@@ -1,0 +1,207 @@
+\doxysection{ngap\+\_\+adapters.\+h}
+\hypertarget{ngap__adapters_8h_source}{}\label{ngap__adapters_8h_source}\index{lib/cu\_cp/adapters/ngap\_adapters.h@{lib/cu\_cp/adapters/ngap\_adapters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}../cu\_cp\_impl\_interface.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}../du\_processor/du\_processor\_impl\_interface.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}../ue\_manager/ue\_task\_scheduler.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/cu\_cp.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ngap/ngap.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/rrc/rrc.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__to__cu__cp__task__scheduler}{ngap\_to\_cu\_cp\_task\_scheduler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__ue__task__scheduler}{ngap\_ue\_task\_scheduler}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__to__cu__cp__task__scheduler}{ngap\_to\_cu\_cp\_task\_scheduler}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ connect\_cu\_cp(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}\&\ cu\_cp\_task\_sched\_)\ \{\ cu\_cp\_task\_sched\ =\ \&cu\_cp\_task\_sched\_;\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{void}\ schedule\_async\_task(ue\_index\_t\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\&\&\ task)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00046\ \ \ \ \ srsran\_assert(cu\_cp\_task\_sched\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ task\ scheduler\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ logger.debug(\textcolor{stringliteral}{"{}ue=\{\}:\ Scheduling\ async\ task"{}},\ ue\_index);}
+\DoxyCodeLine{00048\ \ \ \ \ cu\_cp\_task\_sched-\/>handle\_ue\_async\_task(ue\_index,\ std::move(task));}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ make\_unique\_timer()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00052\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00053\ \ \ \ \ srsran\_assert(cu\_cp\_task\_sched\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ task\ scheduler\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{return}\ cu\_cp\_task\_sched-\/>make\_unique\_timer();}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ get\_timer\_manager()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00057\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00058\ \ \ \ \ srsran\_assert(cu\_cp\_task\_sched\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ task\ scheduler\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{return}\ cu\_cp\_task\_sched-\/>get\_timer\_manager();}
+\DoxyCodeLine{00060\ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}*\ cu\_cp\_task\_sched\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ logger\ \ \ \ \ \ \ \ \ \ \ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}});}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter}{ngap\_cu\_cp\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__du__repository__notifier}{ngap\_cu\_cp\_du\_repository\_notifier}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__ue__creation__notifier}{ngap\_cu\_cp\_ue\_creation\_notifier}}}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00071\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter}{ngap\_cu\_cp\_adapter}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{void}\ connect\_cu\_cp(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__repository__ngap__handler}{du\_repository\_ngap\_handler}}\&\ \ \ \ \ du\_repository\_handler\_,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ngap__ue__creation__handler}{cu\_cp\_ngap\_ue\_creation\_handler}}\&\ ngap\_ue\_creation\_handler\_)}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ du\_repository\_handler\ \ \ \ =\ \&du\_repository\_handler\_;}
+\DoxyCodeLine{00077\ \ \ \ \ ngap\_ue\_creation\_handler\ =\ \&ngap\_ue\_creation\_handler\_;}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter_a18fe4b28697e916c5b8ba3bdd7bf74cf}{on\_paging\_message}}(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__paging__message}{cu\_cp\_paging\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00082\ \ \ \ \ srsran\_assert(du\_repository\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ Paging\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00083\ \ \ \ \ du\_repository\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__repository__ngap__handler_a22ab317e5da27609140d5a88b5f172fc}{handle\_paging\_message}}(msg);}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ ue\_index\_t\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter_a5aeebab3c82a6b93f41501d3b4f0d872}{request\_new\_ue\_index\_allocation}}(\mbox{\hyperlink{structsrsran_1_1nr__cell__global__id__t}{nr\_cell\_global\_id\_t}}\ cgi)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00087\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00088\ \ \ \ \ srsran\_assert(du\_repository\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ Paging\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_repository\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__repository__ngap__handler_ad9c2f9149745106d344c5b5e20f5f07e}{handle\_ue\_index\_allocation\_request}}(cgi);}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ngap\_handover\_resource\_allocation\_response>}}}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter_aa6b67ba82f6def99353afdb99edc4c77}{on\_ngap\_handover\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__request}{ngap\_handover\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00094\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00095\ \ \ \ \ srsran\_assert(du\_repository\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ Paging\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_repository\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__repository__ngap__handler_a37398506a571e6958896be1f4ad7c0b6}{handle\_ngap\_handover\_request}}(request);}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__adapter_a276104537e9c15df1019a892971dcd84}{on\_new\_ngap\_ue}}(ue\_index\_t\ ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00100\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00101\ \ \ \ \ srsran\_assert(ngap\_ue\_creation\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}CU-\/CP\ NGAP\ UE\ creation\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{return}\ ngap\_ue\_creation\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ngap__ue__creation__handler_a7edbaf8f6f468875c700e77ba8c9c252}{handle\_new\_ngap\_ue}}(ue\_index);}
+\DoxyCodeLine{00103\ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__repository__ngap__handler}{du\_repository\_ngap\_handler}}*\ \ \ \ \ du\_repository\_handler\ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ngap__ue__creation__handler}{cu\_cp\_ngap\_ue\_creation\_handler}}*\ ngap\_ue\_creation\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00111\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter}{ngap\_rrc\_ue\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__pdu__notifier}{ngap\_rrc\_ue\_pdu\_notifier}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__control__notifier}{ngap\_rrc\_ue\_control\_notifier}}}
+\DoxyCodeLine{00112\ \{}
+\DoxyCodeLine{00113\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter}{ngap\_rrc\_ue\_adapter}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{void}\ connect\_rrc\_ue(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__dl__nas__message__handler}{rrc\_dl\_nas\_message\_handler}}*\ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_msg\_handler\_,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__init__security__context__handler}{rrc\_ue\_init\_security\_context\_handler}}*\ rrc\_ue\_security\_handler\_,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__handover__preparation__handler}{rrc\_ue\_handover\_preparation\_handler}}*\ \ rrc\_ue\_ho\_prep\_handler\_)}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ rrc\_ue\_msg\_handler\ \ \ \ \ \ =\ rrc\_ue\_msg\_handler\_;}
+\DoxyCodeLine{00121\ \ \ \ \ rrc\_ue\_security\_handler\ =\ rrc\_ue\_security\_handler\_;}
+\DoxyCodeLine{00122\ \ \ \ \ rrc\_ue\_ho\_prep\_handler\ \ =\ rrc\_ue\_ho\_prep\_handler\_;}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter_a4aec4fd6ca2008ed5986c87851354911}{on\_new\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ nas\_pdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00126\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00127\ \ \ \ \ srsran\_assert(rrc\_ue\_msg\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RRC\ UE\ message\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ rrc\_ue\_msg\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__dl__nas__message__handler_aa62b4665544bf620078aa7eec83d3aed}{handle\_dl\_nas\_transport\_message}}(std::move(nas\_pdu));}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter_a46f84ddbf9c67ed8b8a95f67a977a2b1}{on\_new\_security\_context}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security::security\_context}}\&\ sec\_context)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00132\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00133\ \ \ \ \ srsran\_assert(rrc\_ue\_security\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RRC\ UE\ security\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ rrc\_ue\_security\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__init__security__context__handler_a5d548c5071ec304f2279644ac5d5568f}{handle\_init\_security\_context}}(sec\_context);}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter_a563a46294971881f952b44abfce3b96e}{on\_security\_enabled}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00138\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00139\ \ \ \ \ srsran\_assert(rrc\_ue\_security\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RRC\ UE\ security\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{return}\ rrc\_ue\_security\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__init__security__context__handler_a53cbe0347ee4ed0030ac04212ecaa3ee}{get\_security\_enabled}}();}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter_ae66afc03049327583ed7b6468caa82bf}{on\_handover\_preparation\_message\_required}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00144\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00145\ \ \ \ \ srsran\_assert(rrc\_ue\_ho\_prep\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RRC\ UE\ up\ manager\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{return}\ rrc\_ue\_ho\_prep\_handler-\/>get\_packed\_handover\_preparation\_message();}
+\DoxyCodeLine{00147\ \ \ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__rrc__ue__adapter_a7dd2c07d3770a6b8940c7dc9a2d7eebf}{on\_new\_rrc\_handover\_command}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ cmd)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00150\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00151\ \ \ \ \ srsran\_assert(rrc\_ue\_ho\_prep\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RRC\ UE\ up\ manager\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{return}\ rrc\_ue\_ho\_prep\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__handover__preparation__handler_a033af4dbb052553923da28dae6164666}{handle\_rrc\_handover\_command}}(std::move(cmd));}
+\DoxyCodeLine{00153\ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__dl__nas__message__handler}{rrc\_dl\_nas\_message\_handler}}*\ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_msg\_handler\ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__init__security__context__handler}{rrc\_ue\_init\_security\_context\_handler}}*\ rrc\_ue\_security\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__handover__preparation__handler}{rrc\_ue\_handover\_preparation\_handler}}*\ \ rrc\_ue\_ho\_prep\_handler\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00162\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter}{ngap\_du\_processor\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__control__notifier}{ngap\_du\_processor\_control\_notifier}}}
+\DoxyCodeLine{00163\ \{}
+\DoxyCodeLine{00164\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00165\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter}{ngap\_du\_processor\_adapter}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{keywordtype}{void}\ connect\_du\_processor(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__interface}{du\_processor\_ngap\_interface}}*\ du\_processor\_ngap\_handler\_)}
+\DoxyCodeLine{00168\ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ du\_processor\_ngap\_handler\ =\ du\_processor\_ngap\_handler\_;}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<cu\_cp\_pdu\_session\_resource\_setup\_response>}}}
+\DoxyCodeLine{00173\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter_afdf9655577f90b743721621b92f45108}{on\_new\_pdu\_session\_resource\_setup\_request}}(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__request}{cu\_cp\_pdu\_session\_resource\_setup\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00174\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00175\ \ \ \ \ srsran\_assert(du\_processor\_ngap\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}DU\ Processor\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_processor\_ngap\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__interface_aae12552420aafdf53afc1e0315a6eced}{handle\_new\_pdu\_session\_resource\_setup\_request}}(request);}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<cu\_cp\_pdu\_session\_resource\_modify\_response>}}}
+\DoxyCodeLine{00180\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter_a2de2f3f2951b4d5dd6f13e35566e8c83}{on\_new\_pdu\_session\_resource\_modify\_request}}(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__modify__request}{cu\_cp\_pdu\_session\_resource\_modify\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00181\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00182\ \ \ \ \ srsran\_assert(du\_processor\_ngap\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}DU\ Processor\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_processor\_ngap\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__interface_a363fd3fe7fc42a6768f0270f2056f081}{handle\_new\_pdu\_session\_resource\_modify\_request}}(request);}
+\DoxyCodeLine{00184\ \ \ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<cu\_cp\_pdu\_session\_resource\_release\_response>}}}
+\DoxyCodeLine{00187\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter_ae4c4321850d0b48f016eae833a7a89d0}{on\_new\_pdu\_session\_resource\_release\_command}}(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__release__command}{cu\_cp\_pdu\_session\_resource\_release\_command}}\&\ command)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00188\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00189\ \ \ \ \ srsran\_assert(du\_processor\_ngap\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}DU\ Processor\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_processor\_ngap\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__interface_ad106547eca51525787a90e73ff86ee99}{handle\_new\_pdu\_session\_resource\_release\_command}}(command);}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<cu\_cp\_ue\_context\_release\_complete>}}}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__du__processor__adapter_aa3d337ab98d552ed1c219f01b6b3cd1c}{on\_new\_ue\_context\_release\_command}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__command}{cu\_cp\_ue\_context\_release\_command}}\&\ command)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00195\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00196\ \ \ \ \ srsran\_assert(du\_processor\_ngap\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}DU\ Processor\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_processor\_ngap\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ue__context__notifier_a6c385132c7d688cad61e6876608971f1}{handle\_ue\_context\_release\_command}}(command);}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00201\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__interface}{du\_processor\_ngap\_interface}}*\ du\_processor\_ngap\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00202\ \};}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00205\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

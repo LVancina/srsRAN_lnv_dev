@@ -1,0 +1,139 @@
+\doxysection{pseudo\+\_\+random\+\_\+generator.\+h}
+\hypertarget{pseudo__random__generator_8h_source}{}\label{pseudo__random__generator_8h_source}\index{include/srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h@{include/srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h}}
+\mbox{\hyperlink{pseudo__random__generator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Pseudo-\/random\ generator\ interface.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bit\_buffer.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Pseudo-\/random\ sequence\ generator\ interface\ compliant\ to\ TS38.211\ Section\ 5.2.1.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ pseudo\_random\_generator}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{virtual}\ \string~pseudo\_random\_generator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Describes\ the\ pseudo-\/random\ generator\ internal\ state.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{struct}\ state\_s\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{///\ First\ state\ component.}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ x1;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ Second\ state\ component.}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ x2;}
+\DoxyCodeLine{00049\ \ \ \};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Initializes\ the\ pseudo-\/random\ generator\ with\ the\ given\ seed.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ c\_init\ Initialization\ seed\ (parameter\ \(\backslash\)f\$c\_\{\(\backslash\)textup\{init\}\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 5.2.1).}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ init(\textcolor{keywordtype}{unsigned}\ c\_init)\ =\ 0;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Initializes\ the\ pseudo-\/random\ generator\ at\ the\ given\ state.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ state\ Generator\ internal\ state\ description.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ init(\textcolor{keyword}{const}\ state\_s\&\ state)\ =\ 0;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Returns\ the\ current\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{virtual}\ state\_s\ get\_state()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Advances\ the\ pseudo-\/random\ generator\ state\ without\ generating\ sequence\ bits\ or\ applying\ any\ mask.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ count\ Number\ of\ state\ advance\ steps\ (corresponds\ to\ the\ number\ of\ sequence\ bits\ that\ would\ be}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ generated\ by\ the\ same\ state\ advance).}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ advance(\textcolor{keywordtype}{unsigned}\ count)\ =\ 0;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ XOR-\/applies\ the\ generated\ sequence\ to\ a\ packed\ bit\ buffer.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ The\ generated\ sequence\ is\ used\ to\ scramble\ (bit-\/wise\ XOR\ each\ element)\ the\ input\ sequence.\ Both\ input\ and\ output}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ sequences\ are\ represented\ in\ unpacked\ format\ (each\ entry\ corresponds\ to\ 1\ bit).}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ Output\ data\ sequence.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ in\ \ Input\ data\ sequence.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Input\ and\ output\ sequences\ should\ have\ the\ same\ length.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ method\ modifies\ the\ internal\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ apply\_xor(bit\_buffer\&\ out,\ \textcolor{keyword}{const}\ bit\_buffer\&\ in)\ =\ 0;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ XOR-\/applies\ the\ generated\ sequence\ to\ an\ unpacked\ bit\ buffer.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ The\ generated\ sequence\ is\ used\ to\ scramble\ (bit-\/wise\ XOR\ each\ element)\ the\ input\ sequence.\ Both\ input\ and\ output}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ sequence\ are\ represented\ in\ unpacked\ format\ (each\ entry\ corresponds\ to\ 1\ bit).}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ Output\ data\ sequence.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ in\ \ Input\ data\ sequence.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Input\ and\ output\ sequences\ should\ have\ the\ same\ length.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ method\ modifies\ the\ internal\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ apply\_xor(span<uint8\_t>\ out,\ span<\textcolor{keyword}{const}\ uint8\_t>\ in)\ =\ 0;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ XOR-\/applies\ the\ generated\ sequence\ to\ a\ buffer\ of\ log-\/likelihood\ ratios.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ The\ generated\ sequence\ is\ used\ to\ scramble\ (bit-\/wise\ XOR\ each\ element)\ the\ input\ sequence\ of\ soft\ bits.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ Here,\ the\ XOR\ operation\ between\ a\ log-\/likelihood\ ratio\ \(\backslash\)f\$\(\backslash\)ell\(\backslash\)f\$\ and\ a\ (pseudo-\/random)\ bit\ \(\backslash\)f\$b\(\backslash\)f\$\ returns}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$\(\backslash\)ell\(\backslash\)f\$\ \ if\ \(\backslash\)f\$b\ =\ 0\(\backslash\)f\$\ and\ \(\backslash\)f\$-\/\(\backslash\)ell\(\backslash\)f\$\ if\ \(\backslash\)f\$b\ =\ 1\(\backslash\)f\$.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ Ouput\ data\ sequence.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ in\ \ Input\ data\ sequence.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Input\ and\ output\ sequences\ should\ have\ the\ same\ length.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ method\ modifies\ the\ internal\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ apply\_xor(span<\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ out,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ in)\ =\ 0;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ a\ bit\ pseudo-\/random\ sequence.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ data\ Output\ sequence.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ generate(bit\_buffer\&\ data)\ =\ 0;}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ a\ floating-\/point\ pseudo-\/random\ sequence\ with\ the\ given\ amplitude.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ The\ elements\ of\ the\ generated\ sequence\ will\ have\ the\ form\ \(\backslash\)f\$\(\backslash\)pm\ a\(\backslash\)f\$,\ where\ \(\backslash\)f\$a\(\backslash\)f\$\ denotes\ the\ amplitude.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ buffer\ Output\ sequence.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ value\ \ Sequence\ amplitude.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ sequence\ length\ is\ inferred\ from\ the\ size\ of\ the\ output\ container.}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ method\ modifies\ the\ internal\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ generate(span<\textcolor{keywordtype}{float}>\ buffer,\ \textcolor{keywordtype}{float}\ value)\ =\ 0;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ a\ complex\ floating-\/point\ pseudo-\/random\ sequence\ with\ the\ given\ amplitude.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ The\ amplitude\ refers\ to\ both\ parts,\ real\ and\ imaginary,\ of\ the\ sequence.\ In\ other\ words,\ the\ elements\ will\ have}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ the\ form\ \(\backslash\)f\$\(\backslash\)pm\ a\ \(\backslash\)pm\ \(\backslash\)mj\ a\(\backslash\)f\$,\ where\ \(\backslash\)f\$a\(\backslash\)f\$\ denotes\ the\ amplitude.}}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ buffer\ Output\ sequence.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ value\ \ Sequence\ amplitude.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ sequence\ length\ is\ inferred\ from\ the\ size\ of\ the\ output\ container.}}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ method\ modifies\ the\ internal\ state\ of\ the\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00127\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ generate(span<cf\_t>\ buffer,\ \textcolor{keywordtype}{float}\ value)}
+\DoxyCodeLine{00128\ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ generate(\{\textcolor{keyword}{reinterpret\_cast}<\textcolor{keywordtype}{float}*>(buffer.data()),\ 2\ *\ buffer.size()\},\ value);}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ \};}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

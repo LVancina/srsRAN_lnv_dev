@@ -1,0 +1,390 @@
+\doxysection{rlc\+\_\+stress\+\_\+test\+\_\+args.\+h}
+\hypertarget{rlc__stress__test__args_8h_source}{}\label{rlc__stress__test__args_8h_source}\index{tests/integrationtests/rlc/rlc\_stress\_test\_args.h@{tests/integrationtests/rlc/rlc\_stress\_test\_args.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_config.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_config.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_rx.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_tx.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/security/security.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <getopt.h>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{const}\ std::array<uint8\_t,\ 16>\ k\_128\_int\ =}
+\DoxyCodeLine{00037\ \ \ \ \ \{0x16,\ 0x17,\ 0x18,\ 0x19,\ 0x20,\ 0x21,\ 0x22,\ 0x23,\ 0x24,\ 0x25,\ 0x26,\ 0x27,\ 0x28,\ 0x29,\ 0x30,\ 0x31\};}
+\DoxyCodeLine{00038\ \textcolor{keyword}{const}\ std::array<uint8\_t,\ 16>\ k\_128\_enc\ =}
+\DoxyCodeLine{00039\ \ \ \ \ \{0x16,\ 0x17,\ 0x18,\ 0x19,\ 0x20,\ 0x21,\ 0x22,\ 0x23,\ 0x24,\ 0x25,\ 0x26,\ 0x27,\ 0x28,\ 0x29,\ 0x30,\ 0x31\};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1stress__test__args}{stress\_test\_args}}\ \{}
+\DoxyCodeLine{00042\ \ \ std::string\ \ \ \ \ \ \ \ \ \ mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{stringliteral}{"{}UM12"{}};}
+\DoxyCodeLine{00043\ \ \ int32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ sdu\_size\ \ \ \ \ \ \ \ \ \ \ \ =\ -\/1;}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_drop\_rate\ \ \ \ \ \ \ =\ 0.1;}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_cut\_rate\ \ \ \ \ \ \ \ =\ 0.0;}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_duplicate\_rate\ \ =\ 0.0;}
+\DoxyCodeLine{00047\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ avg\_opp\_size\ \ \ \ \ \ \ \ =\ 1505;}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ const\_opp\ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00049\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ seed\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00050\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ nof\_pdu\_tti\ \ \ \ \ \ \ \ \ =\ 10;}
+\DoxyCodeLine{00051\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ nof\_ttis\ \ \ \ \ \ \ \ \ \ \ \ =\ 500;}
+\DoxyCodeLine{00052\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ =\ 18;}
+\DoxyCodeLine{00053\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}\ \ \ =\ 10;}
+\DoxyCodeLine{00054\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_integrity\_algo\ =\ 2;}
+\DoxyCodeLine{00055\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_ciphering\_algo\ =\ 2;}
+\DoxyCodeLine{00056\ \ \ std::string\ \ \ \ \ \ \ \ \ \ log\_filename\ \ \ \ \ \ \ \ =\ \textcolor{stringliteral}{"{}stdout"{}};}
+\DoxyCodeLine{00057\ \ \ srslog::basic\_levels\ log\_level\_stack\ \ \ \ \ =\ srslog::basic\_levels::info;}
+\DoxyCodeLine{00058\ \ \ srslog::basic\_levels\ log\_level\_traff\ \ \ \ \ =\ srslog::basic\_levels::error;}
+\DoxyCodeLine{00059\ \ \ srslog::basic\_levels\ log\_level\_rlc\ \ \ \ \ \ \ =\ srslog::basic\_levels::error;}
+\DoxyCodeLine{00060\ \ \ srslog::basic\_levels\ log\_level\_f1\ \ \ \ \ \ \ \ =\ srslog::basic\_levels::error;}
+\DoxyCodeLine{00061\ \ \ srslog::basic\_levels\ log\_level\_pdcp\ \ \ \ \ \ =\ srslog::basic\_levels::error;}
+\DoxyCodeLine{00062\ \ \ srslog::basic\_levels\ log\_level\_mac\ \ \ \ \ \ \ =\ srslog::basic\_levels::error;}
+\DoxyCodeLine{00063\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ log\_hex\_limit\ \ \ \ \ \ \ =\ 32;}
+\DoxyCodeLine{00064\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ min\_sdu\_size\ \ \ \ \ \ \ \ =\ 5;}
+\DoxyCodeLine{00065\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ max\_sdu\_size\ \ \ \ \ \ \ \ =\ 1500;}
+\DoxyCodeLine{00066\ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{comment}{//\ Long\ only\ optgars\ ints}}
+\DoxyCodeLine{00069\ \textcolor{keyword}{enum\ class}\ long\_only\ \{}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ =\ 1000,}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}},}
+\DoxyCodeLine{00072\ \ \ pdcp\_integrity\_algo,}
+\DoxyCodeLine{00073\ \ \ pdcp\_ciphering\_algo,}
+\DoxyCodeLine{00074\ \ \ log\_stack\_level,}
+\DoxyCodeLine{00075\ \ \ log\_traff\_level,}
+\DoxyCodeLine{00076\ \ \ log\_pdcp\_level,}
+\DoxyCodeLine{00077\ \ \ log\_f1\_level,}
+\DoxyCodeLine{00078\ \ \ log\_rlc\_level,}
+\DoxyCodeLine{00079\ \ \ log\_mac\_level,}
+\DoxyCodeLine{00080\ \};}
+\DoxyCodeLine{00081\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ to\_number(long\_only\ e)}
+\DoxyCodeLine{00082\ \{}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(e);}
+\DoxyCodeLine{00084\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ parse\_args(stress\_test\_args\&\ args,\ \textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}*\ argv[])}
+\DoxyCodeLine{00087\ \{}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keyword}{struct\ }option\ long\_options[]\ =\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}help"{}},\ no\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'h'}\},}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}mode"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'m'}\},}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}sdu\_size"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'s'}\},}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}min\_sdu\_size"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'z'}\},}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}max\_sdu\_size"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'Z'}\},}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}const\_opp"{}},\ no\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'o'}\},}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}avg\_opp\_size"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'p'}\},}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdu\_drop\_rate"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'d'}\},}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdu\_cut\_rate"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'c'}\},}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdu\_duplicate\_rate"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'D'}\},}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}nof\_ttis"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'t'}\},}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdcp\_sn\_size"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::pdcp\_sn\_size)\},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdcp\_t\_reordering"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::pdcp\_t\_reordering)\},}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdcp\_integrity\_algo"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::pdcp\_integrity\_algo)\},}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}pdcp\_ciphering\_algo"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::pdcp\_ciphering\_algo)\},}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_filename"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'l'}\},}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_stack\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_stack\_level)\},}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_traffic\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_traff\_level)\},}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_pdcp\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_pdcp\_level)\},}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_f1\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_f1\_level)\},}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_rlc\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_rlc\_level)\},}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_mac\_level"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ to\_number(long\_only::log\_mac\_level)\},}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}log\_hex\_limit"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'H'}\},}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}seed"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'S'}\},}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}nof\_pdu\_tti"{}},\ required\_argument,\ \textcolor{keyword}{nullptr},\ \textcolor{charliteral}{'T'}\},}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \{\textcolor{keyword}{nullptr},\ 0,\ \textcolor{keyword}{nullptr},\ 0\}\};}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{//\ clang-\/format\ off}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ usage[]\ =}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{stringliteral}{"{}Usage:\ rlc\_stress\_test\ [options]\(\backslash\)n"{}}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{stringliteral}{"{}\(\backslash\)n"{}}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/h,\ -\/-\/help\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Show\ help\ message\ and\ quit.\(\backslash\)n"{}}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/m,\ -\/-\/mode\ <RLC\ mode>\ \ \ \ \ \ \ \ \ \ \ Set\ RLC\ mode\ \{TM,\ UM6,\ UM12,\ AM12,\ AM18\}.\(\backslash\)n"{}}}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/s,\ -\/-\/sdu\_size\ <size>\ \ \ \ \ \ \ \ \ \ \ Set\ SDU\ size\ (-\/1\ means\ random).\(\backslash\)n"{}}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/z,\ -\/-\/min\_sdu\_size\ <size>\ \ \ \ \ \ \ Set\ minimum\ SDU\ size\ (for\ randomly\ selected\ SDU\ size).\(\backslash\)n"{}}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/Z,\ -\/-\/max\_sdu\_size\ <size>\ \ \ \ \ \ \ Set\ maximum\ SDU\ size\ (for\ randomly\ selected\ SDU\ size).\(\backslash\)n"{}}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/o,\ -\/-\/const\_opp\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Generate\ constant-\/size\ MAC\ opportunities\ (default:\ random).\(\backslash\)n"{}}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/p,\ -\/-\/avg\_opp\_size\ <size>\ \ \ \ \ \ \ Set\ average\ MAC\ opportunity\ size.\(\backslash\)n"{}}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/d,\ -\/-\/pdu\_drop\_rate\ <rate>\ \ \ \ \ \ Set\ rate\ at\ which\ RLC\ PDUs\ are\ dropped.\(\backslash\)n"{}}}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/c,\ -\/-\/pdu\_cut\_rate\ <rate>\ \ \ \ \ \ \ Set\ rate\ at\ which\ RLC\ PDUs\ are\ chopped\ in\ length.\(\backslash\)n"{}}}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/D,\ -\/-\/pdu\_duplicate\_rate\ <rate>\ Set\ rate\ at\ which\ RLC\ PDUs\ are\ dropped.\(\backslash\)n"{}}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/l,\ -\/-\/nof\_ttis\ <ttis>\ \ \ \ \ \ \ \ \ \ \ Set\ number\ of\ TTIs\ to\ emulate.\(\backslash\)n"{}}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/l,\ -\/-\/log\_filename\ <filename>\ \ \ Set\ log\ filename.\ Use\ 'stdout'\ to\ print\ to\ console.\(\backslash\)n"{}}}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/pdcp\_sn\_size\ <level>\ \ \ \ \ \ \ \ \ \ Set\ PDCP\ SN\ size.\(\backslash\)n"{}}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/pdcp\_t\_reordering\ <timeout>\ \ \ Set\ PDCP\ t-\/Reordering\ timeout\ (ms).\(\backslash\)n"{}}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/pdcp\_integrity\_algo\ <algo>\ \ \ \ Set\ PDCP\ NIA\ algo\ (default\ NIA2).\(\backslash\)n"{}}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/pdcp\_ciphering\_algo\ <algo>\ \ \ \ Set\ PDCP\ NEA\ algo\ (default\ NEA2).\(\backslash\)n"{}}}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_stack\_level\ <level>\ \ \ \ \ \ \ Set\ STACK\ log\ level\ (default:\ info).\(\backslash\)n"{}}}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_traffic\_level\ <level>\ \ \ \ \ Set\ STACK\ log\ level\ (default:\ info).\(\backslash\)n"{}}}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_pdcp\_level\ <level>\ \ \ \ \ \ \ \ Set\ PDCP\ log\ level\ (default:\ error).\(\backslash\)n"{}}}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_f1\_level\ <level>\ \ \ \ \ \ \ \ \ \ Set\ F1\ log\ level\ (default:\ error).\(\backslash\)n"{}}}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_rlc\_level\ <level>\ \ \ \ \ \ \ \ \ Set\ RLC\ log\ level\ (default:\ error).\(\backslash\)n"{}}}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_mac\_level\ <level>\ \ \ \ \ \ \ \ \ Set\ MAC\ log\ level\ (default:\ error).\(\backslash\)n"{}}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/-\/log\_hex\_limit\ <hex\_limit>\ \ \ \ \ Set\ log\ limit\ for\ hex\ dumps\ (default:\ 32\ bytes).\(\backslash\)n"{}}}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/S,\ -\/-\/seed\ <seed>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Set\ seed\ to\ use\ in\ run.\ 0\ means\ the\ seed\ is\ randomly\ generated.\(\backslash\)n"{}}}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/T,\ -\/-\/nof\_pdu\_tti\ <num>\ \ \ \ \ \ \ \ \ Set\ number\ of\ PDUs\ processed\ in\ a\ TTI.\(\backslash\)n"{}}}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{//\ clang-\/format\ on}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{//\ Parse\ arguments}}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordtype}{int}\ option\_index\ =\ 0;}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordtype}{int}\ c\ \ \ \ \ \ \ \ \ \ \ \ =\ getopt\_long(argc,\ argv,\ \textcolor{stringliteral}{"{}hm:s:z:Z:op:d:c:D:t:l:H:S:T:"{}},\ long\_options,\ \&option\_index);}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{if}\ (c\ ==\ -\/1)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{switch}\ (c)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'h'}:}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}\%s"{}},\ usage);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ exit(0);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'m'}:}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ args.mode\ =\ std::string(optarg);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}RLC\ Mode\ \%s\(\backslash\)n"{}},\ args.mode.c\_str());}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'s'}:}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ args.sdu\_size\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}SDU\ size\ \%d\(\backslash\)n"{}},\ args.sdu\_size);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'z'}:}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ args.min\_sdu\_size\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Minimum\ SDU\ size\ \%d\(\backslash\)n"{}},\ args.min\_sdu\_size);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'Z'}:}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ args.max\_sdu\_size\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Maximum\ SDU\ size\ \%d\(\backslash\)n"{}},\ args.max\_sdu\_size);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'o'}:}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ args.const\_opp\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Using\ constant-\/size\ MAC\ opportunities\(\backslash\)n"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'p'}:}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ args.avg\_opp\_size\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Average\ MAC\ opportunity\ size\ \%d\(\backslash\)n"{}},\ args.avg\_opp\_size);}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'d'}:}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ args.pdu\_drop\_rate\ =\ std::strtod(optarg,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}RLC\ PDU\ drop\ rate\ \%f\(\backslash\)n"{}},\ args.pdu\_drop\_rate);}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'c'}:}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ args.pdu\_cut\_rate\ =\ std::strtod(optarg,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}RLC\ PDU\ cut\ rate\ \%f\(\backslash\)n"{}},\ args.pdu\_cut\_rate);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'D'}:}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ args.pdu\_duplicate\_rate\ =\ std::strtod(optarg,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}RLC\ PDU\ duplicate\ rate\ \%f\(\backslash\)n"{}},\ args.pdu\_duplicate\_rate);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'t'}:}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ args.nof\_ttis\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Number\ of\ TTIs\ to\ emulate\ \%u\(\backslash\)n"{}},\ args.nof\_ttis);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'l'}:}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ args.log\_filename\ =\ std::string(optarg);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Log\ filename\ \%s\(\backslash\)n"{}},\ args.log\_filename.c\_str());}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::pdcp\_sn\_size):}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ args.\mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ =\ std::strtol(optarg,\ nullptr,\ 10);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDCP\ SN\ Size\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::pdcp\_t\_reordering):}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ args.\mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}\ =\ std::strtol(optarg,\ nullptr,\ 10);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDCP\ t-\/Reordering\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::pdcp\_integrity\_algo):}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ args.pdcp\_integrity\_algo\ =\ std::strtol(optarg,\ nullptr,\ 10);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDCP\ integrity\ algorithm\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::pdcp\_ciphering\_algo):}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ args.pdcp\_ciphering\_algo\ =\ std::strtol(optarg,\ nullptr,\ 10);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDCP\ ciphering\ algorithm\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_stack\_level):}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ args.log\_level\_stack\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}STACK\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_traff\_level):}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ args.log\_level\_traff\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}TRAFF\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_pdcp\_level):}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ args.log\_level\_pdcp\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDCP\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_f1\_level):}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ args.log\_level\_f1\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}F1\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_rlc\_level):}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ args.log\_level\_rlc\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}RLC\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ to\_number(long\_only::log\_mac\_level):}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ args.log\_level\_mac\ =\ srslog::str\_to\_basic\_level(std::string(optarg));}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}MAC\ log\ level\ \%s\(\backslash\)n"{}},\ optarg);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'H'}:}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ args.log\_hex\_limit\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Log\ hex\ limit\ \%d\(\backslash\)n"{}},\ args.log\_hex\_limit);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'S'}:}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ args.seed\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}Seed\ \%d\(\backslash\)n"{}},\ args.seed);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'T'}:}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ args.nof\_pdu\_tti\ =\ std::strtol(optarg,\ \textcolor{keyword}{nullptr},\ 10);}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ fprintf(stdout,\ \textcolor{stringliteral}{"{}PDUs\ per\ TTI\ \%d\(\backslash\)n"{}},\ args.nof\_pdu\_tti);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}error\ parsing\ arguments\(\backslash\)n"{}});}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00258\ \ \ \ \ \}}
+\DoxyCodeLine{00259\ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00261\ \}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \textcolor{keyword}{inline}\ security::sec\_128\_as\_config\ get\_security\_config\_from\_args(\textcolor{keyword}{const}\ stress\_test\_args\&\ args)}
+\DoxyCodeLine{00264\ \{}
+\DoxyCodeLine{00265\ \ \ security::sec\_128\_as\_config\ sec\_cfg\ =\ \{\};}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \textcolor{comment}{//\ Set\ security\ domain}}
+\DoxyCodeLine{00268\ \ \ sec\_cfg.domain\ =\ security::sec\_domain::up;\ \textcolor{comment}{//\ DRB}}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \textcolor{comment}{//\ Set\ security\ keys}}
+\DoxyCodeLine{00271\ \ \ sec\_cfg.k\_128\_int\ =\ k\_128\_int;}
+\DoxyCodeLine{00272\ \ \ sec\_cfg.k\_128\_enc\ =\ k\_128\_enc;}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \textcolor{comment}{//\ Set\ encryption/integrity\ algorithms}}
+\DoxyCodeLine{00275\ \ \ sec\_cfg.integ\_algo\ \ =\ \textcolor{keyword}{static\_cast<}security::integrity\_algorithm\textcolor{keyword}{>}(args.pdcp\_integrity\_algo);}
+\DoxyCodeLine{00276\ \ \ sec\_cfg.cipher\_algo\ =\ \textcolor{keyword}{static\_cast<}security::ciphering\_algorithm\textcolor{keyword}{>}(args.pdcp\_ciphering\_algo);}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \textcolor{keywordflow}{return}\ sec\_cfg;}
+\DoxyCodeLine{00279\ \}}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \textcolor{keyword}{inline}\ pdcp\_config\ get\_pdcp\_config\_from\_args(uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ stress\_test\_args\&\ args)}
+\DoxyCodeLine{00282\ \{}
+\DoxyCodeLine{00283\ \ \ pdcp\_config\ cnfg\ =\ \{\};}
+\DoxyCodeLine{00284\ \ \ cnfg.rb\_type\ \ \ \ \ =\ pdcp\_rb\_type::drb;}
+\DoxyCodeLine{00285\ \ \ \textcolor{keywordflow}{if}\ (args.pdcp\_sn\_size\ ==\ 12)\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ cnfg.tx.sn\_size\ =\ srsran::pdcp\_sn\_size::size12bits;}
+\DoxyCodeLine{00287\ \ \ \ \ cnfg.rx.sn\_size\ =\ srsran::pdcp\_sn\_size::size12bits;}
+\DoxyCodeLine{00288\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.pdcp\_sn\_size\ ==\ 18)\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ cnfg.tx.sn\_size\ =\ srsran::pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00290\ \ \ \ \ cnfg.rx.sn\_size\ =\ srsran::pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00291\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}Unsupported\ PDCP\ SN\ \%d,\ exiting.\(\backslash\)n"{}},\ args.pdcp\_sn\_size);}
+\DoxyCodeLine{00293\ \ \ \ \ exit(-\/1);}
+\DoxyCodeLine{00294\ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keywordtype}{id}\ ==\ 0)\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ cnfg.tx.direction\ =\ srsran::pdcp\_security\_direction::downlink;}
+\DoxyCodeLine{00297\ \ \ \ \ cnfg.rx.direction\ =\ srsran::pdcp\_security\_direction::uplink;}
+\DoxyCodeLine{00298\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ cnfg.tx.direction\ =\ srsran::pdcp\_security\_direction::uplink;}
+\DoxyCodeLine{00300\ \ \ \ \ cnfg.rx.direction\ =\ srsran::pdcp\_security\_direction::downlink;}
+\DoxyCodeLine{00301\ \ \ \}}
+\DoxyCodeLine{00302\ \ \ cnfg.rx.t\_reordering\ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}\textcolor{keyword}{>}(args.pdcp\_t\_reordering);}
+\DoxyCodeLine{00303\ \ \ \textcolor{keywordflow}{return}\ cnfg;}
+\DoxyCodeLine{00304\ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \textcolor{keyword}{inline}\ rlc\_config\ get\_rlc\_config\_from\_args(\textcolor{keyword}{const}\ stress\_test\_args\&\ args)}
+\DoxyCodeLine{00307\ \{}
+\DoxyCodeLine{00308\ \ \ rlc\_config\ cnfg\ =\ \{\};}
+\DoxyCodeLine{00309\ \ \ \textcolor{keywordflow}{if}\ (args.mode\ ==\ \textcolor{stringliteral}{"{}TM"{}})\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ cnfg.mode\ =\ srsran::rlc\_mode::tm;}
+\DoxyCodeLine{00311\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.mode\ ==\ \textcolor{stringliteral}{"{}UM6"{}})\ \{}
+\DoxyCodeLine{00312\ \ \ \ \ cnfg.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::rlc\_mode::um\_bidir;}
+\DoxyCodeLine{00313\ \ \ \ \ cnfg.um.rx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size6bits;}
+\DoxyCodeLine{00314\ \ \ \ \ cnfg.um.tx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size6bits;}
+\DoxyCodeLine{00315\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.mode\ ==\ \textcolor{stringliteral}{"{}UM12"{}})\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ cnfg.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::rlc\_mode::um\_bidir;}
+\DoxyCodeLine{00317\ \ \ \ \ cnfg.um.rx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size12bits;}
+\DoxyCodeLine{00318\ \ \ \ \ cnfg.um.tx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size12bits;}
+\DoxyCodeLine{00319\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.mode\ ==\ \textcolor{stringliteral}{"{}AM12"{}})\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ cnfg.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::rlc\_mode::am;}
+\DoxyCodeLine{00321\ \ \ \ \ cnfg.am.rx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size12bits;}
+\DoxyCodeLine{00322\ \ \ \ \ cnfg.am.tx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size12bits;}
+\DoxyCodeLine{00323\ \ \ \ \ cnfg.am.tx.t\_poll\_retx\ \ \ \ \ \ \ =\ 50;}
+\DoxyCodeLine{00324\ \ \ \ \ cnfg.am.tx.poll\_pdu\ \ \ \ \ \ \ \ \ \ =\ 10;}
+\DoxyCodeLine{00325\ \ \ \ \ cnfg.am.tx.poll\_byte\ \ \ \ \ \ \ \ \ =\ 5000;}
+\DoxyCodeLine{00326\ \ \ \ \ cnfg.am.rx.t\_reassembly\ \ \ \ \ \ =\ 40;}
+\DoxyCodeLine{00327\ \ \ \ \ cnfg.am.rx.t\_status\_prohibit\ =\ 8;}
+\DoxyCodeLine{00328\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (args.mode\ ==\ \textcolor{stringliteral}{"{}AM18"{}})\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ cnfg.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::rlc\_mode::am;}
+\DoxyCodeLine{00330\ \ \ \ \ cnfg.am.rx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size18bits;}
+\DoxyCodeLine{00331\ \ \ \ \ cnfg.am.tx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size18bits;}
+\DoxyCodeLine{00332\ \ \ \ \ cnfg.am.tx.t\_poll\_retx\ \ \ \ \ \ \ =\ 50;}
+\DoxyCodeLine{00333\ \ \ \ \ cnfg.am.tx.poll\_pdu\ \ \ \ \ \ \ \ \ \ =\ 10;}
+\DoxyCodeLine{00334\ \ \ \ \ cnfg.am.tx.poll\_byte\ \ \ \ \ \ \ \ \ =\ 5000;}
+\DoxyCodeLine{00335\ \ \ \ \ cnfg.am.rx.t\_reassembly\ \ \ \ \ \ =\ 40;}
+\DoxyCodeLine{00336\ \ \ \ \ cnfg.am.rx.t\_status\_prohibit\ =\ 8;}
+\DoxyCodeLine{00337\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}Unsupported\ RLC\ mode\ \%s,\ exiting.\(\backslash\)n"{}},\ args.mode.c\_str());}
+\DoxyCodeLine{00339\ \ \ \ \ exit(-\/1);}
+\DoxyCodeLine{00340\ \ \ \}}
+\DoxyCodeLine{00341\ \ \ cnfg.metrics\_period\ =\ std::chrono::milliseconds(1000);}
+\DoxyCodeLine{00342\ \ \ \textcolor{keywordflow}{return}\ cnfg;}
+\DoxyCodeLine{00343\ \}}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ init\_log\_from\_args(\textcolor{keyword}{const}\ stress\_test\_args\&\ args)}
+\DoxyCodeLine{00346\ \{}
+\DoxyCodeLine{00347\ \ \ srslog::init();}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}*\ log\_sink\ =}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ (args.log\_filename\ ==\ \textcolor{stringliteral}{"{}stdout"{}})\ ?\ srslog::create\_stdout\_sink()\ :\ srslog::create\_file\_sink(args.log\_filename);}
+\DoxyCodeLine{00351\ \ \ \textcolor{keywordflow}{if}\ (log\_sink\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00353\ \ \ \}}
+\DoxyCodeLine{00354\ \ \ \mbox{\hyperlink{classsrslog_1_1log__channel}{srslog::log\_channel}}*\ chan\ =\ srslog::create\_log\_channel(\textcolor{stringliteral}{"{}main\_channel"{}},\ *log\_sink);}
+\DoxyCodeLine{00355\ \ \ \textcolor{keywordflow}{if}\ (chan\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00356\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00357\ \ \ \}}
+\DoxyCodeLine{00358\ \ \ srslog::set\_default\_sink(*log\_sink);}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00360\ \ \ \textcolor{keyword}{auto}\&\ log\_stack\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}STACK"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00361\ \ \ log\_stack.set\_level(args.log\_level\_stack);}
+\DoxyCodeLine{00362\ \ \ log\_stack.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{auto}\&\ log\_traff\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TRAFF"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00365\ \ \ log\_traff.set\_level(args.log\_level\_traff);}
+\DoxyCodeLine{00366\ \ \ log\_traff.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \ \ \textcolor{keyword}{auto}\&\ log\_pdcp\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}PDCP"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00369\ \ \ log\_pdcp.set\_level(args.log\_level\_pdcp);}
+\DoxyCodeLine{00370\ \ \ log\_pdcp.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \textcolor{keyword}{auto}\&\ log\_f1\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}F1AP"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00373\ \ \ log\_f1.set\_level(args.log\_level\_pdcp);}
+\DoxyCodeLine{00374\ \ \ log\_f1.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \ \ \textcolor{keyword}{auto}\&\ log\_rlc\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00377\ \ \ log\_rlc.set\_level(args.log\_level\_rlc);}
+\DoxyCodeLine{00378\ \ \ log\_rlc.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \textcolor{keyword}{auto}\&\ log\_mac\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}MAC"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00381\ \ \ log\_mac.set\_level(args.log\_level\_mac);}
+\DoxyCodeLine{00382\ \ \ log\_mac.set\_hex\_dump\_max\_size(args.log\_hex\_limit);}
+\DoxyCodeLine{00383\ \}}
+\DoxyCodeLine{00384\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

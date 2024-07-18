@@ -1,0 +1,268 @@
+\doxysection{search\+\_\+space.\+h}
+\hypertarget{search__space_8h_source}{}\label{search__space_8h_source}\index{include/srsran/ran/pdcch/search\_space.h@{include/srsran/ran/pdcch/search\_space.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/variant.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/frame\_types.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/nr\_band.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/coreset.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/sched\_consts.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331,\ "{}SearchSpaceId"{}\ -\/\ The\ number\ of\ Search\ Spaces\ per\ BWP\ is\ limited\ to\ 10\ including\ the\ common}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ and\ UE\ specific\ Search\ Spaces.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_a998eb311caae6c32e55e88ebe764990c}{size\_t}}\ \mbox{\hyperlink{namespacesrsran_a998eb311caae6c32e55e88ebe764990c}{MAX\_NOF\_SEARCH\_SPACE\_PER\_BWP}}\ =\ 10;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)brief\ Search\ Space\ identifier.\ This\ value\ is\ UE-\/specific,\ which\ means\ that\ a\ UE\ can\ have\ up\ to}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ "{}maxNrofSearchSpaces=40"{}\ Search\ Spaces\ configured.\ The\ ID\ space\ is\ used\ across\ BWPs\ of\ a\ serving\ cell.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ :\ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{uint8\_t}}\ \{\ MIN\_SEARCH\_SPACE\_ID\ =\ 0,\ MAX\_SEARCH\_SPACE\_ID\ =\ 39,\ MAX\_NOF\_SEARCH\_SPACES\ =\ 40\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ to\_search\_space\_id(\textcolor{keywordtype}{unsigned}\ ss\_id)}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}>(ss\_id);}
+\DoxyCodeLine{00045\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ Search\ Space\ Set\ Type\ as\ per\ TS38.213,\ Section\ 10.1.}}
+\DoxyCodeLine{00048\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_af4dae949781a0c4b416e9459048cb39a}{search\_space\_set\_type}}\ \{\ type0,\ type0A,\ type1,\ type2,\ type3,\ ue\_specific\ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ Checks\ whether\ the\ SearchSpace\ set\ is\ common\ or\ dedicated.}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_aa7ffd40bcb6d71c35e916f8071121995}{is\_common\_search\_space}}(\mbox{\hyperlink{namespacesrsran_af4dae949781a0c4b416e9459048cb39a}{search\_space\_set\_type}}\ ss\_set)}
+\DoxyCodeLine{00052\ \{}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordflow}{return}\ ss\_set\ !=\ \mbox{\hyperlink{namespacesrsran_af4dae949781a0c4b416e9459048cb39a}{search\_space\_set\_type}}::ue\_specific;}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ SearchSpace\ Type.}}
+\DoxyCodeLine{00057\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_ab20905dca5d1c8e50a87acc5ac860b77}{search\_space\_type}}\ \{\ common,\ ue\_dedicated\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ SearchSpace\ configuration\ as\ per\ TS38.331,\ "{}SearchSpace"{}.}}
+\DoxyCodeLine{00060\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration}{search\_space\_configuration}}\ \{}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ SearchSpace\ monitoring\ symbols\ within\ a\ slot.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ The\ first\ symbol(s)\ for\ PDCCH\ monitoring\ occasion(s)\ in\ the\ slots\ for\ PDCCH\ monitoring.\ The\ most}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ significant\ bit\ represents\ the\ first\ OFDM\ in\ a\ slot.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{using}\ monitoring\_symbols\_within\_slot\_t\ =\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset}}<\mbox{\hyperlink{namespacesrsran_a2ec632168c0292dc5fd78c9bd35f159b}{NOF\_OFDM\_SYM\_PER\_SLOT\_NORMAL\_CP}},\ \textcolor{keyword}{true}>;}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ SearchSpace\ Type.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{using}\ type\_t\ =\ \mbox{\hyperlink{namespacesrsran_ab20905dca5d1c8e50a87acc5ac860b77}{search\_space\_type}};}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ SearchSpace\ Common\ Type\ DCI\ Formats.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_1_1common__dci__format}{common\_dci\_format}}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{bool}\ f0\_0\_and\_f1\_0;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{bool}\ f2\_0;}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{bool}\ f2\_1;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{bool}\ f2\_2;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{bool}\ f2\_3;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_1_1common__dci__format}{common\_dci\_format}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00076\ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f0\_0\_and\_f1\_0\ ==\ rhs.f0\_0\_and\_f1\_0\ \textcolor{keyword}{and}\ f2\_0\ ==\ rhs.f2\_0\ \textcolor{keyword}{and}\ f2\_1\ ==\ rhs.f2\_1\ \textcolor{keyword}{and}\ f2\_2\ ==\ rhs.f2\_2\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ f2\_3\ ==\ rhs.f2\_3;}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \};}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ SearchSpace\ UE-\/specific\ DCI\ formats.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a8aa8cb87c4328dd12c23df42337bf73e}{ue\_specific\_dci\_format}}\ \{\ f0\_0\_and\_f1\_0,\ f0\_1\_and\_1\_1\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Constructor\ for\ SearchSpace\#0.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_af8d71ec82dde619b0163c2476c118f6c}{search\_space\_configuration}}(\mbox{\hyperlink{namespacesrsran_a9e91de4bdf4fc6af2e4fba60dde4d0c5}{nr\_band}}\ \ \ \ \ \ \ \ \ \ \ \ band,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ common\_scs,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ ssb\_scs,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ coreset0\_index,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ search\_space0\_index);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ Constructor\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a0df1e55e9580b19a5dcd17ae846e21ff}{search\_space\_configuration}}(\mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ id\_,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cs\_id\_,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::array<uint8\_t,\ 5>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_candidates\_,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ variant<common\_dci\_format,\ ue\_specific\_dci\_format>\ dci\_fmt\_,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ monitoring\_slot\_periodicity\_,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ monitoring\_slot\_offset\_,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scs\_common,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ duration\_,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ monitoring\_symbols\_within\_slot\_t\ monitoring\_symbols\_within\_slot\_);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration}{search\_space\_configuration}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{return}\ id\ ==\ rhs.id\ \textcolor{keyword}{and}\ cs\_id\ ==\ rhs.cs\_id\ \textcolor{keyword}{and}\ monitoring\_slot\_periodicity\ ==\ rhs.monitoring\_slot\_periodicity\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ monitoring\_slot\_offset\ ==\ rhs.monitoring\_slot\_offset\ \textcolor{keyword}{and}\ duration\ ==\ rhs.duration\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ monitoring\_symbols\_within\_slot\ ==\ rhs.monitoring\_symbols\_within\_slot\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ nof\_candidates\ ==\ rhs.nof\_candidates\ \textcolor{keyword}{and}\ dci\_fmt\ ==\ rhs.dci\_fmt;}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ Id\ of\ the\ SearchSpace.}}
+\DoxyCodeLine{00111\ \ \ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_af62d83a85585b358f7626a3ccfe1005d}{get\_id}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ id;\ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ Id\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aec9ea3c3f0963bfbb0af89cbf96a8490}{set\_non\_ss0\_id}}(\mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ id\_)}
+\DoxyCodeLine{00115\ \ \ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ SearchSpace\ Id\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00117\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(id\_\ !=\ to\_search\_space\_id(0),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ SearchSpace\ Id\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00118\ \ \ \ \ id\ =\ id\_;}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ CORESET\ Id\ of\ the\ SearchSpace.}}
+\DoxyCodeLine{00122\ \ \ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_ace03a709d08d7adb470672818f74a70d}{get\_coreset\_id}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cs\_id;\ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ CORESET\ Id\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_ad8b91d9114e895424795e19ccd6ee81b}{set\_non\_ss0\_coreset\_id}}(\mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ cs\_id\_)}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ CORESET\ Id\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ cs\_id\ =\ cs\_id\_;}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ whether\ its\ a\ SearchSpace\#0\ or\ other\ SearchSpace.}}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{is\_search\_space0}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ id\ ==\ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}(0);\ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ whether\ SearchSpace\ if\ of\ Common\ SearchSpace(CSS)\ or\ UE\ Specific\ SearchSpace(USS).}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a6c39d860b9544efd9d8b4ca2eb1054ae}{is\_common\_search\_space}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ variant\_holds\_alternative<common\_dci\_format>(dci\_fmt);\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ nof.\ PDCCH\ candidates\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a90089e0fa5b6610b05e51263cee4b3e2}{set\_non\_ss0\_nof\_candidates}}(std::array<uint8\_t,\ 5>\ nof\_candidates\_)}
+\DoxyCodeLine{00139\ \ \ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ number\ of\ PDCCH\ candidates\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00141\ \ \ \ \ nof\_candidates\ =\ nof\_candidates\_;}
+\DoxyCodeLine{00142\ \ \ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ nof.\ PDCCH\ candidates\ monitoring\ in\ the\ SearchSpace.}}
+\DoxyCodeLine{00145\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_abf362732c2a87bb3b1dd69a7c270154a}{get\_nof\_candidates}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_candidates;\ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ DCI\ format(s)\ monitored\ in\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aa306dc76b43e6ff8f667434e2fbd0a45}{set\_non\_ss0\_monitored\_dci\_formats}}(variant<common\_dci\_format,\ ue\_specific\_dci\_format>\ dci\_fmt\_)}
+\DoxyCodeLine{00149\ \ \ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ DCI\ format(s)\ monitored\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00151\ \ \ \ \ dci\_fmt\ =\ dci\_fmt\_;}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ DCI\ format(s)\ monitored\ in\ the\ SearchSpace.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aca1305f2fb730a70f98fa0a08ae57557}{variant}}<\mbox{\hyperlink{structsrsran_1_1search__space__configuration_aca1305f2fb730a70f98fa0a08ae57557}{common\_dci\_format}},\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aca1305f2fb730a70f98fa0a08ae57557}{ue\_specific\_dci\_format}}>\&\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aca1305f2fb730a70f98fa0a08ae57557}{get\_monitored\_dci\_formats}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ dci\_fmt;\ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ periodicity\ in\ number\ of\ slots\ for\ non-\/SearchSpace\#0\ SearchSpaces}}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_aa470bf84d60413f1f61edfcbd0eadac7}{set\_non\_ss0\_monitoring\_slot\_periodicity}}(\textcolor{keywordtype}{unsigned}\ periodicity)}
+\DoxyCodeLine{00159\ \ \ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ monitoring\ slot\ period\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00161\ \ \ \ \ monitoring\_slot\_periodicity\ =\ periodicity;}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ SearchSpace\ periodicity\ in\ number\ of\ slots.}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a8b19c8968f89a300a28bf314e00adef1}{get\_monitoring\_slot\_periodicity}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ monitoring\_slot\_periodicity;\ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ slot\ offset\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_ae8c2838b160da2322eac901b1588d5eb}{set\_non\_ss0\_monitoring\_slot\_offset}}(\textcolor{keywordtype}{unsigned}\ slot\_offset,\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs\_common);}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ SearchSpace\ slot\ offset.}}
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a687f84744331587962cfa19bb2c4308a}{get\_monitoring\_slot\_offset}}(uint8\_t\ ssb\_beam\_idx\ =\ 0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00172\ \ \ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{is\_search\_space0}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{(}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{)}})\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ <\ monitoring\_slot\_offset.size(),\ \textcolor{stringliteral}{"{}Invalid\ SSB\ beam\ index=\{\}"{}},\ ssb\_beam\_idx);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ monitoring\_slot\_offset[ssb\_beam\_idx].to\_uint();}
+\DoxyCodeLine{00176\ \ \ \ \ \}}
+\DoxyCodeLine{00177\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ ==\ 0,\ \textcolor{stringliteral}{"{}SSB\ beam\ index\ is\ not\ used\ for\ SearchSpace\ Id\ >\ 0"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keywordflow}{return}\ monitoring\_slot\_offset.back().to\_uint();}
+\DoxyCodeLine{00179\ \ \ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ duration\ in\ number\ of\ slots\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a1ddfbd354fa16d695f82f15eb8a76624}{set\_non\_ss0\_duration}}(\textcolor{keywordtype}{unsigned}\ duration\_)}
+\DoxyCodeLine{00183\ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ is\_search\_space0(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ duration\ of\ SearchSpace\#0"{}});}
+\DoxyCodeLine{00185\ \ \ \ \ duration\ =\ duration\_;}
+\DoxyCodeLine{00186\ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ duration\ that\ a\ SearchSpace\ lasts\ in\ every\ occasion,\ i.e.\ upon\ every\ period\ as\ given\ in\ the}}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{///\ periodicity\ and\ offset,\ as\ per\ TS\ 38.331,\ "{}SearchSpace"{}.}}
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a8965695d824a0c1072308ceac70a7d82}{get\_duration}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ duration;\ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ monitoring\ symbols\ within\ slot\ for\ non-\/SearchSpace\#0\ SearchSpaces.}}
+\DoxyCodeLine{00193\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a920d2ece27bf1eb68b72014fde13622d}{set\_non\_ss0\_monitoring\_symbols\_within\_slot}}(monitoring\_symbols\_within\_slot\_t\ symbols\_within\_slot);}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ PDCCH\ monitoring\ symbols\ within\ slot.}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keyword}{const}\ monitoring\_symbols\_within\_slot\_t\&\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_a00dbae4a7fc3f37d35011471eb465db3}{get\_monitoring\_symbols\_within\_slot}}(uint8\_t\ ssb\_beam\_idx\ =\ 0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00197\ \ \ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{is\_search\_space0}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{(}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{)}})\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Revise\ this\ when\ FR2\ support\ is\ added.}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \textcolor{comment}{//\ As\ per\ TS\ 38.213,\ Table\ 13-\/11.}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ <\ monitoring\_symbols\_within\_slot.size(),\ \textcolor{stringliteral}{"{}Invalid\ SSB\ beam\ index=\{\}"{}},\ ssb\_beam\_idx);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ monitoring\_symbols\_within\_slot[ssb\_beam\_idx];}
+\DoxyCodeLine{00203\ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ ==\ 0,\ \textcolor{stringliteral}{"{}SSB\ beam\ index\ is\ not\ used\ for\ SearchSpace\ Id\ >\ 0"{}});}
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keywordflow}{return}\ monitoring\_symbols\_within\_slot.back();}
+\DoxyCodeLine{00206\ \ \ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ first\ monitoring\ symbol\ for\ the\ current\ SearchSpace.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1search__space__configuration_ab5df7a88e860e0181fb1c5bd24dd0831}{get\_first\_symbol\_index}}(uint8\_t\ ssb\_beam\_idx\ =\ 0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00210\ \ \ \{}
+\DoxyCodeLine{00211\ \ \ \ \ monitoring\_symbols\_within\_slot\_t\ symbols\_within\_slot;}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{is\_search\_space0}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{(}}\mbox{\hyperlink{structsrsran_1_1search__space__configuration_ac925a3601ae7b83b6493b941954dde23}{)}})\ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Revise\ this\ when\ FR2\ support\ is\ added.}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \textcolor{comment}{//\ As\ per\ TS\ 38.213,\ Table\ 13-\/11.}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ <\ monitoring\_symbols\_within\_slot.size(),\ \textcolor{stringliteral}{"{}Invalid\ SSB\ beam\ index=\{\}"{}},\ ssb\_beam\_idx);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ symbols\_within\_slot\ =\ monitoring\_symbols\_within\_slot[ssb\_beam\_idx];}
+\DoxyCodeLine{00217\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_beam\_idx\ ==\ 0,\ \textcolor{stringliteral}{"{}SSB\ beam\ index\ is\ not\ used\ for\ SearchSpace\ Id\ >\ 0"{}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ symbols\_within\_slot\ =\ monitoring\_symbols\_within\_slot.back();}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ n\ =\ 0;\ n\ <\ symbols\_within\_slot.size();\ ++n)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (symbols\_within\_slot.test(n))\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Monitoring\ symbols\ within\ slot\ for\ SS\ id\ \{\}\ doesn't\ have\ any\ symbols\ set\ to\ 1"{}},\ id);}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols\_within\_slot.size();}
+\DoxyCodeLine{00228\ \ \ \}}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ SearchSpace\ Id.}}
+\DoxyCodeLine{00232\ \ \ \mbox{\hyperlink{namespacesrsran_afe2121fadc4c77d28089c1db677a67b6}{search\_space\_id}}\ id;}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ CORESET\ Id.}}
+\DoxyCodeLine{00234\ \ \ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ cs\_id;}
+\DoxyCodeLine{00235\ \ \ \textcolor{comment}{///\ Number\ of\ PDCCH\ candidates\ per\ aggregation\ level.\ The\ aggregation\ level\ for\ the\ array\ element\ with\ index\ "{}x"{}}}
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{///\ is\ L=1U\ <<\ x.\ The\ possible\ values\ for\ each\ element\ are\ \{0,\ 1,\ 2,\ 3,\ 4,\ 5,\ 6,\ 8\}.}}
+\DoxyCodeLine{00237\ \ \ std::array<uint8\_t,\ 5>\ nof\_candidates;}
+\DoxyCodeLine{00238\ \ \ \textcolor{comment}{///\ DCI\ formats\ applicable\ to\ SearchSpace.}}
+\DoxyCodeLine{00239\ \ \ variant<common\_dci\_format,\ ue\_specific\_dci\_format>\ dci\_fmt;}
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ SearchSpace\ periodicity\ in\ nof.\ slots\ for\ PDCCH\ monitoring.}}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ ==\ 0,\ set\ based\ on\ tables\ in\ TS\ 38.213,\ Section\ 13.}}
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ !=\ 0,\ possible\ values:\ \{1,\ 2,\ 4,\ 5,\ 8,\ 10,\ 16,\ 20,\ 40,\ 80,\ 160,\ 320,\ 640,\ 1280,\ 2560\}.}}
+\DoxyCodeLine{00243\ \ \ \textcolor{keywordtype}{unsigned}\ monitoring\_slot\_periodicity;}
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{///\ Number\ of\ consecutive\ slots\ that\ SearchSpace\ lasts\ in\ every\ occasion.}}
+\DoxyCodeLine{00245\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ ==\ 0,\ its\ 2\ consecutive\ slots\ for\ multiplexing\ pattern\ 1.}}
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ !=\ 0,\ Values:\ (1..2559).\ If\ the\ field\ is\ absent,\ the\ UE\ applies\ the\ value\ 1\ slot,\ except\ for\ DCI}}
+\DoxyCodeLine{00247\ \ \ \textcolor{comment}{///\ format\ 2\_0.\ The\ UE\ ignores\ this\ field\ for\ DCI\ format\ 2\_0.}}
+\DoxyCodeLine{00248\ \ \ \textcolor{keywordtype}{unsigned}\ duration;}
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{///\ SearchSpace\ slot\ offset\ for\ PDCCH\ monitoring.}}
+\DoxyCodeLine{00250\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ ==\ 0,\ set\ based\ on\ tables\ in\ TS\ 38.213,\ Section\ 13.\ Each\ element\ in\ vector\ corresponds\ to\ a\ SSB}}
+\DoxyCodeLine{00251\ \ \ \textcolor{comment}{///\ beam\ of\ index\ equal\ to\ index\ in\ vector.}}
+\DoxyCodeLine{00252\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ !=\ 0,\ only\ the\ first\ element\ of\ the\ vector\ is\ used.\ Possible\ values:}}
+\DoxyCodeLine{00253\ \ \ \textcolor{comment}{///\ \{0,...,monitoring\_slot\_period\}.}}
+\DoxyCodeLine{00254\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \mbox{\hyperlink{namespacesrsran_a3c630d2aec87e998af72d1718d055879}{MAX\_NUM\_BEAMS}}>\ monitoring\_slot\_offset;}
+\DoxyCodeLine{00255\ \ \ \textcolor{comment}{///\ The\ first\ symbol(s)\ for\ PDCCH\ monitoring\ occasion(s)\ in\ the\ slots\ for\ PDCCH\ monitoring.\ The\ most}}
+\DoxyCodeLine{00256\ \ \ \textcolor{comment}{///\ significant\ bit\ represents\ the\ first\ OFDM\ in\ a\ slot.}}
+\DoxyCodeLine{00257\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ ==\ 0,\ each\ element\ in\ vector\ corresponds\ to\ a\ SSB\ beam\ of\ index\ equal\ to\ index\ in\ vector.}}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{///\ For\ SearchSpace\ !=\ 0,\ only\ the\ first\ element\ of\ the\ vector\ is\ used.}}
+\DoxyCodeLine{00259\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<monitoring\_symbols\_within\_slot\_t,\ \mbox{\hyperlink{namespacesrsran_a3c630d2aec87e998af72d1718d055879}{MAX\_NUM\_BEAMS}}>\ monitoring\_symbols\_within\_slot;}
+\DoxyCodeLine{00260\ \};}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -126,11 +126,6 @@ void srsran::assert_pdcch_pdsch_common_consistency(const cell_configuration&   c
       N_rb_dl_bwp     = pdcch.dci.tc_rnti_f1_0.N_rb_dl_bwp;
       TESTASSERT_EQ(N_rb_dl_bwp, cs_zero_crbs.length());
     } break;
-    case dci_dl_rnti_config_type::c_rnti_f1_0: {
-      time_assignment = pdcch.dci.c_rnti_f1_0.time_resource;
-      freq_assignment = pdcch.dci.c_rnti_f1_0.frequency_resource;
-      N_rb_dl_bwp     = cs_zero_crbs.length();
-    } break;
     case dci_dl_rnti_config_type::p_rnti_f1_0: {
       time_assignment = pdcch.dci.p_rnti_f1_0.time_resource;
       freq_assignment = pdcch.dci.p_rnti_f1_0.frequency_resource;
@@ -171,16 +166,6 @@ void srsran::assert_pdcch_pdsch_common_consistency(const cell_configuration&    
         auto        it   = std::find_if(
             rars.begin(), rars.end(), [&pdcch](const auto& rar) { return rar.pdsch_cfg.rnti == pdcch.ctx.rnti; });
         TESTASSERT(it != rars.end());
-        linked_pdsch = &it->pdsch_cfg;
-      } break;
-      case dci_dl_rnti_config_type::c_rnti_f1_0: {
-        uint8_t k0 =
-            cell_cfg.dl_cfg_common.init_dl_bwp.pdsch_common.pdsch_td_alloc_list[pdcch.dci.c_rnti_f1_0.time_resource].k0;
-        const auto& ue_grants = cell_res_grid[k0].result.dl.ue_grants;
-        auto        it        = std::find_if(ue_grants.begin(), ue_grants.end(), [&pdcch](const auto& grant) {
-          return grant.pdsch_cfg.rnti == pdcch.ctx.rnti;
-        });
-        TESTASSERT(it != ue_grants.end());
         linked_pdsch = &it->pdsch_cfg;
       } break;
       case dci_dl_rnti_config_type::tc_rnti_f1_0: {
@@ -454,7 +439,7 @@ void assert_dl_resource_grid_filled(const cell_configuration& cell_cfg, const ce
 {
   std::vector<test_grant_info> dl_grants = get_dl_grants(cell_cfg, cell_res_grid[0].result.dl);
   for (const test_grant_info& test_grant : dl_grants) {
-    if (test_grant.type != srsran::test_grant_info::DL_PDCCH and test_grant.type != srsran::test_grant_info::UL_PDCCH) {
+    if (test_grant.type != srsran::test_grant_info::DL_PDCCH) {
       TESTASSERT(cell_res_grid[0].dl_res_grid.all_set(test_grant.grant),
                  "The allocation with rnti={}, type={}, crbs={} was not registered in the cell resource grid",
                  test_grant.rnti,

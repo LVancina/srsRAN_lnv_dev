@@ -1,0 +1,138 @@
+\doxysection{rlc\+\_\+tx.\+h}
+\hypertarget{rlc__tx_8h_source}{}\label{rlc__tx_8h_source}\index{include/srsran/rlc/rlc\_tx.h@{include/srsran/rlc/rlc\_tx.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer\_chain.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/lcid.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00032\ \textcolor{comment}{\ *\ This\ file\ will\ hold\ the\ interfaces\ and\ notifiers\ for\ the\ RLC\ entity.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{\ *\ They\ follow\ the\ following\ nomenclature:}}
+\DoxyCodeLine{00034\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00035\ \textcolor{comment}{\ *\ \ \ rlc\_\{tx/rx\}\_\{lower/upper\}\_layer\_\{[control/data]\}\_\{interface/notifier\}}}
+\DoxyCodeLine{00036\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00037\ \textcolor{comment}{\ *\ 1.\ TX/RX\ indicates\ whether\ the\ interface\ is\ intended\ for\ the}}
+\DoxyCodeLine{00038\ \textcolor{comment}{\ *\ \ \ \ TX\ or\ RX\ side\ of\ the\ entity}}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ *\ 2.\ Lower/Upper\ indicates\ whether\ the\ interface/notifier\ interacts}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ *\ \ \ \ with\ the\ upper\ or\ lower\ layers.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ *\ 3.\ Control/Data:\ indicates\ whether\ this\ interface\ is\ necessary\ for\ "{}control"{}}}
+\DoxyCodeLine{00042\ \textcolor{comment}{\ *\ \ \ \ purposes\ (e.g.,\ notifying\ the\ RRC\ of\ max\ retransmissions,\ or\ that\ we\ are}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ *\ \ \ \ near\ max\ HFN)\ or\ "{}data"{}\ purposes\ (e.g.\ handling\ SDUs).}}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ *\ \ \ \ This\ distinction\ is\ only\ necessary\ when\ interfacing\ with\ the\ upper\ layers,}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ *\ \ \ \ and\ as\ such,\ we\ omit\ it\ in\ the\ interfaces\ with\ the\ lower\ layers.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ *\ 4.\ Interface/Notifier:\ whether\ this\ is\ an\ interface\ the\ RLC\ entity\ will}}
+\DoxyCodeLine{00047\ \textcolor{comment}{\ *\ \ \ \ inherit\ or\ a\ notifier\ that\ the\ RLC\ will\ keep\ as\ a\ member.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00049\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00050\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{/****************************************}}
+\DoxyCodeLine{00053\ \textcolor{comment}{\ *\ Interfaces/notifiers\ for\ upper\ layers}}
+\DoxyCodeLine{00054\ \textcolor{comment}{\ ****************************************/}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\ \{}
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buf\ =\ \{\};}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn;}
+\DoxyCodeLine{00061\ \ \ std::chrono::system\_clock::time\_point\ time\_of\_arrival;}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ buf\_,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ pdcp\_sn\_)\ :\ buf(std::move(buf\_)),\ pdcp\_sn(pdcp\_sn\_)\ \{\}}
+\DoxyCodeLine{00064\ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00069\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}}
+\DoxyCodeLine{00070\ \{}
+\DoxyCodeLine{00071\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{\string~rlc\_tx\_upper\_layer\_data\_interface}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a3672e8658872f39bbcbb61afa9a05235}{handle\_sdu}}(\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\ sdu)\ =\ 0;}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a349619ff887450259fa44a739d2980b6}{discard\_sdu}}(uint32\_t\ pdcp\_sn)\ =\ 0;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{rlc\_tx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00095\ \{}
+\DoxyCodeLine{00096\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{\string~rlc\_tx\_upper\_layer\_data\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier_aa6056abcbe99afbd8359eb5617fd1687}{on\_transmitted\_sdu}}(uint32\_t\ max\_tx\_pdcp\_sn)\ =\ 0;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier_a7c9a3a0c606b053abee68d9f46e9360c}{on\_delivered\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\ =\ 0;}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}}
+\DoxyCodeLine{00114\ \{}
+\DoxyCodeLine{00115\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00117\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{\string~rlc\_tx\_upper\_layer\_control\_notifier}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00120\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_protocol\_failure()\ =\ 0;}
+\DoxyCodeLine{00124\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_max\_retx()\ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00125\ \};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{comment}{/***************************************}}
+\DoxyCodeLine{00128\ \textcolor{comment}{\ *\ Interfaces/notifiers\ for\ lower\ layers}}
+\DoxyCodeLine{00129\ \textcolor{comment}{\ ***************************************/}}
+\DoxyCodeLine{00133\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}}
+\DoxyCodeLine{00134\ \{}
+\DoxyCodeLine{00135\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00137\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{\string~rlc\_tx\_lower\_layer\_interface}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00139\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00141\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface_acdd2d3757d55392f35627a2a05e1fbcf}{pull\_pdu}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ rlc\_pdu\_buf)\ =\ 0;}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{keyword}{virtual}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface_a7cbb36d4595cc433e55261341ccc641a}{get\_buffer\_state}}()\ =\ 0;}
+\DoxyCodeLine{00155\ \};}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}}
+\DoxyCodeLine{00158\ \{}
+\DoxyCodeLine{00159\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00161\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{\string~rlc\_tx\_lower\_layer\_notifier}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00162\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00163\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00164\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00165\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00169\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier_aeb1450426586a690e6d877eda8981a9f}{on\_buffer\_state\_update}}(\textcolor{keywordtype}{unsigned}\ bsr)\ =\ 0;}
+\DoxyCodeLine{00170\ \};}
+\DoxyCodeLine{00171\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

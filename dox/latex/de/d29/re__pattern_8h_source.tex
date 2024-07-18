@@ -1,0 +1,258 @@
+\doxysection{re\+\_\+pattern.\+h}
+\hypertarget{re__pattern_8h_source}{}\label{re__pattern_8h_source}\index{include/srsran/phy/support/re\_pattern.h@{include/srsran/phy/support/re\_pattern.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/interval.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/mask\_types.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Describes\ a\ resource\ element\ pattern\ within\ a\ resource\ grid.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\ \{}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Physical\ resource\ block\ mask.}}
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{structsrsran_1_1re__pattern_ad54232b98e15d6169aad59093d196710}{bounded\_bitset}}<\mbox{\hyperlink{structsrsran_1_1re__pattern_ad54232b98e15d6169aad59093d196710}{MAX\_RB}}>\ \mbox{\hyperlink{structsrsran_1_1re__pattern_ad54232b98e15d6169aad59093d196710}{prb\_mask}};}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Resource\ element\ mask\ per\ resource\ block.\ True\ entries\ indicate\ the\ resource\ elements\ affected\ by\ the\ pattern.}}
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1re__prb__mask}{re\_prb\_mask}}\ \mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}}\mbox{\hyperlink{classsrsran_1_1re__prb__mask_a68f4c9d4fd7895452c58d1842248d12b}{\{}}\mbox{\hyperlink{classsrsran_1_1re__prb__mask_a68f4c9d4fd7895452c58d1842248d12b}{\}}};}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Symbol\ mask.\ True\ entries\ indicate\ the\ symbols\ affected\ by\ the\ pattern.}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1symbol__slot__mask}{symbol\_slot\_mask}}\ \mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}}\mbox{\hyperlink{classsrsran_1_1symbol__slot__mask_ae2c7c7b2c73ee6605875d9b33dcbba92}{\{}}\mbox{\hyperlink{classsrsran_1_1symbol__slot__mask_ae2c7c7b2c73ee6605875d9b33dcbba92}{\}}};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Default\ constructor.\ It\ allows\ instantiating\ the\ structure\ without\ using\ other\ constructors.}}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{structsrsran_1_1re__pattern_a218ae8839c2b09ce73d5d15086efc585}{re\_pattern}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ an\ RE\ pattern\ from\ parameters.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb\_begin\ \ Start\ RB\ block\ index\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb\_end\ \ \ \ End\ RB\ block\ index\ \{0,\ ...,\ 275\}\ (excluded).}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb\_stride\ RB\ index\ jump\ \{1,\ ...,\ 274\}.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ re\_mask\_\ \ RE\ Mask.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbols\_\ \ Symbol\ mask.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ \(\backslash\)c\ rb\_begin,\ \(\backslash\)c\ rb\_end\ or\ \(\backslash\)c\ rb\_stride\ value\ is\ not\ within\ the\ indicated}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ interval.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ \(\backslash\)c\ rb\_end\ is\ less\ than\ \(\backslash\)c\ rb\_begin.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{structsrsran_1_1re__pattern_ab94eeb9b6f7288866c26116694d86935}{re\_pattern}}(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_begin,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_end,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_stride,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__prb__mask}{re\_prb\_mask}}\&\ \ \ \ \ \ re\_mask\_,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1symbol__slot__mask}{symbol\_slot\_mask}}\&\ symbols\_)\ :}
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1re__pattern_ab94eeb9b6f7288866c26116694d86935}{prb\_mask}}(\mbox{\hyperlink{structsrsran_1_1re__pattern_ab94eeb9b6f7288866c26116694d86935}{rb\_end}}),\ \mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}}(re\_mask\_),\ \mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}}(symbols\_)}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}<\textcolor{keywordtype}{unsigned},\ \textcolor{keyword}{true}>\ rb\_begin\_interval\ \ =\ \{0,\ MAX\_RB\ -\/\ 1\};}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}<\textcolor{keywordtype}{unsigned},\ \textcolor{keyword}{true}>\ rb\_stride\_interval\ =\ \{1,\ MAX\_RB\ -\/\ 1\};}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}<\textcolor{keywordtype}{unsigned},\ \textcolor{keyword}{true}>\ rb\_end\_interval\ \ \ \ =\ \{1,\ MAX\_RB\};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(rb\_begin\_interval.contains(rb\_begin),}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ RB\ begin\ (i.e.,\ \{\})\ is\ out\ of\ range\ \{\}."{}},}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_begin,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_begin\_interval);}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ rb\_end\_interval.contains(rb\_end),\ \textcolor{stringliteral}{"{}The\ RB\ end\ (i.e.,\ \{\})\ is\ out\ of\ range\ \{\}."{}},\ rb\_end,\ rb\_end\_interval);}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(rb\_stride\_interval.contains(rb\_stride),}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ RB\ stride\ (i.e.,\ \{\})\ is\ out\ of\ range\ \{\}."{}},}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_stride,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_stride\_interval);}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ rb\_begin\ <\ rb\_end,\ \textcolor{stringliteral}{"{}The\ RB\ begin\ (i.e.,\ \{\})\ must\ be\ smaller\ than\ RB\ end\ (i.e.,\ \{\})"{}},\ rb\_begin,\ rb\_end);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{if}\ (rb\_stride\ ==\ 1)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ prb\_mask.fill(rb\_begin,\ rb\_end);}
+\DoxyCodeLine{00081\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_prb\ =\ rb\_begin;\ i\_prb\ <\ rb\_end;\ i\_prb\ +=\ rb\_stride)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ prb\_mask.set(i\_prb);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Copy\ constructor.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ Provides\ the\ reference\ to\ other\ resource\ element\ pattern\ to\ copy.}}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{structsrsran_1_1re__pattern_aa49c6b302e4dae7296b700b0083d2e3c}{re\_pattern}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ other)\ :\ \mbox{\hyperlink{structsrsran_1_1re__pattern_aa49c6b302e4dae7296b700b0083d2e3c}{prb\_mask}}(\mbox{\hyperlink{structsrsran_1_1re__pattern_aa49c6b302e4dae7296b700b0083d2e3c}{other}}.\mbox{\hyperlink{structsrsran_1_1re__pattern_aa49c6b302e4dae7296b700b0083d2e3c}{prb\_mask}}),\ \mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}}(other\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}}),\ \mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}}(other\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}})}
+\DoxyCodeLine{00092\ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Include\ the\ described\ resource\ element\ pattern\ in\ a\ resource\ grid\ symbol\ mask.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ This\ method\ sets\ to\ true\ the\ elements\ that\ are\ described\ in\ the\ pattern\ for\ a\ given\ symbol\ index.\ The\ mask}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ represents\ resource\ elements\ allocation\ for\ a\ given\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ mask\ Provides\ a\ mask\ representing\ an\ entire\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ Indicates\ the\ symbol\ index\ for\ the\ mask\ to\ be\ included.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ method\ expects\ that\ the\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ is\ equal\ to\ or\ greater\ than\ \(\backslash\)c\ rb\_end}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1re__pattern_a51220cce79fd4314ad55ac7a1220e7f6}{get\_inclusion\_mask}}(bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask,\ \textcolor{keywordtype}{unsigned}\ symbol)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Exclude\ the\ described\ resource\ element\ pattern\ in\ a\ resource\ grid\ symbol\ mask.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ This\ method\ sets\ to\ false\ the\ elements\ that\ are\ described\ in\ the\ pattern\ for\ a\ given\ symbol\ index.\ The\ mask}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ represents\ resource\ elements\ allocation\ for\ a\ given\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ mask\ Provides\ a\ mask\ representing\ an\ entire\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ Indicates\ the\ symbol\ index\ for\ the\ mask\ to\ be\ excluded.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ method\ expects\ that\ the\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ is\ equal\ to\ or\ greater\ than\ \(\backslash\)c\ rb\_end}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1re__pattern_ab191a596e2addcf843fff4e1d9397af3}{get\_exclusion\_mask}}(bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask,\ \textcolor{keywordtype}{unsigned}\ symbol)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ two\ RE\ patterns\ are\ equal.}}
+\DoxyCodeLine{00118\ \textcolor{comment}{///}}
+\DoxyCodeLine{00119\ \textcolor{comment}{///\ Two\ RE\ patterns\ are\ equal\ if\ their\ attributes\ are\ equal.}}
+\DoxyCodeLine{00120\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a1fece9f9917f7ac0c96886000ec724a3}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ pattern1,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ pattern2)}
+\DoxyCodeLine{00121\ \{}
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordflow}{if}\ (pattern1\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}}\ !=\ pattern2\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_adb611adea4c54a4ad5c0ddbcc593cd99}{symbols}})\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00124\ \ \ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordflow}{if}\ (pattern1.prb\_mask\ !=\ pattern2.prb\_mask)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordflow}{if}\ (pattern1\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}}\ !=\ pattern2\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{.}}\mbox{\hyperlink{structsrsran_1_1re__pattern_af9f3399e9641474ffeea688fae30a731}{re\_mask}})\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00135\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \textcolor{comment}{///\ Describes\ a\ resource\ element\ pattern\ list.}}
+\DoxyCodeLine{00138\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}}
+\DoxyCodeLine{00139\ \{}
+\DoxyCodeLine{00140\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ Defines\ the\ maximum\ number\ or\ RE\ pattern\ a\ list\ can\ carry.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_RE\_PATTERN\ =\ 4;}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ Resource\ element\ pattern\ storage.}}
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}},\ MAX\_RE\_PATTERN>\ list;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a905c7a19a5bb139bee79a2667046af1a}{re\_pattern\_list}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{///\ Implicit\ construction\ from\ a\ single\ RE\ pattern.}}
+\DoxyCodeLine{00152\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a9e461e1e70f38f0143fad95af11adc20}{re\_pattern\_list}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ pattern)\ :\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a9e461e1e70f38f0143fad95af11adc20}{list}}()\ \{\ list.emplace\_back(pattern);\ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Create\ a\ pattern\ list\ from\ an\ initializer\ list\ of\ patterns.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ This\ is\ useful\ for\ static\ constant\ pattern\ list\ creation.\ For\ example:}}
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ \(\backslash\)code}}
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ \ \ re\_pattern\_list\ list\ =\ \{}}
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{///\ \ \ \ \ \ \{0,\ 52,\ 1,\ \{1,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0\},\ \{0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0\}\},}}
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{///\ \ \ \ \ \ \{0,\ 52,\ 1,\ \{1,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0\},\ \{0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 1,\ 0,\ 0,\ 0\}\}\};}}
+\DoxyCodeLine{00161\ \ \ \textcolor{comment}{///\ \(\backslash\)endcode}}
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00163\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ patterns\ Initializer\ list\ with\ patterns.}}
+\DoxyCodeLine{00164\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a04fe9430a4f12c27de061a65be782d08}{re\_pattern\_list}}(std::initializer\_list<\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}>\ patterns)}
+\DoxyCodeLine{00165\ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ re\_pattern\&\ pattern\ :\ patterns)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ merge(pattern);}
+\DoxyCodeLine{00168\ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Copy\ constructor.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ Provides\ other\ instance.}}
+\DoxyCodeLine{00174\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a60037fdae191c76f481eac6c0ec9897c}{re\_pattern\_list}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ other)\ :\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a60037fdae191c76f481eac6c0ec9897c}{list}}(\mbox{\hyperlink{classsrsran_1_1re__pattern__list_a60037fdae191c76f481eac6c0ec9897c}{other}}.\mbox{\hyperlink{classsrsran_1_1re__pattern__list_a60037fdae191c76f481eac6c0ec9897c}{list}})}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ Clear\ the\ current\ pattern\ list.}}
+\DoxyCodeLine{00180\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a23d1e666f4fcb258bf9b6748516ed928}{clear}}()\ \{\ list.clear();\ \}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ Get\ the\ number\ of\ internal\ resource\ element\ pattern.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_ac1f34f53326a52dbb4e0cb324fff08df}{get\_nof\_entries}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ list.size();\ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Merges\ a\ given\ resource\ element\ pattern\ list\ into\ the\ list.}}
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_ac34130c5b31c4c27d5642d940e444619}{merge}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ other)}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pattern\ :\ other.get\_re\_patterns())\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ merge(pattern);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Merges\ a\ given\ resource\ element\ pattern\ into\ the\ list.}}
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{///\ This\ method\ tries\ to\ combine\ a\ new\ pattern\ with\ the\ existing\ ones\ in\ the\ list\ according\ to\ if}}
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{///\ -\/\ the\ resource\ block\ allocation\ parameters\ are\ identical,\ and}}
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{///\ -\/\ the\ symbol\ mask\ or\ the\ resource\ element\ mask\ is\ identical.}}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{///\ Otherwise,\ the\ pattern\ is\ appended\ in\ the\ list.}}
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ pattern\ Provides\ the\ reference\ to\ a\ resource\ element\ pattern.}}
+\DoxyCodeLine{00201\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a8f5e432aaa7eb45a4e6cb30156fd712f}{merge}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ pattern);}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ the\ pattern\ list\ is\ equal\ to\ another\ pattern\ list.}}
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Two\ pattern\ lists\ are\ considered\ equal\ if\ their\ generated\ inclusion\ masks\ are\ equal\ for\ the\ maximum\ number}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ of\ RBs\ and\ symbols.}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ The\ other\ pattern\ list.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ patterns\ described\ by\ the\ two\ lists\ are\ equal.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_af8ba0866fd1590216a36b58c07b1cc83}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ other)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ the\ pattern\ list\ is\ the\ pattern\ list\ is\ different\ from\ another\ pattern\ list.}}
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ The\ other\ pattern\ list.}}
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ patterns\ described\ by\ the\ two\ lists\ are\ different.}}
+\DoxyCodeLine{00215\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a284dcef6f6afbb0c5b42e558d164ba1e}{operator}}!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_af8ba0866fd1590216a36b58c07b1cc83}{==}}\ other);\ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Includes\ the\ described\ resource\ element\ pattern\ list\ in\ a\ resource\ grid\ symbol\ mask.}}
+\DoxyCodeLine{00218\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ This\ method\ sets\ to\ true\ the\ elements\ that\ are\ described\ in\ the\ pattern\ list\ for\ a\ given\ symbol\ index.\ The\ mask}}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ represents\ resource\ elements\ allocation\ for\ a\ given\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ mask\ \ \ Provides\ a\ mask\ representing\ an\ entire\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ \ \ \ symbol\ Indicates\ the\ symbol\ index\ for\ the\ mask\ to\ be\ included.}}
+\DoxyCodeLine{00224\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ method\ expects\ that\ the\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ is\ equal\ to\ or\ greater\ than\ \(\backslash\)c\ rb\_end.}}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a401dec364e6b970042f47fd775bb4139}{get\_inclusion\_mask}}(bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask,\ \textcolor{keywordtype}{unsigned}\ symbol)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Counts\ the\ number\ of\ elements\ included\ in\ the\ described\ pattern.}}
+\DoxyCodeLine{00228\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ This\ method\ counts\ the\ included\ elements\ in\ the\ described\ pattern\ for\ a\ symbol\ range\ and\ a\ selection\ of\ PRB.}}
+\DoxyCodeLine{00230\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ start\_symbol\ Indicates\ the\ start\ symbol\ index\ within\ the\ slot.}}
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_symbols\ \ Indicates\ the\ number\ of\ symbols\ within\ the\ slot.}}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ prb\_mask\ \ \ \ \ Selection\ of\ PRB\ to\ count.}}
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ included\ elements.}}
+\DoxyCodeLine{00235\ \ \ \textcolor{keywordtype}{unsigned}}
+\DoxyCodeLine{00236\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a6abc7e3880486673129696217a78890e}{get\_inclusion\_count}}(\textcolor{keywordtype}{unsigned}\ start\_symbol,\ \textcolor{keywordtype}{unsigned}\ nof\_symbols,\ \textcolor{keyword}{const}\ bounded\_bitset<MAX\_RB>\&\ prb\_mask)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Excludes\ the\ described\ resource\ element\ pattern\ list\ in\ a\ resource\ grid\ symbol\ mask.}}
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ This\ method\ sets\ to\ false\ the\ elements\ that\ are\ described\ in\ the\ pattern\ list\ for\ a\ given\ symbol\ index.\ The\ mask}}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{///\ represents\ resource\ elements\ allocation\ for\ a\ given\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00243\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ mask\ \ \ Provides\ a\ mask\ representing\ an\ entire\ symbol\ in\ a\ resource\ grid.}}
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ \ \ \ symbol\ Indicates\ the\ symbol\ index\ for\ the\ mask\ to\ be\ excluded.}}
+\DoxyCodeLine{00245\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ method\ expects\ that\ the\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ is\ equal\ to\ or\ greater\ than\ \(\backslash\)c\ rb\_end.}}
+\DoxyCodeLine{00246\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a74719a6da658696884fcd1643ffd4322}{get\_exclusion\_mask}}(bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask,\ \textcolor{keywordtype}{unsigned}\ symbol)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \textcolor{comment}{///\ Get\ the\ internal\ resource\ element\ patterns.}}
+\DoxyCodeLine{00249\ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}>\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list_a6380425489ac6f498db53a2ef09b6d1a}{get\_re\_patterns}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ list;\ \}}
+\DoxyCodeLine{00250\ \};}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

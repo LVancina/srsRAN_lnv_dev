@@ -93,8 +93,7 @@ void radio_uhd_tx_stream::run_recv_async_msg()
 
   // Enqueue the task again.
   if (not async_executor.defer([this]() { run_recv_async_msg(); })) {
-    fmt::print(stderr, "Unable to run recv async UHD stream task\n");
-    state_fsm.async_task_stopped();
+    fmt::print(stderr, "Unable to run recv async UHD stream task");
   }
 }
 

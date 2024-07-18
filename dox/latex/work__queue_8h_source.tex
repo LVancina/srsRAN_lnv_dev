@@ -1,0 +1,112 @@
+\doxysection{work\+\_\+queue.\+h}
+\hypertarget{work__queue_8h_source}{}\label{work__queue_8h_source}\index{include/srsran/srslog/detail/support/work\_queue.h@{include/srsran/srslog/detail/support/work\_queue.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/ring\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/detail/support/backend\_capacity.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/detail/support/thread\_utils.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }srslog\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{//:\ TODO:\ this\ is\ a\ temp\ work\ queue.}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keywordtype}{size\_t}\ capacity\ =\ SRSLOG\_QUEUE\_CAPACITY>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{srsran::ring\_buffer<T>}}\ \ queue;}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{mutable}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1mutex}{mutex}}\ \ \ \ \ \ \ \ \ \ \ m;}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ threshold\ =\ capacity\ *\ 0.98;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}()\ :\ queue(capacity)\ \{\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{work\_queue}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue_a678909d9fcf19ebb86436e6960c6bec4}{push}}(\textcolor{keyword}{const}\ T\&\ value)}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_ae8ca386e979788f522a6bffe9df7faa5}{lock}}();}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//\ Discard\ the\ new\ element\ if\ we\ reach\ the\ maximum\ capacity.}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{full}}())\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00058\ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a7533e0b892a2601732798c05c1ddc31c}{push}}(value);}
+\DoxyCodeLine{00060\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue_ad446dbd27784c776555a3435f792e11c}{push}}(T\&\&\ value)}
+\DoxyCodeLine{00068\ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_ae8ca386e979788f522a6bffe9df7faa5}{lock}}();}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{//\ Discard\ the\ new\ element\ if\ we\ reach\ the\ maximum\ capacity.}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{full}}())\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \ \ queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a7533e0b892a2601732798c05c1ddc31c}{push}}(std::move(value));}
+\DoxyCodeLine{00076\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00079\ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00083\ \ \ std::pair<bool,\ T>\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue_a2781b26430eba77f379fc52b0b620c45}{try\_pop}}()}
+\DoxyCodeLine{00084\ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_ae8ca386e979788f522a6bffe9df7faa5}{lock}}();}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af5dc3a3ec599a73f864e6e17cde987aa}{empty}}())\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\textcolor{keyword}{false},\ T()\};}
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{//\ Here\ we\ have\ been\ woken\ up\ normally.}}
+\DoxyCodeLine{00093\ \ \ \ \ T\ Item\ =\ std::move(queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_abd8c574507c47bd3d6e464ce96d263b6}{top}}());}
+\DoxyCodeLine{00094\ \ \ \ \ queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1e65da25acdc92d7520ef79aa34e6fdf}{pop}}();}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ m.\mbox{\hyperlink{classsrslog_1_1detail_1_1mutex_a89acdcd67bf39f2de2876a48e4b32f94}{unlock}}();}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\textcolor{keyword}{true},\ std::move(Item)\};}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue_a40fabef705f59a5740cc953c385eef14}{get\_capacity}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ capacity;\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue_a6a8ee71888ffe4d3e326c49940fdf587}{is\_almost\_full}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00106\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1scoped__lock}{scoped\_lock}}\ lock(m);}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ queue.\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{size}}()\ >\ threshold;}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

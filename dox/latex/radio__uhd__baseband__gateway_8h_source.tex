@@ -1,0 +1,81 @@
+\doxysection{radio\+\_\+uhd\+\_\+baseband\+\_\+gateway.\+h}
+\hypertarget{radio__uhd__baseband__gateway_8h_source}{}\label{radio__uhd__baseband__gateway_8h_source}\index{lib/radio/uhd/radio\_uhd\_baseband\_gateway.h@{lib/radio/uhd/radio\_uhd\_baseband\_gateway.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}radio\_uhd\_rx\_stream.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}radio\_uhd\_tx\_stream.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/baseband\_gateway.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway}{radio\_uhd\_baseband\_gateway}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway}{baseband\_gateway}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway}{radio\_uhd\_baseband\_gateway}}(\mbox{\hyperlink{classsrsran_1_1radio__uhd__device}{radio\_uhd\_device}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ device,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_executor,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notifier,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__tx__stream_1_1stream__description}{radio\_uhd\_tx\_stream::stream\_description}}\&\ tx\_stream\_config,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description}{radio\_uhd\_rx\_stream::stream\_description}}\&\ rx\_stream\_config)\ :}
+\DoxyCodeLine{00043\ \ \ \ \ tx\_stream(device.create\_tx\_stream(async\_executor,\ notifier,\ tx\_stream\_config)),}
+\DoxyCodeLine{00044\ \ \ \ \ rx\_stream(device.create\_rx\_stream(notifier,\ rx\_stream\_config))}
+\DoxyCodeLine{00045\ \ \ \{}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter}{baseband\_gateway\_transmitter}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_a5671220e614d178f2f0ec693f70282b5}{get\_transmitter}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *tx\_stream;\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__receiver}{baseband\_gateway\_receiver}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_ab5b12374765da0e493c6ca3d62730100}{get\_receiver}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *rx\_stream;\ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_aeac8ea719804c2a26df29f68bf03f0bc}{get\_transmitter\_optimal\_buffer\_size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ tx\_stream-\/>get\_buffer\_size();\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_ae25aadf30d7dd99829280f86953fb293}{get\_receiver\_optimal\_buffer\_size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ rx\_stream-\/>get\_buffer\_size();\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream}{radio\_uhd\_tx\_stream}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_a5020da03e1290093a1c52af6bc066dc1}{get\_tx\_stream}}()\ \{\ \textcolor{keywordflow}{return}\ *tx\_stream;\ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream}{radio\_uhd\_rx\_stream}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_ae446cce21c79fec6907ea8ff01e759d4}{get\_rx\_stream}}()\ \{\ \textcolor{keywordflow}{return}\ *rx\_stream;\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__baseband__gateway_abbd15e1fc327c44f600bb8b56c64f6a3}{is\_successful}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00068\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{if}\ (!tx\_stream\ ||\ !rx\_stream)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{return}\ tx\_stream-\/>is\_successful()\ \&\&\ rx\_stream-\/>is\_successful();}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00078\ \ \ std::unique\_ptr<radio\_uhd\_tx\_stream>\ tx\_stream;}
+\DoxyCodeLine{00080\ \ \ std::unique\_ptr<radio\_uhd\_rx\_stream>\ rx\_stream;}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

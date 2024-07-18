@@ -1,0 +1,684 @@
+\doxysection{harq\+\_\+process.\+h}
+\hypertarget{harq__process_8h_source}{}\label{harq__process_8h_source}\index{lib/scheduler/ue\_scheduling/harq\_process.h@{lib/scheduler/ue\_scheduling/harq\_process.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/csi\_report/csi\_report\_data.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdsch/pdsch\_mcs.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pusch/pusch\_mcs.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/sch\_mcs.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/bwp\_configuration.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/harq\_id.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/sched\_consts.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_dci.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/format\_utils.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{numeric}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdsch__information}{pdsch\_information}};}
+\DoxyCodeLine{00042\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pusch__information}{pusch\_information}};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)brief\ Handler\ of\ HARQ\ process\ timeouts.}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1harq__timeout__handler}{harq\_timeout\_handler}}}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{virtual}\ \string~harq\_timeout\_handler()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handles\ a\ HARQ\ process\ timeout.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{handle\_harq\_timeout}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keywordtype}{bool}\ is\_dl)\ =\ 0;}
+\DoxyCodeLine{00052\ \};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ \(\backslash\)brief\ UE-\/specific\ notifier\ of\ HARQ\ process\ timeouts.}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier}{ue\_harq\_timeout\_notifier}}}
+\DoxyCodeLine{00056\ \{}
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Default\ constructor\ creates\ a\ no-\/op\ notifier.}}
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_a7cf75d507fa86f8714d92bca68e772e7}{ue\_harq\_timeout\_notifier}}();}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ notifier\ to\ a\ custom\ harq\ timeout\ handler.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ notifier\_\ The\ custom\ harq\ timeout\ handler.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ ue\_index\_\ The\ UE\ index.}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_acc65b6958d452efd2cfaf1deed326dfd}{ue\_harq\_timeout\_notifier}}(\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler}{harq\_timeout\_handler}}\&\ handler\_,\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ a\ HARQ\ timeout.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_a6a6c53e307a63b45218a75f03d3e3a67}{notify\_harq\_timeout}}(\textcolor{keywordtype}{bool}\ is\_dl)\ \{\ handler\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{-\/>}}\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{handle\_harq\_timeout}}\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{(}}ue\_index\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{,}}\ is\_dl\mbox{\hyperlink{classsrsran_1_1harq__timeout__handler_a61aec4e21d4d5daa293647c06016261c}{)}};\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1harq__timeout__handler}{harq\_timeout\_handler}}*\ handler;}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ \(\backslash\)brief\ Helper\ class\ to\ log\ HARQ\ events.}}
+\DoxyCodeLine{00076\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}}
+\DoxyCodeLine{00077\ \{}
+\DoxyCodeLine{00078\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00079\ \ \ harq\_logger(srslog::basic\_logger\&\ logger\_,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti\_,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index\_,\ \textcolor{keywordtype}{bool}\ is\_dl\_)\ :}
+\DoxyCodeLine{00080\ \ \ \ \ logger(logger\_),\ rnti(rnti\_),\ cell\_index(cell\_index\_),\ is\_dl(is\_dl\_)}
+\DoxyCodeLine{00081\ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ set\_rnti(\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti\_)\ \{\ rnti\ =\ rnti\_;\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ warning(harq\_id\_t\ h\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmtstr,\ Args\&\&...\ args)}
+\DoxyCodeLine{00088\ \ \ \{}
+\DoxyCodeLine{00089\ \ \ \ \ log(logger.warning,\ h\_id,\ fmtstr,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{void}\ info(harq\_id\_t\ h\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmtstr,\ Args\&\&...\ args)}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ log(logger.info,\ h\_id,\ fmtstr,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00096\ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ debug(harq\_id\_t\ h\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmtstr,\ Args\&\&...\ args)}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ log(logger.debug,\ h\_id,\ fmtstr,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ log(srslog::\mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ ch,\ harq\_id\_t\ h\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmtstr,\ Args\&\&...\ args)}
+\DoxyCodeLine{00107\ \ \ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ ch\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{.}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{enabled}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{(}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{)}})\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ fmt::memory\_buffer\ fmtbuf;}
+\DoxyCodeLine{00112\ \ \ \ \ fmt::format\_to(fmtbuf,\ fmtstr,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00113\ \ \ \ \ ch(\textcolor{stringliteral}{"{}\{\}\ HARQ\ rnti=\{\}\ cell=\{\}\ h\_id=\{\}:\ \{\}"{}},\ is\_dl\ ?\ \textcolor{stringliteral}{"{}DL"{}}\ :\ \textcolor{stringliteral}{"{}UL"{}},\ rnti,\ cell\_index,\ h\_id,\ to\_c\_str(fmtbuf));}
+\DoxyCodeLine{00114\ \ \ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00117\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \ \ \ \ \ \ cell\_index;}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_dl;}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{comment}{///\ Basic\ class\ for\ HARQ\ processes:\ will\ be\ extended\ by\ DL\ and\ UL\ HARQ\ process\ classes}}
+\DoxyCodeLine{00125\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{bool}\ IsDownlink>}
+\DoxyCodeLine{00126\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{harq\_process}}}
+\DoxyCodeLine{00127\ \{}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ Type\ used\ to\ store\ the\ DCI\ format\ and\ RNTI\ type\ of\ the\ TB\ stored\ in\ the\ HARQ.}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{dci\_rnti\_config\_type}}\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{std}}::\mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{conditional\_t}}<\mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{IsDownlink}},\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{dci\_dl\_rnti\_config\_type}},\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{dci\_ul\_rnti\_config\_type}}>;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Default\ timeout\ in\ slots\ after\ which\ the\ HARQ\ process\ assumes\ that\ the\ CRC/ACK\ went\ missing}}
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///\ (implementation-\/defined).}}
+\DoxyCodeLine{00134\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_aca2c55a601c1fa70a98205aa6e94b178}{DEFAULT\_ACK\_TIMEOUT\_SLOTS}}\ =\ 256U;}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ SHORT\_ACK\_TIMEOUT\_DTX\ =\ 4U;}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ Transport\ Blocks\ as\ per\ TS38.321,\ 5.3.2.1\ and\ 5.4.2.1.}}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_ac3ebfdd7209bfad4d029e6eebf0f4d61}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_ac3ebfdd7209bfad4d029e6eebf0f4d61}{MAX\_NOF\_TBS}}\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{IsDownlink}}\ ?\ 2\ :\ 1;}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block}{transport\_block}}\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{comment}{///\ State\ of\ the\ Transport\ Block.}}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_a7818596e94700af4a6caf1945bd0100e}{state\_t}}\ \{\ empty,\ pending\_retx,\ waiting\_ack\ \}\ state\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_a7818596e94700af4a6caf1945bd0100e}{state\_t}}::empty;}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{comment}{///\ New\ Data\ Indicator.\ Its\ value\ should\ flip\ for\ every\ new\ Tx.}}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_af242f2b1a5e0f49195937b1005ce3a28}{ndi}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ retransmissions\ that\ took\ place\ for\ the\ current\ Transport\ Block.}}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_a1663035032300906b5b52ee2cf290020}{nof\_retxs}}\ =\ 0;}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ retransmission\ before\ Transport\ Block\ is\ reset.}}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_ac1abadcc8e6cf77b1620ae1b6850d23e}{max\_nof\_harq\_retxs}}\ =\ 0;}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{comment}{///\ HARQ-\/bit\ index\ corresponding\ to\ this\ HARQ\ process\ in\ the\ UCI\ PDU\ indication.}}
+\DoxyCodeLine{00155\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_a91df56888a9e6205654045f85aa49126}{harq\_bit\_idx}}\ =\ 0;}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{comment}{///\ Whether\ to\ set\ the\ HARQ\ as\ ACKed\ or\ NACKed\ when\ the\ timeout\ expires.}}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_aaa73d53ca4b766bcb3b99f852ef7398b}{ack\_on\_timeout}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ state\ ==\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block_a7818596e94700af4a6caf1945bd0100e}{state\_t}}::empty;\ \}}
+\DoxyCodeLine{00161\ \ \ \};}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{comment}{///\ HARQ\ process\ id.}}
+\DoxyCodeLine{00164\ \ \ \textcolor{keyword}{const}\ harq\_id\_t\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a496fbde909cacb94b3587796e62dcc8a}{id}};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ HARQ\ process\ constructor.}}
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ h\_id\ HARQ\ process\ ID.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ max\_ack\_wait\_in\_slots\_\ number\ of\ slots\ above\ which\ the\ scheduler\ considers\ that\ the\ ACK/CRC\ went\ missing.}}
+\DoxyCodeLine{00169\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a32e89cddebce66f1314ae6ef5d2f86db}{harq\_process}}(harq\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ h\_id,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ logger\_,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier}{ue\_harq\_timeout\_notifier}}\ timeout\_notif\ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_a7cf75d507fa86f8714d92bca68e772e7}{=}}\ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_a7cf75d507fa86f8714d92bca68e772e7}{\{}}\mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier_a7cf75d507fa86f8714d92bca68e772e7}{\}}},}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_ack\_wait\_in\_slots\_\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_aca2c55a601c1fa70a98205aa6e94b178}{DEFAULT\_ACK\_TIMEOUT\_SLOTS}});}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Indicate\ the\ beginning\ of\ a\ new\ slot.}}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a25d48986abcc1ab197d5ddb5aaa6b3a1}{slot\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot\_tx);}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Last\ slot\ when\ a\ SCH\ grant\ was\ scheduled\ for\ this\ HARQ\ process.}}
+\DoxyCodeLine{00178\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_abe21b7283d9cf736c42598707733b9a2}{slot\_tx}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a07dfe837dcacf644ac6f88837defc04f}{last\_slot\_tx}};\ \}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Slot\ when\ the\ last\ SCH\ grant\ of\ this\ HARQ\ process\ is\ supposed\ to\ be\ ACKed.}}
+\DoxyCodeLine{00181\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a28423fdd349f957019429b04f2554b82}{slot\_ack}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_afa6c1b681769339446023fd322ecbde8}{last\_slot\_ack}};\ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ a\ specified\ TB\ is\ empty.}}
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a7bacbfff919533bb0e77bac0b634b573}{empty}}(\textcolor{keywordtype}{unsigned}\ tb\_idx)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00185\ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(tb\_idx\ <\ tb\_array.size(),\ \textcolor{stringliteral}{"{}Invalid\ TB\ index=\{\}"{}},\ tb\_idx);}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordflow}{return}\ tb\_array[tb\_idx].empty();}
+\DoxyCodeLine{00188\ \ \ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ specified\ TB\ has\ pending\ new\_retx.}}
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a9cb73980ed9d17579518de736c86210d}{has\_pending\_retx}}(\textcolor{keywordtype}{unsigned}\ tb\_idx)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00192\ \ \ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(tb\_idx\ <\ tb\_array.size(),\ \textcolor{stringliteral}{"{}Invalid\ TB\ index\ (\{\}\ >=\ \{\})"{}},\ tb\_idx,\ tb\_array.size());}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ tb\_array[tb\_idx].state\ ==\ transport\_block::state\_t::pending\_retx;}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ specified\ TB\ is\ expecting\ an\ ACK.}}
+\DoxyCodeLine{00198\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a22fe37de33da5a82210f32c40e44f51b}{is\_waiting\_ack}}(\textcolor{keywordtype}{unsigned}\ tb\_idx)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00199\ \ \ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(tb\_idx\ <\ tb\_array.size(),\ \textcolor{stringliteral}{"{}Invalid\ TB\ index=\{\}"{}},\ tb\_idx);}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{return}\ tb\_array[tb\_idx].state\ ==\ transport\_block::state\_t::waiting\_ack;}
+\DoxyCodeLine{00202\ \ \ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \textcolor{keywordtype}{unsigned}\ max\_nof\_harq\_retxs(\textcolor{keywordtype}{unsigned}\ tb\_idx)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00205\ \ \ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(tb\_idx\ <\ tb\_array.size(),\ \textcolor{stringliteral}{"{}Invalid\ TB\ index\ (\{\}\ >=\ \{\})"{}},\ tb\_idx,\ tb\_array.size());}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keywordflow}{return}\ tb\_array[tb\_idx].max\_nof\_harq\_retxs;}
+\DoxyCodeLine{00208\ \ \ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ for\ TB\ parameters.}}
+\DoxyCodeLine{00211\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1harq__process_1_1transport__block}{transport\_block}}\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_ab9e3038edccbdcf995a2e202286c2b0e}{tb}}(\textcolor{keywordtype}{unsigned}\ tb\_idx)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ tb\_array[tb\_idx];\ \}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Resets\ HARQ\ process\ state.}}
+\DoxyCodeLine{00214\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a3fa487e3cad06347815ab4b36bb12cd4}{reset}}();}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Cancels\ the\ HARQ\ process\ by\ stopping\ retransmissions\ of\ the\ currently\ held\ TB.}}
+\DoxyCodeLine{00217\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a84f47c48eb4e8cebbacec9570c38d20b}{cancel\_harq\_retxs}}(\textcolor{keywordtype}{unsigned}\ tb\_idx);}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ of\ the\ slot\ when\ the\ HARQ\ process\ will\ assume\ that\ the\ ACK/CRC\ went\ missing.}}
+\DoxyCodeLine{00220\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a3443dc7fd854397f3ca268c41e75c547}{get\_slot\_ack\_timeout}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_adb49d584080fc9bfbe52271d4043c1ad}{slot\_ack\_timeout}};\ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordtype}{void}\ tx\_common(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot\_tx,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot\_ack);}
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{void}\ new\_tx\_tb\_common(\textcolor{keywordtype}{unsigned}\ tb\_idx,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_harq\_retxs,\ uint8\_t\ harq\_bit\_idx);}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{void}\ new\_retx\_tb\_common(\textcolor{keywordtype}{unsigned}\ tb\_idx,\ uint8\_t\ harq\_bit\_idx);}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Updates\ the\ ACK\ state\ of\ the\ TB\ of\ the\ HARQ\ process.}}
+\DoxyCodeLine{00228\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a5ce6a0d9d0f9beb8f6ab3110754aa4f2}{ack\_info\_common}}(uint32\_t\ tb\_idx,\ \textcolor{keywordtype}{bool}\ ack);}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Clear\ the\ contents\ of\ a\ specific\ TB\ of\ this\ HARQ\ process\ and\ resets\ it\ back\ to\ empty\ state.}}
+\DoxyCodeLine{00231\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_ad09fce227ccd2316688368380034cdb1}{reset\_tb}}(\textcolor{keywordtype}{unsigned}\ tb\_idx);}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ HARQ\ entity\ logger\ used\ by\ this\ HARQ\ process.}}
+\DoxyCodeLine{00234\ \ \ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_ad7e0f4d9da7d133212dda53c348404fb}{logger}};}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{///\ Notifier\ used\ by\ this\ HARQ\ process\ when\ there\ is\ a\ timeout.}}
+\DoxyCodeLine{00237\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier}{ue\_harq\_timeout\_notifier}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a35f4b6a7825c094edd6f2fdc2a4b6306}{timeout\_notifier}};}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{///\ Maximum\ value\ of\ time\ interval,\ in\ slots,\ before\ the\ HARQ\ process\ assumes\ that\ the\ ACK/CRC\ went\ missing.}}
+\DoxyCodeLine{00240\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a75aaa14f4fe066cad0f0fe4faeb18206}{max\_ack\_wait\_in\_slots}};}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{///\ Last\ slot\ indication.}}
+\DoxyCodeLine{00243\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a5f6845494254d1a9e47cf75632e58223}{last\_slot\_ind}};}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \textcolor{comment}{///\ For\ DL,\ slot\_tx\ corresponds\ to\ the\ slot\ when\ the\ TB\ in\ the\ HARQ\ process\ is\ going\ to\ be\ transmitted\ by\ the\ gNB.}}
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{///\ For\ UL,\ slot\_tx\ corresponds\ to\ the\ slot\ when\ the\ TB\ in\ the\ HARQ\ process\ is\ going\ to\ be\ transmitted\ by\ the\ UE.}}
+\DoxyCodeLine{00247\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_a07dfe837dcacf644ac6f88837defc04f}{last\_slot\_tx}};}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{///\ For\ DL,\ slot\_ack\ is\ the\ slot\ at\ which\ gNB\ is\ expected\ to\ receive\ the\ ACK\ via\ UCI.}}
+\DoxyCodeLine{00250\ \ \ \textcolor{comment}{///\ For\ UL,\ slot\_ack\ is\ the\ slot\ when\ the\ PUSCH\ CRC\ will\ be\ received\ by\ the\ gNB.\ It\ coincides\ with\ slot\_tx\ of\ UL.}}
+\DoxyCodeLine{00251\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_afa6c1b681769339446023fd322ecbde8}{last\_slot\_ack}};}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ \textcolor{comment}{///\ Slot\ when\ the\ HARQ\ process\ will\ assume\ that\ the\ ACK/CRC\ went\ missing.}}
+\DoxyCodeLine{00254\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process_adb49d584080fc9bfbe52271d4043c1ad}{slot\_ack\_timeout}};}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \ \ std::array<transport\_block,\ MAX\_NOF\_TBS>\ tb\_array;}
+\DoxyCodeLine{00257\ \};}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{detail}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{harq\_process}}<\textcolor{keyword}{true}>}
+\DoxyCodeLine{00262\ \{}
+\DoxyCodeLine{00263\ \ \ \textcolor{keyword}{using}\ base\_type\ =\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{harq\_process}}<\textcolor{keyword}{true}>;}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00266\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Update\ to\ the\ HARQ\ process\ state\ after\ a\ HARQ-\/ACK\ is\ received.}}
+\DoxyCodeLine{00267\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_ac54b21b50c80ee2addc6624668107cb1}{status\_update}}\ \{\ acked,\ nacked,\ no\_update,\ error\ \};}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Parameters\ relative\ to\ the\ last\ used\ PDSCH\ PDU\ that\ get\ stored\ in\ the\ HARQ\ process\ for\ future\ reuse.}}
+\DoxyCodeLine{00270\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1alloc__params}{alloc\_params}}\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1alloc__params_1_1tb__params}{tb\_params}}\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a7360cbf57f4cd82cfda032d47fa58e81}{pdsch\_mcs\_table}}\ mcs\_table;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ sch\_mcs\_index\ \ \ mcs;}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ tbs\_bytes;}
+\DoxyCodeLine{00275\ \ \ \ \ \};}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ac0a93d3e0aa8452e32308d5038bcad49}{dci\_dl\_rnti\_config\_type}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dci\_cfg\_type;}
+\DoxyCodeLine{00278\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1vrb__alloc}{vrb\_alloc}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rbs;}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_symbols;}
+\DoxyCodeLine{00280\ \ \ \ \ std::array<optional<tb\_params>,\ base\_type::MAX\_NOF\_TBS>\ tb;}
+\DoxyCodeLine{00281\ \ \ \ \ cqi\_value\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cqi;}
+\DoxyCodeLine{00282\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_layers;}
+\DoxyCodeLine{00283\ \ \ \};}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result}{dl\_ack\_info\_result}}\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ HARQ\ process\ ID.}}
+\DoxyCodeLine{00287\ \ \ \ \ harq\_id\_t\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_a290068f7ee7095de7609891c03f4e403}{h\_id}};}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ mcs\_table\ used\ for\ the\ last\ PDSCH\ transmission.}}
+\DoxyCodeLine{00289\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a7360cbf57f4cd82cfda032d47fa58e81}{pdsch\_mcs\_table}}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_a4059725418e3faea6594569b34b2d6de}{mcs\_table}};}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ MCS\ used\ for\ the\ last\ PDSCH\ transmission.}}
+\DoxyCodeLine{00291\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_a38b95163776d7b94ff0bcca502d66b9a}{sch\_mcs\_index}}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_a38b95163776d7b94ff0bcca502d66b9a}{mcs}};}
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ bytes\ of\ the\ last\ PDSCH\ transmission.}}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_a2e220756945c143304dff6ed7ca7b4a3}{tbs\_bytes}};}
+\DoxyCodeLine{00294\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ HARQ\ process\ status\ update.}}
+\DoxyCodeLine{00295\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process_ac54b21b50c80ee2addc6624668107cb1}{status\_update}}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result_ad52f5c777756e338a3dbf80fb0ab43b9}{update}};}
+\DoxyCodeLine{00296\ \ \ \};}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{transport\_block}};}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{empty}};}
+\DoxyCodeLine{00301\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{harq\_process}};}
+\DoxyCodeLine{00302\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{has\_pending\_retx}};}
+\DoxyCodeLine{00303\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1dl__harq__process}{is\_waiting\_ack}};}
+\DoxyCodeLine{00304\ }
+\DoxyCodeLine{00305\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ HARQ\ process\ has\ no\ TBs\ currently\ active.}}
+\DoxyCodeLine{00306\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_a84adccf19cb19a9a41622c6b6c7761ef}{empty}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::empty(0)\ \textcolor{keyword}{and}\ base\_type::empty(1);\ \}}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ there\ is\ at\ least\ one\ TB\ with\ pending\ new\_retx.}}
+\DoxyCodeLine{00309\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_a7ccc8dee176194af632872aa2732dd07}{has\_pending\_retx}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::has\_pending\_retx(0)\ \textcolor{keyword}{or}\ base\_type::has\_pending\_retx(1);\ \}}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ UL\ HARQ\ process\ is\ busy\ but\ waiting\ for\ an\ ACK.}}
+\DoxyCodeLine{00312\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_a7c57e5628a3131cf3896b61696eb908b}{is\_waiting\_ack}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::is\_waiting\_ack(0)\ \textcolor{keyword}{or}\ base\_type::is\_waiting\_ack(1);\ \}}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ of\ the\ PDCCH/PDSCH\ parameters\ used\ in\ the\ last\ Tx.}}
+\DoxyCodeLine{00315\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1alloc__params}{alloc\_params}}\&\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_ad4d77ca89e13c47dfeb6fca29fbada75}{last\_alloc\_params}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ prev\_tx\_params;\ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Called\ on\ every\ new\ TB\ transmission,\ when\ only\ one\ TB\ is\ active.\ It\ marks\ this\ HARQ\ process\ as\ busy\ and}}
+\DoxyCodeLine{00318\ \ \ \textcolor{comment}{///\ stores\ respective\ TB\ information.}}
+\DoxyCodeLine{00319\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_a302fa3ad6546b57c27fd7fe91402d5e8}{new\_tx}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pdsch\_slot,}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ k1,}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ max\_harq\_nof\_retxs,}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ harq\_bit\_idx,}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cqi\_value\ \ cqi,}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ nof\_layers);}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Called\ on\ every\ TB\ retransmission,\ when\ only\ one\ TB\ is\ active.\ This\ function\ assumes\ that\ the\ HARQ\ TB\ is}}
+\DoxyCodeLine{00327\ \ \ \textcolor{comment}{///\ in\ pending\ new\_retx\ state.}}
+\DoxyCodeLine{00328\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_af84b7d7c563830eca885c16530c18c96}{new\_retx}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pdsch\_slot,\ \textcolor{keywordtype}{unsigned}\ k1,\ uint8\_t\ harq\_bit\_idx);}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Called\ on\ every\ new\ TB\ transmission/retransmission,\ when\ 2\ TBs\ are\ used.}}
+\DoxyCodeLine{00331\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_aff5dfd52e5f8f7eeeeb0c513f6f01a8d}{tb\_tx\_request}}\ \{\ newtx,\ retx,\ disabled\ \};}
+\DoxyCodeLine{00332\ \ \ \textcolor{keywordtype}{void}\ tx\_2\_tb(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdsch\_slot,}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k1,}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_aff5dfd52e5f8f7eeeeb0c513f6f01a8d}{tb\_tx\_request}}>\ tb\_tx\_req,}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_harq\_nof\_retxs,}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_bit\_idx);}
+\DoxyCodeLine{00337\ }
+\DoxyCodeLine{00338\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Updates\ the\ ACK\ state\ of\ the\ HARQ\ process.}}
+\DoxyCodeLine{00339\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ result\ of\ a\ HARQ\ receiving\ an\ HARQ-\/ACK\ bit.}}
+\DoxyCodeLine{00340\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_ac54b21b50c80ee2addc6624668107cb1}{status\_update}}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_acea910a4a29c4e108e0fd97494022b80}{ack\_info}}(uint32\_t\ tb\_idx,\ mac\_harq\_ack\_report\_status\ ack,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ pucch\_snr);}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Stores\ grant\ parameters\ that\ are\ associated\ with\ the\ HARQ\ allocation\ (e.g.\ DCI\ format,\ PRBs,\ MCS)\ so\ that}}
+\DoxyCodeLine{00343\ \ \ \textcolor{comment}{///\ they\ can\ be\ later\ fetched\ and\ optionally\ reused.}}
+\DoxyCodeLine{00344\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process_ad9c66e3c42b93dac12eaf59f9f6a86b6}{save\_alloc\_params}}(\mbox{\hyperlink{namespacesrsran_ac0a93d3e0aa8452e32308d5038bcad49}{dci\_dl\_rnti\_config\_type}}\ dci\_cfg\_type,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__information}{pdsch\_information}}\&\ pdsch);}
+\DoxyCodeLine{00345\ }
+\DoxyCodeLine{00346\ \ \ \textcolor{keywordtype}{void}\ increment\_pucch\_counter();}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00349\ \ \ \textcolor{comment}{///\ Parameters\ used\ for\ the\ last\ Tx\ of\ this\ HARQ\ process.}}
+\DoxyCodeLine{00350\ \ \ \mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1alloc__params}{alloc\_params}}\ prev\_tx\_params;}
+\DoxyCodeLine{00351\ \ \ \textcolor{comment}{///\ Keeps\ the\ count\ of\ how\ many\ PUCCH\ grants\ are\ allocate\ for\ this\ harq\_process.}}
+\DoxyCodeLine{00352\ \ \ \textcolor{keywordtype}{unsigned}\ pucch\_ack\_to\_receive\{0\};}
+\DoxyCodeLine{00353\ \ \ \textcolor{comment}{///\ Chosen\ ACK\ status\ for\ this\ HARQ\ process\ transmission,\ given\ one\ or\ more\ HARQ-\/ACK\ bits\ received.}}
+\DoxyCodeLine{00354\ \ \ mac\_harq\_ack\_report\_status\ chosen\_ack\ =\ mac\_harq\_ack\_report\_status::dtx;}
+\DoxyCodeLine{00355\ \ \ \textcolor{comment}{///\ Stores\ the\ highest\ recorded\ PUCCH\ SNR\ for\ this\ HARQ\ process.}}
+\DoxyCodeLine{00356\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ last\_pucch\_snr;}
+\DoxyCodeLine{00357\ \};}
+\DoxyCodeLine{00358\ }
+\DoxyCodeLine{00359\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}\ :\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{detail}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{harq\_process}}<\textcolor{keyword}{false}>}
+\DoxyCodeLine{00360\ \{}
+\DoxyCodeLine{00361\ \ \ \textcolor{keyword}{using}\ base\_type\ =\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1harq__process}{harq\_process}}<\textcolor{keyword}{false}>;}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00364\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Parameters\ relative\ to\ the\ last\ allocated\ PUSCH\ PDU\ for\ this\ HARQ\ process.}}
+\DoxyCodeLine{00365\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ul__harq__process_1_1alloc__params}{alloc\_params}}\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a635cecd3b3b6716ab9f4b6043d603f9f}{dci\_ul\_rnti\_config\_type}}\ dci\_cfg\_type;}
+\DoxyCodeLine{00367\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1vrb__alloc}{vrb\_alloc}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rbs;}
+\DoxyCodeLine{00368\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ab9c85fbd71b868a0cc3ba0b21d0c2bbf}{pusch\_mcs\_table}}\ \ \ \ \ \ \ \ \ mcs\_table;}
+\DoxyCodeLine{00369\ \ \ \ \ sch\_mcs\_index\ \ \ \ \ \ \ \ \ \ \ mcs;}
+\DoxyCodeLine{00370\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tbs\_bytes;}
+\DoxyCodeLine{00371\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_symbols;}
+\DoxyCodeLine{00372\ \ \ \};}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{transport\_block}};}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{get\_slot\_ack\_timeout}};}
+\DoxyCodeLine{00377\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{harq\_process}};}
+\DoxyCodeLine{00378\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{id}};}
+\DoxyCodeLine{00379\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{reset}};}
+\DoxyCodeLine{00380\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{slot\_ack}};}
+\DoxyCodeLine{00381\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{slot\_indication}};}
+\DoxyCodeLine{00382\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{base\_type}}::\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{slot\_tx}};}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ HARQ\ process\ is\ inactive.}}
+\DoxyCodeLine{00385\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_afa4105f0bb26b34adc92b1ff248647f9}{empty}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::empty(0);\ \}}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00387\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ UL\ HARQ\ process\ has\ a\ pending\ new\_retx.}}
+\DoxyCodeLine{00388\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a24118a819c4b3bf092f55ed3491f8c71}{has\_pending\_retx}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::has\_pending\_retx(0);\ \}}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ UL\ HARQ\ process\ is\ busy\ but\ waiting\ for\ an\ ACK.}}
+\DoxyCodeLine{00391\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a3e781dd7605b5a4d14dbf9035915b61f}{is\_waiting\_ack}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::is\_waiting\_ack(0);\ \}}
+\DoxyCodeLine{00392\ }
+\DoxyCodeLine{00393\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ maximum\ number\ of\ HARQ\ retxs.}}
+\DoxyCodeLine{00394\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_aab73be1ff6619c2bffbf13c4930c03b1}{max\_nof\_harq\_retxs}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::max\_nof\_harq\_retxs(0);\ \}}
+\DoxyCodeLine{00395\ }
+\DoxyCodeLine{00396\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ of\ TB\ params.}}
+\DoxyCodeLine{00397\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a934e1662f1c2c9443c817ebad17715a3}{transport\_block}}\&\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a934e1662f1c2c9443c817ebad17715a3}{tb}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_type::tb(0);\ \}}
+\DoxyCodeLine{00398\ }
+\DoxyCodeLine{00399\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ of\ the\ PDCCH/PDSCH\ parameters\ used\ in\ the\ last\ Tx.}}
+\DoxyCodeLine{00400\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__harq__process_1_1alloc__params}{alloc\_params}}\&\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_af1871f29af526e12658a7dc8c9650af1}{last\_tx\_params}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ prev\_tx\_params;\ \}}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ CRC\ info\ for\ the\ UL\ HARQ\ process.}}
+\DoxyCodeLine{00403\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ bytes\ of\ the\ TB\ in\ case\ of\ ack==true,\ zero\ in\ case\ ack==false,\ and\ -\/1\ if\ HARQ\ is\ inactive.}}
+\DoxyCodeLine{00404\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_afffd0731c33f00ed16485aefa3ae8cdc}{crc\_info}}(\textcolor{keywordtype}{bool}\ ack);}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Called\ on\ every\ new\ transmission.\ It\ marks\ this\ HARQ\ process\ as\ busy\ and\ stores\ respective\ TB\ information.}}
+\DoxyCodeLine{00407\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_aa4da3e01b3a3538afbf9084f4fa612c1}{new\_tx}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pusch\_slot,\ \textcolor{keywordtype}{unsigned}\ max\_harq\_retxs);}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Called\ on\ every\ TB\ retransmission.\ This\ function\ assumes\ that\ the\ HARQ\ TB\ is\ in\ pending\ new\_retx\ state.}}
+\DoxyCodeLine{00410\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a938725379dca0eaf839fee11d6515487}{new\_retx}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pusch\_slot);}
+\DoxyCodeLine{00411\ }
+\DoxyCodeLine{00412\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Stores\ grant\ parameters\ that\ are\ associated\ with\ the\ HARQ\ allocation\ (e.g.\ DCI\ format,\ PRBs,\ MCS)\ so\ that}}
+\DoxyCodeLine{00413\ \ \ \textcolor{comment}{///\ they\ can\ be\ later\ fetched\ and\ optionally\ reused.}}
+\DoxyCodeLine{00414\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a5761b078713823b073b23accc64a976a}{save\_alloc\_params}}(\mbox{\hyperlink{namespacesrsran_a635cecd3b3b6716ab9f4b6043d603f9f}{dci\_ul\_rnti\_config\_type}}\ dci\_cfg\_type,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__information}{pusch\_information}}\&\ pusch);}
+\DoxyCodeLine{00415\ }
+\DoxyCodeLine{00416\ \ \ \textcolor{comment}{///\ Cancels\ the\ HARQ\ and\ stops\ retransmitting\ the\ specified\ TB\ until\ the\ next\ new\ transmission.}}
+\DoxyCodeLine{00417\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a3fe3a8cc557ede35f6657212c6c369ef}{cancel\_harq\_retxs}}();}
+\DoxyCodeLine{00418\ }
+\DoxyCodeLine{00419\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Getter\ of\ the\ number\ of\ bytes\ of\ the\ last\ transmitted\ TB.}}
+\DoxyCodeLine{00420\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process_a99d1a437fc17193d118f8e75f9b55445}{get\_tbs\_bytes}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ prev\_tx\_params.tbs\_bytes;\ \}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00423\ \ \ \textcolor{comment}{///\ Parameters\ used\ for\ the\ last\ Tx\ of\ this\ HARQ\ process.}}
+\DoxyCodeLine{00424\ \ \ \mbox{\hyperlink{structsrsran_1_1ul__harq__process_1_1alloc__params}{alloc\_params}}\ prev\_tx\_params;}
+\DoxyCodeLine{00425\ \};}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \textcolor{comment}{///\ \(\backslash\)brief\ Helper\ function\ to\ fill\ HARQ\ allocation\ grant\ parameters.}}
+\DoxyCodeLine{00428\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a2bfa339a06721aa379d6fef2a5ff3ad0}{save\_harq\_alloc\_params}}(\mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}::\mbox{\hyperlink{structsrsran_1_1ul__harq__process_1_1alloc__params}{alloc\_params}}\&\ ul\_alloc,}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a93c929b38944ccc0dbb9039381103931}{bwp\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bwp\_id,}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a635cecd3b3b6716ab9f4b6043d603f9f}{dci\_ul\_rnti\_config\_type}}\ \ \ \ \ \ \ \ dci\_cfg\_type,}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_resource,}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__information}{pusch\_information}}\&\ \ \ \ \ \ \ pusch);}
+\DoxyCodeLine{00433\ }
+\DoxyCodeLine{00434\ \textcolor{comment}{///\ This\ object\ handles\ the\ DL\ and\ UL\ HARQ\ processes\ for\ each\ UE's\ Component\ Carrier;\ therefore,\ for\ each\ UE,\ we}}
+\DoxyCodeLine{00435\ \textcolor{comment}{///\ instantiate\ as\ many\ harq\_entity\ object\ as\ CCs}}
+\DoxyCodeLine{00436\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1harq__entity}{harq\_entity}}}
+\DoxyCodeLine{00437\ \{}
+\DoxyCodeLine{00438\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00439\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ HARQ\ entity\ for\ a\ given\ UE\ cell.}}
+\DoxyCodeLine{00440\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rnti\ RNTI\ of\ the\ UE}}
+\DoxyCodeLine{00441\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ nof\_dl\_harq\_procs\ Number\ of\ DL\ HARQ\ processes\ that\ the\ UE\ can\ support.\ This\ value\ is\ derived\ based\ on}}
+\DoxyCodeLine{00442\ \ \ \textcolor{comment}{///\ the\ UE\ capabilities,\ and\ passed\ to\ the\ UE\ via\ RRC\ signalling.\ See\ TS38.331,\ "{}nrofHARQ-\/ProcessesForPDSCH"{}.}}
+\DoxyCodeLine{00443\ \ \ \textcolor{comment}{///\ Values:\ \{2,\ 4,\ 6,\ 10,\ 12,\ 16\}.}}
+\DoxyCodeLine{00444\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ nof\_ul\_harq\_procs\ Number\ of\ UL\ HARQ\ processes\ that\ gNB\ can\ support.\ This\ value\ is\ implementation-\/defined}}
+\DoxyCodeLine{00445\ \ \ \textcolor{comment}{///\ and\ can\ up\ to\ 16\ (there\ are\ up\ to\ 4\ bits\ for\ HARQ-\/Id\ signalling).}}
+\DoxyCodeLine{00446\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ max\_ack\_wait\_in\_slots\ Duration\ in\ slots\ before\ a\ HARQ\ process\ acknowledgement\ is\ considered\ to\ have\ gone}}
+\DoxyCodeLine{00447\ \ \ \textcolor{comment}{///\ missing\ and\ that\ the\ HARQ\ can\ be\ reset.}}
+\DoxyCodeLine{00448\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1harq__entity_a5eb0652618d233bfe1b57855981f85a9}{harq\_entity}}(\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti,}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_dl\_harq\_procs,}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_ul\_harq\_procs,}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier}{ue\_harq\_timeout\_notifier}}\ timeout\_notif,}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntn\_cs\_koffset\ =\ 0,}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ max\_ack\_wait\_in\_slots\ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1harq__entity_a5eb0652618d233bfe1b57855981f85a9}{detail}}::\mbox{\hyperlink{classsrsran_1_1harq__entity_a5eb0652618d233bfe1b57855981f85a9}{harq\_process}}<\textcolor{keyword}{true}>::\mbox{\hyperlink{classsrsran_1_1harq__entity_a5eb0652618d233bfe1b57855981f85a9}{DEFAULT\_ACK\_TIMEOUT\_SLOTS}});}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \textcolor{comment}{///\ Update\ slot,\ and\ checks\ if\ there\ are\ HARQ\ processes\ that\ have\ reached\ maxReTx\ with\ no\ ACK}}
+\DoxyCodeLine{00456\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1harq__entity_ae9e1342bc87ff9035b8e98535aaaa4d7}{slot\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot\_tx\_);}
+\DoxyCodeLine{00457\ }
+\DoxyCodeLine{00458\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Update\ the\ state\ of\ the\ DL\ HARQ\ for\ the\ specified\ UCI\ slot.}}
+\DoxyCodeLine{00459\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ struct\ containing\ the\ HARQ\ process\ ID,\ MCS,\ TBS\ and\ status\ update.}}
+\DoxyCodeLine{00460\ \ \ \textcolor{comment}{///\ ACK/NACK\ was\ directed\ was\ found.}}
+\DoxyCodeLine{00461\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}::\mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result}{dl\_ack\_info\_result}}}
+\DoxyCodeLine{00462\ \ \ \mbox{\hyperlink{classsrsran_1_1harq__entity_aa2828a14b911b195b07d3cfae323f9bc}{dl\_ack\_info}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ uci\_slot,\ mac\_harq\_ack\_report\_status\ ack,\ uint8\_t\ harq\_bit\_idx,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ pucch\_snr);}
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \ \ \textcolor{comment}{///\ Update\ UL\ HARQ\ state\ given\ the\ received\ CRC\ indication.}}
+\DoxyCodeLine{00465\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Transport\ Block\ size\ of\ the\ HARQ\ whose\ state\ was\ updated.}}
+\DoxyCodeLine{00466\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1harq__entity_ac7d8dd718225b1f0260eb66022fc5282}{ul\_crc\_info}}(harq\_id\_t\ h\_id,\ \textcolor{keywordtype}{bool}\ ack,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pusch\_slot);}
+\DoxyCodeLine{00467\ }
+\DoxyCodeLine{00468\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ The\ UCI\ scheduling\ associated\ with\ a\ given\ slot\ was\ cancelled.\ The\ associated\ DL\ HARQs\ will\ be\ NACKEd.}}
+\DoxyCodeLine{00469\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00470\ \ \ \textcolor{comment}{///\ This\ function\ can\ be\ called\ for\ instance\ when\ there\ is\ an\ error\ indication\ coming\ from\ lower\ layers.}}
+\DoxyCodeLine{00471\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1harq__entity_a107e35d945d967f5909099ec376a1f0d}{dl\_ack\_info\_cancelled}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ uci\_slot);}
+\DoxyCodeLine{00472\ }
+\DoxyCodeLine{00473\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_dl\_harqs()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ dl\_harqs.size();\ \}}
+\DoxyCodeLine{00474\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_ul\_harqs()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ul\_harqs.size();\ \}}
+\DoxyCodeLine{00475\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}\&\ dl\_harq(uint32\_t\ pid)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ dl\_harqs[pid];\ \}}
+\DoxyCodeLine{00476\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}\&\ \ \ \ \ \ \ dl\_harq(uint32\_t\ pid)\ \{\ \textcolor{keywordflow}{return}\ dl\_harqs[pid];\ \}}
+\DoxyCodeLine{00477\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}\&\ ul\_harq(uint32\_t\ pid)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ul\_harqs[pid];\ \}}
+\DoxyCodeLine{00478\ \ \ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}\&\ \ \ \ \ \ \ ul\_harq(uint32\_t\ pid)\ \{\ \textcolor{keywordflow}{return}\ ul\_harqs[pid];\ \}}
+\DoxyCodeLine{00479\ }
+\DoxyCodeLine{00480\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_pending\_dl\_retx()}
+\DoxyCodeLine{00481\ \ \ \{}
+\DoxyCodeLine{00482\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_oldest\_harq\_retx(dl\_harqs);}
+\DoxyCodeLine{00483\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&dl\_harqs[h\_id];}
+\DoxyCodeLine{00484\ \ \ \}}
+\DoxyCodeLine{00485\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_pending\_dl\_retx()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00486\ \ \ \{}
+\DoxyCodeLine{00487\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_oldest\_harq\_retx(dl\_harqs);}
+\DoxyCodeLine{00488\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&dl\_harqs[h\_id];}
+\DoxyCodeLine{00489\ \ \ \}}
+\DoxyCodeLine{00490\ \ \ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}*\ find\_pending\_ul\_retx()}
+\DoxyCodeLine{00491\ \ \ \{}
+\DoxyCodeLine{00492\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_oldest\_harq\_retx(ul\_harqs);}
+\DoxyCodeLine{00493\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&ul\_harqs[h\_id];}
+\DoxyCodeLine{00494\ \ \ \}}
+\DoxyCodeLine{00495\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}*\ find\_pending\_ul\_retx()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00496\ \ \ \{}
+\DoxyCodeLine{00497\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_oldest\_harq\_retx(ul\_harqs);}
+\DoxyCodeLine{00498\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&ul\_harqs[h\_id];}
+\DoxyCodeLine{00499\ \ \ \}}
+\DoxyCodeLine{00500\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_empty\_dl\_harq()}
+\DoxyCodeLine{00501\ \ \ \{}
+\DoxyCodeLine{00502\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_empty\_harq(dl\_harqs);}
+\DoxyCodeLine{00503\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&dl\_harqs[h\_id];}
+\DoxyCodeLine{00504\ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_empty\_dl\_harq()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00506\ \ \ \{}
+\DoxyCodeLine{00507\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_empty\_harq(dl\_harqs);}
+\DoxyCodeLine{00508\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&dl\_harqs[h\_id];}
+\DoxyCodeLine{00509\ \ \ \}}
+\DoxyCodeLine{00510\ \ \ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}*\ find\_empty\_ul\_harq()}
+\DoxyCodeLine{00511\ \ \ \{}
+\DoxyCodeLine{00512\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_empty\_harq(ul\_harqs);}
+\DoxyCodeLine{00513\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&ul\_harqs[h\_id];}
+\DoxyCodeLine{00514\ \ \ \}}
+\DoxyCodeLine{00515\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}*\ find\_empty\_ul\_harq()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00516\ \ \ \{}
+\DoxyCodeLine{00517\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_empty\_harq(ul\_harqs);}
+\DoxyCodeLine{00518\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&ul\_harqs[h\_id];}
+\DoxyCodeLine{00519\ \ \ \}}
+\DoxyCodeLine{00520\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_dl\_harq\_waiting\_ack()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00521\ \ \ \{}
+\DoxyCodeLine{00522\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_harq\_waiting\_ack(dl\_harqs);}
+\DoxyCodeLine{00523\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&dl\_harqs[h\_id];}
+\DoxyCodeLine{00524\ \ \ \}}
+\DoxyCodeLine{00525\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}*\ find\_ul\_harq\_waiting\_ack()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00526\ \ \ \{}
+\DoxyCodeLine{00527\ \ \ \ \ harq\_id\_t\ h\_id\ =\ find\_harq\_waiting\_ack(ul\_harqs);}
+\DoxyCodeLine{00528\ \ \ \ \ \textcolor{keywordflow}{return}\ h\_id\ ==\ INVALID\_HARQ\_ID\ ?\ \textcolor{keywordtype}{nullptr}\ :\ \&ul\_harqs[h\_id];}
+\DoxyCodeLine{00529\ \ \ \}}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}*\ find\_dl\_harq\_waiting\_ack\_slot(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_ack,\ \textcolor{keywordtype}{unsigned}\ harq\_bit\_idx)}
+\DoxyCodeLine{00532\ \ \ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \textcolor{comment}{//\ For\ the\ time\ being,\ we\ assume\ 1\ TB\ only.}}
+\DoxyCodeLine{00534\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ size\_t\ tb\_index\ =\ 0;}
+\DoxyCodeLine{00535\ }
+\DoxyCodeLine{00536\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ dl\_harqs.size();\ ++i)\ \{}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dl\_harqs[i].tb(tb\_index).harq\_bit\_idx\ ==\ harq\_bit\_idx\ \textcolor{keyword}{and}\ dl\_harqs[i].is\_waiting\_ack(tb\_index)\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ dl\_harqs[i].slot\_ack()\ ==\ sl\_ack)\ \{}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&dl\_harqs[to\_harq\_id(i)];}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00541\ \ \ \ \ \}}
+\DoxyCodeLine{00542\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00543\ \ \ \}}
+\DoxyCodeLine{00544\ }
+\DoxyCodeLine{00545\ \ \ \textcolor{keywordtype}{unsigned}\ ntn\_get\_tbs\_pending\_crcs()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00546\ \ \ \{}
+\DoxyCodeLine{00547\ \ \ \ \ \textcolor{keywordflow}{if}\ (ntn\_harq.active())\ \{}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ntn\_harq.get\_total\_tbs();}
+\DoxyCodeLine{00549\ \ \ \ \ \}}
+\DoxyCodeLine{00550\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00551\ \ \ \}}
+\DoxyCodeLine{00552\ }
+\DoxyCodeLine{00553\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00554\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ HarqVector>}
+\DoxyCodeLine{00555\ \ \ harq\_id\_t\ find\_oldest\_harq\_retx(\textcolor{keyword}{const}\ HarqVector\&\ harqs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00556\ \ \ \{}
+\DoxyCodeLine{00557\ \ \ \ \ harq\_id\_t\ oldest\_h\ =\ harq\_id\_t::INVALID\_HARQ\_ID;}
+\DoxyCodeLine{00558\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ harqs.size();\ ++i)\ \{}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harqs[i].has\_pending\_retx())\ \{}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (oldest\_h\ ==\ harq\_id\_t::INVALID\_HARQ\_ID\ \textcolor{keyword}{or}\ harqs[i].slot\_ack()\ <\ harqs[oldest\_h].slot\_ack())\ \{}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ oldest\_h\ =\ to\_harq\_id(i);}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00564\ \ \ \ \ \}}
+\DoxyCodeLine{00565\ \ \ \ \ \textcolor{keywordflow}{return}\ oldest\_h;}
+\DoxyCodeLine{00566\ \ \ \}}
+\DoxyCodeLine{00567\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ HarqVector>}
+\DoxyCodeLine{00568\ \ \ harq\_id\_t\ find\_empty\_harq(\textcolor{keyword}{const}\ HarqVector\&\ harqs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00569\ \ \ \{}
+\DoxyCodeLine{00570\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ harqs.size();\ ++i)\ \{}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harqs[i].empty())\ \{}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ to\_harq\_id(i);}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00574\ \ \ \ \ \}}
+\DoxyCodeLine{00575\ \ \ \ \ \textcolor{keywordflow}{return}\ harq\_id\_t::INVALID\_HARQ\_ID;}
+\DoxyCodeLine{00576\ \ \ \}}
+\DoxyCodeLine{00577\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ HarqVector>}
+\DoxyCodeLine{00578\ \ \ harq\_id\_t\ find\_harq\_waiting\_ack(\textcolor{keyword}{const}\ HarqVector\&\ harqs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00579\ \ \ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ harqs.size();\ ++i)\ \{}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harqs[i].is\_waiting\_ack())\ \{}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ to\_harq\_id(i);}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00584\ \ \ \ \ \}}
+\DoxyCodeLine{00585\ \ \ \ \ \textcolor{keywordflow}{return}\ harq\_id\_t::INVALID\_HARQ\_ID;}
+\DoxyCodeLine{00586\ \ \ \}}
+\DoxyCodeLine{00587\ }
+\DoxyCodeLine{00588\ \ \ \textcolor{keyword}{class}\ ntn\_tbs\_history}
+\DoxyCodeLine{00589\ \ \ \{}
+\DoxyCodeLine{00590\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00591\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ class\ is\ used\ to\ store\ the\ TBS\ of\ the\ HARQ\ processes\ that\ have\ to\ be\ released\ before\ they\ have\ been}}
+\DoxyCodeLine{00592\ \ \ \ \ \textcolor{comment}{///\ completed\ by\ an\ ACK\ or\ a\ PUSCH.}}
+\DoxyCodeLine{00593\ \ \ \ \ \textcolor{keyword}{explicit}\ ntn\_tbs\_history(\textcolor{keywordtype}{unsigned}\ ntn\_cs\_koffset\_);}
+\DoxyCodeLine{00594\ }
+\DoxyCodeLine{00595\ \ \ \ \ \textcolor{keywordtype}{bool}\ active()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ntn\_cs\_koffset\ !=\ 0;\ \}}
+\DoxyCodeLine{00596\ }
+\DoxyCodeLine{00597\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ save\ the\ TBS\ of\ the\ HARQ\ process.}}
+\DoxyCodeLine{00598\ \ \ \ \ \textcolor{keywordtype}{void}\ save\_dl\_harq\_info(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}\&\ harq,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \_slot\_tx)}
+\DoxyCodeLine{00599\ \ \ \ \ \{}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harq\mbox{\hyperlink{classsrsran_1_1dl__harq__process_a84adccf19cb19a9a41622c6b6c7761ef}{.}}\mbox{\hyperlink{classsrsran_1_1dl__harq__process_a84adccf19cb19a9a41622c6b6c7761ef}{empty}}\mbox{\hyperlink{classsrsran_1_1dl__harq__process_a84adccf19cb19a9a41622c6b6c7761ef}{(}}\mbox{\hyperlink{classsrsran_1_1dl__harq__process_a84adccf19cb19a9a41622c6b6c7761ef}{)}})\ \{}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harq.get\_slot\_ack\_timeout()\ <=\ \_slot\_tx)\ \{}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ idx\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ (harq.slot\_ack().to\_uint()\ +\ ntn\_cs\_koffset)\ \%\ slot\_ack\_info.size();}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(idx).tbs\_bytes\ =\ harq.last\_alloc\_params().tb[0]-\/>tbs\_bytes;}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(idx).h\_id\ \ \ \ \ \ =\ harq.id;}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(idx).mcs\ \ \ \ \ \ \ =\ harq.last\_alloc\_params().tb[0]-\/>mcs;}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(idx).mcs\_table\ =\ harq.last\_alloc\_params().tb[0]-\/>mcs\_table;}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(idx).update\ \ \ \ =\ dl\_harq\_process::status\_update::acked;}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00611\ \ \ \ \ \}}
+\DoxyCodeLine{00612\ }
+\DoxyCodeLine{00613\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ save\ the\ ack\ info\ of\ the\ HARQ\ process.}}
+\DoxyCodeLine{00614\ \ \ \ \ \textcolor{keywordtype}{void}\ save\_ul\_harq\_info(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}\&\ harq,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \_slot\_tx)}
+\DoxyCodeLine{00615\ \ \ \ \ \{}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harq\mbox{\hyperlink{classsrsran_1_1ul__harq__process_afa4105f0bb26b34adc92b1ff248647f9}{.}}\mbox{\hyperlink{classsrsran_1_1ul__harq__process_afa4105f0bb26b34adc92b1ff248647f9}{empty}}\mbox{\hyperlink{classsrsran_1_1ul__harq__process_afa4105f0bb26b34adc92b1ff248647f9}{(}}\mbox{\hyperlink{classsrsran_1_1ul__harq__process_afa4105f0bb26b34adc92b1ff248647f9}{)}})\ \{}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (harq.get\_slot\_ack\_timeout()\ <=\ \_slot\_tx)\ \{}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ idx\ \ \ \ \ \ \ \ \ \ =\ (harq.slot\_ack().to\_uint()\ +\ ntn\_cs\_koffset)\ \%\ slot\_tbs.size();}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ slot\_tbs.at(idx)\ =\ harq.get\_tbs\_bytes();}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00623\ \ \ \ \ \}}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ pop\ the\ ack\ info\ of\ the\ HARQ\ process\ saved\ at\ the\ slot\ \_slot\_tx.}}
+\DoxyCodeLine{00626\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dl__harq__process}{dl\_harq\_process}}::\mbox{\hyperlink{structsrsran_1_1dl__harq__process_1_1dl__ack__info__result}{dl\_ack\_info\_result}}\ pop\_ack\_info(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \_slot\_tx,\ mac\_harq\_ack\_report\_status\ ack)}
+\DoxyCodeLine{00627\ \ \ \ \ \{}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ret\ =\ slot\_ack\_info.at(\_slot\_tx.to\_uint()\ \%\ slot\_ack\_info.size());}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ret.tbs\_bytes)\ \{}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ slot\_ack\_info.at(\_slot\_tx.to\_uint()\ \%\ slot\_ack\_info.size())\ =\ \{\};}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00633\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ ret.update\ =\ ack\ ==\ mac\_harq\_ack\_report\_status::ack\ ?\ dl\_harq\_process::status\_update::acked}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ dl\_harq\_process::status\_update::nacked;}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00637\ \ \ \ \ \}}
+\DoxyCodeLine{00638\ }
+\DoxyCodeLine{00639\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ pop\ the\ TBS\ of\ the\ HARQ\ process\ saved\ at\ the\ slot\ \_slot\_tx.}}
+\DoxyCodeLine{00640\ \ \ \ \ \textcolor{keywordtype}{int}\ pop\_tbs(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \_slot\_tx)}
+\DoxyCodeLine{00641\ \ \ \ \ \{}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ ret\ =\ slot\_tbs.at(\_slot\_tx.to\_uint()\ \%\ slot\_tbs.size());}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ret)\ \{}
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ slot\_tbs.at(\_slot\_tx.to\_uint()\ \%\ slot\_tbs.size())\ =\ 0;}
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00649\ \ \ \ \ \}}
+\DoxyCodeLine{00650\ }
+\DoxyCodeLine{00651\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ clear\ the\ TBS\ of\ the\ HARQ\ process\ saved\ at\ the\ slot\ \_slot\_tx.}}
+\DoxyCodeLine{00652\ \ \ \ \ \textcolor{keywordtype}{void}\ clear\_tbs(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \_slot\_tx)\ \{\ slot\_tbs.at(\_slot\_tx.to\_uint()\ \%\ slot\_tbs.size())\ =\ 0;\ \}}
+\DoxyCodeLine{00653\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ function\ is\ used\ to\ get\ the\ total\ TBS\ of\ the\ HARQ\ processes\ saved.}}
+\DoxyCodeLine{00654\ \ \ \ \ \textcolor{keywordtype}{int}\ get\_total\_tbs()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ std::accumulate(slot\_tbs.begin(),\ slot\_tbs.end(),\ 0);\ \}}
+\DoxyCodeLine{00655\ \ \ \ \ \textcolor{comment}{//\ We\ timeout\ the\ HARQ\ since\ we\ need\ to\ reuse\ the\ process\ before\ the\ PUSCH\ arrives.}}
+\DoxyCodeLine{00656\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ ntn\_harq\_timeout\ =\ 1;}
+\DoxyCodeLine{00657\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ The\ function\ is\ used\ to\ get\ the\ ntn\ koffset.}}
+\DoxyCodeLine{00658\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ get\_ntn\_koffset()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ntn\_cs\_koffset;\ \}}
+\DoxyCodeLine{00659\ }
+\DoxyCodeLine{00660\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00661\ \ \ \ \ std::vector<\textcolor{keywordtype}{unsigned}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_tbs;}
+\DoxyCodeLine{00662\ \ \ \ \ std::vector<dl\_harq\_process::dl\_ack\_info\_result>\ slot\_ack\_info;}
+\DoxyCodeLine{00663\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntn\_cs\_koffset;}
+\DoxyCodeLine{00664\ \ \ \};}
+\DoxyCodeLine{00665\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00666\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00667\ \ \ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}\ \ \ \ \ \ \ \ \ \ \ dl\_h\_logger;}
+\DoxyCodeLine{00668\ \ \ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}\ \ \ \ \ \ \ \ \ \ \ ul\_h\_logger;}
+\DoxyCodeLine{00669\ }
+\DoxyCodeLine{00670\ \ \ \textcolor{comment}{//\ slot\_rx\ is\ the\ slot\ index\ at\ which\ the\ scheduler\ is\ currently\ working}}
+\DoxyCodeLine{00671\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_tx;}
+\DoxyCodeLine{00672\ \ \ std::vector<dl\_harq\_process>\ dl\_harqs;}
+\DoxyCodeLine{00673\ \ \ std::vector<ul\_harq\_process>\ ul\_harqs;}
+\DoxyCodeLine{00674\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__harq__timeout__notifier}{ue\_harq\_timeout\_notifier}}\ \ \ \ \ nop\_timeout\_notifier;}
+\DoxyCodeLine{00675\ \ \ ntn\_tbs\_history\ \ \ \ \ \ \ \ \ \ \ \ \ \ ntn\_harq;}
+\DoxyCodeLine{00676\ \};}
+\DoxyCodeLine{00677\ }
+\DoxyCodeLine{00678\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

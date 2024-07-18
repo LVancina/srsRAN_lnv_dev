@@ -1,0 +1,195 @@
+\doxysection{uplink\+\_\+processor\+\_\+impl.\+h}
+\hypertarget{upper_2uplink__processor__impl_8h_source}{}\label{upper_2uplink__processor__impl_8h_source}\index{lib/phy/upper/uplink\_processor\_impl.h@{lib/phy/upper/uplink\_processor\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/concurrent\_queue.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/instrumentation/traces/du\_traces.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pusch/pusch\_processor\_result\_notifier.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/uplink\_processor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/upper\_phy\_rx\_results\_notifier.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Concurrent\ queue\ type\ used\ for\ storing\ the\ PUSCH\ processor\ result\ notifier\ adaptors.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{using}\ free\_adaptor\_queue\ =}
+\DoxyCodeLine{00037\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__queue}{concurrent\_queue}}<\textcolor{keywordtype}{unsigned},\ \mbox{\hyperlink{namespacesrsran_a08f31ae01c088c535705650443feec0c}{concurrent\_queue\_policy}}::lockfree\_mpmc,\ \mbox{\hyperlink{namespacesrsran_a1aa5b9ae2fbb3e003686513bd761c0a4}{concurrent\_queue\_wait\_policy}}::sleep>;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)brief\ Adapts\ the\ PUSCH\ processor\ result\ notifier\ to\ the\ upper\ PHY\ receive\ results\ notifier.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ It\ collects\ the\ Channel\ State\ Information\ (CSI),\ control\ and\ data\ decoding\ information\ from\ a\ PUSCH\ processor\ object}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ and\ notifies\ them\ through\ the\ upper\ PHY\ notification\ interface.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ order\ of\ the\ calls\ matters.\ Method\ on\_csi()\ must\ be\ called\ before\ on\_uci()\ or\ on\_sch().\ Otherwise,\ an}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ assertion\ is\ triggered.}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor}{pusch\_processor\_result\_notifier\_adaptor}}\ :\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1pusch__processor__result__notifier}{pusch\_processor\_result\_notifier}}}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ an\ adaptor.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ The\ PUSCH\ adaptor\ queue\ identifier\ is\ set\ to\ the\ current\ size\ of\ the\ queue.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ queue\_\ Free\ adaptor\ queue\ instance.}}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor_afa4b14e6812328473bfb64adcc16b7db}{pusch\_processor\_result\_notifier\_adaptor}}(free\_adaptor\_queue\&\ queue\_)\ :\ queue(queue\_),\ \mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor_afa4b14e6812328473bfb64adcc16b7db}{queue\_identifier}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor_afa4b14e6812328473bfb64adcc16b7db}{queue}}.\mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor_afa4b14e6812328473bfb64adcc16b7db}{size}}())}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ queue.push\_blocking(queue\_identifier);}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ PUSCH\ processor\ result\ notifier\ adaptor.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ notifier\_\ \ \ Upper\ physical\ layer\ result\ notifier.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ rnti\_\ \ \ \ \ \ \ User\ RNTI.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_\ \ \ \ \ \ \ Current\ slot.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ harq\_id\_\ \ \ \ User\ HARQ\ process\ identifier.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ payload\_\ \ \ \ View\ to\ the\ data\ payload.}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__processor__result__notifier}{pusch\_processor\_result\_notifier}}\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1pusch__processor__result__notifier__adaptor_a0303b27e639085d41e37295df3052fcd}{configure}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}\&\ notifier\_,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti\_,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_id\_,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ payload\_)}
+\DoxyCodeLine{00070\ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ notifier\ =\ \&notifier\_;}
+\DoxyCodeLine{00072\ \ \ \ \ rnti\ \ \ \ \ =\ rnti\_;}
+\DoxyCodeLine{00073\ \ \ \ \ slot\ \ \ \ \ =\ slot\_;}
+\DoxyCodeLine{00074\ \ \ \ \ harq\_id\ \ =\ harq\_id\_;}
+\DoxyCodeLine{00075\ \ \ \ \ payload\ \ =\ payload\_;}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{void}\ on\_uci(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__processor__result__control}{pusch\_processor\_result\_control}}\&\ uci)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(notifier\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ notifier."{}});}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ul__pusch__results__control}{ul\_pusch\_results\_control}}\ result;}
+\DoxyCodeLine{00086\ \ \ \ \ result\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__control_afb6a9527a5039753568d230b6d168446}{.}}\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__control_afb6a9527a5039753568d230b6d168446}{rnti}}\ =\ rnti;}
+\DoxyCodeLine{00087\ \ \ \ \ result\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__control_a6fb8c413373acca65f62c76e8e86c007}{.}}\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__control_a6fb8c413373acca65f62c76e8e86c007}{slot}}\ =\ slot;}
+\DoxyCodeLine{00088\ \ \ \ \ result.csi\ \ =\ uci.csi;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{if}\ (!uci.harq\_ack.payload.empty())\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ result.harq\_ack.emplace(uci.harq\_ack);}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{if}\ (!uci.csi\_part1.payload.empty())\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ result.csi1.emplace(uci.csi\_part1);}
+\DoxyCodeLine{00096\ \ \ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{if}\ (!uci.csi\_part2.payload.empty())\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ result.csi2.emplace(uci.csi\_part2);}
+\DoxyCodeLine{00100\ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ notifier\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_ac1900833501516bbabae331c1782bdd7}{-\/>}}\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_ac1900833501516bbabae331c1782bdd7}{on\_new\_pusch\_results\_control}}\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_ac1900833501516bbabae331c1782bdd7}{(}}result\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_ac1900833501516bbabae331c1782bdd7}{)}};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a84c18973244331fd6a0b0e1e553e54a1}{l1\_tracer}}\ <<\ \mbox{\hyperlink{structsrsran_1_1instant__trace__event}{instant\_trace\_event}}(\textcolor{stringliteral}{"{}on\_uci"{}},\ \mbox{\hyperlink{structsrsran_1_1instant__trace__event}{instant\_trace\_event}}::cpu\_scope::thread);}
+\DoxyCodeLine{00105\ \ \ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordtype}{void}\ on\_sch(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__processor__result__data}{pusch\_processor\_result\_data}}\&\ sch)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00109\ \ \ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ Gets\ the\ notifier\ and\ invalidates.\ It\ makes\ sure\ the\ notifier\ is\ no\ longer\ available\ after\ the\ exchange.}}
+\DoxyCodeLine{00111\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}*\ notifier\_\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00112\ \ \ \ \ std::exchange(notifier\_,\ notifier);}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(notifier\_\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ notifier."{}});}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ Notify\ the\ completion\ of\ PUSCH\ data.}}
+\DoxyCodeLine{00116\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data}{ul\_pusch\_results\_data}}\ result;}
+\DoxyCodeLine{00117\ \ \ \ \ result\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_a6d8340020fb45e6a7ab8e335819cbc04}{.}}\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_a6d8340020fb45e6a7ab8e335819cbc04}{rnti}}\ \ \ \ \ \ \ \ \ \ \ =\ rnti;}
+\DoxyCodeLine{00118\ \ \ \ \ result\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_a0f083dbe83aab6023c06008a073085d1}{.}}\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_a0f083dbe83aab6023c06008a073085d1}{slot}}\ \ \ \ \ \ \ \ \ \ \ =\ slot;}
+\DoxyCodeLine{00119\ \ \ \ \ result.csi\ \ \ \ \ \ \ \ \ \ \ \ =\ sch.csi;}
+\DoxyCodeLine{00120\ \ \ \ \ result\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_af721d679ec5ae70f009363c5e1a26f72}{.}}\mbox{\hyperlink{structsrsran_1_1ul__pusch__results__data_af721d679ec5ae70f009363c5e1a26f72}{harq\_id}}\ \ \ \ \ \ \ \ =\ harq\_id;}
+\DoxyCodeLine{00121\ \ \ \ \ result.decoder\_result\ =\ sch.data;}
+\DoxyCodeLine{00122\ \ \ \ \ result.payload\ \ \ \ \ \ \ \ =\ (sch.data.tb\_crc\_ok)\ ?\ payload\ :\ span<\textcolor{keyword}{const}\ uint8\_t>();}
+\DoxyCodeLine{00123\ \ \ \ \ notifier\_\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_a4f1fe70ba8e076a3e7946e695286647c}{-\/>}}\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_a4f1fe70ba8e076a3e7946e695286647c}{on\_new\_pusch\_results\_data}}\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_a4f1fe70ba8e076a3e7946e695286647c}{(}}result\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier_a4f1fe70ba8e076a3e7946e695286647c}{)}};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ Return\ the\ adaptor\ identifier\ to\ the\ queue.}}
+\DoxyCodeLine{00126\ \ \ \ \ queue.push\_blocking(queue\_identifier);}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a84c18973244331fd6a0b0e1e553e54a1}{l1\_tracer}}\ <<\ \mbox{\hyperlink{structsrsran_1_1instant__trace__event}{instant\_trace\_event}}(\textcolor{stringliteral}{"{}on\_sch"{}},\ \mbox{\hyperlink{structsrsran_1_1instant__trace__event}{instant\_trace\_event}}::cpu\_scope::thread);}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ free\_adaptor\_queue\&\ \ \ \ \ \ \ \ \ \ \ \ queue;}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ queue\_identifier;}
+\DoxyCodeLine{00133\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}*\ notifier\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00134\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti\ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}::INVALID\_RNTI;}
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{)}};}
+\DoxyCodeLine{00136\ \ \ harq\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_id\ \ =\ harq\_id\_t::INVALID\_HARQ\_ID;}
+\DoxyCodeLine{00137\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ payload;}
+\DoxyCodeLine{00138\ \};}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \textcolor{comment}{///\ \(\backslash\)brief\ Uplink\ processor\ implementation.}}
+\DoxyCodeLine{00145\ \textcolor{comment}{///}}
+\DoxyCodeLine{00146\ \textcolor{comment}{///\ In\ this\ implementation,\ every\ task\ is\ processed\ by\ its\ channel\ processor.\ When\ a\ task\ finishes,\ the\ results\ are}}
+\DoxyCodeLine{00147\ \textcolor{comment}{///\ notified\ by\ the\ upper\_phy\_rx\_results\_notifier\ interface.}}
+\DoxyCodeLine{00148\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor__impl}{uplink\_processor\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor}{uplink\_processor}}}
+\DoxyCodeLine{00149\ \{}
+\DoxyCodeLine{00150\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00151\ \ \ uplink\_processor\_impl(std::unique\_ptr<prach\_detector>\ \ prach\_,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pusch\_processor>\ pusch\_proc\_,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pucch\_processor>\ pucch\_proc\_);}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor__impl_a87d828925cea9db5db53e7dc941b30d3}{process\_prach}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}\&\ notifier,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ prach\_buffer\&\ \ \ \ \ \ \ \ \ \ \ \ buffer,}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ prach\_buffer\_context\&\ \ \ \ context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor__impl_ae89448c00746a3a066fe4e71cea87b51}{process\_pusch}}(span<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__rx__buffer}{unique\_rx\_buffer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm\_buffer,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}\&\ \ \ \ \ notifier,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ \ \ \ \ \ \ \ grid,}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor}{uplink\_processor}}::\mbox{\hyperlink{structsrsran_1_1uplink__processor_1_1pusch__pdu}{pusch\_pdu}}\&\ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor__impl_a61877305345f2042b4ac43f0dc634f12}{process\_pucch}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}\&\ notifier,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ \ \ \ grid,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1uplink__processor_1_1pucch__pdu}{pucch\_pdu}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ PUSCH\ notifier\ adaptors.}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ max\_nof\_pusch\_notifier\_adaptors\ =\ 1024;}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ Pool\ of\ adaptors.}}
+\DoxyCodeLine{00176\ \ \ std::vector<detail::pusch\_processor\_result\_notifier\_adaptor>\ pusch\_adaptors;}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ Queue\ of\ free\ adaptors.}}
+\DoxyCodeLine{00178\ \ \ detail::free\_adaptor\_queue\ free\_pusch\_adaptors;}
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ PRACH\ detector.}}
+\DoxyCodeLine{00180\ \ \ std::unique\_ptr<prach\_detector>\ prach;}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ PUSCH\ processor.}}
+\DoxyCodeLine{00182\ \ \ std::unique\_ptr<pusch\_processor>\ pusch\_proc;}
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///\ PUCCH\ processor.}}
+\DoxyCodeLine{00184\ \ \ std::unique\_ptr<pucch\_processor>\ pucch\_proc;}
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{///\ General\ PHY\ logger,\ used\ to\ notify\ pool\ failures.}}
+\DoxyCodeLine{00186\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00187\ \};}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

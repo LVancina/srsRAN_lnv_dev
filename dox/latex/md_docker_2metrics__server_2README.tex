@@ -1,0 +1,51 @@
+\chapter{Metrics Server}
+\hypertarget{md_docker_2metrics__server_2README}{}\label{md_docker_2metrics__server_2README}\index{Metrics Server@{Metrics Server}}
+\label{md_docker_2metrics__server_2README_autotoc_md3}%
+\Hypertarget{md_docker_2metrics__server_2README_autotoc_md3}%
+ This server receives metrics data from a running srs\+RAN Project gnb and send it to the configured Influx\+DB.\hypertarget{md_docker_2metrics__server_2README_autotoc_md4}{}\doxysection{\texorpdfstring{Run from cmd line}{Run from cmd line}}\label{md_docker_2metrics__server_2README_autotoc_md4}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{usage:\ python3\ -\/m\ srs\_metrics\_server\ [-\/h]\ [-\/-\/input\ INPUT]\ [-\/-\/offline]\ [-\/-\/db-\/config\ [DB\_CONFIG\ ...]]\ [-\/-\/bucket\ BUCKET]}
+\DoxyCodeLine{}
+\DoxyCodeLine{Real\ time\ receiving\ and\ parsing\ srsRAN\ Project\ gnb\ metrics\ data\ and\ pushing\ it\ to\ influx\ db.}
+\DoxyCodeLine{}
+\DoxyCodeLine{options:}
+\DoxyCodeLine{\ \ -\/h,\ -\/-\/help\ \ \ \ \ \ \ \ \ \ \ \ show\ this\ help\ message\ and\ exit}
+\DoxyCodeLine{\ \ -\/-\/port\ PORT\ \ \ \ \ \ \ \ \ \ \ Port\ to\ listen\ from.}
+\DoxyCodeLine{\ \ -\/-\/offline}
+\DoxyCodeLine{\ \ -\/-\/db-\/config\ [DB\_CONFIG\ ...]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Data\ base\ configuration\ in\ the\ format\ "{}key=value\ key=value"{}}
+\DoxyCodeLine{\ \ -\/-\/bucket\ BUCKET\ \ \ \ \ \ \ Bucket\ to\ save\ the\ data.}
+\DoxyCodeLine{\ \ -\/-\/testbed\ TESTBED\ \ \ \ \ Testbed\ where\ srsRAN\ Project\ was\ run}
+
+\end{DoxyCode}
+
+
+For example\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{metrics-\/server\ -\/-\/port\ 55555\ -\/-\/bucket\ srsran\ -\/-\/testbed\ default\ -\/-\/db-\/config\ url=http://localhost:8086\ org=srs\ token=605bc59413b7d5457d181ccf20f9fda15693f81b068d70396cc183081b264f3b}
+
+\end{DoxyCode}
+\hypertarget{md_docker_2metrics__server_2README_autotoc_md5}{}\doxysection{\texorpdfstring{Run from Docker}{Run from Docker}}\label{md_docker_2metrics__server_2README_autotoc_md5}
+You can configure the metrics-\/server run by setting following variables\+:
+
+
+\begin{DoxyItemize}
+\item PORT
+\item BUCKET
+\item TESTBED
+\item URL
+\item ORG
+\item TOKEN
+\end{DoxyItemize}
+
+For example\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ run\ -\/e\ PORT=55555\ BUCKET=...\ srsran/metrics\_server}
+
+\end{DoxyCode}
+ 

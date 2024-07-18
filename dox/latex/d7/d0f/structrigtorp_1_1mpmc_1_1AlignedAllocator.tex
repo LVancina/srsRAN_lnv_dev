@@ -1,0 +1,90 @@
+\doxysection{rigtorp\+::mpmc\+::Aligned\+Allocator\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structrigtorp_1_1mpmc_1_1AlignedAllocator}{}\label{structrigtorp_1_1mpmc_1_1AlignedAllocator}\index{rigtorp::mpmc::AlignedAllocator$<$ T $>$@{rigtorp::mpmc::AlignedAllocator$<$ T $>$}}
+
+
+Inheritance diagram for rigtorp\+::mpmc\+::Aligned\+Allocator\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>}\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=274pt]{d8/d94/structrigtorp_1_1mpmc_1_1AlignedAllocator__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for rigtorp\+::mpmc\+::Aligned\+Allocator\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>}\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=274pt]{dd/d6b/structrigtorp_1_1mpmc_1_1AlignedAllocator__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structrigtorp_1_1mpmc_1_1AlignedAllocator_a074b9dc37460ebd036619353d6579ecc}\label{structrigtorp_1_1mpmc_1_1AlignedAllocator_a074b9dc37460ebd036619353d6579ecc} 
+using {\bfseries value\+\_\+type} = T
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structrigtorp_1_1mpmc_1_1AlignedAllocator_a87980bd9206ac6c382d3ebf45320cce7}{allocate}} (std\+::size\+\_\+t n)
+\item 
+void \mbox{\hyperlink{structrigtorp_1_1mpmc_1_1AlignedAllocator_a0a3f94956897b4daabaa17e9e4226561}{deallocate}} (T \texorpdfstring{$\ast$}{*}p, std\+::size\+\_\+t)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structrigtorp_1_1mpmc_1_1AlignedAllocator_a87980bd9206ac6c382d3ebf45320cce7}\label{structrigtorp_1_1mpmc_1_1AlignedAllocator_a87980bd9206ac6c382d3ebf45320cce7} 
+\index{rigtorp::mpmc::AlignedAllocator$<$ T $>$@{rigtorp::mpmc::AlignedAllocator$<$ T $>$}!allocate@{allocate}}
+\index{allocate@{allocate}!rigtorp::mpmc::AlignedAllocator$<$ T $>$@{rigtorp::mpmc::AlignedAllocator$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{allocate()}{allocate()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structrigtorp_1_1mpmc_1_1AlignedAllocator}{rigtorp\+::mpmc\+::\+Aligned\+Allocator}}$<$ T $>$\+::allocate (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{if}\ (n\ >\ std::numeric\_limits<std::size\_t>::max()\ /\ \textcolor{keyword}{sizeof}(T))\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::bad\_array\_new\_length();}
+\DoxyCodeLine{00059\ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#ifdef\ \_WIN32}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{auto}\ *p\ =\ \textcolor{keyword}{static\_cast<}T\ *\textcolor{keyword}{>}(\_aligned\_malloc(\textcolor{keyword}{sizeof}(T)\ *\ n,\ \textcolor{keyword}{alignof}(T)));}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (p\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::bad\_alloc();}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00066\ \ \ \ \ T\ *p;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (posix\_memalign(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}\ **\textcolor{keyword}{>}(\&p),\ \textcolor{keyword}{alignof}(T),}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{sizeof}(T)\ *\ n)\ !=\ 0)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::bad\_alloc();}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00073\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structrigtorp_1_1mpmc_1_1AlignedAllocator_a0a3f94956897b4daabaa17e9e4226561}\label{structrigtorp_1_1mpmc_1_1AlignedAllocator_a0a3f94956897b4daabaa17e9e4226561} 
+\index{rigtorp::mpmc::AlignedAllocator$<$ T $>$@{rigtorp::mpmc::AlignedAllocator$<$ T $>$}!deallocate@{deallocate}}
+\index{deallocate@{deallocate}!rigtorp::mpmc::AlignedAllocator$<$ T $>$@{rigtorp::mpmc::AlignedAllocator$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{deallocate()}{deallocate()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{structrigtorp_1_1mpmc_1_1AlignedAllocator}{rigtorp\+::mpmc\+::\+Aligned\+Allocator}}$<$ T $>$\+::deallocate (\begin{DoxyParamCaption}\item[{T \texorpdfstring{$\ast$}{*}}]{p,  }\item[{std\+::size\+\_\+t}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#ifdef\ \_WIN32}}
+\DoxyCodeLine{00077\ \ \ \ \ \_aligned\_free(p);}
+\DoxyCodeLine{00078\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00079\ \ \ \ \ free(p);}
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00081\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+external/rigtorp/MPMCQueue.\+h\end{DoxyCompactItemize}

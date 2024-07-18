@@ -27,8 +27,6 @@ using namespace srsran;
 
 dlsch_information srsran::get_dlsch_information(const dlsch_configuration& config)
 {
-  using namespace units::literals;
-
   dlsch_information result = {};
 
   // Get shared channel parameters.
@@ -85,13 +83,6 @@ dlsch_information srsran::get_dlsch_information(const dlsch_configuration& confi
 
   // Number of bits used for shared channel.
   result.nof_dl_sch_bits = units::bits(nof_re_dl_sch * config.nof_layers * modulation_order);
-
-  // Count the number of rate matched bits that overlap with the DC position.
-  if (config.contains_dc) {
-    result.nof_dc_overlap_bits = units::bits(config.nof_symbols * modulation_order);
-  } else {
-    result.nof_dc_overlap_bits = 0_bits;
-  }
 
   return result;
 }

@@ -1,0 +1,69 @@
+\doxysection{uplink\+\_\+processor.\+h}
+\hypertarget{lower_2processors_2uplink_2uplink__processor_8h_source}{}\label{lower_2processors_2uplink_2uplink__processor_8h_source}\index{include/srsran/phy/lower/processors/uplink/uplink\_processor.h@{include/srsran/phy/lower/processors/uplink/uplink\_processor.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class}\ uplink\_processor\_notifier;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{class}\ uplink\_processor\_baseband;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{class}\ prach\_processor\_request\_handler;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ puxch\_processor\_request\_handler;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ prach\_processor\_notifier;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ puxch\_processor\_notifier;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ Uplink\ processor\ main\ interface.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Provides\ a\ single\ access\ point\ to\ all\ uplink-\/related\ interfaces,\ that\ is\ uplink\_processor\_notifier,}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ uplink\_processor\_request\_handler\ and\ uplink\_processor\_baseband.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)note\ All\ implementations\ of\ this\ interface\ must\ trigger\ an\ assertion\ error\ if\ the\ uplink\ processor\ is\ not\ connected}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ to\ a\ notifier\ before\ calling\ get\_prach\_request\_handler(),\ get\_puxch\_request\_handler()\ or\ get\_baseband().}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{class}\ lower\_phy\_uplink\_processor}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{virtual}\ \string~lower\_phy\_uplink\_processor()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Connects\ the\ uplink\ processor\ with\ notifiers.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ connect(uplink\_processor\_notifier\&\ notifier,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prach\_processor\_notifier\&\ \ prach\_notifier,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puxch\_processor\_notifier\&\ \ puxch\_notifier)\ =\ 0;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Gets\ the\ PRACH\ request\ handler.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{virtual}\ prach\_processor\_request\_handler\&\ get\_prach\_request\_handler()\ =\ 0;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Gets\ the\ PUxCH\ request\ handler.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{virtual}\ puxch\_processor\_request\_handler\&\ get\_puxch\_request\_handler()\ =\ 0;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ uplink\ processor\ baseband\ interface.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ reference\ to\ the\ internal\ uplink\ processor\ baseband\ interface.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{virtual}\ uplink\_processor\_baseband\&\ get\_baseband()\ =\ 0;}
+\DoxyCodeLine{00061\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

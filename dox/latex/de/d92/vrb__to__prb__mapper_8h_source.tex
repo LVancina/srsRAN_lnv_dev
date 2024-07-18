@@ -1,0 +1,165 @@
+\doxysection{vrb\+\_\+to\+\_\+prb\+\_\+mapper.\+h}
+\hypertarget{vrb__to__prb__mapper_8h_source}{}\label{vrb__to__prb__mapper_8h_source}\index{include/srsran/phy/upper/vrb\_to\_prb\_mapper.h@{include/srsran/phy/upper/vrb\_to\_prb\_mapper.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ a\ VRB-\/to-\/PRB\ mapping.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ This\ class\ abstracts\ the\ virtual\ to\ physical\ resource\ mapping\ for\ PDSCH.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ The\ default\ constructor\ is\ equivalent\ to\ use\ create\_non\_interleaved\_other().}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ vrb\_to\_prb\_mapper}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Indicates\ VRB\ index\ of\ the\ lowest\ VRB\ in\ the\ CORESET\ used\ for\ the\ DCI\ transmission.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{unsigned}\ coreset\_start\ =\ 0;}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Indicates\ the\ number\ of\ RB\ bundles\ \(\backslash\)f\$N\_\{bundle\}\(\backslash\)f\$.\ It\ is\ set\ to\ zero\ for\ non-\/interleaved\ mapping.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_bundles\ =\ 0;}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Indicates\ the\ first\ RB\ bundle\ size.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{unsigned}\ first\_bundle\_size\ =\ 0;}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Indicates\ the\ last\ RB\ bundle\ size.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{unsigned}\ last\_bundle\_size\ =\ 0;}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Indicates\ the\ other\ RB\ bundle\ sizes.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{unsigned}\ other\_bundle\_size\ =\ 0;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ non-\/interleaved\ VRB-\/to-\/PRB\ mapper\ for\ PDSCH\ transmissions\ scheduled\ by\ DCI\ Format\ 1\_0\ in\ common}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ SS.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Implemented\ as\ per\ TS38.211\ Section\ 7.3.1.6\ Case\ 1:}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ -\/\ A\ virtual\ resource\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ mapped\ to\ the\ physical\ block\ \(\backslash\)f\$n\ +\ N\_\{start\}\string^\{CORESET\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ If\ the\ PDSCH\ is\ scheduled\ with\ DCI\ format\ 1\_0\ with\ the\ CRC\ scrambled\ by\ SI-\/RNTI\ in\ Type0-\/PDCCH\ common\ search\ space}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ in\ CORESET\ 0,\ the\ BWP\ start\ and\ size\ must\ match\ with\ the\ CORESET0\ start\ and\ size.\ Consequently,}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{start\}\string^\{CORESET\}\(\backslash\)f\$\ must\ be\ zero.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_start\_coreset\ VRB\ index\ of\ the\ lowest-\/numbered\ RB\ in\ the\ CORESET\ used\ for\ the\ DCI\ transmission\ as}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{start\}\string^\{CORESET\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB-\/to-\/PRB\ mapper\ instance.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{static}\ vrb\_to\_prb\_mapper\ create\_non\_interleaved\_common\_ss(\textcolor{keywordtype}{unsigned}\ N\_start\_coreset);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ non-\/interleaved\ VRB-\/to-\/PRB\ mapper\ for\ PDSCH\ transmissions\ scheduled\ by\ DCI\ other\ than\ Format\ 1\_0}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ in\ common\ SS.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Implemented\ as\ per\ TS38.211\ Section\ 7.3.1.6\ Case\ 2:}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ -\/\ A\ virtual\ resouce\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ mapped\ to\ the\ physical\ block\ \(\backslash\)f\$n\(\backslash\)f\$.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB-\/to-\/PRB\ mapper\ instance.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{static}\ vrb\_to\_prb\_mapper\ create\_non\_interleaved\_other();}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ VRB-\/to-\/PRB\ mapper\ for\ PDSCH\ transmissions\ scheduled\ with\ DCI\ Format\ 1\_0\ with\ the\ CRC\ scrambled}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ by\ SI-\/RNTI\ in\ Type0-\/PDCCH\ common\ SS\ in\ CORESET0.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Implemented\ as\ per\ TS38.211\ Section\ 7.3.1.6\ Case\ 3:}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ -\/\ the\ number\ of\ bundles\ is\ calculated\ as\ \(\backslash\)f\$N\_\{bundle\}=\(\backslash\)lceil\ N\_\{BWP,init\}\string^\{size\}/L\ \(\backslash\)rceil\(\backslash\)f\$,}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ -\/\ the\ last\ RB\ bundle\ consists\ of\ \(\backslash\)f\$N\_\{BWP,init\}\string^\{size\}\ \(\backslash\)bmod\ L\(\backslash\)f\$\ if\ \(\backslash\)f\$N\_\{BWP,init\}\string^\{size\}\ \(\backslash\)bmod\ L\ >\ 0\(\backslash\)f\$,}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ -\/\ all\ other\ resource\ block\ bundles\ consist\ of\ \(\backslash\)f\$L\(\backslash\)f\$\ RBs,\ and}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ -\/\ the\ bundle\ size\ is\ \(\backslash\)f\$L=2\(\backslash\)f\$.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_start\_coreset\ VRB\ index\ of\ the\ lowest-\/numbered\ RB\ in\ the\ CORESET\ used\ for\ the\ DCI\ transmission\ as}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{start\}\string^\{CORESET\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_bwp\_init\_size\ The\ size\ in\ RBs\ of\ CORESET0\ as\ \(\backslash\)f\$N\_\{BWP,init\}\string^\{size\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB-\/to-\/PRB\ mapper\ instance.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{static}\ vrb\_to\_prb\_mapper\ create\_interleaved\_coreset0(\textcolor{keywordtype}{unsigned}\ N\_start\_coreset,\ \textcolor{keywordtype}{unsigned}\ N\_bwp\_init\_size);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ VRB-\/to-\/PRB\ mapper\ for\ PDSCH\ transmissions\ scheduled\ by\ DCI\ format\ 1\_0\ in\ any\ common\ SS\ except}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ Type0-\/PDCCH\ common\ SS\ in\ CORESET0.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ Implemented\ as\ per\ TS38.211\ Section\ 7.3.1.6\ Case\ 4:}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ -\/\ the\ set\ of\ \(\backslash\)f\$N\_\{BWP,init\}\string^\{size\}\(\backslash\)f\$\ virtual\ RBs\ starting\ at\ \(\backslash\)f\$N\_\{BWP,i\}\string^\{start\}\(\backslash\)f\$\ is\ divided\ into}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{bundle\}=\(\backslash\)lceil\ (N\_\{BWP,init\}\string^\{size\}\ +\ ((N\_\{BWP,i\}\string^\{start\}\ +\ N\_\{start\}\string^\{CORESET\})\ \(\backslash\)bmod\ L))/L}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)rceil\(\backslash\)f\$,}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ -\/\ the\ bundle\ size\ is\ \(\backslash\)f\$L=2\(\backslash\)f\$,}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ -\/\ the\ first\ RB\ bundle\ consists\ of\ \(\backslash\)f\$L\ -\/\ ((N\_\{BWP,init\}\string^\{size\}\ +\ N\_\{start\}\string^\{CORESET\})\ \(\backslash\)bmod\ L)\(\backslash\)f\$,}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ -\/\ the\ last\ RB\ bundle\ consists\ of\ \(\backslash\)f\$(N\_\{BWP,init\}\string^\{size\}\ +\ N\_\{BWP,i\}\string^\{start\}\ +\ N\_\{start\}\string^\{CORESET\})\ \(\backslash\)bmod\ L\(\backslash\)f\$}}
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ if\ \(\backslash\)f\$(N\_\{BWP,init\}\string^\{size\}\ +\ N\_\{BWP,i\}\string^\{start\}\ +\ N\_\{start\}\string^\{CORESET\})\ \(\backslash\)bmod\ L\ >\ 0\(\backslash\)f\$\ and\ \(\backslash\)f\$L\(\backslash\)f\$\ RB\ otherwise,\ and}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ -\/\ all\ other\ resource\ block\ bundles\ consist\ of\ \(\backslash\)f\$L\(\backslash\)f\$\ RBs.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_start\_coreset\ VRB\ index\ of\ the\ lowest-\/numbered\ RB\ in\ the\ CORESET\ used\ for\ the\ DCI\ transmission\ as}}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{start\}\string^\{CORESET\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_bwp\_i\_start\ BWP\ \(\backslash\)f\$i\(\backslash\)f\$\ starting\ position\ \(\backslash\)f\$N\_\{BWP,i\}\string^\{start\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_bwp\_init\_size\ The\ size\ in\ RBs\ of\ CORESET0\ if\ available,\ otherwise\ the\ initial\ bandwidth\ part\ size\ as}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{BWP,init\}\string^\{size\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB-\/to-\/PRB\ mapper\ instance.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keyword}{static}\ vrb\_to\_prb\_mapper}
+\DoxyCodeLine{00111\ \ \ create\_interleaved\_common(\textcolor{keywordtype}{unsigned}\ N\_start\_coreset,\ \textcolor{keywordtype}{unsigned}\ N\_bwp\_i\_start,\ \textcolor{keywordtype}{unsigned}\ N\_bwp\_init\_size);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ VRB-\/to-\/PRB\ mapper\ for\ all\ other\ PDSCH\ transmissions\ with\ interleaved\ mapping.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Implemented\ as\ per\ TS38.211\ Section\ 7.3.1.6\ Case\ 5:}}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ -\/\ the\ set\ of\ \(\backslash\)f\$N\_\{BWP,i\}\string^\{size\}\(\backslash\)f\$\ virtual\ RBs\ starting\ at\ \(\backslash\)f\$N\_\{BWP,i\}\string^\{start\}\(\backslash\)f\$\ is\ divided\ into}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{bundle\}=\(\backslash\)lceil\ (N\_\{BWP,i\}\string^\{size\}\ +\ (N\_\{BWP,i\}\string^\{start\}\ \(\backslash\)bmod\ L\_i))/L\_i\ \(\backslash\)rceil\(\backslash\)f\$,}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ -\/\ the\ first\ RB\ bundle\ consists\ of\ \(\backslash\)f\$L\_i\ -\/\ N\_\{BWP,i\}\string^\{size\}\ \(\backslash\)bmod\ L\_i\(\backslash\)f\$,}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ -\/\ the\ last\ RB\ bundle\ consists\ of\ \(\backslash\)f\$(N\_\{BWP,i\}\string^\{size\}+N\_\{BWP,i\}\string^\{start\})\ \(\backslash\)bmod\ L\_i\(\backslash\)f\$\ if}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$(N\_\{BWP,i\}\string^\{size\}+N\_\{BWP,i\}\string^\{start\})\ \(\backslash\)bmod\ L\_i\ >\ 0\(\backslash\)f\$\ and\ \(\backslash\)f\$L\_i\(\backslash\)f\$\ RBs\ otherwise,}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ -\/\ all\ other\ resource\ block\ bundles\ consist\ of\ \(\backslash\)f\$L\_i\(\backslash\)f\$\ RBs.}}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_bwp\_i\_start\ BWP\ \(\backslash\)f\$i\(\backslash\)f\$\ starting\ position\ \(\backslash\)f\$N\_\{BWP,i\}\string^\{start\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\_bwp\_i\_size\ \ BWP\ \(\backslash\)f\$i\(\backslash\)f\$\ size\(\backslash\)f\$N\_\{BWP,i\}\string^\{size\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ L\_i\ \ \ \ \ \ \ \ \ \ \ RB\ Bundle\ size\ for\ BWP\ \(\backslash\)f\$i\(\backslash\)f\$\ in\ RBs\ \(\backslash\)f\$L\_i\(\backslash\)f\$.}}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB-\/to-\/PRB\ mapper\ instance.}}
+\DoxyCodeLine{00127\ \ \ \textcolor{keyword}{static}\ vrb\_to\_prb\_mapper\ create\_interleaved\_other(\textcolor{keywordtype}{unsigned}\ N\_bwp\_i\_start,\ \textcolor{keywordtype}{unsigned}\ N\_bwp\_i\_size,\ \textcolor{keywordtype}{unsigned}\ L\_i);}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ resource\ allocation\ is\ interleaved.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{///\ The\ resource\ allocation\ is\ interleaved\ if\ the\ number\ of\ bundles\ is\ not\ zero.}}
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ resource\ allocation\ is\ interleaved.\ Otherwise,\ False.}}
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{bool}\ is\_interleaved()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_bundles\ !=\ 0;\ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ CORESET\ start\ VRB\ index.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{///\ VRB\ index\ of\ the\ lowest-\/numbered\ RB\ in\ the\ CORESET\ used\ for\ the\ DCI\ transmission.}}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ VRB\ index\ if\ the\ PDSCH\ transmission\ is\ scheduled\ by\ a\ DCI\ in\ a\ common\ SS.\ Otherwise,\ 0.}}
+\DoxyCodeLine{00141\ \ \ \textcolor{keywordtype}{unsigned}\ get\_coreset\_start()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ coreset\_start;\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Calculates\ a\ PDSCH\ allocation\ PRB\ indices.}}
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ bwp\_size\ Indicates\ the\ BWP\ size.}}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Return\ the\ PRB\ indices\ relative\ to\ the\ lowest\ PRB\ of\ the\ BWP.}}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint16\_t,\ MAX\_RB>\ get\_allocation\_indices(\textcolor{keywordtype}{unsigned}\ bwp\_size)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Equal\ comparison\ between\ two\ VRB-\/to-\/PRB\ mappers.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{///\ Two\ mappers\ are\ considered\ equal\ if\ \ their\ CORESET\ start,\ number\ of\ bundles\ and\ RB\ bundle\ sizes\ are\ equal.}}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ vrb\_to\_prb\_mapper\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00153\ \ \ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{return}\ (coreset\_start\ ==\ other.coreset\_start)\ \&\&\ (nof\_bundles\ ==\ other.nof\_bundles)\ \&\&}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ (first\_bundle\_size\ ==\ other.first\_bundle\_size)\ \&\&\ (last\_bundle\_size\ ==\ other.last\_bundle\_size)\ \&\&}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ (other\_bundle\_size\ ==\ other.other\_bundle\_size);}
+\DoxyCodeLine{00157\ \ \ \}}
+\DoxyCodeLine{00158\ \};}
+\DoxyCodeLine{00159\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

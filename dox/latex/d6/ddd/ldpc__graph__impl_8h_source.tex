@@ -1,0 +1,186 @@
+\doxysection{ldpc\+\_\+graph\+\_\+impl.\+h}
+\hypertarget{ldpc__graph__impl_8h_source}{}\label{ldpc__graph__impl_8h_source}\index{lib/phy/upper/channel\_coding/ldpc/ldpc\_graph\_impl.h@{lib/phy/upper/channel\_coding/ldpc/ldpc\_graph\_impl.h}}
+\mbox{\hyperlink{ldpc__graph__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\(\backslash\)brief\ ldpc\_graph:\ class\ describing\ LDPC\ Tanner\ graphs.}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/ldpc/ldpc.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Placeholder\ for\ invalid\ lifting-\/size\ values.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint8\_t\ VOID\_LIFTSIZE\ =\ 255;}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Placeholder\ for\ missing\ edges\ in\ the\ Tanner\ graph.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint16\_t\ NO\_EDGE\ =\ 0xffff;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Number\ of\ parity-\/check\ nodes\ in\ base\ graph\ BG1.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG1\_M\ =\ 46;}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ base\ graph\ BG1,\ before\ shortening.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG1\_N\_FULL\ =\ 68;}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ base\ graph\ BG1,\ after\ shortening.}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG1\_N\_SHORT\ =\ 66;}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ Number\ of\ parity-\/check\ nodes\ in\ base\ graph\ BG2.}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG2\_M\ =\ 42;}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ base\ graph\ BG2,\ before\ shortening.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG2\_N\_FULL\ =\ 52;}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ base\ graph\ BG2,\ after\ shortening.}}
+\DoxyCodeLine{00049\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BG2\_N\_SHORT\ =\ 50;}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ Maximum\ number\ of\ variable\ nodes\ in\ a\ base\ graph.}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_BG\_N\_FULL\ =\ std::max(BG1\_N\_FULL,\ BG2\_N\_FULL);}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ Maximum\ number\ of\ parity\ check\ nodes\ in\ a\ base\ graph.}}
+\DoxyCodeLine{00053\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_BG\_M\ =\ std::max(BG1\_M,\ BG2\_M);}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ Maximum\ lifting\ size.}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_LIFTING\_SIZE\ =\ 384;}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \(\backslash\)brief\ Representation\ of\ a\ graph,\ inspired\ by\ TS38.212\ Tables\ 5.3.2-\/2\ and\ 5.3.2-\/3.}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ Graphs\ are\ represented\ by\ a\ \(\backslash\)c\ max\_BG\_M\ \(\backslash\)f\$\(\backslash\)times\(\backslash\)f\$\ \(\backslash\)c\ max\_BG\_N\_full\ matrix.\ A\ number\ between\ 0\ and\ 383}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ at\ entry\ \(\backslash\)f\$(m,\ n)\(\backslash\)f\$\ denotes\ a\ connection\ between\ check\ node\ \(\backslash\)f\$m\(\backslash\)f\$\ and\ variable\ node\ \(\backslash\)f\$n\(\backslash\)f\$}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ in\ the\ base\ graph.\ The\ value\ of\ the\ number\ represents\ the\ circular\ shift\ applied\ to\ the\ connections}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ in\ the\ lifted\ graph.\ If\ entry\ \(\backslash\)f\$(m,\ n)\(\backslash\)f\$\ is\ equal\ to\ \(\backslash\)c\ NO\_EDGE,\ there\ is\ no\ connection\ in\ either\ the}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ base\ graph\ or\ the\ lifted\ one.}}
+\DoxyCodeLine{00064\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{BG\_matrix\_t}}\ =\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{std}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc}{array}}<\mbox{\hyperlink{namespacesrsran_1_1ldpc}{std}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc}{array}}<\mbox{\hyperlink{namespacesrsran_1_1ldpc}{uint16\_t}},\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{MAX\_BG\_N\_FULL}}>,\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{MAX\_BG\_M}}>;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{comment}{///\ Maximum\ degree\ (number\ of\ incident\ edges)\ of\ a\ check\ node,\ in\ the\ base\ graphs.}}
+\DoxyCodeLine{00067\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_BG\_CHECK\_EDGES\ =\ 20;}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ \(\backslash\)brief\ Represents\ a\ list\ of\ variable\ nodes\ connected\ to\ a\ check\ node.}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{using}\ BG\_adjacency\_row\_t\ =\ std::array<uint16\_t,\ MAX\_BG\_CHECK\_EDGES>;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ \(\backslash\)brief\ For\ check\ node\ \(\backslash\)c\ m,\ BG\_adjacency\_matrix\_t[m]\ provides\ a\ list\ of\ the\ variable\ nodes\ connected\ to\ it.}}
+\DoxyCodeLine{00073\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{BG\_adjacency\_matrix\_t}}\ =\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{std}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc}{array}}<\mbox{\hyperlink{namespacesrsran_1_1ldpc}{BG\_adjacency\_row\_t}},\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{MAX\_BG\_M}}>;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ Number\ of\ base\ graphs.}}
+\DoxyCodeLine{00076\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_BASE\_GRAPHS\ =\ 2;}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ Total\ number\ of\ lifted\ graphs.}}
+\DoxyCodeLine{00078\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ TOTAL\_NOF\_GRAPHS\ =\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a3a46322ad929e76af7cb959300dafd93}{NOF\_LIFTING\_SIZES}}\ *\ NOF\_BASE\_GRAPHS;}
+\DoxyCodeLine{00079\ \}\ \textcolor{comment}{//\ namespace\ ldpc}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{comment}{///\ Describes\ the\ Tanner\ graph\ of\ an\ LDPC\ code\ (implementation).}}
+\DoxyCodeLine{00082\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}}
+\DoxyCodeLine{00083\ \{}
+\DoxyCodeLine{00084\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Constructors\ and\ destructors}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00088\ \ \ ldpc\_graph\_impl(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ \_bg,\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc_aa8225b08a82fdb2faf7642e2a292f85f}{lifting\_size\_t}}\ \_ls);}
+\DoxyCodeLine{00089\ \ \ ldpc\_graph\_impl()\ :\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}::BG1,\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc_aa8225b08a82fdb2faf7642e2a292f85f}{lifting\_size\_t}}::LS2)\ \{\}}
+\DoxyCodeLine{00090\ \ \ \string~ldpc\_graph\_impl()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Copy\ constructor\ and\ operator}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ Deleted}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00097\ \ \ ldpc\_graph\_impl(\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Move\ constructor\ and\ operator}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ Default}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00105\ \ \ ldpc\_graph\_impl(\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ Returns\ the\ base\ graph\ generating\ the\ current\ graph.}}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_a01de3ff32d2be98b90e14a78af4576be}{get\_base\_graph}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ base\_graph;\ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Returns\ the\ lifting\ size\ generating\ the\ current\ graph.}}
+\DoxyCodeLine{00113\ \ \ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc_aa8225b08a82fdb2faf7642e2a292f85f}{lifting\_size\_t}}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_a67b54ab5ba00b85eab723f40d82f03dc}{get\_lifting\_size}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ lifting\_size;\ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Returns\ the\ lifting\ index\ corresponding\ to\ the\ current\ lifting\ size\ (a\ number\ between\ 0\ and\ 7).}}
+\DoxyCodeLine{00116\ \ \ uint8\_t\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_ad8753ab6d58e414f9b61bdb6c547e6ba}{get\_lifting\_index}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ lifting\_index;\ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ compact\ representation\ of\ the\ lifted\ node\ at\ position\ \(\backslash\)f\$(m,n)\(\backslash\)f\$.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ If\ the\ base\ graph\ has\ an\ edge\ between\ check\ node\ \(\backslash\)c\ m\ and\ variable\ node\ \(\backslash\)c\ n,\ the\ returned\ value\ is}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ the\ shift\ applied\ to\ the\ lifted\ node.\ Conversely,\ if\ there\ is\ no\ edge,\ then\ the\ returned\ value\ is}}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ srsran::ldpc::NO\_EDGE.}}
+\DoxyCodeLine{00123\ \ \ uint16\_t\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_af13eaa657a59b74bbab600f043e5c39a}{get\_lifted\_node}}(\textcolor{keywordtype}{unsigned}\ m,\ \textcolor{keywordtype}{unsigned}\ n)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parity\_check\_matrix[m][n];\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ check\ nodes\ of\ the\ underlying\ base\ graph.}}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_ac8d2401d31cf448b994f5421c7b1c430}{get\_nof\_BG\_check\_nodes}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_BG\_check\_nodes;\ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ variable\ nodes\ of\ the\ underlying\ base\ graph.}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_a1952ee034d7a2e859adbb46438063657}{get\_nof\_BG\_var\_nodes\_full}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_BG\_var\_nodes\_full;\ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ variable\ nodes\ of\ the\ underlying\ base\ graph\ after\ shortening.}}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_aec9e8f843adeab4d4b252e986025798a}{get\_nof\_BG\_var\_nodes\_short}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_BG\_var\_nodes\_short;\ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ variable\ nodes\ of\ the\ underlying\ base\ graph\ associated\ to\ information\ bits.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_a6e22a8e9d8323d8f5437a8a549a98f85}{get\_nof\_BG\_info\_nodes}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_BG\_var\_nodes\_full\ -\/\ nof\_BG\_check\_nodes;\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ Returns\ a\ reference\ to\ the\ selected\ row\ of\ ldpc\_graph\_impl::adjacency\_matrix.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::BG\_adjacency\_row\_t\&\ \mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl_a5a6be76658acef830b1abc99623e6540}{get\_adjacency\_row}}(\textcolor{keywordtype}{unsigned}\ m)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (*adjacency\_matrix)[m];\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keyword}{const}\ std::vector<std::tuple<uint16\_t,\ uint16\_t,\ uint16\_t>>\&\ get\_parity\_check\_sparse()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordflow}{return}\ parity\_check\_sparse;}
+\DoxyCodeLine{00143\ \ \ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ Base\ graph.}}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ base\_graph;}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ Lifting\ size.}}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::\mbox{\hyperlink{namespacesrsran_1_1ldpc_aa8225b08a82fdb2faf7642e2a292f85f}{lifting\_size\_t}}\ lifting\_size;}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ Lifting\ index.}}
+\DoxyCodeLine{00151\ \ \ uint8\_t\ lifting\_index;}
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Number\ of\ check\ nodes\ in\ the\ base\ graph.}}
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_BG\_check\_nodes;}
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ the\ base\ graph,\ before\ shortening.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_BG\_var\_nodes\_full;}
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ Number\ of\ variable\ nodes\ in\ the\ base\ graph,\ after\ shortening.}}
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_BG\_var\_nodes\_short;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{///\ Parity\ check\ matrix\ of\ the\ graph\ (BG\ representation).}}
+\DoxyCodeLine{00160\ \ \ ldpc::BG\_matrix\_t\ parity\_check\_matrix;}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ std::vector<std::tuple<uint16\_t,\ uint16\_t,\ uint16\_t>>\ parity\_check\_sparse;}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///\ Adjacency\ matrix\ of\ the\ base\ graph\ (sparse\ representation).}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{const}\ ldpc::BG\_adjacency\_matrix\_t*\ adjacency\_matrix;}
+\DoxyCodeLine{00166\ \};}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}\ \{}
+\DoxyCodeLine{00169\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ an\ array\ with\ all\ possible\ LDPC\ graphs.}}
+\DoxyCodeLine{00170\ \textcolor{comment}{///}}
+\DoxyCodeLine{00171\ \textcolor{comment}{///\ The\ graphs\ will\ be\ ordered\ by\ base\ graph\ and\ lifting\ size.\ For\ instance,\ the\ graph\ corresponding\ to\ BG2\ and\ LS4\ will}}
+\DoxyCodeLine{00172\ \textcolor{comment}{///\ be\ at\ entry\ ::NOF\_LIFTING\_SIZES\ <tt>\ +\ 3\ </tt>,\ since\ \(\backslash\)c\ LS4\ is\ the\ third\ one\ in\ the\ list\ of\ all\ possible\ lifting}}
+\DoxyCodeLine{00173\ \textcolor{comment}{///\ sizes\ (i.e.,\ ::all\_lifting\_sizes).}}
+\DoxyCodeLine{00174\ std::array<\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}},\ TOTAL\_NOF\_GRAPHS>\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_acb7bb22392263a2969944389e23c4229}{create\_graph\_array}}();}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{comment}{///\ An\ array\ with\ all\ possible\ LDPC\ graphs\ (see\ create\_graph\_array()).}}
+\DoxyCodeLine{00177\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<\mbox{\hyperlink{classsrsran_1_1ldpc__graph__impl}{ldpc\_graph\_impl}},\ TOTAL\_NOF\_GRAPHS>\ graph\_array\ =\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{create\_graph\_array}}();}
+\DoxyCodeLine{00178\ \}\ \textcolor{comment}{//\ namespace\ ldpc}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

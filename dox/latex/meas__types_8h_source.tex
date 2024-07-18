@@ -1,0 +1,587 @@
+\doxysection{meas\+\_\+types.\+h}
+\hypertarget{meas__types_8h_source}{}\label{meas__types_8h_source}\index{include/srsran/rrc/meas\_types.h@{include/srsran/rrc/meas\_types.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/pci.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{const}\ uint8\_t\ MAX\_NOF\_MEAS\ =\ 64;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{enum\ class}\ meas\_id\_t\ :\ uint8\_t\ \{\ \mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}}\ =\ 1,\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}\ =\ MAX\_NOF\_MEAS,\ invalid\ =\ MAX\_NOF\_MEAS\ +\ 1\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{inline}\ uint8\_t\ meas\_id\_to\_uint(meas\_id\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00045\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{inline}\ meas\_id\_t\ uint\_to\_meas\_id(uint8\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}meas\_id\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00051\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{const}\ uint8\_t\ MAX\_NOF\_MEAS\_OBJ\ =\ 64;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{enum\ class}\ meas\_obj\_id\_t\ :\ uint8\_t\ \{\ \mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}}\ =\ 1,\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}\ =\ MAX\_NOF\_MEAS\_OBJ,\ invalid\ =\ MAX\_NOF\_MEAS\_OBJ\ +\ 1\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{inline}\ uint8\_t\ meas\_obj\_id\_to\_uint(meas\_obj\_id\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00061\ \{}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00063\ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{inline}\ meas\_obj\_id\_t\ uint\_to\_meas\_obj\_id(uint8\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}meas\_obj\_id\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{const}\ uint8\_t\ MAX\_NOF\_REPORT\_CFG\ =\ 64;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00075\ \textcolor{keyword}{enum\ class}\ report\_cfg\_id\_t\ :\ uint8\_t\ \{\ \mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}}\ =\ 0,\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}\ =\ MAX\_NOF\_REPORT\_CFG\ -\/\ 1,\ invalid\ =\ MAX\_NOF\_REPORT\_CFG\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{inline}\ uint8\_t\ report\_cfg\_id\_to\_uint(report\_cfg\_id\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00081\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{inline}\ report\_cfg\_id\_t\ uint\_to\_report\_cfg\_id(uint8\_t\ \textcolor{keywordtype}{id})}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}report\_cfg\_id\_t\textcolor{keyword}{>}(id);}
+\DoxyCodeLine{00087\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__periodicity__and__offset}{rrc\_periodicity\_and\_offset}}\ \{}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf5;}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf10;}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf20;}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf40;}
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf80;}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sf160;}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc}{rrc\_ssb\_mtc}}\ \{}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__periodicity__and__offset}{rrc\_periodicity\_and\_offset}}\ periodicity\_and\_offset;}
+\DoxyCodeLine{00100\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dur;}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ss__rssi__meas}{rrc\_ss\_rssi\_meas}}\ \{}
+\DoxyCodeLine{00104\ \ \ uint64\_t\ meas\_slots;}
+\DoxyCodeLine{00105\ \ \ uint8\_t\ \ end\_symbol;}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing}{rrc\_meas\_timing}}\ \{}
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing_1_1rrc__freq__and__timing__}{rrc\_freq\_and\_timing\_}}\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ carrier\_freq;}
+\DoxyCodeLine{00111\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ \ \ \ \ \ ssb\_subcarrier\_spacing;}
+\DoxyCodeLine{00112\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc}{rrc\_ssb\_mtc}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_meas\_timing\_cfg;}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ss\_rssi\_meas>}}\ ss\_rssi\_meas;}
+\DoxyCodeLine{00114\ \ \ \};}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_freq\_and\_timing\_>}}\ freq\_and\_timing;}
+\DoxyCodeLine{00117\ \};}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc2}{rrc\_ssb\_mtc2}}\ \{}
+\DoxyCodeLine{00120\ \ \ std::vector<pci\_t>\ pci\_list;}
+\DoxyCodeLine{00121\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ periodicity;}
+\DoxyCodeLine{00122\ \};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__to__measure}{rrc\_ssb\_to\_measure}}\ \{}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ short\_bitmap;}
+\DoxyCodeLine{00126\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ medium\_bitmap;}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint64\_t>}}\ long\_bitmap;}
+\DoxyCodeLine{00128\ \};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__to__measure__setup__release}{rrc\_ssb\_to\_measure\_setup\_release}}\ \{}
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_release;}
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ssb\_to\_measure>}}\ setup;}
+\DoxyCodeLine{00133\ \};}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__cfg__mob}{rrc\_ssb\_cfg\_mob}}\ \{}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ssb\_to\_measure\_setup\_release>}}\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{ssb\_to\_measure}};}
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ derive\_ssb\_idx\_from\_cell;}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ss\_rssi\_meas>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ss\_rssi\_meas;}
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__meas__bw}{rrc\_csi\_rs\_meas\_bw}}\ \{}
+\DoxyCodeLine{00142\ \ \ uint16\_t\ nrof\_prbs;}
+\DoxyCodeLine{00143\ \ \ uint16\_t\ start\_prb;}
+\DoxyCodeLine{00144\ \};}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__slot__cfg}{rrc\_slot\_cfg}}\ \{}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ ms4;}
+\DoxyCodeLine{00148\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ ms5;}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ ms10;}
+\DoxyCodeLine{00150\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ ms20;}
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ ms40;}
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__associated__ssb}{rrc\_associated\_ssb}}\ \{}
+\DoxyCodeLine{00155\ \ \ uint8\_t\ ssb\_idx;}
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ is\_quasi\_colocated;}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__freq__domain__alloc}{rrc\_freq\_domain\_alloc}}\ \{}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ row1;}
+\DoxyCodeLine{00161\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ row2;}
+\DoxyCodeLine{00162\ \};}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__res__mob}{rrc\_csi\_rs\_res\_mob}}\ \{}
+\DoxyCodeLine{00165\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_rs\_idx;}
+\DoxyCodeLine{00166\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__slot__cfg}{rrc\_slot\_cfg}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_cfg;}
+\DoxyCodeLine{00167\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_associated\_ssb>}}\ associated\_ssb;}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__freq__domain__alloc}{rrc\_freq\_domain\_alloc}}\ \ \ \ \ \ \ \ freq\_domain\_alloc;}
+\DoxyCodeLine{00169\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ first\_ofdm\_symbol\_in\_time\_domain;}
+\DoxyCodeLine{00170\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ seq\_generation\_cfg;}
+\DoxyCodeLine{00171\ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__cell__mob}{rrc\_csi\_rs\_cell\_mob}}\ \{}
+\DoxyCodeLine{00174\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_id;}
+\DoxyCodeLine{00175\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__meas__bw}{rrc\_csi\_rs\_meas\_bw}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_rs\_meas\_bw;}
+\DoxyCodeLine{00176\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ density;}
+\DoxyCodeLine{00177\ \ \ std::vector<rrc\_csi\_rs\_res\_mob>\ csi\_rs\_res\_list\_mob;}
+\DoxyCodeLine{00178\ \};}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__res__cfg__mob}{rrc\_csi\_rs\_res\_cfg\_mob}}\ \{}
+\DoxyCodeLine{00181\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc\_spacing;}
+\DoxyCodeLine{00182\ \ \ std::vector<rrc\_csi\_rs\_cell\_mob>\ csi\_rs\_cell\_list\_mob;}
+\DoxyCodeLine{00183\ \};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__res__cfg__mob__setup__release}{rrc\_csi\_rs\_res\_cfg\_mob\_setup\_release}}\ \{}
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_release;}
+\DoxyCodeLine{00187\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_csi\_rs\_res\_cfg\_mob>}}\ setup;}
+\DoxyCodeLine{00188\ \};}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ref__sig__cfg}{rrc\_ref\_sig\_cfg}}\ \{}
+\DoxyCodeLine{00191\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ssb\_cfg\_mob>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_cfg\_mob;}
+\DoxyCodeLine{00192\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_csi\_rs\_res\_cfg\_mob\_setup\_release>}}\ csi\_rs\_res\_cfg\_mob;}
+\DoxyCodeLine{00193\ \};}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__thres__nr}{rrc\_thres\_nr}}\ \{}
+\DoxyCodeLine{00196\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ thres\_rsrp;}
+\DoxyCodeLine{00197\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ thres\_rsrq;}
+\DoxyCodeLine{00198\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ thres\_sinr;}
+\DoxyCodeLine{00199\ \};}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__q__offset__range__list}{rrc\_q\_offset\_range\_list}}\ \{}
+\DoxyCodeLine{00202\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ rsrp\_offset\_ssb;}
+\DoxyCodeLine{00203\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ rsrq\_offset\_ssb;}
+\DoxyCodeLine{00204\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ sinr\_offset\_ssb;}
+\DoxyCodeLine{00205\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ rsrp\_offset\_csi\_rs;}
+\DoxyCodeLine{00206\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ rsrq\_offset\_csi\_rs;}
+\DoxyCodeLine{00207\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int8\_t>}}\ sinr\_offset\_csi\_rs;}
+\DoxyCodeLine{00208\ \};}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__cells__to__add__mod}{rrc\_cells\_to\_add\_mod}}\ \{}
+\DoxyCodeLine{00211\ \ \ \mbox{\hyperlink{namespacesrsran_ae2a7787d776e7d6ee8959beb6b368286}{pci\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci;}
+\DoxyCodeLine{00212\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__q__offset__range__list}{rrc\_q\_offset\_range\_list}}\ cell\_individual\_offset;}
+\DoxyCodeLine{00213\ \};}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__pci__range}{rrc\_pci\_range}}\ \{}
+\DoxyCodeLine{00216\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ start;}
+\DoxyCodeLine{00217\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ range;}
+\DoxyCodeLine{00218\ \};}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__pci__range__elem}{rrc\_pci\_range\_elem}}\ \{}
+\DoxyCodeLine{00221\ \ \ uint8\_t\ \ \ \ \ \ \ pci\_range\_idx;}
+\DoxyCodeLine{00222\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__pci__range}{rrc\_pci\_range}}\ pci\_range;}
+\DoxyCodeLine{00223\ \};}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__obj__nr}{rrc\_meas\_obj\_nr}}\ \{}
+\DoxyCodeLine{00226\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_freq;}
+\DoxyCodeLine{00227\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<subcarrier\_spacing>}}\ \ \ \ \ \ ssb\_subcarrier\_spacing;}
+\DoxyCodeLine{00228\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ssb\_mtc>}}\ \ \ \ \ \ \ \ \ \ \ \ \ smtc1;}
+\DoxyCodeLine{00229\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ssb\_mtc2>}}\ \ \ \ \ \ \ \ \ \ \ \ smtc2;}
+\DoxyCodeLine{00230\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ref\_freq\_csi\_rs;}
+\DoxyCodeLine{00231\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ref__sig__cfg}{rrc\_ref\_sig\_cfg}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ref\_sig\_cfg;}
+\DoxyCodeLine{00232\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_thres\_nr>}}\ \ \ \ \ \ \ \ \ \ \ \ abs\_thresh\_ss\_blocks\_consolidation;}
+\DoxyCodeLine{00233\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_thres\_nr>}}\ \ \ \ \ \ \ \ \ \ \ \ abs\_thresh\_csi\_rs\_consolidation;}
+\DoxyCodeLine{00234\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nrof\_ss\_blocks\_to\_average;}
+\DoxyCodeLine{00235\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nrof\_csi\_rs\_res\_to\_average;}
+\DoxyCodeLine{00236\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ quant\_cfg\_idx;}
+\DoxyCodeLine{00237\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__q__offset__range__list}{rrc\_q\_offset\_range\_list}}\ \ \ \ \ \ \ \ \ \ \ offset\_mo;}
+\DoxyCodeLine{00238\ \ \ std::vector<pci\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cells\_to\_rem\_list;\ \textcolor{comment}{//\ max\ size\ =\ 32}}
+\DoxyCodeLine{00239\ \ \ std::vector<rrc\_cells\_to\_add\_mod>\ cells\_to\_add\_mod\_list;}
+\DoxyCodeLine{00240\ \ \ std::vector<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ excluded\_cells\_to\_rem\_list;\ \textcolor{comment}{//\ max\ size\ =\ 8}}
+\DoxyCodeLine{00241\ \ \ std::vector<rrc\_pci\_range\_elem>\ \ \ excluded\_cells\_to\_add\_mod\_list;}
+\DoxyCodeLine{00242\ \ \ std::vector<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ allowed\_cells\_to\_rem\_list;\ \textcolor{comment}{//\ max\ size\ =\ 8}}
+\DoxyCodeLine{00243\ \ \ std::vector<rrc\_pci\_range\_elem>\ \ \ allowed\_cells\_to\_add\_mod\_list;}
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{//\ group\ 0}}
+\DoxyCodeLine{00245\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ freq\_band\_ind\_nr;}
+\DoxyCodeLine{00246\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ meas\_cycle\_scell;}
+\DoxyCodeLine{00247\ \};}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__n2}{rrc\_n2}}\ \{}
+\DoxyCodeLine{00250\ \ \ uint8\_t\ comb\_offset\_n2;}
+\DoxyCodeLine{00251\ \ \ uint8\_t\ cyclic\_shift\_n2;}
+\DoxyCodeLine{00252\ \};}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__n4}{rrc\_n4}}\ \{}
+\DoxyCodeLine{00255\ \ \ uint8\_t\ comb\_offset\_n4;}
+\DoxyCodeLine{00256\ \ \ uint8\_t\ cyclic\_shift\_n4;}
+\DoxyCodeLine{00257\ \};}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__tx__comb}{rrc\_tx\_comb}}\ \{}
+\DoxyCodeLine{00260\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_n2>}}\ n2;}
+\DoxyCodeLine{00261\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_n4>}}\ n4;}
+\DoxyCodeLine{00262\ \};}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__res__map}{rrc\_res\_map}}\ \{}
+\DoxyCodeLine{00265\ \ \ uint8\_t\ start\_position;}
+\DoxyCodeLine{00266\ \ \ uint8\_t\ nrof\_symbols;}
+\DoxyCodeLine{00267\ \ \ uint8\_t\ repeat\_factor;}
+\DoxyCodeLine{00268\ \};}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__freq__hop}{rrc\_freq\_hop}}\ \{}
+\DoxyCodeLine{00271\ \ \ uint8\_t\ c\_srs;}
+\DoxyCodeLine{00272\ \ \ uint8\_t\ b\_srs;}
+\DoxyCodeLine{00273\ \ \ uint8\_t\ b\_hop;}
+\DoxyCodeLine{00274\ \};}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__periodicity__and__offset}{rrc\_srs\_periodicity\_and\_offset}}\ \{}
+\DoxyCodeLine{00277\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_sl1;}
+\DoxyCodeLine{00278\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl2;}
+\DoxyCodeLine{00279\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl4;}
+\DoxyCodeLine{00280\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl5;}
+\DoxyCodeLine{00281\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl8;}
+\DoxyCodeLine{00282\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl10;}
+\DoxyCodeLine{00283\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl16;}
+\DoxyCodeLine{00284\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl20;}
+\DoxyCodeLine{00285\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl32;}
+\DoxyCodeLine{00286\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl40;}
+\DoxyCodeLine{00287\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl64;}
+\DoxyCodeLine{00288\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl80;}
+\DoxyCodeLine{00289\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ sl160;}
+\DoxyCodeLine{00290\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ sl320;}
+\DoxyCodeLine{00291\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ sl640;}
+\DoxyCodeLine{00292\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ sl1280;}
+\DoxyCodeLine{00293\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint16\_t>}}\ sl2560;}
+\DoxyCodeLine{00294\ \};}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__semi__persistent__periodic}{rrc\_semi\_persistent\_periodic}}\ \{}
+\DoxyCodeLine{00297\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__periodicity__and__offset}{rrc\_srs\_periodicity\_and\_offset}}\ periodicity\_and\_offset\_sp\_p;}
+\DoxyCodeLine{00298\ \};}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__res__type}{rrc\_res\_type}}\ \{}
+\DoxyCodeLine{00301\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_aperiodic;}
+\DoxyCodeLine{00302\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_semi\_persistent\_periodic>}}\ semi\_persistent;}
+\DoxyCodeLine{00303\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_semi\_persistent\_periodic>}}\ periodic;}
+\DoxyCodeLine{00304\ \};}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs}{rrc\_srs}}\ \{}
+\DoxyCodeLine{00307\ \ \ uint8\_t\ res\_id;}
+\DoxyCodeLine{00308\ \ \ uint8\_t\ ul\_bwp;}
+\DoxyCodeLine{00309\ \};}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__spatial__relation__info}{rrc\_srs\_spatial\_relation\_info}}\ \{}
+\DoxyCodeLine{00312\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__spatial__relation__info_1_1rrc__ref__sig__}{rrc\_ref\_sig\_}}\ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ ssb\_idx;}
+\DoxyCodeLine{00314\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ csi\_rs\_idx;}
+\DoxyCodeLine{00315\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_srs>}}\ srs;}
+\DoxyCodeLine{00316\ \ \ \};}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ serving\_cell\_id;}
+\DoxyCodeLine{00319\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__spatial__relation__info_1_1rrc__ref__sig__}{rrc\_ref\_sig\_}}\ \ \ \ \ \ ref\_sig;}
+\DoxyCodeLine{00320\ \};}
+\DoxyCodeLine{00321\ }
+\DoxyCodeLine{00322\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__res}{rrc\_srs\_res}}\ \{}
+\DoxyCodeLine{00323\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_res\_id;}
+\DoxyCodeLine{00324\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nrof\_srs\_ports;}
+\DoxyCodeLine{00325\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ptrs\_port\_idx;}
+\DoxyCodeLine{00326\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__tx__comb}{rrc\_tx\_comb}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tx\_comb;}
+\DoxyCodeLine{00327\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__res__map}{rrc\_res\_map}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\_map;}
+\DoxyCodeLine{00328\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ freq\_domain\_position;}
+\DoxyCodeLine{00329\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ freq\_domain\_shift;}
+\DoxyCodeLine{00330\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__freq__hop}{rrc\_freq\_hop}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ freq\_hop;}
+\DoxyCodeLine{00331\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ group\_or\_seq\_hop;}
+\DoxyCodeLine{00332\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__res__type}{rrc\_res\_type}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ res\_type;}
+\DoxyCodeLine{00333\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ seq\_id;}
+\DoxyCodeLine{00334\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_srs\_spatial\_relation\_info>}}\ spatial\_relation\_info;}
+\DoxyCodeLine{00335\ \};}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__obj__to__add__mod}{rrc\_meas\_obj\_to\_add\_mod}}\ \{}
+\DoxyCodeLine{00338\ \ \ meas\_obj\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ meas\_obj\_id;}
+\DoxyCodeLine{00339\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_obj\_nr>}}\ meas\_obj\_nr;}
+\DoxyCodeLine{00340\ \};}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \textcolor{keyword}{enum\ class}\ rrc\_nr\_rs\_type\ \{\ ssb\ =\ 0,\ csi\_rs\ \};}
+\DoxyCodeLine{00343\ }
+\DoxyCodeLine{00344\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__report__quant}{rrc\_meas\_report\_quant}}\ \{}
+\DoxyCodeLine{00345\ \ \ \textcolor{keywordtype}{bool}\ rsrp;}
+\DoxyCodeLine{00346\ \ \ \textcolor{keywordtype}{bool}\ rsrq;}
+\DoxyCodeLine{00347\ \ \ \textcolor{keywordtype}{bool}\ sinr;}
+\DoxyCodeLine{00348\ \};}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__periodical__report__cfg}{rrc\_periodical\_report\_cfg}}\ \{}
+\DoxyCodeLine{00351\ \ \ rrc\_nr\_rs\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rs\_type;}
+\DoxyCodeLine{00352\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_interv;}
+\DoxyCodeLine{00353\ \ \ int8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_amount;}
+\DoxyCodeLine{00354\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__report__quant}{rrc\_meas\_report\_quant}}\ \ \ \ \ \ \ \ \ \ \ report\_quant\_cell;}
+\DoxyCodeLine{00355\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_report\_cells;}
+\DoxyCodeLine{00356\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_report\_quant>}}\ report\_quant\_rs\_idxes;}
+\DoxyCodeLine{00357\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nrof\_rs\_idxes\_to\_report;}
+\DoxyCodeLine{00358\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ include\_beam\_meass;}
+\DoxyCodeLine{00359\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ use\_allowed\_cell\_list;}
+\DoxyCodeLine{00360\ \};}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00362\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ \{}
+\DoxyCodeLine{00363\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ rsrp;}
+\DoxyCodeLine{00364\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ rsrq;}
+\DoxyCodeLine{00365\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sinr;}
+\DoxyCodeLine{00366\ \};}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a1}{rrc\_event\_a1}}\ \{}
+\DoxyCodeLine{00369\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a1\_thres;}
+\DoxyCodeLine{00370\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00371\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00372\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00373\ \};}
+\DoxyCodeLine{00374\ }
+\DoxyCodeLine{00375\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a2}{rrc\_event\_a2}}\ \{}
+\DoxyCodeLine{00376\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a2\_thres;}
+\DoxyCodeLine{00377\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00378\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00379\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00380\ \};}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant\_offset}}\ =\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}};}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a3}{rrc\_event\_a3}}\ \{}
+\DoxyCodeLine{00385\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant\_offset}}\ a3\_offset;}
+\DoxyCodeLine{00386\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00387\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00388\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00389\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ use\_allowed\_cell\_list;}
+\DoxyCodeLine{00390\ \};}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a4}{rrc\_event\_a4}}\ \{}
+\DoxyCodeLine{00393\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a4\_thres;}
+\DoxyCodeLine{00394\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00395\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00396\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00397\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ use\_allowed\_cell\_list;}
+\DoxyCodeLine{00398\ \};}
+\DoxyCodeLine{00399\ }
+\DoxyCodeLine{00400\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a5}{rrc\_event\_a5}}\ \{}
+\DoxyCodeLine{00401\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a5\_thres\_1;}
+\DoxyCodeLine{00402\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a5\_thres\_2;}
+\DoxyCodeLine{00403\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00404\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00405\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00406\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ use\_allowed\_cell\_list;}
+\DoxyCodeLine{00407\ \};}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__a6}{rrc\_event\_a6}}\ \{}
+\DoxyCodeLine{00410\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant\_offset}}\ a6\_offset;}
+\DoxyCodeLine{00411\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_on\_leave;}
+\DoxyCodeLine{00412\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00413\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00414\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ use\_allowed\_cell\_list;}
+\DoxyCodeLine{00415\ \};}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__id}{rrc\_event\_id}}\ \{}
+\DoxyCodeLine{00418\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a1>}}\ event\_a1;}
+\DoxyCodeLine{00419\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a2>}}\ event\_a2;}
+\DoxyCodeLine{00420\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a3>}}\ event\_a3;}
+\DoxyCodeLine{00421\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a4>}}\ event\_a4;}
+\DoxyCodeLine{00422\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a5>}}\ event\_a5;}
+\DoxyCodeLine{00423\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_a6>}}\ event\_a6;}
+\DoxyCodeLine{00424\ \};}
+\DoxyCodeLine{00425\ }
+\DoxyCodeLine{00426\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__trigger__cfg}{rrc\_event\_trigger\_cfg}}\ \{}
+\DoxyCodeLine{00427\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_add\_neigh\_meas\_present;}
+\DoxyCodeLine{00428\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__id}{rrc\_event\_id}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ event\_id;}
+\DoxyCodeLine{00429\ \ \ rrc\_nr\_rs\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rs\_type;}
+\DoxyCodeLine{00430\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_interv;}
+\DoxyCodeLine{00431\ \ \ int8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ report\_amount;}
+\DoxyCodeLine{00432\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__report__quant}{rrc\_meas\_report\_quant}}\ \ \ \ \ \ \ \ \ \ \ report\_quant\_cell;}
+\DoxyCodeLine{00433\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_report\_cells;}
+\DoxyCodeLine{00434\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_report\_quant>}}\ report\_quant\_rs\_idxes;}
+\DoxyCodeLine{00435\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nrof\_rs\_idxes\_to\_report;}
+\DoxyCodeLine{00436\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ include\_beam\_meass;}
+\DoxyCodeLine{00437\ \};}
+\DoxyCodeLine{00438\ }
+\DoxyCodeLine{00439\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cgi}{rrc\_report\_cgi}}\ \{}
+\DoxyCodeLine{00440\ \ \ uint16\_t\ cell\_for\_which\_to\_report\_cgi;}
+\DoxyCodeLine{00441\ \};}
+\DoxyCodeLine{00442\ }
+\DoxyCodeLine{00443\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__sftd__nr}{rrc\_report\_sftd\_nr}}\ \{}
+\DoxyCodeLine{00444\ \ \ \textcolor{keywordtype}{bool}\ report\_sftd\_meas;}
+\DoxyCodeLine{00445\ \ \ \textcolor{keywordtype}{bool}\ report\_rsrp;}
+\DoxyCodeLine{00446\ \};}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00448\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__cond__event__a3}{rrc\_cond\_event\_a3}}\ \{}
+\DoxyCodeLine{00449\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant\_offset}}\ a3\_offset;}
+\DoxyCodeLine{00450\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00451\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00452\ \};}
+\DoxyCodeLine{00453\ }
+\DoxyCodeLine{00454\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__cond__event__a5}{rrc\_cond\_event\_a5}}\ \{}
+\DoxyCodeLine{00455\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a5\_thres1;}
+\DoxyCodeLine{00456\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\ a5\_thres2;}
+\DoxyCodeLine{00457\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hysteresis;}
+\DoxyCodeLine{00458\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_to\_trigger;}
+\DoxyCodeLine{00459\ \};}
+\DoxyCodeLine{00460\ }
+\DoxyCodeLine{00461\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cfg__nr}{rrc\_report\_cfg\_nr}}\ \{}
+\DoxyCodeLine{00462\ \ \ \textcolor{comment}{//\ choice}}
+\DoxyCodeLine{00463\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_periodical\_report\_cfg>}}\ periodical;}
+\DoxyCodeLine{00464\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_event\_trigger\_cfg>}}\ \ \ \ \ event\_triggered;}
+\DoxyCodeLine{00465\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_report\_cgi>}}\ \ \ \ \ \ \ \ \ \ \ \ report\_cgi;}
+\DoxyCodeLine{00466\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_report\_sftd\_nr>}}\ \ \ \ \ \ \ \ report\_sftd;}
+\DoxyCodeLine{00467\ \};}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cfg__to__add__mod}{rrc\_report\_cfg\_to\_add\_mod}}\ \{}
+\DoxyCodeLine{00470\ \ \ report\_cfg\_id\_t\ \ \ report\_cfg\_id;}
+\DoxyCodeLine{00471\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cfg__nr}{rrc\_report\_cfg\_nr}}\ report\_cfg;}
+\DoxyCodeLine{00472\ \};}
+\DoxyCodeLine{00473\ }
+\DoxyCodeLine{00474\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__id__to__add__mod}{rrc\_meas\_id\_to\_add\_mod}}\ \{}
+\DoxyCodeLine{00475\ \ \ meas\_id\_t\ \ \ \ \ \ \ meas\_id;}
+\DoxyCodeLine{00476\ \ \ meas\_obj\_id\_t\ \ \ meas\_obj\_id;}
+\DoxyCodeLine{00477\ \ \ report\_cfg\_id\_t\ report\_cfg\_id;}
+\DoxyCodeLine{00478\ \};}
+\DoxyCodeLine{00479\ }
+\DoxyCodeLine{00480\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__s__measure__cfg}{rrc\_s\_measure\_cfg}}\ \{}
+\DoxyCodeLine{00481\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ ssb\_rsrp;}
+\DoxyCodeLine{00482\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ csi\_rsrp;}
+\DoxyCodeLine{00483\ \};}
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__filt__cfg}{rrc\_filt\_cfg}}\ \{}
+\DoxyCodeLine{00486\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ filt\_coef\_rsrp;}
+\DoxyCodeLine{00487\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ filt\_coef\_rsrq;}
+\DoxyCodeLine{00488\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ filt\_coef\_rs\_sinr;}
+\DoxyCodeLine{00489\ \};}
+\DoxyCodeLine{00490\ }
+\DoxyCodeLine{00491\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__quant__cfg__rs}{rrc\_quant\_cfg\_rs}}\ \{}
+\DoxyCodeLine{00492\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__filt__cfg}{rrc\_filt\_cfg}}\ ssb\_filt\_cfg;}
+\DoxyCodeLine{00493\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__filt__cfg}{rrc\_filt\_cfg}}\ csi\_rs\_filt\_cfg;}
+\DoxyCodeLine{00494\ \};}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__quant__cfg__nr}{rrc\_quant\_cfg\_nr}}\ \{}
+\DoxyCodeLine{00497\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__quant__cfg__rs}{rrc\_quant\_cfg\_rs}}\ \ \ \ \ \ \ \ \ \ \ quant\_cfg\_cell;}
+\DoxyCodeLine{00498\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_quant\_cfg\_rs>}}\ quant\_cfg\_rs\_idx;}
+\DoxyCodeLine{00499\ \};}
+\DoxyCodeLine{00500\ }
+\DoxyCodeLine{00501\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__quant__cfg}{rrc\_quant\_cfg}}\ \{}
+\DoxyCodeLine{00502\ \ \ std::vector<rrc\_quant\_cfg\_nr>\ quant\_cfg\_nr\_list;}
+\DoxyCodeLine{00503\ \};}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__gap__cfg}{rrc\_gap\_cfg}}\ \{}
+\DoxyCodeLine{00506\ \ \ uint8\_t\ gap\_offset;}
+\DoxyCodeLine{00507\ \ \ uint8\_t\ mgl;}
+\DoxyCodeLine{00508\ \ \ uint8\_t\ mgrp;}
+\DoxyCodeLine{00509\ \ \ \textcolor{keywordtype}{float}\ \ \ mgta;}
+\DoxyCodeLine{00510\ \};}
+\DoxyCodeLine{00511\ }
+\DoxyCodeLine{00512\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__gap__cfg__setup__release}{rrc\_gap\_cfg\_setup\_release}}\ \{}
+\DoxyCodeLine{00513\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_release;}
+\DoxyCodeLine{00514\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_gap\_cfg>}}\ setup;}
+\DoxyCodeLine{00515\ \};}
+\DoxyCodeLine{00516\ }
+\DoxyCodeLine{00517\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__measg__gap__cfg}{rrc\_measg\_gap\_cfg}}\ \{}
+\DoxyCodeLine{00518\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_gap\_cfg\_setup\_release>}}\ gap\_fr2;}
+\DoxyCodeLine{00519\ \};}
+\DoxyCodeLine{00520\ }
+\DoxyCodeLine{00521\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__gap__sharing__scheme__setup__release}{rrc\_meas\_gap\_sharing\_scheme\_setup\_release}}\ \{}
+\DoxyCodeLine{00522\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_release;}
+\DoxyCodeLine{00523\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<std::string>}}\ setup;}
+\DoxyCodeLine{00524\ \};}
+\DoxyCodeLine{00525\ }
+\DoxyCodeLine{00526\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__gap__sharing__cfg}{rrc\_meas\_gap\_sharing\_cfg}}\ \{}
+\DoxyCodeLine{00527\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_gap\_sharing\_scheme\_setup\_release>}}\ gap\_sharing\_fr2;}
+\DoxyCodeLine{00528\ \};}
+\DoxyCodeLine{00529\ }
+\DoxyCodeLine{00530\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__cfg}{rrc\_meas\_cfg}}\ \{}
+\DoxyCodeLine{00531\ \ \ std::vector<meas\_obj\_id\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ meas\_obj\_to\_rem\_list;}
+\DoxyCodeLine{00532\ \ \ std::vector<rrc\_meas\_obj\_to\_add\_mod>\ \ \ meas\_obj\_to\_add\_mod\_list;}
+\DoxyCodeLine{00533\ \ \ std::vector<report\_cfg\_id\_t>\ \ \ \ \ \ \ \ \ \ \ report\_cfg\_to\_rem\_list;}
+\DoxyCodeLine{00534\ \ \ std::vector<rrc\_report\_cfg\_to\_add\_mod>\ report\_cfg\_to\_add\_mod\_list;}
+\DoxyCodeLine{00535\ \ \ std::vector<meas\_id\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_id\_to\_rem\_list;}
+\DoxyCodeLine{00536\ \ \ std::vector<rrc\_meas\_id\_to\_add\_mod>\ \ \ \ meas\_id\_to\_add\_mod\_list;}
+\DoxyCodeLine{00537\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_s\_measure\_cfg>}}\ \ \ \ \ \ \ \ \ \ \ \ s\_measure\_cfg;}
+\DoxyCodeLine{00538\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_quant\_cfg>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ quant\_cfg;}
+\DoxyCodeLine{00539\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_measg\_gap\_cfg>}}\ \ \ \ \ \ \ \ \ \ \ \ meas\_gap\_cfg;}
+\DoxyCodeLine{00540\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_gap\_sharing\_cfg>}}\ \ \ \ \ meas\_gap\_sharing\_cfg;}
+\DoxyCodeLine{00541\ \};}
+\DoxyCodeLine{00542\ }
+\DoxyCodeLine{00543\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__quant__results}{rrc\_meas\_quant\_results}}\ \{}
+\DoxyCodeLine{00544\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ rsrp;}
+\DoxyCodeLine{00545\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ rsrq;}
+\DoxyCodeLine{00546\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint8\_t>}}\ sinr;}
+\DoxyCodeLine{00547\ \};}
+\DoxyCodeLine{00548\ }
+\DoxyCodeLine{00549\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__results__per__ssb__idx}{rrc\_results\_per\_ssb\_idx}}\ \{}
+\DoxyCodeLine{00550\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_idx;}
+\DoxyCodeLine{00551\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_quant\_results>}}\ ssb\_results;}
+\DoxyCodeLine{00552\ \};}
+\DoxyCodeLine{00553\ }
+\DoxyCodeLine{00554\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__results__per__csi__rs__idx}{rrc\_results\_per\_csi\_rs\_idx}}\ \{}
+\DoxyCodeLine{00555\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_rs\_idx;}
+\DoxyCodeLine{00556\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_quant\_results>}}\ csi\_rs\_results;}
+\DoxyCodeLine{00557\ \};}
+\DoxyCodeLine{00558\ }
+\DoxyCodeLine{00559\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr}{rrc\_meas\_result\_nr}}\ \{}
+\DoxyCodeLine{00560\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr_1_1cell__results__}{cell\_results\_}}\ \{}
+\DoxyCodeLine{00561\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_quant\_results>}}\ results\_ssb\_cell;}
+\DoxyCodeLine{00562\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_quant\_results>}}\ results\_csi\_rs\_cell;}
+\DoxyCodeLine{00563\ \ \ \};}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr_1_1rs__idx__results__}{rs\_idx\_results\_}}\ \{}
+\DoxyCodeLine{00566\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<uint8\_t,\ rrc\_results\_per\_ssb\_idx>}}\ \ \ \ results\_ssb\_idxes;\ \ \ \ \textcolor{comment}{//\ indexed\ by\ ssb\_idx}}
+\DoxyCodeLine{00567\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<uint8\_t,\ rrc\_results\_per\_csi\_rs\_idx>}}\ results\_csi\_rs\_idxes;\ \textcolor{comment}{//\ indexed\ by\ csi\_rs\_idx}}
+\DoxyCodeLine{00568\ \ \ \};}
+\DoxyCodeLine{00569\ }
+\DoxyCodeLine{00570\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<pci\_t>}}\ \ \ \ \ \ \ \ \ \ \ pci;}
+\DoxyCodeLine{00571\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr_1_1cell__results__}{cell\_results\_}}\ \ \ \ \ \ \ \ \ \ \ \ \ cell\_results;}
+\DoxyCodeLine{00572\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rs\_idx\_results\_>}}\ rs\_idx\_results;}
+\DoxyCodeLine{00573\ \};}
+\DoxyCodeLine{00574\ }
+\DoxyCodeLine{00575\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__serv__mo}{rrc\_meas\_result\_serv\_mo}}\ \{}
+\DoxyCodeLine{00576\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ serv\_cell\_id;}
+\DoxyCodeLine{00577\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr}{rrc\_meas\_result\_nr}}\ \ \ \ \ \ \ \ \ \ \ meas\_result\_serving\_cell;}
+\DoxyCodeLine{00578\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_result\_nr>}}\ meas\_result\_best\_neigh\_cell;}
+\DoxyCodeLine{00579\ \};}
+\DoxyCodeLine{00580\ }
+\DoxyCodeLine{00581\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__neigh__cells}{rrc\_meas\_result\_neigh\_cells}}\ \{}
+\DoxyCodeLine{00582\ \ \ \textcolor{comment}{//\ choice}}
+\DoxyCodeLine{00583\ \ \ std::vector<rrc\_meas\_result\_nr>\ meas\_result\_list\_nr;}
+\DoxyCodeLine{00584\ \};}
+\DoxyCodeLine{00585\ }
+\DoxyCodeLine{00586\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__results}{rrc\_meas\_results}}\ \{}
+\DoxyCodeLine{00587\ \ \ meas\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_id;}
+\DoxyCodeLine{00588\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<uint8\_t,\ rrc\_meas\_result\_serv\_mo>}}\ meas\_result\_serving\_mo\_list;\ \textcolor{comment}{//\ indexed\ by\ serv\_cell\_id}}
+\DoxyCodeLine{00589\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_result\_neigh\_cells>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_result\_neigh\_cells;}
+\DoxyCodeLine{00590\ \};}
+\DoxyCodeLine{00591\ }
+\DoxyCodeLine{00592\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00593\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

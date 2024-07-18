@@ -1,0 +1,72 @@
+\doxysection{log\+\_\+backend\+\_\+impl.\+h}
+\hypertarget{log__backend__impl_8h_source}{}\label{log__backend__impl_8h_source}\index{lib/srslog/log\_backend\_impl.h@{lib/srslog/log\_backend\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}backend\_worker.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/detail/log\_backend.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }srslog\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class\ }sink\_repository;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1log__backend}{detail::log\_backend}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}(\mbox{\hyperlink{classsrslog_1_1sink__repository}{sink\_repository}}\&\ sink\_repo)\ :\ worker(sink\_repo,\ queue,\ arg\_pool)\ \{\}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl}{log\_backend\_impl}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_a28f080d9e6fdc29feae90593c4289cc0}{start}}(backend\_priority\ priority\ =\ backend\_priority::normal)\textcolor{keyword}{\ override\ }\{\ worker.\mbox{\hyperlink{classsrslog_1_1backend__worker_ab82ec78d95c8b3b8ea623911dd62268f}{start}}(priority);\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_a6f0f1d0b28ba221d4bd79bcf102f5da9}{push}}(\mbox{\hyperlink{structsrslog_1_1detail_1_1log__entry}{detail::log\_entry}}\&\&\ entry)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{auto}*\ arg\_store\ =\ entry.metadata.store;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{if}\ (!queue.push(std::move(entry)))\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ arg\_pool.\mbox{\hyperlink{classsrslog_1_1detail_1_1dyn__arg__store__pool_a2e3de258ca7aa659a4d05f6237109cf2}{dealloc}}(arg\_store);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ fmt::dynamic\_format\_arg\_store<fmt::format\_context>*\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_a272f17f7607737553c592725749dc07e}{alloc\_arg\_store}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ arg\_pool.\mbox{\hyperlink{classsrslog_1_1detail_1_1dyn__arg__store__pool_a1fb11e9bbc9e81d2bfd0650dd766e85c}{alloc}}();\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_a077ade5320042bbeb42767a0ced5c92e}{is\_running}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ worker.\mbox{\hyperlink{classsrslog_1_1backend__worker_a779a741d31c550aa735bf2962177700f}{is\_running}}();\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_a058aa2eed8e099cecaf944d4e5ea8f61}{set\_error\_handler}}(error\_handler\ err\_handler)\ \{\ worker.\mbox{\hyperlink{classsrslog_1_1backend__worker_a0254ca3a08a242d6ab89546e562dbee1}{set\_error\_handler}}(std::move(err\_handler));\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1log__backend__impl_af6eecba559adbc10a8f0d0c8721d532a}{stop}}()\ \{\ worker.\mbox{\hyperlink{classsrslog_1_1backend__worker_a4cc4b03e0bfdd20fa137f6b5669eb9a7}{stop}}();\ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1work__queue}{detail::work\_queue<detail::log\_entry>}}\ queue;}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1dyn__arg__store__pool}{detail::dyn\_arg\_store\_pool}}\ \ \ \ \ \ \ \ \ \ \ \ arg\_pool;}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrslog_1_1backend__worker}{backend\_worker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worker;}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

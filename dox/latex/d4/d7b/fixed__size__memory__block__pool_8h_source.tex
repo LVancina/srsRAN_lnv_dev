@@ -1,0 +1,303 @@
+\doxysection{fixed\+\_\+size\+\_\+memory\+\_\+block\+\_\+pool.\+h}
+\hypertarget{fixed__size__memory__block__pool_8h_source}{}\label{fixed__size__memory__block__pool_8h_source}\index{include/srsran/support/memory\_pool/fixed\_size\_memory\_block\_pool.h@{include/srsran/support/memory\_pool/fixed\_size\_memory\_block\_pool.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}cameron314/concurrentqueue.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{memory__block__list_8h}{"{}memory\_block\_list.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{mutex}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{thread}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{/**}}
+\DoxyCodeLine{00037\ \textcolor{comment}{\ *\ Concurrent\ memory\ pool\ of\ memory\ blocks\ of\ equal\ size.\ This\ pool\ is\ thread-\/safe.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{\ *\ Each\ worker\ keeps\ a\ separate\ thread-\/local\ memory\ block\ cache\ that\ it\ uses\ for\ fast,\ non-\/contended\ allocation\ and}}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ *\ deallocation.\ When\ accessing\ a\ thread-\/local\ cache,\ no\ locks\ are\ required.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ *\ When\ the\ local\ cache\ gets\ depleted,\ the\ worker\ tries\ to\ obtain\ a\ batch\ of\ segments\ from\ a\ central\ memory\ block\ cache.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{\ *\ If\ the\ central\ cache\ is\ also\ depleted,\ the\ allocation\ fails.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ *\ Since\ there\ is\ no\ stealing\ of\ segments\ between\ workers'\ local\ caches,\ it\ is\ possible\ that\ a\ worker\ cannot\ allocate}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ *\ while\ another\ worker\ still\ has\ blocks\ in\ its\ own\ cache.\ To\ minimize\ the\ impact\ of\ this\ event,\ an\ upper\ bound\ is}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ *\ placed\ on\ a\ worker\ local\ cache\ size.\ Once\ a\ worker\ reaches\ that\ upper\ bound,\ it\ sends\ half\ of\ its\ stored\ blocks\ to}}
+\DoxyCodeLine{00047\ \textcolor{comment}{\ *\ the\ central\ cache.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00049\ \textcolor{comment}{\ *\ Note1:\ Notice\ that\ the\ same\ memory\ block\ might\ be\ allocated\ and\ deallocated\ in\ different\ workers.\ So,\ it\ can\ happen}}
+\DoxyCodeLine{00050\ \textcolor{comment}{\ *\ that\ a\ worker\ is\ allocating\ many\ blocks\ and\ another\ worker\ just\ deallocating.\ The\ latter\ worker\ has\ to\ keep}}
+\DoxyCodeLine{00051\ \textcolor{comment}{\ *\ returning\ blocks\ back\ to\ the\ central\ cache\ every\ time\ its\ local\ cache\ grows\ beyond\ a\ given\ upper\ bound.}}
+\DoxyCodeLine{00052\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00053\ \textcolor{comment}{\ *\ Note2:\ Taking\ into\ account\ the\ usage\ of\ thread\_local,\ this\ class\ is\ made\ a\ singleton.\ To\ be\ able\ to\ instantiate}}
+\DoxyCodeLine{00054\ \textcolor{comment}{\ *\ \ \ \ \ \ \ different\ pools,\ the\ user\ should\ use\ different\ IdTag\ types.}}
+\DoxyCodeLine{00055\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00056\ \textcolor{comment}{\ *\ Note3:\ No\ considerations\ were\ made\ regarding\ false\ sharing\ between\ workers.\ It\ is\ assumed\ that\ the\ blocks\ are\ big}}
+\DoxyCodeLine{00057\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ enough\ to\ fill\ a\ cache\ line.}}
+\DoxyCodeLine{00058\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00059\ \textcolor{comment}{\ *\ \(\backslash\)tparam\ IdTag\ We\ use\ a\ ID\ type\ tag\ to\ be\ able\ to\ intantiate\ different\ pool\ objects.}}
+\DoxyCodeLine{00060\ \textcolor{comment}{\ *\ \(\backslash\)tparam\ DebugSanitizeAddress\ when\ set\ to\ true,\ the\ pool\ verifies\ that\ the\ addresses\ allocated\ and\ deallocated\ are}}
+\DoxyCodeLine{00061\ \textcolor{comment}{\ *\ valid.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00063\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ IdTag,\ \textcolor{keywordtype}{bool}\ DebugSanitizeAddress\ =\ \textcolor{keyword}{false}>}
+\DoxyCodeLine{00064\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{using}\ pool\_type\ =\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}<IdTag,\ DebugSanitizeAddress>;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ The\ number\ of\ blocks\ in\ batch\ that\ the\ worker\ can\ steal\ from\ the\ central\ cache.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ size\_t\ block\_batch\_size\ =\ 32U;}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ The\ number\ of\ batches\ of\ blocks\ that\ a\ worker\ can\ store\ in\ its\ own\ thread\ for\ non-\/contended\ access.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ size\_t\ MAX\_LOCAL\_BATCH\_CAPACITY\ =\ 64U;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ A\ batch\ of\ memory\ blocks\ that\ is\ exchanged\ in\ bulk\ between\ the\ central\ and\ local\ caches.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{using}\ memory\_block\_batch\ =\ free\_memory\_block\_list;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Thread-\/local\ cache\ that\ stores\ a\ list\ of\ batches\ of\ memory\ blocks.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{local\_cache\_type}}\ =\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{static\_vector}}<\mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{memory\_block\_batch}},\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{MAX\_LOCAL\_BATCH\_CAPACITY}}>;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ Given\ that\ we\ use\ the\ MPMC\ queue\ in\ https://github.com/cameron314/concurrentqueue,\ we\ have\ to\ over-\/dimension\ it}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ to\ account\ the\ potential\ number\ of\ producers.\ The\ way\ to\ exactly\ over-\/dimension\ this\ queue\ is\ inconvenient,\ so}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\ we\ just\ try\ to\ conservatively\ ensure\ it\ can\ accommodate\ up\ to\ 32\ producers\ for\ a\ block\ size\ of\ 32.\ If\ this\ is}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ not\ enough,\ the\ queue\ will\ resize\ itself\ and\ malloc\ in\ the\ process.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{static}\ size\_t\ OVER\_DIM\_CENTRAL\_CACHE\ =\ 2\ *\ 32\ *\ 32;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Ctor\ of\ the\ memory\ pool.\ It\ is\ set\ as\ private\ because\ the\ class\ works\ as\ a\ singleton.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{explicit}\ fixed\_size\_memory\_block\_pool(size\_t\ nof\_blocks\_,\ size\_t\ memory\_block\_size\_)\ :}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//\ Make\ sure\ that\ there\ are\ no\ gaps\ between\ blocks\ when\ they\ are\ allocated\ as\ paret\ of\ a\ single\ array.}}
+\DoxyCodeLine{00089\ \ \ \ \ mblock\_size(align\_next(memory\_block\_size\_,\ \textcolor{keyword}{alignof}(std::max\_align\_t))),}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{//\ Make\ sure\ all\ batches\ are\ filled\ with\ block\_batch\_size\ blocks.}}
+\DoxyCodeLine{00091\ \ \ \ \ nof\_blocks(ceil(nof\_blocks\_\ /\ (\textcolor{keywordtype}{double})block\_batch\_size)\ *\ block\_batch\_size),}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{//\ Calculate\ the\ maximum\ number\ of\ batches\ that\ can\ be\ stored\ in\ the\ local\ cache.}}
+\DoxyCodeLine{00093\ \ \ \ \ max\_local\_batches(}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ std::max(std::min((size\_t)MAX\_LOCAL\_BATCH\_CAPACITY,\ \textcolor{keyword}{static\_cast}<size\_t>(nof\_blocks\ /\ block\_batch\_size\ /\ 32U)),}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast}<size\_t>(2U))),}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ Allocate\ the\ required\ memory\ for\ the\ given\ number\ of\ segments\ and\ segment\ size.}}
+\DoxyCodeLine{00097\ \ \ \ \ allocated\_memory(mblock\_size\ *\ nof\_blocks),}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{//\ Pre-\/reserve\ space\ in\ the\ central\ cache\ to\ hold\ all\ batches\ and\ avoid\ reallocations.}}
+\DoxyCodeLine{00099\ \ \ \ \ central\_mem\_cache(nof\_total\_batches()\ +\ OVER\_DIM\_CENTRAL\_CACHE)}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_blocks\ >\ max\_local\_cache\_size(),}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ segments\ in\ the\ pool\ must\ be\ much\ larger\ than\ the\ thread\ cache\ size\ (\{\}\ <=\ \{\})"{}},}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_blocks,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_local\_cache\_size());}
+\DoxyCodeLine{00105\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(mblock\_size\ >\ free\_memory\_block\_list::min\_memory\_block\_align(),}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Segment\ size\ is\ too\ small\ (\{\}\ <=\ \{\})"{}},}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mblock\_size,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ free\_memory\_block\_list::min\_memory\_block\_align());}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ Push\ all\ memory\ blocks\ to\ the\ central\ cache\ in\ batches.}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ nof\_batches\ =\ nof\_total\_batches();}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ nof\_batches;\ ++i)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ free\_memory\_block\_list\ batch;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ j\ =\ 0;\ j\ !=\ block\_batch\_size;\ ++j)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ batch.push(allocated\_memory.data()\ +\ (i\ *\ block\_batch\_size\ +\ j)\ *\ mblock\_size);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(central\_mem\_cache.enqueue(batch),\ \textcolor{stringliteral}{"{}Failed\ to\ push\ batch\ to\ central\ cache"{}});}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00122\ \ \ fixed\_size\_memory\_block\_pool(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00123\ \ \ fixed\_size\_memory\_block\_pool(\mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00124\ \ \ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \string~fixed\_size\_memory\_block\_pool()\ \{\}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ instance\ of\ a\ memory\ pool\ singleton.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}<IdTag,\ DebugSanitizeAddress>\&\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_a0ca5df2697c29c7b931cdfd9834e77a5}{get\_instance}}(size\_t\ nof\_blocks\ \ \ \ \ =\ 0,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size\_t\ mem\_block\_size\ =\ 0)}
+\DoxyCodeLine{00132\ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}<IdTag,\ DebugSanitizeAddress>\ pool(nof\_blocks,\ mem\_block\_size);}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ pool;}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ Memory\ block\ size\ in\ bytes.}}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_adade3bf7e9aff4541725d76e420d6aa1}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_adade3bf7e9aff4541725d76e420d6aa1}{memory\_block\_size}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ mblock\_size;\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ Number\ of\ memory\ blocks\ contained\ in\ this\ memory\ pool.}}
+\DoxyCodeLine{00141\ \ \ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_aa740c16913d89c23f766a051d9dbe69a}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_aa740c16913d89c23f766a051d9dbe69a}{nof\_memory\_blocks}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_blocks;\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ blocks\ that\ can\ be\ stored\ in\ the\ thread-\/local\ memory\ block\ cache.}}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_ac42ad85fb1309826074e303e2512889e}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_ac42ad85fb1309826074e303e2512889e}{max\_local\_cache\_size}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ max\_local\_batches\ *\ block\_batch\_size;\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ Allocate\ a\ node\ from\ the\ memory\ pool\ with\ the\ maximum\ size.}}
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_a36dcaf676f890701fdb05d5019f888c3}{allocate\_node}}()\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ allocate\_node(memory\_block\_size());\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ Allocate\ a\ node\ from\ the\ memory\ pool\ with\ the\ provided\ size.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_aee26f022975269f264f883a2047c695c}{allocate\_node}}(size\_t\ sz)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sz\ <=\ mblock\_size,\ \textcolor{stringliteral}{"{}Allocated\ node\ size=\{\}\ exceeds\ max\ object\ size=\{\}"{}},\ sz,\ mblock\_size);}
+\DoxyCodeLine{00153\ \ \ \ \ worker\_ctxt*\ w\_ctx\ =\ get\_worker\_cache();}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{comment}{//\ Attempt\ memory\ block\ pop\ from\ local\ cache.}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordtype}{void}*\ node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{not}\ w\_ctx-\/>local\_cache.empty())\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ node\ =\ w\_ctx-\/>local\_cache.back().try\_pop();}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ node;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ w\_ctx-\/>local\_cache.pop\_back();}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{comment}{//\ Local\ cache\ is\ empty.\ Attempt\ memory\ block\ pop\ from\ central\ cache.}}
+\DoxyCodeLine{00166\ \ \ \ \ free\_memory\_block\_list\ batch;}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordflow}{if}\ (central\_mem\_cache.try\_dequeue(w\_ctx-\/>consumer\_token,\ batch))\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ w\_ctx-\/>local\_cache.push\_back(batch);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ node\ =\ w\_ctx-\/>local\_cache.back().try\_pop();}
+\DoxyCodeLine{00170\ \ \ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordflow}{return}\ node;}
+\DoxyCodeLine{00173\ \ \ \}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ Deallocate\ node\ by\ returning\ it\ back\ to\ the\ memory\ pool.}}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool_ae503bb341886bef39bac36225531d1ff}{deallocate\_node}}(\textcolor{keywordtype}{void}*\ p)}
+\DoxyCodeLine{00177\ \ \ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(p\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}Deallocated\ nodes\ must\ have\ valid\ address"{}});}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ worker\_ctxt*\ w\_ctx\ =\ get\_worker\_cache();}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordflow}{if}\ (DebugSanitizeAddress)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{comment}{//\ For\ debug\ purposes.}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ lock(debug\_mutex);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ found\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ nof\_blocks;\ ++i)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allocated\_memory.data()\ +\ i\ *\ mblock\_size\ ==\ \textcolor{keyword}{static\_cast}<uint8\_t*>(p))\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ found\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ found)\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Error\ dealloccating\ block\ with\ address\ \{:\#x\}"{}},\ p);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{comment}{//\ Verify\ if\ new\ batch\ needs\ to\ be\ created\ in\ local\ cache.}}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{if}\ (w\_ctx-\/>local\_cache.empty()\ \textcolor{keyword}{or}\ w\_ctx-\/>local\_cache.back().size()\ >=\ block\_batch\_size)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ w\_ctx-\/>local\_cache.emplace\_back();}
+\DoxyCodeLine{00199\ \ \ \ \ \}}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{comment}{//\ Push\ block\ to\ local\ cache.}}
+\DoxyCodeLine{00202\ \ \ \ \ w\_ctx-\/>local\_cache.back().push(p);}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \ \ \textcolor{keywordflow}{if}\ (w\_ctx-\/>local\_cache.size()\ >=\ max\_local\_batches\ \textcolor{keyword}{and}\ w\_ctx-\/>local\_cache.back().size()\ >=\ block\_batch\_size)\ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \textcolor{comment}{//\ Local\ cache\ is\ full.\ Rebalance\ by\ sending\ batches\ of\ blocks\ to\ central\ cache.}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \textcolor{comment}{//\ We\ leave\ one\ batch\ in\ the\ local\ cache.}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ max\_local\_batches\ -\/\ 1;\ ++i)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(central\_mem\_cache.enqueue(w\_ctx-\/>producer\_token,\ w\_ctx-\/>local\_cache.back()),}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Failed\ to\ push\ allocated\ batch\ back\ to\ central\ cache"{}});}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ w\_ctx-\/>local\_cache.pop\_back();}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \textcolor{keywordtype}{void}\ print\_all\_buffers()}
+\DoxyCodeLine{00216\ \ \ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keyword}{auto}*\ \ \ \ worker\ =\ get\_worker\_cache();}
+\DoxyCodeLine{00218\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ \ =\ 0;}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ l\ :\ worker-\/>local\_cache)\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ count\ +=\ l.size();}
+\DoxyCodeLine{00221\ \ \ \ \ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}There\ are\ \{\}/\{\}\ buffers\ in\ central\ memory\ block\ cache.\ This\ thread\ contains\ \{\}\ in\ its\ local\ cache.\(\backslash\)n"{}},}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ central\_mem\_cache.size\_approx()\ *\ block\_batch\_size,}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_memory\_blocks(),}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count);}
+\DoxyCodeLine{00227\ \ \ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00230\ \ \ \textcolor{keyword}{struct}\ worker\_ctxt\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{comment}{///\ Thread\ ID\ of\ the\ worker.}}
+\DoxyCodeLine{00232\ \ \ \ \ std::thread::id\ id;}
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{comment}{///\ Thread-\/local\ cache\ of\ memory\ blocks.}}
+\DoxyCodeLine{00234\ \ \ \ \ local\_cache\_type\ local\_cache;}
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{comment}{///\ Producer\ Token\ for\ fast\ enqueueing\ to\ the\ central\ cache.}}
+\DoxyCodeLine{00236\ \ \ \ \ moodycamel::\mbox{\hyperlink{structmoodycamel_1_1ProducerToken}{ProducerToken}}\ producer\_token;}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{comment}{///\ Consumer\ Token\ for\ fast\ dequeueing\ to\ the\ central\ cache.}}
+\DoxyCodeLine{00238\ \ \ \ \ moodycamel::\mbox{\hyperlink{structmoodycamel_1_1ConsumerToken}{ConsumerToken}}\ consumer\_token;}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ worker\_ctxt(\mbox{\hyperlink{classsrsran_1_1fixed__size__memory__block__pool}{fixed\_size\_memory\_block\_pool}}\&\ parent)\ :}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ id(std::this\_thread::get\_id()),\ producer\_token(parent.central\_mem\_cache),\ consumer\_token(parent.central\_mem\_cache)}
+\DoxyCodeLine{00242\ \ \ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ \string~worker\_ctxt()}
+\DoxyCodeLine{00245\ \ \ \ \ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ pool\_type\&\ pool\ =\ pool\_type::get\_instance();}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{not}\ local\_cache.empty())\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (local\_cache.back().size()\ <\ block\_batch\_size)\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Batch\ is\ incomplete.\ We\ combine\ it\ with\ any\ other\ existing\ incomplete\ batch.}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ lock(pool.incomplete\_batch\_mutex);}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{not}\ local\_cache.back().empty())\ \{}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pool.incomplete\_batch.push(local\_cache.back().try\_pop());}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pool.incomplete\_batch.size()\ >=\ block\_batch\_size)\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ incomplete\ batch\ is\ now\ complete\ and\ can\ be\ pushed\ to\ the\ central\ cache.}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error__handling_8h_af2a19668fa4937d5d6aa2c93f42b7f8a}{report\_error\_if\_not}}(pool.central\_mem\_cache.enqueue(producer\_token,\ pool.incomplete\_batch),}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Failed\ to\ push\ blocks\ to\ central\ cache"{}});}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pool.incomplete\_batch.clear();}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ local\_cache.pop\_back();}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{error__handling_8h_af2a19668fa4937d5d6aa2c93f42b7f8a}{report\_error\_if\_not}}(pool.central\_mem\_cache.enqueue(producer\_token,\ local\_cache.back()),}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Failed\ to\ push\ blocks\ back\ to\ central\ cache"{}});}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ local\_cache.pop\_back();}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00269\ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \};}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ worker\_ctxt*\ get\_worker\_cache()}
+\DoxyCodeLine{00273\ \ \ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keyword}{thread\_local}\ worker\_ctxt\ worker\_cache\{*\textcolor{keyword}{this}\};}
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keywordflow}{return}\ \&worker\_cache;}
+\DoxyCodeLine{00276\ \ \ \}}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \textcolor{comment}{///\ Number\ of\ batches\ of\ memory\ blocks\ stored\ in\ the\ pool.}}
+\DoxyCodeLine{00279\ \ \ size\_t\ nof\_total\_batches()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (nof\_blocks\ +\ block\_batch\_size\ -\/\ 1)\ /\ block\_batch\_size;\ \}}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \ \ \textcolor{keyword}{const}\ size\_t\ mblock\_size;}
+\DoxyCodeLine{00282\ \ \ \textcolor{keyword}{const}\ size\_t\ nof\_blocks;}
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{const}\ size\_t\ max\_local\_batches;}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ std::vector<uint8\_t>\ allocated\_memory;}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ moodycamel::ConcurrentQueue<free\_memory\_block\_list>\ central\_mem\_cache;}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ \textcolor{comment}{//\ When\ workers\ get\ deleted,\ some\ local\ batches\ may\ be\ still\ incomplete.\ We\ collect\ them\ here\ to\ form\ full\ batches}}
+\DoxyCodeLine{00290\ \ \ \textcolor{comment}{//\ when\ other\ workers\ get\ deleted\ as\ well.}}
+\DoxyCodeLine{00291\ \ \ std::mutex\ \ \ \ \ \ \ \ \ \ \ \ \ incomplete\_batch\_mutex;}
+\DoxyCodeLine{00292\ \ \ free\_memory\_block\_list\ incomplete\_batch;}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ std::mutex\ debug\_mutex;}
+\DoxyCodeLine{00295\ \};}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

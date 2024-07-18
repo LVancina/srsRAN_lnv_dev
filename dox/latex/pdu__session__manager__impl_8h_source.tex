@@ -1,0 +1,95 @@
+\doxysection{pdu\+\_\+session\+\_\+manager\+\_\+impl.\+h}
+\hypertarget{pdu__session__manager__impl_8h_source}{}\label{pdu__session__manager__impl_8h_source}\index{lib/cu\_up/pdu\_session\_manager\_impl.h@{lib/cu\_up/pdu\_session\_manager\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}cu\_up\_ue\_logger.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}pdu\_session.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}pdu\_session\_manager.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_up/cu\_up\_configuration.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_up/cu\_up\_types.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/e1ap/common/e1ap\_types.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/f1u/cu\_up/f1u\_gateway.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_demux.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_teid\_pool.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_tunnel\_tx.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{namespace\ }srs\_cu\_up\ \{}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1pdu__session__manager__impl}{pdu\_session\_manager\_impl}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1pdu__session__manager__ctrl}{pdu\_session\_manager\_ctrl}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1pdu__session__manager__impl}{pdu\_session\_manager\_impl}}(ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::map<five\_qi\_t,\ srs\_cu\_up::cu\_up\_qos\_config>\ qos\_cfg\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{security::sec\_as\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_info\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1network__interface__config}{network\_interface\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ net\_config\_,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1n3__interface__config}{n3\_interface\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n3\_config\_,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{cu\_up\_ue\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\_,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1f1u__cu__up__gateway}{f1u\_cu\_up\_gateway}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_gw\_,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__teid__pool}{gtpu\_teid\_pool}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_teid\_allocator\_,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__tx__upper__layer__notifier}{gtpu\_tunnel\_tx\_upper\_layer\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_tx\_notifier\_,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__ctrl}{gtpu\_demux\_ctrl}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_rx\_demux\_,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap\_);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1pdu__session__setup__result}{pdu\_session\_setup\_result}}\ \ \ \ \ \ \ \ setup\_pdu\_session(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__setup__item}{e1ap\_pdu\_session\_res\_to\_setup\_item}}\&\ session)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1pdu__session__modification__result}{pdu\_session\_modification\_result}}\ modify\_pdu\_session(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\&\ session,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ new\_ul\_tnl\_info\_required)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ remove\_pdu\_session(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ pdu\_session\_id)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_pdu\_sessions()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1strong__type}{gtpu\_teid\_t}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1pdu__session__manager__impl_a20f9ae4a7210aa08a5e95a392935830a}{allocate\_local\_teid}}(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ pdu\_session\_id);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1drb__setup__result}{drb\_setup\_result}}\ handle\_drb\_to\_setup\_item(\mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1pdu__session}{pdu\_session}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ new\_session,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__setup__item__ng__ran}{e1ap\_drb\_to\_setup\_item\_ng\_ran}}\&\ drb\_to\_setup);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{const}\ std::map<five\_qi\_t,\ srs\_cu\_up::cu\_up\_qos\_config>\ \ \ qos\_cfg;}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{security::sec\_as\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_info;}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1network__interface__config}{network\_interface\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ net\_config;}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1n3__interface__config}{n3\_interface\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n3\_config;}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{cu\_up\_ue\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer;}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__tx__upper__layer__notifier}{gtpu\_tunnel\_tx\_upper\_layer\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_tx\_notifier;}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__teid__pool}{gtpu\_teid\_pool}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_teid\_allocator;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__ctrl}{gtpu\_demux\_ctrl}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_rx\_demux;}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap;}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsrsran_1_1f1u__cu__up__gateway}{f1u\_cu\_up\_gateway}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_gw;}
+\DoxyCodeLine{00090\ \ \ std::map<pdu\_session\_id\_t,\ std::unique\_ptr<pdu\_session>>\ pdu\_sessions;\ \textcolor{comment}{//\ key\ is\ pdu\_session\_id}}
+\DoxyCodeLine{00091\ \};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

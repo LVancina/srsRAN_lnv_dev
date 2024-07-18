@@ -1,0 +1,154 @@
+\doxysection{resource\+\_\+block.\+h}
+\hypertarget{resource__block_8h_source}{}\label{resource__block_8h_source}\index{include/srsran/ran/resource\_block.h@{include/srsran/ran/resource\_block.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{subcarrier__spacing_8h}{"{}subcarrier\_spacing.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ Maximum\ number\ of\ PRBs\ of\ a\ UE\ carrier,\ for\ any\ SCS.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331\ -\/\ "{}maxNrofPhysicalResourceBlocks"{}.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{constexpr}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_ad1ba5b00d91f36c10973b0b36719e438}{MAX\_NOF\_PRBS}}\ =\ 275;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ See\ TS\ 38.211,\ 4.4.4.1\ -\/\ Resource\ Blocks,\ General.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{constexpr}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_a1d73f866251b700d7747204655a84500}{NOF\_SUBCARRIERS\_PER\_RB}}\ =\ 12;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Compute\ RB\ bandwidth\ in\ kHz,\ based\ on\ the\ used\ numerology.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_aa794a25575dfe5f88408be0a2b842b87}{get\_rb\_bw\_khz}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs)}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a1d73f866251b700d7747204655a84500}{NOF\_SUBCARRIERS\_PER\_RB}}\ *\ \mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{scs\_to\_khz}}\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{(}}scs\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{)}};}
+\DoxyCodeLine{00041\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ Converts\ channel\ bandwidth\ in\ MHz\ to\ index.}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_a14f5b7c422844a508a163acf8eff52e8}{channel\_bw\_mhz\_to\_index\_fr1}}(\textcolor{keywordtype}{unsigned}\ dl\_bw\_mhz)}
+\DoxyCodeLine{00045\ \{}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordflow}{switch}\ (dl\_bw\_mhz)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{case}\ 5:}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{case}\ 10:}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{case}\ 15:}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 2;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{case}\ 20:}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{case}\ 25:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 4;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{case}\ 30:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 5;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{case}\ 40:}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 6;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{case}\ 50:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 7;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{case}\ 60:}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 8;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{case}\ 70:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 9;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{case}\ 80:}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 10;}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{case}\ 90:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 11;}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{case}\ 100:}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 12;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{return}\ std::numeric\_limits<size\_t>::max();}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ Converts\ channel\ bandwidth\ in\ MHz\ to\ index.}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_ac16d173f3efe75fcdbceca6d3e5b2dca}{channel\_bw\_mhz\_to\_index\_fr2}}(\textcolor{keywordtype}{unsigned}\ dl\_bw\_mhz)}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordflow}{switch}\ (dl\_bw\_mhz)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{case}\ 50:}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{case}\ 100:}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{case}\ 200:}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 2;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{case}\ 400:}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordflow}{return}\ std::numeric\_limits<size\_t>::max();}
+\DoxyCodeLine{00095\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{comment}{///\ Computes\ the\ maximum\ transmission\ bandwidth\ in\ number\ of\ PRBs.}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.104,\ Table\ 5.3.2-\/1/2\ -\/\ Transmission\ bandwidth\ configuration\ for\ FR1/FR2.}}
+\DoxyCodeLine{00099\ \textcolor{keyword}{inline}\ std::size\_t\ \mbox{\hyperlink{namespacesrsran_a6ef9794965aeb9030dbfa54e0c9411fb}{get\_max\_Nprb}}(\textcolor{keywordtype}{unsigned}\ dl\_bw\_mhz,\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ \mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5}{frequency\_range}}\ fr)}
+\DoxyCodeLine{00100\ \{}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(is\_scs\_valid(scs,\ fr),\ \textcolor{stringliteral}{"{}Invalid\ SCS"{}});}
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::array<std::size\_t,\ 3>\ rb\_table\_fr1[]\ =\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ off}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{comment}{//\ SCS}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{comment}{//\ 15,\ \ 30,\ \ 60.}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \{\ \ 25,\ \ 11,\ \ \ 0\},\ \textcolor{comment}{//\ 5\ MHz.}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \{\ \ 52,\ \ 24,\ \ 11\},\ \textcolor{comment}{//\ 10\ MHz.}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \{\ \ 79,\ \ 38,\ \ 18\},\ \textcolor{comment}{//\ 15\ MHz.}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \{\ 106,\ \ 51,\ \ 24\},\ \textcolor{comment}{//\ 20\ MHz.}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \{\ 133,\ \ 65,\ \ 31\},\ \textcolor{comment}{//\ 25\ MHz.}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \{\ 160,\ \ 78,\ \ 38\},\ \textcolor{comment}{//\ 30\ MHz.}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \{\ 216,\ 106,\ \ 51\},\ \textcolor{comment}{//\ 40\ MHz.}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \{\ 270,\ 133,\ \ 65\},\ \textcolor{comment}{//\ 50\ MHz.}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \{\ \ \ 0,\ 162,\ \ 79\},\ \textcolor{comment}{//\ 60\ MHz.}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \{\ \ \ 0,\ 189,\ \ 93\},\ \textcolor{comment}{//\ 70\ MHz.}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \{\ \ \ 0,\ 217,\ 107\},\ \textcolor{comment}{//\ 80\ MHz.}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \{\ \ \ 0,\ 245,\ 121\},\ \textcolor{comment}{//\ 90\ MHz.}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \{\ \ \ 0,\ 273,\ 135\},\ \textcolor{comment}{//\ 100\ MHz.}}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ on}}
+\DoxyCodeLine{00120\ \ \ \};}
+\DoxyCodeLine{00121\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::array<std::size\_t,\ 2>\ rb\_table\_fr2[]\ =\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ off}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \textcolor{comment}{//\ SCS}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{comment}{//\ 60,\ 120.}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \{\ \ 66,\ \ 32\},\ \textcolor{comment}{//\ 50\ MHz.}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \{\ 132,\ \ 66\},\ \textcolor{comment}{//\ 100\ MHz.}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \{\ 264,\ 132\},\ \textcolor{comment}{//\ 200\ MHz.}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \{\ \ \ 0,\ 264\},\ \textcolor{comment}{//\ 400\ MHz.}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{comment}{//\ clang-\/format\ on}}
+\DoxyCodeLine{00130\ \ \ \};}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ size\_t\ bw\_idx;}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordflow}{if}\ (fr\ ==\ \mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5}{frequency\_range}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{::}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{FR1}})\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ bw\_idx\ =\ channel\_bw\_mhz\_to\_index\_fr1(dl\_bw\_mhz);}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{if}\ (bw\_idx\ ==\ std::numeric\_limits<size\_t>::max())\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{return}\ rb\_table\_fr1[bw\_idx][to\_numerology\_value(scs)];}
+\DoxyCodeLine{00139\ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ bw\_idx\ =\ channel\_bw\_mhz\_to\_index\_fr2(dl\_bw\_mhz);}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordflow}{if}\ (bw\_idx\ ==\ std::numeric\_limits<size\_t>::max())\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00144\ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordflow}{return}\ rb\_table\_fr2[bw\_idx][to\_numerology\_value(scs)\ -\/\ to\_numerology\_value(subcarrier\_spacing::kHz60)];}
+\DoxyCodeLine{00146\ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

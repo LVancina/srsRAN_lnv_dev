@@ -28,36 +28,15 @@
 namespace srsran {
 namespace srs_cu_cp {
 
-struct pdcp_tx_result {
-  variant<byte_buffer, ngap_cause_t> result;
-
-  /// Whether the packing was successful.
-  bool is_successful() const { return variant_holds_alternative<byte_buffer>(result); }
-
-  ngap_cause_t get_failure_cause() const { return variant_get<ngap_cause_t>(result); }
-
-  byte_buffer pop_pdu() { return std::move(variant_get<byte_buffer>(result)); }
-};
-
-struct pdcp_rx_result {
-  variant<std::vector<byte_buffer>, ngap_cause_t> result;
-
-  /// Whether the unpacking was successful.
-  bool is_successful() const { return variant_holds_alternative<std::vector<byte_buffer>>(result); }
-
-  ngap_cause_t get_failure_cause() const { return variant_get<ngap_cause_t>(result); }
-
-  std::vector<byte_buffer> pop_pdus() { return std::move(variant_get<std::vector<byte_buffer>>(result)); }
-};
-
 /// Additional context of a SRB containing notifiers to PDCP, i.e. SRB1 and SRB2.
 struct srb_pdcp_context {
   std::unique_ptr<pdcp_entity>   entity;
   pdcp_rrc_ue_tx_adapter         pdcp_tx_notifier;
   pdcp_tx_control_rrc_ue_adapter rrc_tx_control_notifier;
   pdcp_rrc_ue_rx_adapter         rrc_rx_data_notifier;
+  pdcp_rx_control_rrc_ue_adapter rrc_rx_control_notifier;
 
-  srb_pdcp_context(const ue_index_t ue_index, const srb_id_t srb_id, timer_factory timers, task_executor& executor)
+  srb_pdcp_context(const ue_index_t ue_index, const srb_id_t srb_id, timer_factory timers)
   {
     // prepare PDCP creation message
     pdcp_entity_creation_message srb_pdcp{};
@@ -67,15 +46,8 @@ struct srb_pdcp_context {
     srb_pdcp.tx_lower    = &pdcp_tx_notifier;
     srb_pdcp.tx_upper_cn = &rrc_tx_control_notifier;
     srb_pdcp.rx_upper_dn = &rrc_rx_data_notifier;
-    srb_pdcp.rx_upper_cn = &rrc_rx_data_notifier;
-    // Uplink, Downlink and Control run in the same executor, hence all timer factories are the same.
-    srb_pdcp.ue_dl_timer_factory   = timers;
-    srb_pdcp.ue_ul_timer_factory   = timers;
-    srb_pdcp.ue_ctrl_timer_factory = timers;
-    // Uplink, Downlink, Control and Crypto run in the same executor
-    srb_pdcp.ue_dl_executor  = &executor;
-    srb_pdcp.ue_ul_executor  = &executor;
-    srb_pdcp.crypto_executor = &executor;
+    srb_pdcp.rx_upper_cn = &rrc_rx_control_notifier;
+    srb_pdcp.timers      = timers;
 
     // create PDCP entity
     entity = create_pdcp_entity(srb_pdcp);
@@ -86,8 +58,8 @@ struct srb_pdcp_context {
 class ue_srb_context
 {
 public:
-  ue_srb_context(const ue_index_t ue_index, const srb_id_t srb_id, timer_factory timers, task_executor& executor) :
-    pdcp_context(ue_index, srb_id, timers, executor)
+  ue_srb_context(const ue_index_t ue_index, const srb_id_t srb_id, timer_factory timers) :
+    pdcp_context(ue_index, srb_id, timers)
   {
   }
 
@@ -131,34 +103,17 @@ public:
   }
 
   // Add ciphering and integrity protection to an RRC PDU.
-  pdcp_tx_result pack_rrc_pdu(byte_buffer rrc_pdu)
+  byte_buffer pack_rrc_pdu(byte_buffer rrc_pdu)
   {
     pdcp_context.entity->get_tx_upper_data_interface().handle_sdu(std::move(rrc_pdu));
-
-    byte_buffer packed_pdu = pdcp_context.pdcp_tx_notifier.get_pdcp_pdu();
-
-    // If the PDCP layer failed to pack the PDU, return the failure cause.
-    if (packed_pdu.empty()) {
-      return pdcp_tx_result{pdcp_context.rrc_tx_control_notifier.get_failure_cause()};
-    }
-
-    return pdcp_tx_result{std::move(packed_pdu)};
+    return pdcp_context.pdcp_tx_notifier.get_pdcp_pdu();
   }
 
   // Decipher and verify integrity of an PDCP PDU.
-  pdcp_rx_result unpack_pdcp_pdu(byte_buffer pdcp_pdu)
+  byte_buffer unpack_pdcp_pdu(byte_buffer pdcp_pdu)
   {
-    auto buffer_chain = byte_buffer_chain::create(std::move(pdcp_pdu));
-    if (buffer_chain.is_error()) {
-      return pdcp_rx_result{ngap_cause_misc_t::not_enough_user_plane_processing_res};
-    }
-
-    pdcp_context.entity->get_rx_lower_interface().handle_pdu(std::move(buffer_chain.value()));
-
-    // Return unpacked PDCP PDUs or error with cause.
-    // Note: List of byte_buffers (in case of success) can be empty if the PDCP Rx PDU is out-of-order.
-    variant<std::vector<byte_buffer>, ngap_cause_t> unpacked_pdus = pdcp_context.rrc_rx_data_notifier.pop_result();
-    return pdcp_rx_result{unpacked_pdus};
+    pdcp_context.entity->get_rx_lower_interface().handle_pdu(byte_buffer_chain{std::move(pdcp_pdu)});
+    return pdcp_context.rrc_rx_data_notifier.get_rrc_pdu();
   }
 
 private:

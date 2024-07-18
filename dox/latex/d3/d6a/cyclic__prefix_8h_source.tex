@@ -1,0 +1,144 @@
+\doxysection{cyclic\+\_\+prefix.\+h}
+\hypertarget{cyclic__prefix_8h_source}{}\label{cyclic__prefix_8h_source}\index{include/srsran/ran/cyclic\_prefix.h@{include/srsran/ran/cyclic\_prefix.h}}
+\mbox{\hyperlink{cyclic__prefix_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Cyclic\ Prefix\ types\ and\ related\ slot\ size.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/phy\_time\_unit.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/math\_utils.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{algorithm}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Describes\ a\ cyclic\ prefix\ configuration\ with\ its\ helper\ methods.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Cyclic\ Prefix\ types,\ as\ described\ in\ TS\ 38.211.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65}{options}}\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{///\ Indicates\ normal\ cyclic\ prefix\ length.}}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{NORMAL}}\ =\ 0,}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{///\ Indicates\ extended\ cyclic\ prefix\ length.}}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{EXTENDED}}}
+\DoxyCodeLine{00044\ \ \ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Indicates\ the\ cyclic\ prefix\ type.}}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65}{options}}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}}\ =\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{NORMAL}};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Default\ constructor\ as\ normal.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a43ac3b3c05069a561bc37e1e22e2c5bc}{cyclic\_prefix}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Construct\ from\ value.\ It\ allows\ implicit\ conversion\ from\ a\ cyclic\ prefix\ option.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_ab7e1377f328765e91550e4a626ff959d}{cyclic\_prefix}}(\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65}{options}}\ opt)\ :\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}}(opt)\ \{\}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Implicit\ conversion\ to\ enumerate.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a4be3594147e20191a9db9bb060e37104}{operator}}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65}{options}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}};\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Get\ the\ string\ value.}}
+\DoxyCodeLine{00059\ \ \ std::string\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_af1fb55b0e99e5a7b17fcd5366fefb0f4}{to\_string}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}}\ ==\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{NORMAL}})\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}normal"{}};}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}extended"{}};}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ the\ validity\ of\ the\ DFT\ size\ and\ subcarrier\ spacing\ for\ the\ current\ cyclic\ prefix.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ A\ cyclic\ prefix\ is\ valid\ if\ it\ results\ in\ an\ integer\ number\ of\ samples.\ Othwerwise,\ it\ is\ not\ valid.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ \ \ \ \ \ Subcarrier\ spacing.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ dft\_size\ DFT\ size.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ cyclic\ prefix\ is\ valid\ for\ the\ given\ SCS\ and\ DFT\ size.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_ab94b4f7573c80542bbe98d5b6e14b458}{is\_valid}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ \textcolor{keywordtype}{unsigned}\ dft\_size)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{//\ All\ units\ are\ in\ multiples\ of\ the\ constant\ kappa.}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ cp\_len\ =\ 144U\ >>\ \mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}};}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}}\ ==\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{EXTENDED}})\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ cp\_len\ =\ 512U\ >>\ \mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}};}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ sampling\_rate\_Hz\ =\ to\_sampling\_rate\_Hz<\textcolor{keywordtype}{unsigned}>(scs,\ dft\_size);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ The\ cyclic\ prefix\ lengths\ must\ result\ in\ an\ integer\ number\ of\ samples.}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{::}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{from\_units\_of\_kappa}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{(}}cp\_len\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{)}}.is\_sample\_accurate(sampling\_rate\_Hz)\ \&\&}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{::}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{from\_units\_of\_kappa}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{(}}16\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{)}}.is\_sample\_accurate(sampling\_rate\_Hz);}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Calculates\ the\ cyclic\ prefix\ length\ in\ samples\ as\ per\ TS38.211\ Section\ 5.3.1.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_idx\ Symbol\ index\ within\ the\ subframe.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ \ \ \ \ \ \ \ Subcarrier\ spacing\ numerology.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ cyclic\ prefix\ length\ in\ PHY\ time\ units.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_ac71cef705198bb0f9b4a83f5ee3f158b}{get\_length}}(\textcolor{keywordtype}{unsigned}\ symbol\_idx,\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{//\ All\ units\ are\ in\ multiples\ of\ the\ constant\ kappa.}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ cp\_len\ =\ 144U\ >>\ \mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_a6781225855740b26c69f8e329877d012}{value}}\ ==\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{EXTENDED}})\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ cp\_len\ =\ 512U\ >>\ \mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}};}
+\DoxyCodeLine{00099\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (symbol\_idx\ ==\ 0\ ||\ symbol\_idx\ ==\ 7\ *\ \mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{pow2}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{(}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{)}})\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ cp\_len\ +=\ 16;}
+\DoxyCodeLine{00101\ \ \ \ \ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{::}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{from\_units\_of\_kappa}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{(}}cp\_len\mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{)}};}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ \};}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \textcolor{comment}{///\ Defines\ the\ number\ of\ OFDM\ symbols\ per\ slot,\ according\ to\ TS\ 38.211\ Tables\ 4.3.2-\/1\ and\ 4.3.2-\/2.}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{get\_nsymb\_per\_slot}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ cp)}
+\DoxyCodeLine{00109\ \{}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordflow}{if}\ (cp\ ==\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{::}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{EXTENDED}})\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{return}\ 12;}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordflow}{return}\ 14;}
+\DoxyCodeLine{00114\ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \textcolor{comment}{///\ Returns\ the\ maximum\ number\ of\ OFDM\ symbols\ per\ slot.}}
+\DoxyCodeLine{00117\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NSYMB\_PER\_SLOT\ =}
+\DoxyCodeLine{00118\ \ \ \ \ std::max(\mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{get\_nsymb\_per\_slot}}\mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{(}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{::}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{NORMAL}}\mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{)}},\ \mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{get\_nsymb\_per\_slot}}\mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{(}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{::}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65adabe94441d9f690568b5744c54f64778}{EXTENDED}}\mbox{\hyperlink{namespacesrsran_aa1d2bd5d3008afda19c0949d241a73f7}{)}});}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{comment}{///\ FMT\ formatter\ of\ slot\_point\ type.}}
+\DoxyCodeLine{00125\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00126\ \textcolor{keyword}{struct}\ formatter<srsran::cyclic\_prefix>\ \{}
+\DoxyCodeLine{00127\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00129\ \ \ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{auto}\ format(srsran::cyclic\_prefix\ cp,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00134\ \ \ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ cp.to\_string());}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

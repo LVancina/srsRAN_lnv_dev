@@ -3043,38 +3043,6 @@ void srsran::srs_du::calculate_cell_group_config_diff(asn1::rrc_nr::cell_group_c
           : asn1::rrc_nr::phys_cell_group_cfg_s::pdsch_harq_ack_codebook_opts::semi_static;
 }
 
-static ssb_mtc_s make_ssb_mtc(const du_cell_config& du_cell_cfg)
-{
-  ssb_mtc_s ret;
-
-  // TODO: Derive the correct duration.
-  switch (du_cell_cfg.ssb_cfg.ssb_period) {
-    case ssb_periodicity::ms5:
-      ret.periodicity_and_offset.set_sf5() = 0;
-      break;
-    case ssb_periodicity::ms10:
-      ret.periodicity_and_offset.set_sf10() = 0;
-      break;
-    case ssb_periodicity::ms20:
-      ret.periodicity_and_offset.set_sf20() = 0;
-      break;
-    case ssb_periodicity::ms40:
-      ret.periodicity_and_offset.set_sf40() = 0;
-      break;
-    case ssb_periodicity::ms80:
-      ret.periodicity_and_offset.set_sf80() = 0;
-      break;
-    case ssb_periodicity::ms160:
-      ret.periodicity_and_offset.set_sf160() = 0;
-      break;
-    default:
-      report_fatal_error("Invalud SSB period={}", du_cell_cfg.ssb_cfg.ssb_period);
-  }
-  ret.dur.value = ssb_mtc_s::dur_opts::sf5;
-
-  return ret;
-}
-
 bool srsran::srs_du::calculate_reconfig_with_sync_diff(asn1::rrc_nr::recfg_with_sync_s&    out,
                                                        const du_cell_config&               du_cell_cfg,
                                                        const cell_group_config&            dest,
@@ -3090,12 +3058,6 @@ bool srsran::srs_du::calculate_reconfig_with_sync_diff(asn1::rrc_nr::recfg_with_
   // > downlinkConfigCommon DownlinkConfigCommon OPTIONAL, -- Cond HOAndServCellAdd
   out.sp_cell_cfg_common.dl_cfg_common_present = true;
   out.sp_cell_cfg_common.dl_cfg_common         = make_asn1_rrc_dl_cfg_common(du_cell_cfg);
-  // >> In case of HO, the coresetZero and searchSpaceZero need to be set.
-  pdcch_cfg_common_s& pdcch_cfg_common  = out.sp_cell_cfg_common.dl_cfg_common.init_dl_bwp.pdcch_cfg_common.setup();
-  pdcch_cfg_common.coreset_zero_present = true;
-  pdcch_cfg_common.coreset_zero         = du_cell_cfg.coreset0_idx;
-  pdcch_cfg_common.search_space_zero_present = true;
-  pdcch_cfg_common.search_space_zero         = du_cell_cfg.searchspace0_idx;
 
   // > uplinkConfigCommon UplinkConfigCommon OPTIONAL, -- Need M
   out.sp_cell_cfg_common.ul_cfg_common_present = true;
@@ -3113,23 +3075,10 @@ bool srsran::srs_du::calculate_reconfig_with_sync_diff(asn1::rrc_nr::recfg_with_
         serving_cell_cfg_common_s::n_timing_advance_offset_opts::n39936;
   }
 
-  // As per \c ssb-PositionsInBurst, in \c ServingCellConfigCommon, TS 38.331, the length of \c ssb-PositionsInBurst
-  // needs to be set according to TS 38.213, Section 4.1.
+  // TODO: check how to fill this field.
   out.sp_cell_cfg_common.ssb_positions_in_burst_present = true;
-  const uint8_t l_max =
-      band_helper::get_ssb_l_max(du_cell_cfg.dl_carrier.band,
-                                 du_cell_cfg.ssb_cfg.scs,
-                                 static_cast<uint32_t>(du_cell_cfg.dl_cfg_common.freq_info_dl.absolute_freq_point_a));
-  srsran_assert(l_max == 4U or l_max == 8U or l_max == 64U, "L_max value {} not valid", l_max);
-  if (l_max == 4U) {
-    out.sp_cell_cfg_common.ssb_positions_in_burst.set_short_bitmap().from_number(
-        static_cast<uint64_t>(du_cell_cfg.ssb_cfg.ssb_bitmap) >> static_cast<uint64_t>(60U));
-  } else if (l_max == 8U) {
-    out.sp_cell_cfg_common.ssb_positions_in_burst.set_medium_bitmap().from_number(
-        static_cast<uint64_t>(du_cell_cfg.ssb_cfg.ssb_bitmap) >> static_cast<uint64_t>(56U));
-  } else {
-    out.sp_cell_cfg_common.ssb_positions_in_burst.set_long_bitmap().from_number(du_cell_cfg.ssb_cfg.ssb_bitmap);
-  }
+  out.sp_cell_cfg_common.ssb_positions_in_burst.set_medium_bitmap().from_number(
+      static_cast<uint64_t>(du_cell_cfg.ssb_cfg.ssb_bitmap) >> static_cast<uint64_t>(56U));
 
   out.sp_cell_cfg_common.ssb_periodicity_serving_cell_present = true;
   asn1::number_to_enum(out.sp_cell_cfg_common.ssb_periodicity_serving_cell,
@@ -3156,10 +3105,6 @@ bool srsran::srs_du::calculate_reconfig_with_sync_diff(asn1::rrc_nr::recfg_with_
   out.new_ue_id = to_value(rnti);
 
   out.t304.value = recfg_with_sync_s::t304_opts::ms2000;
-
-  out.ext = true;
-  out.smtc.set_present();
-  *out.smtc = make_ssb_mtc(du_cell_cfg);
 
   // TODO
 

@@ -45,7 +45,7 @@ void rrc_ue_impl::handle_ul_ccch_pdu(byte_buffer pdu)
     if (ul_ccch_msg.unpack(bref) != asn1::SRSASN_SUCCESS or
         ul_ccch_msg.msg.type().value != ul_ccch_msg_type_c::types_opts::c1) {
       logger.log_error(pdu.begin(), pdu.end(), "Failed to unpack CCCH UL PDU");
-      on_ue_release_required(ngap_cause_radio_network_t::unspecified);
+      on_ue_release_required(cause_radio_network_t::unspecified);
       return;
     }
   }
@@ -63,7 +63,7 @@ void rrc_ue_impl::handle_ul_ccch_pdu(byte_buffer pdu)
       break;
     default:
       logger.log_error("Unsupported CCCH UL message type");
-      on_ue_release_required(ngap_cause_radio_network_t::unspecified);
+      on_ue_release_required(cause_radio_network_t::unspecified);
   }
 }
 
@@ -72,7 +72,7 @@ void rrc_ue_impl::handle_rrc_setup_request(const asn1::rrc_nr::rrc_setup_request
   // Perform various checks to make sure we can serve the RRC Setup Request
   if (not cu_cp_notifier.on_ue_setup_request()) {
     logger.log_error("Sending Connection Reject. Cause: RRC connections not allowed");
-    on_ue_release_required(ngap_cause_radio_network_t::unspecified);
+    on_ue_release_required(cause_radio_network_t::unspecified);
     return;
   }
 
@@ -80,7 +80,7 @@ void rrc_ue_impl::handle_rrc_setup_request(const asn1::rrc_nr::rrc_setup_request
     // If the DU to CU container is missing, assume the DU can't serve the UE, so the CU-CP should reject the UE, see
     // TS 38.473 section 8.4.1.2.
     logger.log_debug("Sending rrcReject. Cause: DU is not able to serve the UE");
-    on_ue_release_required(ngap_cause_radio_network_t::unspecified);
+    on_ue_release_required(cause_radio_network_t::unspecified);
     return;
   }
 
@@ -102,8 +102,8 @@ void rrc_ue_impl::handle_rrc_setup_request(const asn1::rrc_nr::rrc_setup_request
       // TODO: communicate with NGAP
       break;
     default:
-      logger.log_error("Unsupported RRCSetupRequest");
-      on_ue_release_required(ngap_cause_radio_network_t::unspecified);
+      logger.log_error("Unsupported RrcSetupRequest");
+      on_ue_release_required(cause_radio_network_t::unspecified);
       return;
   }
   context.connection_cause.value = request_ies.establishment_cause.value;
@@ -128,15 +128,12 @@ void rrc_ue_impl::handle_rrc_reest_request(const asn1::rrc_nr::rrc_reest_request
                                                                              *this,
                                                                              *this,
                                                                              get_rrc_ue_srb_handler(),
+                                                                             du_processor_notifier,
                                                                              cu_cp_notifier,
+                                                                             ngap_ctrl_notifier,
                                                                              nas_notifier,
                                                                              *event_mng,
                                                                              logger));
-}
-
-void rrc_ue_impl::stop()
-{
-  event_mng->transactions.stop();
 }
 
 void rrc_ue_impl::handle_pdu(const srb_id_t srb_id, byte_buffer rrc_pdu)
@@ -153,11 +150,9 @@ void rrc_ue_impl::handle_pdu(const srb_id_t srb_id, byte_buffer rrc_pdu)
   }
 
   // Log Rx message
-  if (logger.get_basic_logger().debug.enabled()) {
-    fmt::memory_buffer fmtbuf;
-    fmt::format_to(fmtbuf, "{} DCCH UL", srb_id);
-    log_rrc_message(logger, Rx, rrc_pdu, ul_dcch_msg, to_c_str(fmtbuf));
-  }
+  fmt::memory_buffer fmtbuf;
+  fmt::format_to(fmtbuf, "{} DCCH UL", srb_id);
+  log_rrc_message(logger, Rx, rrc_pdu, ul_dcch_msg, to_c_str(fmtbuf));
 
   switch (ul_dcch_msg.msg.c1().type().value) {
     case ul_dcch_msg_type_c::c1_c_::types_opts::options::ul_info_transfer:
@@ -205,18 +200,14 @@ void rrc_ue_impl::handle_ul_dcch_pdu(const srb_id_t srb_id, byte_buffer pdcp_pdu
   }
 
   // Unpack PDCP PDU
-  pdcp_rx_result pdcp_unpacking_result = context.srbs.at(srb_id).unpack_pdcp_pdu(std::move(pdcp_pdu));
-  if (!pdcp_unpacking_result.is_successful()) {
-    logger.log_info("Requesting UE release. Cause: PDCP unpacking failed with {}",
-                    pdcp_unpacking_result.get_failure_cause());
-    on_ue_release_required(pdcp_unpacking_result.get_failure_cause());
+  byte_buffer rrc_pdu = context.srbs.at(srb_id).unpack_pdcp_pdu(std::move(pdcp_pdu));
+  if (rrc_pdu.empty()) {
+    logger.log_warning("Dropping empty PDU. RX {}", srb_id);
+    logger.log_debug("original len={}, new_len={}", pdcp_pdu.length(), rrc_pdu.length());
     return;
   }
 
-  std::vector<byte_buffer> rrc_pdus = pdcp_unpacking_result.pop_pdus();
-  for (byte_buffer& pdu : rrc_pdus) {
-    handle_pdu(srb_id, std::move(pdu));
-  }
+  handle_pdu(srb_id, std::move(rrc_pdu));
 }
 
 void rrc_ue_impl::handle_ul_info_transfer(const ul_info_transfer_ies_s& ul_info_transfer)
@@ -236,11 +227,13 @@ void rrc_ue_impl::handle_measurement_report(const asn1::rrc_nr::meas_report_s& m
   // convert asn1 to common type
   rrc_meas_results meas_results = asn1_to_measurement_results(msg.crit_exts.meas_report().meas_results);
   // send measurement results to cell measurement manager
-  measurement_notifier.on_measurement_report(meas_results);
+  measurement_notifier.on_measurement_report(context.ue_index, meas_results);
 }
 
 void rrc_ue_impl::handle_dl_nas_transport_message(byte_buffer nas_pdu)
 {
+  logger.log_debug("Received DlNasTransportMessage ({} B)", nas_pdu.length());
+
   dl_dcch_msg_s           dl_dcch_msg;
   dl_info_transfer_ies_s& dl_info_transfer =
       dl_dcch_msg.msg.set_c1().set_dl_info_transfer().crit_exts.set_dl_info_transfer();
@@ -266,39 +259,22 @@ void rrc_ue_impl::handle_rrc_transaction_complete(const ul_dcch_msg_s& msg, uint
 async_task<bool> rrc_ue_impl::handle_rrc_reconfiguration_request(const rrc_reconfiguration_procedure_request& msg)
 {
   return launch_async<rrc_reconfiguration_procedure>(
-      context, msg, *this, cu_cp_notifier, *event_mng, get_rrc_ue_srb_handler(), logger);
+      context, msg, *this, ngap_ctrl_notifier, du_processor_notifier, *event_mng, get_rrc_ue_srb_handler(), logger);
 }
 
-rrc_ue_handover_reconfiguration_context
-rrc_ue_impl::get_rrc_ue_handover_reconfiguration_context(const rrc_reconfiguration_procedure_request& request)
+uint8_t rrc_ue_impl::handle_handover_reconfiguration_request(const rrc_reconfiguration_procedure_request& msg)
 {
-  rrc_ue_handover_reconfiguration_context ho_reconf_ctxt;
-
   // Create transaction to get transaction ID
-  rrc_transaction transaction   = event_mng->transactions.create_transaction();
-  ho_reconf_ctxt.transaction_id = transaction.id();
+  rrc_transaction transaction    = event_mng->transactions.create_transaction();
+  unsigned        transaction_id = transaction.id();
 
-  // pack RRC Reconfig
   dl_dcch_msg_s dl_dcch_msg;
-  dl_dcch_msg.msg.set_c1().set_rrc_recfg().crit_exts.set_rrc_recfg();
-  fill_asn1_rrc_reconfiguration_msg(dl_dcch_msg.msg.c1().rrc_recfg(), ho_reconf_ctxt.transaction_id, request);
+  dl_dcch_msg.msg.set_c1().set_rrc_recfg();
+  rrc_recfg_s& rrc_reconfig = dl_dcch_msg.msg.c1().rrc_recfg();
+  fill_asn1_rrc_reconfiguration_msg(rrc_reconfig, transaction_id, msg);
+  on_new_dl_dcch(srb_id_t::srb1, dl_dcch_msg);
 
-  // pack DL CCCH msg
-  pdcp_tx_result pdcp_packing_result =
-      context.srbs.at(srb_id_t::srb1).pack_rrc_pdu(pack_into_pdu(dl_dcch_msg, "RRCReconfiguration"));
-  if (!pdcp_packing_result.is_successful()) {
-    logger.log_info("Requesting UE release. Cause: PDCP packing failed with {}",
-                    pdcp_packing_result.get_failure_cause());
-    on_ue_release_required(pdcp_packing_result.get_failure_cause());
-    return ho_reconf_ctxt;
-  }
-
-  ho_reconf_ctxt.rrc_ue_handover_reconfiguration_pdu = pdcp_packing_result.pop_pdu();
-
-  // Log Tx message
-  log_rrc_message(logger, Tx, ho_reconf_ctxt.rrc_ue_handover_reconfiguration_pdu, dl_dcch_msg, "DCCH DL");
-
-  return ho_reconf_ctxt;
+  return transaction_id;
 }
 
 async_task<bool> rrc_ue_impl::handle_handover_reconfiguration_complete_expected(uint8_t transaction_id)
@@ -310,7 +286,7 @@ async_task<bool> rrc_ue_impl::handle_handover_reconfiguration_complete_expected(
       [this, timeout_ms, transaction_id, transaction = rrc_transaction{}](coro_context<async_task<bool>>& ctx) mutable {
         CORO_BEGIN(ctx);
 
-        logger.log_debug("Awaiting RRC Reconfiguration Complete (timeout={}ms)", timeout_ms.count());
+        logger.log_debug("Awaiting RRC Reconfiguration Complete");
         // create new transaction for RRC Reconfiguration procedure
         transaction = event_mng->transactions.create_transaction(transaction_id, timeout_ms);
 
@@ -320,12 +296,8 @@ async_task<bool> rrc_ue_impl::handle_handover_reconfiguration_complete_expected(
         if (transaction.has_response()) {
           logger.log_debug("Received RRC Reconfiguration Complete after HO");
           procedure_result = true;
-
-          // The UE in the target cell is in connected state on RRC Reconfiguration Complete reception.
-          context.state = rrc_state::connected;
-
         } else {
-          logger.log_debug("Did not receive RRC Reconfiguration Complete after HO. Cause: timeout");
+          logger.log_debug("Did not receive RRC Reconfiguration Complete after HO (timeout)");
         }
 
         CORO_RETURN(procedure_result);
@@ -338,7 +310,7 @@ async_task<bool> rrc_ue_impl::handle_rrc_ue_capability_transfer_request(const rr
   return launch_async<rrc_ue_capability_transfer_procedure>(context, *this, *event_mng, logger);
 }
 
-rrc_ue_release_context rrc_ue_impl::get_rrc_ue_release_context(bool requires_rrc_message)
+rrc_ue_release_context rrc_ue_impl::get_rrc_ue_release_context()
 {
   // prepare location info to return
   rrc_ue_release_context release_context;
@@ -346,57 +318,47 @@ rrc_ue_release_context rrc_ue_impl::get_rrc_ue_release_context(bool requires_rrc
   release_context.user_location_info.tai.plmn_id = context.cell.cgi.plmn_hex;
   release_context.user_location_info.tai.tac     = context.cell.tac;
 
-  if (requires_rrc_message) {
-    if (context.srbs.empty()) {
-      // SRB1 was not created, so we need to reject the UE
-      // Create and RRCReject container, see section 5.3.15 in TS 38.331
-      dl_ccch_msg_s dl_ccch_msg;
-      // SRB1 was not created, so we create a RRC Container with RRCReject
-      rrc_reject_ies_s& reject = dl_ccch_msg.msg.set_c1().set_rrc_reject().crit_exts.set_rrc_reject();
+  if (context.srbs.empty()) {
+    // SRB1 was not created, so we need to reject the UE
+    // Create and RrcReject container, see section 5.3.15 in TS 38.331
+    dl_ccch_msg_s dl_ccch_msg;
+    // SRB1 was not created, so we create a RRC Container with RrcReject
+    rrc_reject_ies_s& reject = dl_ccch_msg.msg.set_c1().set_rrc_reject().crit_exts.set_rrc_reject();
 
-      // See TS 38.331, RejectWaitTime
-      reject.wait_time_present = true;
-      reject.wait_time         = rrc_reject_max_wait_time_s;
+    // See TS 38.331, RejectWaitTime
+    reject.wait_time_present = true;
+    reject.wait_time         = rrc_reject_max_wait_time_s;
 
-      // pack DL CCCH msg
-      release_context.rrc_release_pdu = pack_into_pdu(dl_ccch_msg, "RRCReject");
-      release_context.srb_id          = srb_id_t::srb0;
-
-      // Log Tx message
-      log_rrc_message(logger, Tx, release_context.rrc_release_pdu, dl_ccch_msg, "CCCH DL");
-    } else {
-      // prepare SRB1 RRC Release PDU to return
-      if (context.srbs.find(srb_id_t::srb1) == context.srbs.end()) {
-        logger.log_error("Can't create RRCRelease PDU. RX {} is not set up", srb_id_t::srb1);
-        return release_context;
-      } else {
-        dl_dcch_msg_s dl_dcch_msg;
-        dl_dcch_msg.msg.set_c1().set_rrc_release().crit_exts.set_rrc_release();
-
-        // pack DL CCCH msg
-        pdcp_tx_result pdcp_packing_result =
-            context.srbs.at(srb_id_t::srb1).pack_rrc_pdu(pack_into_pdu(dl_dcch_msg, "RRCRelease"));
-        if (!pdcp_packing_result.is_successful()) {
-          logger.log_info("Requesting UE release. Cause: PDCP packing failed with {}",
-                          pdcp_packing_result.get_failure_cause());
-          on_ue_release_required(pdcp_packing_result.get_failure_cause());
-          return release_context;
-        }
-
-        release_context.rrc_release_pdu = pdcp_packing_result.pop_pdu();
-        release_context.srb_id          = srb_id_t::srb1;
-
-        // Log Tx message
-        log_rrc_message(logger, Tx, release_context.rrc_release_pdu, dl_dcch_msg, "DCCH DL");
-      }
-    }
+    // pack DL CCCH msg
+    release_context.rrc_release_pdu = pack_into_pdu(dl_ccch_msg, "RRCReject");
+    release_context.srb_id          = srb_id_t::srb0;
 
     // Log Tx message
-    logger.log_debug(release_context.rrc_release_pdu.begin(),
-                     release_context.rrc_release_pdu.end(),
-                     "TX {} PDU",
-                     release_context.srb_id);
+    log_rrc_message(logger, Tx, release_context.rrc_release_pdu, dl_ccch_msg, "CCCH DL");
+  } else {
+    // prepare SRB1 RRC Release PDU to return
+    if (context.srbs.find(srb_id_t::srb1) == context.srbs.end()) {
+      logger.log_error("Can't create RrcRelease PDU. RX {} is not set up", srb_id_t::srb1);
+      return release_context;
+    } else {
+      dl_dcch_msg_s dl_dcch_msg;
+      dl_dcch_msg.msg.set_c1().set_rrc_release().crit_exts.set_rrc_release();
+
+      // pack DL CCCH msg
+      release_context.rrc_release_pdu =
+          context.srbs.at(srb_id_t::srb1).pack_rrc_pdu(pack_into_pdu(dl_dcch_msg, "RRCRelease"));
+      release_context.srb_id = srb_id_t::srb1;
+
+      // Log Tx message
+      log_rrc_message(logger, Tx, release_context.rrc_release_pdu, dl_dcch_msg, "DCCH DL");
+    }
   }
+
+  // Log Tx message
+  logger.log_debug(release_context.rrc_release_pdu.begin(),
+                   release_context.rrc_release_pdu.end(),
+                   "TX {} PDU",
+                   release_context.srb_id);
 
   return release_context;
 }
@@ -419,9 +381,9 @@ rrc_ue_transfer_context rrc_ue_impl::get_transfer_context()
   return transfer_context;
 }
 
-rrc_ue_reestablishment_context_response rrc_ue_impl::get_context()
+rrc_reestablishment_ue_context_t rrc_ue_impl::get_context()
 {
-  rrc_ue_reestablishment_context_response rrc_reest_context;
+  rrc_reestablishment_ue_context_t rrc_reest_context;
   rrc_reest_context.sec_context = context.sec_context;
 
   if (context.capabilities.has_value()) {
@@ -469,30 +431,28 @@ byte_buffer rrc_ue_impl::get_rrc_handover_command(const rrc_reconfiguration_proc
   ho_cmd.crit_exts.set_c1().set_ho_cmd().ho_cmd_msg = reconfig_pdu.copy();
 
   // pack Handover Command
-  byte_buffer ho_cmd_pdu = pack_into_pdu(ho_cmd, "RRCHandoverCommand");
+  byte_buffer ho_cmd_pdu = pack_into_pdu(ho_cmd, "HandoverCommand");
 
   // Log message
   logger.log_debug(ho_cmd_pdu.begin(), ho_cmd_pdu.end(), "RRCHandoverCommand ({} B)", ho_cmd_pdu.length());
   if (logger.get_basic_logger().debug.enabled()) {
     asn1::json_writer js;
     ho_cmd.to_json(js);
-    logger.log_debug("Containerized RRCHandoverCommand: {}", js.to_string());
+    logger.log_debug("Containerized RrcHandoverCommand: {}", js.to_string());
   }
 
   return ho_cmd_pdu;
 }
 
-byte_buffer rrc_ue_impl::handle_rrc_handover_command(byte_buffer cmd)
+bool rrc_ue_impl::handle_rrc_handover_command(byte_buffer cmd)
 {
-  byte_buffer ho_reconf_pdu = byte_buffer{};
-
-  // Unpack Handover Command
+  // Unpack HGandover Command
   asn1::rrc_nr::ho_cmd_s handover_command;
   asn1::cbit_ref         bref({cmd.begin(), cmd.end()});
 
   if (handover_command.unpack(bref) != asn1::SRSASN_SUCCESS) {
     logger.log_error("Couldn't unpack Handover Command RRC container");
-    return ho_reconf_pdu;
+    return false;
   }
 
   // Unpack RRC Reconfiguration to new DL DCCH Message
@@ -504,23 +464,11 @@ byte_buffer rrc_ue_impl::handle_rrc_handover_command(byte_buffer cmd)
 
   if (rrc_recfg.unpack(bref2) != asn1::SRSASN_SUCCESS) {
     logger.log_error("Couldn't unpack RRC Reconfiguration container");
-    return ho_reconf_pdu;
+    return false;
   }
 
-  // pack DL CCCH msg
-  pdcp_tx_result pdcp_packing_result =
-      context.srbs.at(srb_id_t::srb1).pack_rrc_pdu(pack_into_pdu(dl_dcch_msg, "RRCReconfiguration"));
-  if (!pdcp_packing_result.is_successful()) {
-    logger.log_info("Requesting UE release. Cause: PDCP packing failed with {}",
-                    pdcp_packing_result.get_failure_cause());
-    on_ue_release_required(pdcp_packing_result.get_failure_cause());
-    return ho_reconf_pdu;
-  }
+  // Send to UE
+  on_new_dl_dcch(srb_id_t::srb1, dl_dcch_msg);
 
-  ho_reconf_pdu = pdcp_packing_result.pop_pdu();
-
-  // Log Tx message
-  log_rrc_message(logger, Tx, ho_reconf_pdu, dl_dcch_msg, "DCCH DL");
-
-  return ho_reconf_pdu;
+  return true;
 }

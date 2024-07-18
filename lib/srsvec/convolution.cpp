@@ -27,7 +27,11 @@
 using namespace srsran;
 using namespace srsvec;
 
-void srsran::srsvec::detail::multiply_and_accumulate(span<float> out, span<const float> x, span<const float> y)
+namespace srsran {
+namespace srsvec {
+namespace detail {
+
+void multiply_and_accumulate(span<float> out, span<const float> x, span<const float> y)
 {
   unsigned y_mid     = y.size() / 2;
   unsigned out_start = y_mid - (y.size() % 2 == 0 ? 1 : 0);
@@ -40,13 +44,15 @@ void srsran::srsvec::detail::multiply_and_accumulate(span<float> out, span<const
 
     span<const float> x_chunk = x.subspan(x_start, x_end - x_start);
 
-    for (unsigned i = 0, i_end = x_chunk.size(); i != i_end; ++i) {
+    unsigned i = 0;
+
+    for (unsigned i_end = x_chunk.size(); i != i_end; ++i) {
       out[i + out_start] += x_chunk[i] * y[y_index];
     }
   }
 }
 
-void srsran::srsvec::detail::multiply_and_accumulate(span<cf_t> out, span<const cf_t> x, span<const float> y)
+void multiply_and_accumulate(span<cf_t> out, span<const cf_t> x, span<const float> y)
 {
   unsigned y_mid     = y.size() / 2;
   unsigned out_start = (y_mid - (y.size() % 2 == 0 ? 1 : 0)) * 2;
@@ -63,11 +69,11 @@ void srsran::srsvec::detail::multiply_and_accumulate(span<cf_t> out, span<const 
     auto     y_it   = y.rbegin();
     for (unsigned i_y = 0, i_y_end = y.size(); i_y != i_y_end; ++i_y) {
       simd_f_t y_vector = srsran_simd_f_set1(*y_it++);
-      simd_f_t x_vals   = srsran_simd_f_loadu(x_float.data() + i_x + (i_y * 2));
+      simd_f_t x_vals   = srsran_simd_f_loadu(&x_float[i_x + (i_y * 2)]);
       simd_f_t partial  = srsran_simd_f_mul(x_vals, y_vector);
       result            = srsran_simd_f_add(result, partial);
     }
-    srsran_simd_f_storeu(out_float.data() + out_start + i_x, result);
+    srsran_simd_f_storeu(&out_float[out_start + i_x], result);
   }
 #endif
   unsigned extra = out_start + i_x;
@@ -84,7 +90,7 @@ void srsran::srsvec::detail::multiply_and_accumulate(span<cf_t> out, span<const 
   }
 }
 
-void srsran::srsvec::detail::multiply_and_accumulate(span<cf_t> out, span<const float> x, span<const cf_t> y)
+void multiply_and_accumulate(span<cf_t> out, span<const float> x, span<const cf_t> y)
 {
   unsigned y_mid     = y.size() / 2;
   unsigned out_start = y_mid - (y.size() % 2 == 0 ? 1 : 0);
@@ -97,8 +103,14 @@ void srsran::srsvec::detail::multiply_and_accumulate(span<cf_t> out, span<const 
 
     span<const float> x_chunk = x.subspan(x_start, x_end - x_start);
 
-    for (unsigned i = 0, i_end = x_chunk.size(); i != i_end; ++i) {
+    unsigned i = 0;
+
+    for (unsigned i_end = x_chunk.size(); i != i_end; ++i) {
       out[i + out_start] += x_chunk[i] * y[y_index];
     }
   }
 }
+
+} // namespace detail
+} // namespace srsvec
+} // namespace srsran

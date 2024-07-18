@@ -1,0 +1,106 @@
+\doxysection{srslog\+::detail\+::dyn\+\_\+arg\+\_\+store\+\_\+pool Class Reference}
+\hypertarget{classsrslog_1_1detail_1_1dyn__arg__store__pool}{}\label{classsrslog_1_1detail_1_1dyn__arg__store__pool}\index{srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}}
+
+
+{\ttfamily \#include $<$dyn\+\_\+arg\+\_\+store\+\_\+pool.\+h$>$}
+
+
+
+Collaboration diagram for srslog\+::detail\+::dyn\+\_\+arg\+\_\+store\+\_\+pool\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{d7/d07/classsrslog_1_1detail_1_1dyn__arg__store__pool__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+fmt\+::dynamic\+\_\+format\+\_\+arg\+\_\+store$<$ fmt\+::format\+\_\+context $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classsrslog_1_1detail_1_1dyn__arg__store__pool_a1fb11e9bbc9e81d2bfd0650dd766e85c}{alloc}} ()
+\begin{DoxyCompactList}\small\item\em Returns a pointer to a free dyn arg store object, otherwise returns nullptr. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsrslog_1_1detail_1_1dyn__arg__store__pool_a2e3de258ca7aa659a4d05f6237109cf2}{dealloc}} (fmt\+::dynamic\+\_\+format\+\_\+arg\+\_\+store$<$ fmt\+::format\+\_\+context $>$ \texorpdfstring{$\ast$}{*}p)
+\begin{DoxyCompactList}\small\item\em Deallocate the given dyn arg store object returning it to the pool. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Keeps a pool of \doxylink{classdynamic__format__arg__store}{dynamic\+\_\+format\+\_\+arg\+\_\+store} objects. The main reason for this class is that the arg store objects are implemented with std\+::vectors, so we want to avoid allocating memory each time we create a new object. Instead, reserve memory for each vector during initialization and recycle the objects. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrslog_1_1detail_1_1dyn__arg__store__pool_a79dd6bea58ecee1637a04429df795640}\label{classsrslog_1_1detail_1_1dyn__arg__store__pool_a79dd6bea58ecee1637a04429df795640} 
+\index{srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}!dyn\_arg\_store\_pool@{dyn\_arg\_store\_pool}}
+\index{dyn\_arg\_store\_pool@{dyn\_arg\_store\_pool}!srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}}
+\doxysubsubsection{\texorpdfstring{dyn\_arg\_store\_pool()}{dyn\_arg\_store\_pool()}}
+{\footnotesize\ttfamily srslog\+::detail\+::dyn\+\_\+arg\+\_\+store\+\_\+pool\+::dyn\+\_\+arg\+\_\+store\+\_\+pool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ pool.resize(SRSLOG\_QUEUE\_CAPACITY);}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ elem\ :\ pool)\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{comment}{//\ Reserve\ for\ 10\ normal\ and\ 2\ named\ arguments.}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ elem.reserve(10,\ 2);}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \ \ free\_list.reserve(SRSLOG\_QUEUE\_CAPACITY);}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ elem\ :\ pool)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ free\_list.push\_back(\&elem);}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrslog_1_1detail_1_1dyn__arg__store__pool_a1fb11e9bbc9e81d2bfd0650dd766e85c}\label{classsrslog_1_1detail_1_1dyn__arg__store__pool_a1fb11e9bbc9e81d2bfd0650dd766e85c} 
+\index{srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}!alloc@{alloc}}
+\index{alloc@{alloc}!srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}}
+\doxysubsubsection{\texorpdfstring{alloc()}{alloc()}}
+{\footnotesize\ttfamily fmt\+::dynamic\+\_\+format\+\_\+arg\+\_\+store$<$ fmt\+::format\+\_\+context $>$ \texorpdfstring{$\ast$}{*} srslog\+::detail\+::dyn\+\_\+arg\+\_\+store\+\_\+pool\+::alloc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a pointer to a free dyn arg store object, otherwise returns nullptr. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ scoped\_lock\ lock(m);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (free\_list.empty())\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{auto}*\ p\ =\ free\_list.back();}
+\DoxyCodeLine{00060\ \ \ \ \ free\_list.pop\_back();}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00063\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrslog_1_1detail_1_1dyn__arg__store__pool_a2e3de258ca7aa659a4d05f6237109cf2}\label{classsrslog_1_1detail_1_1dyn__arg__store__pool_a2e3de258ca7aa659a4d05f6237109cf2} 
+\index{srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}!dealloc@{dealloc}}
+\index{dealloc@{dealloc}!srslog::detail::dyn\_arg\_store\_pool@{srslog::detail::dyn\_arg\_store\_pool}}
+\doxysubsubsection{\texorpdfstring{dealloc()}{dealloc()}}
+{\footnotesize\ttfamily void srslog\+::detail\+::dyn\+\_\+arg\+\_\+store\+\_\+pool\+::dealloc (\begin{DoxyParamCaption}\item[{fmt\+::dynamic\+\_\+format\+\_\+arg\+\_\+store$<$ fmt\+::format\+\_\+context $>$ \texorpdfstring{$\ast$}{*}}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deallocate the given dyn arg store object returning it to the pool. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (!p)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ p-\/>clear();}
+\DoxyCodeLine{00073\ \ \ \ \ scoped\_lock\ lock(m);}
+\DoxyCodeLine{00074\ \ \ \ \ free\_list.push\_back(p);}
+\DoxyCodeLine{00075\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/srsran/srslog/detail/support/dyn\+\_\+arg\+\_\+store\+\_\+pool.\+h\end{DoxyCompactItemize}

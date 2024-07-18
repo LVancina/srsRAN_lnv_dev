@@ -1,0 +1,67 @@
+\doxysection{interpolator.\+h}
+\hypertarget{interpolator_8h_source}{}\label{interpolator_8h_source}\index{include/srsran/phy/support/interpolator.h@{include/srsran/phy/support/interpolator.h}}
+\mbox{\hyperlink{interpolator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Interpolator\ interface.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)brief\ Interpolator\ interface.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Describes\ a\ generic\ interpolator,\ agnostic\ to\ the\ interpolation\ algorithm.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1interpolator}{interpolator}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Interpolator\ configuration\ parameters.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1interpolator_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{///\ Index\ of\ the\ first\ known\ value\ (i.e.,\ number\ of\ unknown\ values\ at\ the\ beginning\ of\ the\ sequence).}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1interpolator_1_1configuration_ad798da43a510d17064e948960c4a4db0}{offset}}\ =\ 0;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{///\ Distance\ between\ two\ consecutive\ known\ values\ (a\ value\ of\ one\ means\ that\ there\ are\ no\ gaps).}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1interpolator_1_1configuration_ab1516c1c93c973c5519f0353bd3990d2}{stride}}\ =\ 1;}
+\DoxyCodeLine{00045\ \ \ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Defalut\ destructor.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1interpolator_a23d5351182a67df06ac2a6a9e66a5162}{interpolator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Interpolates\ the\ missing\ data\ in\ a\ sequence.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Interpolated\ data\ sequence.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ input\ \ Known\ data.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ cfg\ \ \ \ Configuration:\ describes\ the\ position\ of\ the\ known\ values\ in\ the\ output\ data\ sequence.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ output\ length\ should\ be\ sufficient\ to\ process\ all\ input\ data\ according\ to\ the\ configured\ pattern.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ extrapolates\ all\ values\ at\ the\ beginning\ and\ at\ the\ end\ of\ the\ output\ sequence\ (that\ is,}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ before\ the\ first\ and\ after\ the\ last\ known\ values,\ respectively).}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1interpolator_a2eb1dbc9f8b17bcbb08aca3e898c23bb}{interpolate}}(span<cf\_t>\ output,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1interpolator_1_1configuration}{configuration}}\&\ cfg)\ =\ 0;}
+\DoxyCodeLine{00059\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

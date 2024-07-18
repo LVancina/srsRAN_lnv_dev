@@ -25,6 +25,7 @@
 #include "srsran/srsvec/types.h"
 
 namespace srsran {
+
 namespace srsvec {
 
 /// \brief Calculates the element-wise modulus square of a sequence of complex values.

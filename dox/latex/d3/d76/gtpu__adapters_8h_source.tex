@@ -1,0 +1,78 @@
+\doxysection{gtpu\+\_\+adapters.\+h}
+\hypertarget{gtpu__adapters_8h_source}{}\label{gtpu__adapters_8h_source}\index{lib/cu\_up/adapters/gtpu\_adapters.h@{lib/cu\_up/adapters/gtpu\_adapters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/udp\_network\_gateway.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gtpu/gtpu\_tunnel\_rx.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gtpu/gtpu\_tunnel\_tx.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/sdap/sdap.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srs\_cu\_up\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Adapter\ between\ GTP-\/U\ and\ Network\ Gateway}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1gtpu__network__gateway__adapter}{gtpu\_network\_gateway\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__tx__upper__layer__notifier}{gtpu\_tunnel\_tx\_upper\_layer\_notifier}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ gtpu\_network\_gateway\_adapter()\ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00038\ \ \ \string~gtpu\_network\_gateway\_adapter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{void}\ connect\_network\_gateway(\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler}{udp\_network\_gateway\_data\_handler}}\&\ gw\_handler\_)\ \{\ gw\_handler\ =\ \&gw\_handler\_;\ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1gtpu__network__gateway__adapter_aadcb2ad34a0a25a91069ccef102e66b9}{on\_new\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ addr)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00043\ \ \ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(gw\_handler\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}Network\ Gateway\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00045\ \ \ \ \ gw\_handler\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler_a09bd799e183ecb47b1cb73b64fc62f13}{-\/>}}\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler_a09bd799e183ecb47b1cb73b64fc62f13}{handle\_pdu}}\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler_a09bd799e183ecb47b1cb73b64fc62f13}{(}}std::move(pdu)\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler_a09bd799e183ecb47b1cb73b64fc62f13}{,}}\ addr\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler_a09bd799e183ecb47b1cb73b64fc62f13}{)}};}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{classsrsran_1_1udp__network__gateway__data__handler}{udp\_network\_gateway\_data\_handler}}*\ gw\_handler\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ Adapter\ between\ GTP-\/U\ and\ SDAP}}
+\DoxyCodeLine{00053\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1gtpu__sdap__adapter}{gtpu\_sdap\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}}
+\DoxyCodeLine{00054\ \{}
+\DoxyCodeLine{00055\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00056\ \ \ gtpu\_sdap\_adapter()\ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00057\ \ \ \string~gtpu\_sdap\_adapter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ connect\_sdap(\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler}{sdap\_tx\_sdu\_handler}}\&\ sdap\_handler\_)\ \{\ sdap\_handler\ =\ \&sdap\_handler\_;\ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1gtpu__sdap__adapter_a1f1880b41a840f66a9e0cda9abc473c7}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ sdu,\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qos\_flow\_id)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sdap\_handler\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}SDAP\ handler\ must\ not\ be\ nullptr"{}});}
+\DoxyCodeLine{00064\ \ \ \ \ sdap\_handler\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler_a2354ab0ea8063a6928162360c72f4f92}{-\/>}}\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler_a2354ab0ea8063a6928162360c72f4f92}{handle\_sdu}}\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler_a2354ab0ea8063a6928162360c72f4f92}{(}}std::move(sdu)\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler_a2354ab0ea8063a6928162360c72f4f92}{,}}\ qos\_flow\_id\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler_a2354ab0ea8063a6928162360c72f4f92}{)}};}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__sdu__handler}{sdap\_tx\_sdu\_handler}}*\ sdap\_handler\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00072\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

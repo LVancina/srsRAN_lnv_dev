@@ -1,0 +1,166 @@
+\doxysection{rlc\+\_\+rx\+\_\+um\+\_\+entity.\+h}
+\hypertarget{rlc__rx__um__entity_8h_source}{}\label{rlc__rx__um__entity_8h_source}\index{lib/rlc/rlc\_rx\_um\_entity.h@{lib/rlc/rlc\_rx\_um\_entity.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}rlc\_rx\_entity.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}rlc\_um\_pdu.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/sdu\_window.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}fmt/format.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment}{rlc\_rx\_um\_sdu\_segment}}\ \{}
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798}{rlc\_si\_field}}\ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment_abdef7315ec8c77d7c9299f85543e8325}{si}};\ \ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment_a95f4788d76134fc76c5242273b4e5d51}{so}};\ \ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment_ae8b8cc1e28887c50340fcafbb449a32c}{payload}};\ }
+\DoxyCodeLine{00040\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment__cmp}{rlc\_rx\_um\_sdu\_segment\_cmp}}\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{bool}\ operator()(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment}{rlc\_rx\_um\_sdu\_segment}}\&\ a,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment}{rlc\_rx\_um\_sdu\_segment}}\&\ b)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ a.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment_a95f4788d76134fc76c5242273b4e5d51}{so}}\ <\ b.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment_a95f4788d76134fc76c5242273b4e5d51}{so}};\ \}}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__info}{rlc\_rx\_um\_sdu\_info}}\ \{}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{//\ TODO:\ Refactor\ this\ struct.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ Move\ the\ following\ rlc\_rx\_um\ methods\ here:}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ -\/\ add\ segments\ without\ duplicates}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ -\/\ assemble\ SDU}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fully\_received\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ has\_gap\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ std::set<rlc\_rx\_um\_sdu\_segment,\ rlc\_rx\_um\_sdu\_segment\_cmp>\ segments;\ \textcolor{comment}{//\ Set\ of\ segments\ with\ SO\ as\ key}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdu\ =\ \{\};}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state}{rlc\_rx\_um\_state}}\ \{}
+\DoxyCodeLine{00064\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_a38dafe0b98c258406dc2dfbb599cd6bf}{rx\_next\_reassembly}}\ =\ 0;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00068\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_ac27856a1c33d51b68a7cbb95a067eae5}{rx\_timer\_trigger}}\ =\ 0;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00073\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_a3865c104a6fd71738416fd1f1d121179}{rx\_next\_highest}}\ =\ 0;}
+\DoxyCodeLine{00074\ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__rx__um__entity}{rlc\_rx\_um\_entity}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__entity}{rlc\_rx\_entity}}}
+\DoxyCodeLine{00077\ \{}
+\DoxyCodeLine{00078\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__config}{rlc\_rx\_um\_config}}\ cfg;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state}{rlc\_rx\_um\_state}}\ st;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{const}\ uint32\_t\ mod;}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{const}\ uint32\_t\ um\_window\_size;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00091\ \ \ std::unique\_ptr<sdu\_window<rlc\_rx\_um\_sdu\_info>>\ rx\_window;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ reassembly\_timer;\ \textcolor{comment}{//\ to\ detect\ loss\ of\ RLC\ PDUs\ at\ lower\ layers}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{structsrsran_1_1pcap__rlc__pdu__context}{pcap\_rlc\_pdu\_context}}\ pcap\_context;}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__rx__um__entity}{rlc\_rx\_um\_entity}}(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_index,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rb__id__t}{rb\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_id,}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__config}{rlc\_rx\_um\_config}}\&\ \ \ \ \ \ \ \ \ \ \ config,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__rx__upper__layer__data__notifier}{rlc\_rx\_upper\_layer\_data\_notifier}}\&\ upper\_dn\_,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_executor,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ metrics\_enabled\_,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__pcap}{rlc\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap\_);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{void}\ on\_expired\_reassembly\_timer();}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__um__entity_aa36a54c5e07b384f952e9c2eecc779c0}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ buf)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordtype}{bool}\ handle\_segment\_data\_sdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header}{rlc\_um\_pdu\_header}}\&\ header,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ payload);}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordtype}{bool}\ store\_segment(\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__info}{rlc\_rx\_um\_sdu\_info}}\&\ sdu\_info,\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__segment}{rlc\_rx\_um\_sdu\_segment}}\ new\_segment);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{void}\ update\_segment\_inventory(\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__info}{rlc\_rx\_um\_sdu\_info}}\&\ rx\_sdu)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00144\ \ \ std::unique\_ptr<sdu\_window<rlc\_rx\_um\_sdu\_info>>\ create\_rx\_window(\mbox{\hyperlink{namespacesrsran_adc21d913d29e6d0bf48c5abce52bee31}{rlc\_um\_sn\_size}}\ sn\_size);}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{bool}\ sn\_in\_reassembly\_window(\textcolor{keyword}{const}\ uint32\_t\ sn);}
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{bool}\ sn\_invalid\_for\_rx\_buffer(\textcolor{keyword}{const}\ uint32\_t\ sn);}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ rx\_mod\_base(uint32\_t\ x)\ \{\ \textcolor{keywordflow}{return}\ (x\ -\/\ st.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_a3865c104a6fd71738416fd1f1d121179}{rx\_next\_highest}}\ -\/\ um\_window\_size)\ \%\ mod;\ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{void}\ log\_state(srslog::basic\_levels\ level)}
+\DoxyCodeLine{00152\ \ \ \{}
+\DoxyCodeLine{00153\ \ \ \ \ logger.log(}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ level,\ \textcolor{stringliteral}{"{}RX\ entity\ state.\ \{\}\ t\_reassembly=\{\}"{}},\ st,\ reassembly\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{is\_running}}()\ ?\ \textcolor{stringliteral}{"{}running"{}}\ :\ \textcolor{stringliteral}{"{}notify\_stop"{}});}
+\DoxyCodeLine{00155\ \ \ \}}
+\DoxyCodeLine{00156\ \};}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00163\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::rlc\_rx\_um\_sdu\_info>\ \{}
+\DoxyCodeLine{00164\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00166\ \ \ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00168\ \ \ \}}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00171\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__sdu__info}{srsran::rlc\_rx\_um\_sdu\_info}}\&\ info,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00173\ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}nof\_segments=\{\}\ has\_gap=\{\}\ fully\_received=\{\}\ sdu\_len=\{\}"{}},}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.segments.size(),}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.has\_gap,}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.fully\_received,}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.sdu.length());}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ \};}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00184\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::rlc\_rx\_um\_state>\ \{}
+\DoxyCodeLine{00185\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00186\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00189\ \ \ \}}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00192\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state}{srsran::rlc\_rx\_um\_state}}\&\ st,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00193\ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rx\_next\_reassembly=\{\}\ rx\_timer\_trigger=\{\}\ rx\_next\_highest=\{\}"{}},}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_a38dafe0b98c258406dc2dfbb599cd6bf}{rx\_next\_reassembly}},}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_ac27856a1c33d51b68a7cbb95a067eae5}{rx\_timer\_trigger}},}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.\mbox{\hyperlink{structsrsran_1_1rlc__rx__um__state_a3865c104a6fd71738416fd1f1d121179}{rx\_next\_highest}});}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \};}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

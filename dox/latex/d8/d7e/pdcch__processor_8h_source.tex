@@ -1,0 +1,172 @@
+\doxysection{pdcch\+\_\+processor.\+h}
+\hypertarget{pdcch__processor_8h_source}{}\label{pdcch__processor_8h_source}\index{include/srsran/phy/upper/channel\_processors/pdcch\_processor.h@{include/srsran/phy/upper/channel\_processors/pdcch\_processor.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/precoding\_configuration.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/coreset.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/pdcch\_context.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ resource\_grid\_mapper;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ the\ PDCCH\ processor\ interface.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ The\ PDCCH\ processor\ shall:}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ -\/\ encode\ DCI,\ as\ per\ TS38.212\ Section\ 7.3,\ where\ the\ DCI\ payload\ is\ given\ in\ \(\backslash\)c\ dci\_description::payload,}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ -\/\ modulate\ PDCCH,\ as\ per\ TS38.211\ Section\ 7.3.2,\ and}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ -\/\ generate\ DMRS\ for\ PDCCH,\ as\ per\ TS38.211\ Section\ 7.4.1.3.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ \(\backslash\)remark\ One\ Resource\ Element\ Group\ (REG)\ is\ equivalent\ to\ one\ Resource\ Block\ (RB),\ that\ is\ 12\ Resource\ Elements}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ (REs).}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)remark\ One\ Control-\/Channel\ Element\ (CCE)\ is\ equivalent\ to\ 6\ REGs.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)remark\ REGs\ are\ indexed\ first\ in\ time\ (for\ each\ symbol)\ and\ then\ in\ frequency.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdcch__processor}{pdcch\_processor}}}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Describes\ a\ DCI\ transmission.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description}{dci\_description}}\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$x\_\{rnti,\ k\}\(\backslash\)f\$\ as\ per\ TS38.211\ section\ 7.3.2\ \{0...65535\}.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a1f0f3a4acc51192737a82f3a6bb37ca8}{rnti}};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$n\_\{ID\}\(\backslash\)f\$\ used\ for\ DMRS\ scrambling\ as\ per\ TS38.211\ Section\ 7.4.1.3.1\ \{0...65535\}.}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a0f0fccc89f60cd718abd7bca42cdc463}{n\_id\_pdcch\_dmrs}};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$n\_\{ID\}\(\backslash\)f\$\ used\ in\ data\ scrambling\ as\ per\ TS38.211\ Section\ 7.3.2.3\ \{0...65535\}.}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_aa1f2e74a60d6b8f3d3f1183605d17a57}{n\_id\_pdcch\_data}};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$n\_\{RNTI\}\(\backslash\)f\$\ used\ for\ PDCCH\ data\ scrambling\ in\ TS38.211\ Section\ 7.3.2.3\ \{1...65535\}.}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a7afe25e04b339f8782a5a452095486e1}{n\_rnti}};}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{///\ CCE\ start\ index\ used\ to\ send\ the\ DCI\ \{0,\ 135\}.}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a6e3c3fd301c57f563854ce166561aa3c}{cce\_index}};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ number\ of\ CCE\ used\ by\ the\ PDCCH\ transmission\ as\ per\ TS38.211\ Section\ 7.3.2.1\ \{1,\ 2,\ 4,\ 8,\ 16\}.}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a7fee4fcb9a5e62b1d1f347b611704e0b}{aggregation\_level}};}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{///\ Ratio\ of\ PDCCH\ DM-\/RS\ EPRE\ to\ SSS\ EPRE\ in\ decibels.}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a948a310e6e385715ac2bdd62de6a8f15}{dmrs\_power\_offset\_dB}};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{///\ Ratio\ of\ PDCCH\ Data\ EPRE\ to\ SSS\ EPRE\ in\ decibels.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_ac51381df241a8deb9260adad8dce1414}{data\_power\_offset\_dB}};}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{///\ DCI\ payload\ as\ unpacked\ bits.}}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ pdcch\_constants::MAX\_DCI\_PAYLOAD\_SIZE>\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_a2256d7a3547bad0e06291d8c1219f864}{payload}};}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{///\ Precoding\ configuration.}}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description_ad69575c98879a130fdbd330f8f904029}{precoding}};}
+\DoxyCodeLine{00072\ \ \ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ CCE-\/to-\/REG\ mapping\ types\ as\ per\ TS38.211\ Section\ 7.3.2.2.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_aef755c37fa33b634f70a9782933d7c58}{cce\_to\_reg\_mapping\_type}}\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{///\ CORESET\ is\ configured\ by\ the\ PBCH\ or\ SIB1,\ (subcarrier\ 0\ of\ the\ CORESET)}}
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_aef755c37fa33b634f70a9782933d7c58a99db3fe7378d38e9b93f061596de7181}{CORESET0}}\ =\ 0,}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{///\ Not\ configured\ by\ PBCH\ or\ SIB\ 1,\ and\ non-\/interleaved.}}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_aef755c37fa33b634f70a9782933d7c58aaf19bf4014a346bac02bca39ae8d6d89}{NON\_INTERLEAVED}},}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{///\ Not\ configured\ by\ PBCH\ or\ SIB\ 1,\ and\ interleaved.}}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_aef755c37fa33b634f70a9782933d7c58a6eb6ea02262afd72767b6aa2f0139799}{INTERLEAVED}}}
+\DoxyCodeLine{00082\ \ \ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ CORESET\ parameters.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Provides\ the\ Control\ Resource\ Set\ (CORESET,\ TS38.331\ \(\backslash\)c\ ControlResourceSet\ for\ more\ information)\ related}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ parameters\ common\ for\ up\ to\ \(\backslash\)c\ MAX\_NOF\_DCI\ Downlink\ Control\ Information\ (DCI)\ transmissions.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ For\ \ \(\backslash\)c\ controlResourceSetZero\ (CORESET\ 0,\ TS38.213\ Section\ 13\ for\ more\ information)\ there\ are\ some\ exceptions:}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ -\/\ \(\backslash\)c\ cce\_to\_reg\_mapping\_type\ shall\ be\ set\ to\ \(\backslash\)c\ CORESET0.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ -\/\ \(\backslash\)c\ bwp\_start\_rb\ and\ \(\backslash\)c\ bwp\_size\_rb\ indicate\ the\ CORESET\ start\ point\ and\ contiguous\ resource\ blocks.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ -\/\ \(\backslash\)c\ shift\_index\ shall\ be\ equal\ to\ the\ physical\ cell\ identifier\ \{0...1007\}.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ -\/\ \(\backslash\)c\ cce\_to\_reg\_mapping\_type,\ \(\backslash\)c\ frequency\_resources,\ \(\backslash\)c\ reg\_bundle\_size,\ \(\backslash\)c\ interleaver\_size\ are\ ignored.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description}{coreset\_description}}\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ contiguous\ PRBs\ allocated\ to\ the\ BWP\ \{1,\ ...,\ 275\}.}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a94d2af3c4ca105077943fb6d4aa8381a}{bwp\_size\_rb}};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{///\ BWP\ start\ RB\ index\ from\ Point\ A\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a59cbd96c94e2c291acfc8ae6170c5f31}{bwp\_start\_rb}};}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{///\ Starting\ OFDM\ symbol\ for\ the\ CORESET.}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_ac1a61152e3e0d305128c294e6bb06a43}{start\_symbol\_index}};}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{///\ Contiguous\ time\ duration\ of\ the\ CORESET\ in\ number\ of\ symbols\ \{1,2,3\}.\ Corresponds\ to\ L1\ parameter}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\string^\{CORESET\}\_\{symb\}\(\backslash\)f\$\ as\ per\ RS\ 38.211\ Section\ 7.3.2.2.}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a7a7c1845f2653339071f36f18b804c58}{duration}};}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Frequency\ domain\ resources.}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{///\ This\ is\ a\ bitmap\ defining\ non-\/overlapping\ groups\ of\ 6\ PRBs\ in\ ascending\ order.\ Defined\ as\ \(\backslash\)f\$N\_\{CORESET\}\string^RB\(\backslash\)f\$}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{///\ as\ per\ TS38.211\ Section\ 7.3.2.2.}}
+\DoxyCodeLine{00108\ \ \ \ \ freq\_resource\_bitmap\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a39aa11673e11a665fbb5eedc24c525a2}{frequency\_resources}};}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{///\ CCE-\/to-\/REG\ mapping.}}
+\DoxyCodeLine{00110\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_aef755c37fa33b634f70a9782933d7c58}{cce\_to\_reg\_mapping\_type}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_afe5b3ec9fc7bc23b9e62d5d8795a85fa}{cce\_to\_reg\_mapping}};}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ The\ number\ of\ REGs\ in\ a\ bundle.\ Corresponds\ to\ parameter\ \(\backslash\)f\$L\(\backslash\)f\$\ in\ TS38.211\ 7.3.2.2.}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{comment}{///\ Ignored\ for\ \(\backslash\)c\ cce\_to\_reg\_mapping\_type\ set\ to\ \(\backslash\)c\ INTERLEAVED\ or\ \(\backslash\)c\ CORESET0.\ It\ must\ be:}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{///\ -\/\ \{2,6\}\ for\ duration\ of\ 1\ or\ 2\ symbols,\ and}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{///\ -\/\ \{3,6\}\ for\ duration\ of\ 3\ symbols.}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a8abb79c657a0a32771133bf8a5f73fa1}{reg\_bundle\_size}};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ The\ CCE-\/to-\/REG\ interleaver\ size.\ Corresponds\ to\ parameter\ \(\backslash\)f\$R\(\backslash\)f\$\ in\ TS38.211\ 7.3.2.2.}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{///\ Ignored\ for\ \(\backslash\)c\ cce\_to\_reg\_mapping\_type\ set\ to\ \(\backslash\)c\ INTERLEAVED\ or\ \(\backslash\)c\ CORESET0.\ It\ must\ be\ \{2,3,6\}.}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a2d51842bae5155a45b7cb00789033983}{interleaver\_size}};}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Shift\ index\ \(\backslash\)f\$n\_\{shift\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 7.3.2.2.}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{///\ The\ value\ is:}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{comment}{///\ -\/\ set\ to\ the\ physical\ cell\ identifier\ for\ a\ transmission\ in\ CORESET0,}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{///\ -\/\ ignored\ for\ non-\/interleaved\ mapping,\ and}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{comment}{///\ -\/\ set\ to\ \{0,275\}\ for\ non-\/interleaved\ CCE-\/to-\/REG\ mapping.}}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description_a97f9088877f2b35d4273479f9e6e891f}{shift\_index}};}
+\DoxyCodeLine{00128\ \ \ \};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///\ Collects\ the\ PDCCH\ parameters\ for\ a\ transmission.}}
+\DoxyCodeLine{00131\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t}{pdu\_t}}\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{///\ Context\ information.}}
+\DoxyCodeLine{00133\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{classsrsran_1_1pdcch__context}{pdcch\_context}}>\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t_af9a75b33ec490664e71e1e7752c5a94e}{context}};}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ slot\ and\ numerology.}}
+\DoxyCodeLine{00135\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t_a065bc7a6cb0e62507d204422650acb6b}{slot}};}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ type.}}
+\DoxyCodeLine{00137\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t_a2df411bae75a0f42a922869b19de54b4}{cp}};}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{comment}{///\ Provides\ CORESET\ description.}}
+\DoxyCodeLine{00139\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1coreset__description}{coreset\_description}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t_a479ca1c6b986eaed590500fcc4ad774e}{coreset}};}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{comment}{///\ Downlink\ Control\ Information.}}
+\DoxyCodeLine{00141\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1dci__description}{dci\_description}}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t_af0cea00282822603b6fb668f8cf1e6e0}{dci}};}
+\DoxyCodeLine{00142\ \ \ \};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ Default\ detsructor.}}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pdcch__processor_aad6e4fe0600a86aa6a8be144039a7268}{pdcch\_processor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PDCCH\ transmission.}}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ mapper\ Resource\ grid\ mapper\ interface.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ pdu\ \ \ \ \ Necessary\ parameters\ to\ process\ the\ PDCCH\ transmission.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdcch__processor_abfd2099def706756fcf5c5dc312fb00e}{process}}(resource\_grid\_mapper\&\ mapper,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t}{pdu\_t}}\&\ pdu)\ =\ 0;}
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ the\ PDCCH\ processor\ validator\ interface.}}
+\DoxyCodeLine{00155\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdcch__pdu__validator}{pdcch\_pdu\_validator}}}
+\DoxyCodeLine{00156\ \{}
+\DoxyCodeLine{00157\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pdcch__pdu__validator_af850d2f995f0dd1abcaeef2bb5d3d864}{pdcch\_pdu\_validator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PDCCH\ processor\ configuration\ parameters.}}
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ pdu\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00163\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pdcch__pdu__validator_a2ac893e4431812945431c1f524a8bd87}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pdcch__processor}{pdcch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pdcch__processor_1_1pdu__t}{pdu\_t}}\&\ pdu)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

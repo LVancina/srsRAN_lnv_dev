@@ -1,0 +1,161 @@
+\doxysection{channel\+\_\+state\+\_\+information.\+h}
+\hypertarget{channel__state__information_8h_source}{}\label{channel__state__information_8h_source}\index{include/srsran/phy/upper/channel\_state\_information.h@{include/srsran/phy/upper/channel\_state\_information.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/phy\_time\_unit.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ Channel\ State\ Information\ parameters.}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ channel\_state\_information}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{comment}{///\ Types\ of\ SINR\ that\ can\ be\ computed\ by\ the\ upper\ PHY.}}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ sinr\_type\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{///\ SINR\ computed\ by\ the\ channel\ estimator,\ using\ reference\ signals.}}
+\DoxyCodeLine{00037\ \ \ \ \ channel\_estimator,}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{///\ SINR\ computed\ at\ the\ output\ of\ the\ channel\ equalizer,\ using\ the\ noise\ variances\ of\ the\ equalized\ RE.}}
+\DoxyCodeLine{00039\ \ \ \ \ post\_equalization,}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{///\ SINR\ obtained\ from\ the\ EVM\ of\ the\ demodulated\ symbols.}}
+\DoxyCodeLine{00041\ \ \ \ \ evm}
+\DoxyCodeLine{00042\ \ \ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Default\ constructor.\ Reported\ SINR\ is\ obtained\ from\ the\ channel\ estimator.}}
+\DoxyCodeLine{00045\ \ \ channel\_state\_information()\ :\ sinr\_report\_type(sinr\_type::channel\_estimator),\ epre\_dB(NAN),\ rsrp\_dB(NAN)}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00048\ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Constructor\ that\ allows\ selection\ of\ the\ reported\ SINR\ type.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{explicit}\ channel\_state\_information(sinr\_type\ sinr\_report\_type\_)\ :}
+\DoxyCodeLine{00052\ \ \ \ \ sinr\_report\_type(sinr\_report\_type\_),\ epre\_dB(NAN),\ rsrp\_dB(NAN)}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Copy\ constructor.}}
+\DoxyCodeLine{00058\ \ \ channel\_state\_information(\textcolor{keyword}{const}\ channel\_state\_information\&\ other)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Gets\ a\ SINR\ type\ from\ a\ string\ representation.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{static}\ sinr\_type\ sinr\_type\_from\_string(\textcolor{keyword}{const}\ std::string\&\ sinr\_type\_str)}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{if}\ (sinr\_type\_str\ ==\ \textcolor{stringliteral}{"{}channel\_estimator"{}})\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_type::channel\_estimator;}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{if}\ (sinr\_type\_str\ ==\ \textcolor{stringliteral}{"{}post\_equalization"{}})\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_type::post\_equalization;}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{if}\ (sinr\_type\_str\ ==\ \textcolor{stringliteral}{"{}evm"{}})\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_type::evm;}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Invalid\ SINR\ type"{}});}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_type::channel\_estimator;}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Gets\ the\ SINR\ value\ that\ is\ used\ to\ select\ the\ modulation\ and\ coding\ scheme.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{float}\ get\_sinr\_dB()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00078\ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{switch}\ (sinr\_report\_type)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::channel\_estimator:}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sinr\_ch\_estimator\_dB.has\_value(),}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Selected\ CSI\ SINR\ type,\ i.e.,\ channel\ estimator,\ is\ not\ available."{}});}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_ch\_estimator\_dB.value();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::post\_equalization:}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sinr\_post\_eq\_dB.has\_value(),}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Selected\ CSI\ SINR\ type,\ i.e.,\ post\ equalization,\ is\ not\ available."{}});}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_post\_eq\_dB.value();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::evm:}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sinr\_evm\_dB.has\_value(),\ \textcolor{stringliteral}{"{}Selected\ CSI\ SINR\ type,\ i.e.,\ from\ EVM,\ is\ not\ available."{}});}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sinr\_evm\_dB.value();}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ SINR\ values.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ type\ SINR\ type\ to\ set.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ sinr\_dB\ The\ SINR\ value\ in\ dB.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ set\_sinr\_dB(sinr\_type\ type,\ \textcolor{keywordtype}{float}\ sinr\_dB)}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{switch}\ (type)\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::channel\_estimator:}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ sinr\_ch\_estimator\_dB.emplace(sinr\_dB);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::post\_equalization:}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ sinr\_post\_eq\_dB.emplace(sinr\_dB);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ sinr\_type::evm:}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ sinr\_evm\_dB.emplace(sinr\_dB);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Sets\ the\ Error\ Vector\ Magnitude\ (EVM).}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{void}\ set\_evm(\textcolor{keywordtype}{float}\ evm\_)\ \{\ evm.emplace(evm\_);\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Sets\ the\ time\ alignment.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ set\_time\_alignment(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\&\ time\_alignment\_)\ \{\ time\_alignment\ =\ time\_alignment\_;\ \}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ Gets\ the\ time\ alignment.}}
+\DoxyCodeLine{00120\ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ get\_time\_alignment()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ time\_alignment;\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ Sets\ the\ Energy\ Per\ Resource\ Element\ (EPRE)\ in\ normalized\ dB\ units.}}
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{void}\ set\_epre(\textcolor{keywordtype}{float}\ epre\_dB\_)\ \{\ epre\_dB\ =\ epre\_dB\_;\ \}}
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ Gets\ the\ Energy\ Per\ Resource\ Element\ (EPRE)\ in\ normalized\ dB\ units.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{float}\ get\_epre\_dB()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ epre\_dB;\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ Sets\ the\ Reference\ Signal\ Received\ Power\ (RSRP)\ in\ normalized\ dB\ units.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{keywordtype}{void}\ set\_rsrp(\textcolor{keywordtype}{float}\ rsrp\_dB\_)\ \{\ rsrp\_dB\ =\ rsrp\_dB\_;\ \}}
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Gets\ the\ Reference\ Signal\ Received\ Power\ (RSRP)\ in\ normalized\ dB\ units.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{float}\ get\_rsrp\_dB()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ rsrp\_dB;\ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{struct}\ fmt::formatter<channel\_state\_information>;}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ SINR\ type\ that\ can\ be\ accessed\ by\ \(\backslash\)ref\ get\_sinr\_dB.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ It\ is\ used\ to\ select,\ from\ all\ the\ available\ SINR\ values,\ the\ one\ that\ is\ used\ for\ choosing\ the\ modulation\ and}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ coding\ scheme.}}
+\DoxyCodeLine{00138\ \ \ sinr\_type\ sinr\_report\_type;}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ Time\ alignment\ measurement.}}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ time\_alignment;}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ Average\ post-\/equalization\ SINR.}}
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ sinr\_post\_eq\_dB;}
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ Error\ Vector\ Magnitude,\ obtained\ after\ QAM\ demodulation.}}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ evm;}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{///\ SINR\ obtained\ from\ EVM.}}
+\DoxyCodeLine{00146\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ sinr\_evm\_dB;}
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ Average\ SINR\ in\ decibels,\ computed\ by\ the\ channel\ estimator.}}
+\DoxyCodeLine{00148\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ sinr\_ch\_estimator\_dB;}
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ Average\ EPRE\ in\ decibels.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{float}\ epre\_dB;}
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{///\ Average\ RSRP\ in\ decibels.}}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{float}\ rsrp\_dB;}
+\DoxyCodeLine{00153\ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

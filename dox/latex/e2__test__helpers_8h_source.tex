@@ -1,0 +1,981 @@
+\doxysection{e2\+\_\+test\+\_\+helpers.\+h}
+\hypertarget{e2__test__helpers_8h_source}{}\label{e2__test__helpers_8h_source}\index{tests/unittests/e2/common/e2\_test\_helpers.h@{tests/unittests/e2/common/e2\_test\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}lib/e2/common/e2\_subscription\_manager\_impl.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}lib/e2/common/e2ap\_asn1\_packer.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_kpm/e2sm\_kpm\_asn1\_packer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_kpm/e2sm\_kpm\_impl.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_rc/e2sm\_rc\_asn1\_packer.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_rc/e2sm\_rc\_control\_action\_du\_executor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_rc/e2sm\_rc\_control\_service\_impl.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}lib/e2/e2sm/e2sm\_rc/e2sm\_rc\_impl.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/asn1/e2ap/e2ap.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/asn1/e2ap/e2sm\_rc.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2\_factory.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2ap\_configuration\_helpers.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2sm/e2sm.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2sm/e2sm\_factory.h"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}srsran/e2/e2sm/e2sm\_manager.h"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/network\_gateway.h"{}}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ "{}srsran/pcap/dlt\_pcap.h"{}}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/manual\_task\_worker.h"{}}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ <gtest/gtest.h>}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier}{dummy\_e2\_pdu\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__message__notifier}{e2\_message\_notifier}}}
+\DoxyCodeLine{00053\ \{}
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier}{dummy\_e2\_pdu\_notifier}}(\mbox{\hyperlink{classsrsran_1_1e2__message__handler}{e2\_message\_handler}}*\ handler\_)\ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}})),\ handler(handler\_)\{\};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ attach\_handler(\mbox{\hyperlink{classsrsran_1_1e2__message__handler}{e2\_message\_handler}}*\ handler\_)\ \{\ handler\ =\ handler\_;\ \};}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier_a1b22eab589269464cf53f0a4060e4883}{on\_new\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{switch}\ (msg.pdu.type().value)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e2ap::e2\_ap\_pdu\_c::types\_opts::init\_msg:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ E2AP\ PDU\ of\ type\ \{\}.\{\}"{}},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.type().to\_string(),}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.init\_msg().value.type().to\_string());}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e2ap::e2\_ap\_pdu\_c::types\_opts::successful\_outcome:}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ E2AP\ PDU\ of\ type\ \{\}.\{\}"{}},}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.type().to\_string(),}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.successful\_outcome().value.type().to\_string());}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e2ap::e2\_ap\_pdu\_c::types\_opts::unsuccessful\_outcome:}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ E2AP\ PDU\ of\ type\ \{\}.\{\}"{}},}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.type().to\_string(),}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg.pdu.unsuccessful\_outcome().value.type().to\_string());}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e2ap::e2\_ap\_pdu\_c::types\_opts::nulltype:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ E2AP\ PDU\ of\ type\ nulltype"{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ last\_e2\_msg\ =\ msg;\ \textcolor{comment}{//\ store\ msg}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{if}\ (handler\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Forwarding\ E2AP\ PDU"{}});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ handler-\/>\mbox{\hyperlink{classsrsran_1_1e2__message__handler_a25894c4dedb94645ebeab8c0ca0cb7cc}{handle\_message}}(msg);}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\ last\_e2\_msg;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1e2__message__handler}{e2\_message\_handler}}*\ \ \ handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00093\ \};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2ap__pcap}{dummy\_e2ap\_pcap}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}}
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ close()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ is\_write\_enabled()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ push\_pdu(\mbox{\hyperlink{classsrsran_1_1span}{const\_span<uint8\_t>}}\ pdu)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{void}\ push\_pdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\ generate\_e2\_setup\_request(std::string\ oid)}
+\DoxyCodeLine{00105\ \{}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{using\ namespace\ }asn1::e2ap;}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\ \ e2\_msg;}
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{structasn1_1_1e2ap_1_1init__msg__s}{init\_msg\_s}}\&\ initmsg\ =\ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00109\ \ \ initmsg.load\_info\_obj(ASN1\_E2AP\_ID\_E2SETUP);}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{e2setup\_request\_s}}\&\ setup\ =\ initmsg.value.e2setup\_request();}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{//\ \ Transaction\ ID}}
+\DoxyCodeLine{00113\ \ \ setup-\/>transaction\_id.crit\ \ \ \ \ \ \ \ =\ asn1::crit\_opts::reject;}
+\DoxyCodeLine{00114\ \ \ setup-\/>transaction\_id.value.value\ =\ 1;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{//\ Global\ e2\ node\ ID}}
+\DoxyCodeLine{00117\ \ \ setup-\/>global\_e2node\_id.crit\ =\ asn1::crit\_opts::reject;}
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{auto}\&\ gnb\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ setup-\/>global\_e2node\_id.value.set\_gnb();}
+\DoxyCodeLine{00119\ \ \ gnb\_id.global\_g\_nb\_id.plmn\_id.from\_number(3617847);}
+\DoxyCodeLine{00120\ \ \ gnb\_id.global\_g\_nb\_id.gnb\_id.gnb\_id().from\_number(381210353);}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{//\ RAN\ functions\ added}}
+\DoxyCodeLine{00123\ \ \ setup-\/>ra\_nfunctions\_added.crit\ =\ asn1::crit\_opts::reject;}
+\DoxyCodeLine{00124\ \ \ setup-\/>ra\_nfunctions\_added.id\ \ \ =\ ASN1\_E2AP\_ID\_RA\_NFUNCTIONS\_ADDED;}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{structasn1_1_1protocol__ie__single__container__s}{asn1::protocol\_ie\_single\_container\_s<ra\_nfunction\_item\_ies\_o>}}\ ran\_func\_item;}
+\DoxyCodeLine{00126\ \ \ ran\_func\_item.load\_info\_obj(ASN1\_E2AP\_ID\_RA\_NFUNCTION\_ITEM);}
+\DoxyCodeLine{00127\ \ \ ran\_func\_item.value().ra\_nfunction\_item().ran\_function\_id\ =\ 0;}
+\DoxyCodeLine{00128\ \ \ ran\_func\_item.value().ra\_nfunction\_item().ran\_function\_definition.from\_string(}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}20C04F52414E2D4532534D2D4B504D0000054F494431323305004B504D206D6F6E69746F720860283861AAE33F0060000101070050657269"{}}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}6F646963207265706F727401051401011D004F2D4455204D6561737572656D656E7420436F6E7461696E657220666F722074686520354743"{}}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}20636F6E6E6563746564206465706C6F796D656E74010101010001021D004F2D4455204D6561737572656D656E7420436F6E7461696E6572"{}}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}20666F72207468652045504320636F6E6E6563746564206465706C6F796D656E74010101010001031E804F2D43552D4350204D6561737572"{}}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}656D656E7420436F6E7461696E657220666F72207468652035474320636F6E6E6563746564206465706C6F796D656E74010101010001041E"{}}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}804F2D43552D4350204D6561737572656D656E7420436F6E7461696E657220666F72207468652045504320636F6E6E656374656420646570"{}}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}6C6F796D656E74010101010001051E804F2D43552D5550204D6561737572656D656E7420436F6E7461696E657220666F7220746865203547"{}}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}4320636F6E6E6563746564206465706C6F796D656E74010101010001061E804F2D43552D5550204D6561737572656D656E7420436F6E7461"{}}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}696E657220666F72207468652045504320636F6E6E6563746564206465706C6F796D656E7401010101"{}});}
+\DoxyCodeLine{00138\ \ \ ran\_func\_item.value().ra\_nfunction\_item().ran\_function\_oid.resize(30);}
+\DoxyCodeLine{00139\ \ \ ran\_func\_item.value().ra\_nfunction\_item().ran\_function\_oid.from\_string(oid);}
+\DoxyCodeLine{00140\ \ \ setup-\/>ra\_nfunctions\_added.value.push\_back(ran\_func\_item);}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{//\ E2\ node\ component\ config}}
+\DoxyCodeLine{00143\ \ \ setup-\/>e2node\_component\_cfg\_addition.crit\ =\ asn1::crit\_opts::reject;}
+\DoxyCodeLine{00144\ \ \ \textcolor{keyword}{auto}\&\ list\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ setup-\/>e2node\_component\_cfg\_addition.value;}
+\DoxyCodeLine{00145\ \ \ list.resize(1);}
+\DoxyCodeLine{00146\ \ \ list[0].load\_info\_obj(ASN1\_E2AP\_ID\_E2NODE\_COMPONENT\_CFG\_ADDITION\_ITEM);}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{structasn1_1_1e2ap_1_1e2node__component__cfg__addition__item__s}{e2node\_component\_cfg\_addition\_item\_s}}\&\ e2node\_cfg\_item\ =\ list[0].value().e2node\_component\_cfg\_addition\_item();}
+\DoxyCodeLine{00148\ \ \ e2node\_cfg\_item.e2node\_component\_interface\_type\ \ \ \ \ \ \ =\ e2node\_component\_interface\_type\_opts::ng;}
+\DoxyCodeLine{00149\ \ \ e2node\_cfg\_item.e2node\_component\_id.set\_e2node\_component\_interface\_type\_ng().amf\_name.from\_string(\textcolor{stringliteral}{"{}nginterf"{}});}
+\DoxyCodeLine{00150\ \ \ e2node\_cfg\_item.e2node\_component\_cfg.e2node\_component\_request\_part.from\_string(\textcolor{stringliteral}{"{}72657170617274"{}});}
+\DoxyCodeLine{00151\ \ \ e2node\_cfg\_item.e2node\_component\_cfg.e2node\_component\_resp\_part.from\_string(\textcolor{stringliteral}{"{}72657370617274"{}});}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00154\ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{keyword}{inline}\ e2\_message\ generate\_ric\_control\_request\_style2\_action6(\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00157\ \{}
+\DoxyCodeLine{00158\ \ \ \textcolor{keyword}{using\ namespace\ }asn1::e2ap;}
+\DoxyCodeLine{00159\ \ \ e2\_message\ \ e2\_msg;}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{structasn1_1_1e2ap_1_1init__msg__s}{init\_msg\_s}}\&\ initmsg\ =\ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00161\ \ \ initmsg.load\_info\_obj(ASN1\_E2AP\_ID\_RI\_CCTRL);}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{ri\_cctrl\_request\_s}}\&\ ric\_control\_request\ \ \ \ \ \ \ \ \ \ \ =\ initmsg.value.ri\_cctrl\_request();}
+\DoxyCodeLine{00164\ \ \ ric\_control\_request-\/>ri\_ccall\_process\_id\_present\ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00165\ \ \ ric\_control\_request-\/>ri\_cctrl\_ack\_request\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00166\ \ \ ric\_control\_request-\/>ri\_cctrl\_ack\_request.value\ \ \ =\ ri\_cctrl\_ack\_request\_e::options::ack;}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ ric\_control\_request-\/>ra\_nfunction\_id.value.value\ \ \ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00169\ \ \ ric\_control\_request-\/>ri\_crequest\_id.value.ric\_requestor\_id\ =\ 3;}
+\DoxyCodeLine{00170\ \ \ ric\_control\_request-\/>ri\_crequest\_id.value.ric\_instance\_id\ \ =\ 0;}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__rc_1_1e2__sm__rc__ctrl__hdr__s}{asn1::e2sm\_rc::e2\_sm\_rc\_ctrl\_hdr\_s}}\ ctrl\_hdr;}
+\DoxyCodeLine{00173\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.set\_ctrl\_hdr\_format1();}
+\DoxyCodeLine{00174\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ric\_ctrl\_decision\_present\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00175\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ric\_style\_type\ \ \ \ \ \ \ \ \ \ \ \ =\ 2;}
+\DoxyCodeLine{00176\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ric\_ctrl\_action\_id\ \ \ \ \ \ \ \ =\ 6;}
+\DoxyCodeLine{00177\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ue\_id.set\_gnb\_ue\_id();}
+\DoxyCodeLine{00178\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ue\_id.gnb\_du\_ue\_id().gnb\_cu\_ue\_f1ap\_id\ =\ 4;}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\ ctrl\_hdr\_buff;}
+\DoxyCodeLine{00181\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ \ \ \ \ \ \ bref\_msg(ctrl\_hdr\_buff);}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordflow}{if}\ (ctrl\_hdr.pack(bref\_msg)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Failed\ to\ pack\ E2SM\ RC\ control\ header\(\backslash\)n"{}});}
+\DoxyCodeLine{00184\ \ \ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ ric\_control\_request-\/>ri\_cctrl\_hdr.value.resize(ctrl\_hdr\_buff.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a7168fb8841a83a60b60a2ae06b59662d}{length}}());}
+\DoxyCodeLine{00187\ \ \ std::copy(ctrl\_hdr\_buff.begin(),\ ctrl\_hdr\_buff.end(),\ ric\_control\_request-\/>ri\_cctrl\_hdr.value.begin());}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__rc_1_1e2__sm__rc__ctrl__msg__s}{asn1::e2sm\_rc::e2\_sm\_rc\_ctrl\_msg\_s}}\ ctrl\_msg;}
+\DoxyCodeLine{00190\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.set\_ctrl\_msg\_format1();}
+\DoxyCodeLine{00191\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1().ran\_p\_list.resize(2);}
+\DoxyCodeLine{00192\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1().ran\_p\_list[0].ran\_param\_id\ =\ 11;}
+\DoxyCodeLine{00193\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ .ran\_p\_list[0]}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ .ran\_param\_value\_type.set\_ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ .ran\_param\_value\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00197\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ .ran\_p\_list[0]}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ .ran\_param\_value\_type.ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ .ran\_param\_value.set\_value\_int()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 5;}
+\DoxyCodeLine{00201\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1().ran\_p\_list[1].ran\_param\_id\ =\ 12;}
+\DoxyCodeLine{00202\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ .ran\_p\_list[1]}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ .ran\_param\_value\_type.set\_ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ .ran\_param\_value\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00206\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ .ran\_p\_list[1]}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ .ran\_param\_value\_type.ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ .ran\_param\_value.set\_value\_int()\ =\ 12;}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\ ctrl\_msg\_buff;}
+\DoxyCodeLine{00212\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ \ \ \ \ \ \ bref\_msg1(ctrl\_msg\_buff);}
+\DoxyCodeLine{00213\ \ \ \textcolor{keywordflow}{if}\ (ctrl\_msg.pack(bref\_msg1)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00214\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Failed\ to\ pack\ E2SM\ RC\ control\ message\(\backslash\)n"{}});}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ ric\_control\_request-\/>ri\_cctrl\_msg.value.resize(ctrl\_msg\_buff.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a7168fb8841a83a60b60a2ae06b59662d}{length}}());}
+\DoxyCodeLine{00218\ \ \ std::copy(ctrl\_msg\_buff.begin(),\ ctrl\_msg\_buff.end(),\ ric\_control\_request-\/>ri\_cctrl\_msg.value.begin());}
+\DoxyCodeLine{00219\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00220\ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \textcolor{keyword}{inline}\ e2\_message\ generate\_ric\_control\_request(\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger,}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ int64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ style\_type,}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ action\_id,}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ param\_id,}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ param\_value)}
+\DoxyCodeLine{00227\ \{}
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{using\ namespace\ }asn1::e2ap;}
+\DoxyCodeLine{00229\ \ \ e2\_message\ \ e2\_msg;}
+\DoxyCodeLine{00230\ \ \ \mbox{\hyperlink{structasn1_1_1e2ap_1_1init__msg__s}{init\_msg\_s}}\&\ initmsg\ =\ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00231\ \ \ initmsg.load\_info\_obj(ASN1\_E2AP\_ID\_RI\_CCTRL);}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{ri\_cctrl\_request\_s}}\&\ ric\_control\_request\ \ \ \ \ \ \ \ \ \ \ =\ initmsg.value.ri\_cctrl\_request();}
+\DoxyCodeLine{00234\ \ \ ric\_control\_request-\/>ri\_ccall\_process\_id\_present\ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00235\ \ \ ric\_control\_request-\/>ri\_cctrl\_ack\_request\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00236\ \ \ ric\_control\_request-\/>ri\_cctrl\_ack\_request.value\ \ \ =\ ri\_cctrl\_ack\_request\_e::options::ack;}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ ric\_control\_request-\/>ra\_nfunction\_id.value.value\ \ \ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00239\ \ \ ric\_control\_request-\/>ri\_crequest\_id.value.ric\_instance\_id\ \ =\ 3;}
+\DoxyCodeLine{00240\ \ \ ric\_control\_request-\/>ri\_crequest\_id.value.ric\_requestor\_id\ =\ 0;}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__rc_1_1e2__sm__rc__ctrl__hdr__s}{asn1::e2sm\_rc::e2\_sm\_rc\_ctrl\_hdr\_s}}\ ctrl\_hdr;}
+\DoxyCodeLine{00243\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.set\_ctrl\_hdr\_format1();}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ric\_style\_type\ \ \ \ \ =\ style\_type;}
+\DoxyCodeLine{00246\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ric\_ctrl\_action\_id\ =\ action\_id;}
+\DoxyCodeLine{00247\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ue\_id.set\_gnb\_ue\_id();}
+\DoxyCodeLine{00248\ \ \ ctrl\_hdr.ric\_ctrl\_hdr\_formats.ctrl\_hdr\_format1().ue\_id.gnb\_du\_ue\_id().gnb\_cu\_ue\_f1ap\_id\ =\ 4;}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\ ctrl\_hdr\_buff;}
+\DoxyCodeLine{00251\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ \ \ \ \ \ \ bref\_msg(ctrl\_hdr\_buff);}
+\DoxyCodeLine{00252\ \ \ \textcolor{keywordflow}{if}\ (ctrl\_hdr.pack(bref\_msg)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00253\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Failed\ to\ pack\ E2SM\ RC\ control\ header\(\backslash\)n"{}});}
+\DoxyCodeLine{00254\ \ \ \}}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \ \ ric\_control\_request-\/>ri\_cctrl\_hdr.value.resize(ctrl\_hdr\_buff.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a7168fb8841a83a60b60a2ae06b59662d}{length}}());}
+\DoxyCodeLine{00257\ \ \ std::copy(ctrl\_hdr\_buff.begin(),\ ctrl\_hdr\_buff.end(),\ ric\_control\_request-\/>ri\_cctrl\_hdr.value.begin());}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__rc_1_1e2__sm__rc__ctrl__msg__s}{asn1::e2sm\_rc::e2\_sm\_rc\_ctrl\_msg\_s}}\ ctrl\_msg;}
+\DoxyCodeLine{00260\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.set\_ctrl\_msg\_format1();}
+\DoxyCodeLine{00261\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1().ran\_p\_list.resize(1);}
+\DoxyCodeLine{00262\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1().ran\_p\_list[0].ran\_param\_id\ =\ param\_id;}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ .ran\_p\_list[0]}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ .ran\_param\_value\_type.set\_ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ .ran\_param\_value\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \ \ ctrl\_msg.ric\_ctrl\_msg\_formats.ctrl\_msg\_format1()}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ .ran\_p\_list[0]}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ .ran\_param\_value\_type.ran\_p\_choice\_elem\_false()}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ .ran\_param\_value.set\_value\_int()\ =\ param\_value;}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\ ctrl\_msg\_buff;}
+\DoxyCodeLine{00275\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ \ \ \ \ \ \ bref\_msg1(ctrl\_msg\_buff);}
+\DoxyCodeLine{00276\ \ \ \textcolor{keywordflow}{if}\ (ctrl\_msg.pack(bref\_msg1)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Failed\ to\ pack\ E2SM\ RC\ control\ message\(\backslash\)n"{}});}
+\DoxyCodeLine{00278\ \ \ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \ \ ric\_control\_request-\/>ri\_cctrl\_msg.value.resize(ctrl\_msg\_buff.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a7168fb8841a83a60b60a2ae06b59662d}{length}}());}
+\DoxyCodeLine{00281\ \ \ std::copy(ctrl\_msg\_buff.begin(),\ ctrl\_msg\_buff.end(),\ ric\_control\_request-\/>ri\_cctrl\_msg.value.begin());}
+\DoxyCodeLine{00282\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00283\ \}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2__du__metrics}{dummy\_e2\_du\_metrics}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__du__metrics__interface}{e2\_du\_metrics\_interface}}}
+\DoxyCodeLine{00286\ \{}
+\DoxyCodeLine{00287\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00288\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__du__metrics_a1643f4a377a3fcfec22661aecd7048e2}{get\_metrics}}(\mbox{\hyperlink{structsrsran_1_1scheduler__ue__metrics}{scheduler\_ue\_metrics}}\&\ ue\_metrics)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__du__metrics_a25a732846f65e9c8ca621440362dc3ab}{connect\_e2\_du\_meas\_provider}}(std::unique\_ptr<e2\_du\_metrics\_notifier>\ meas\_provider)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00291\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00292\ \ \ \ \ e2\_meas\_provider\ =\ std::move(meas\_provider);}
+\DoxyCodeLine{00293\ \ \ \}}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00296\ \ \ std::unique\_ptr<scheduler\_ue\_metrics\_notifier>\ e2\_meas\_provider;}
+\DoxyCodeLine{00297\ \};}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator}{dummy\_f1ap\_ue\_id\_translator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__id__translator}{srs\_du::f1ap\_ue\_id\_translator}}}
+\DoxyCodeLine{00300\ \{}
+\DoxyCodeLine{00301\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00302\ \ \ \textcolor{comment}{//\ F1AP\ UE\ ID\ translator\ functions.}}
+\DoxyCodeLine{00303\ \ \ gnb\_cu\_ue\_f1ap\_id\_t\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_aa53caafe43700ac84e212776912f6da4}{get\_gnb\_cu\_ue\_f1ap\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\&\ ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00304\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00305\ \ \ \ \ gnb\_cu\_ue\_f1ap\_id\_t\ gnb\_cu\_ue\_f1ap\_id\ =\ \mbox{\hyperlink{namespacesrsran_acb1f9974408354de95ccc776851ac026}{int\_to\_gnb\_cu\_ue\_f1ap\_id}}(ue\_index);}
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_cu\_ue\_f1ap\_id;}
+\DoxyCodeLine{00307\ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ gnb\_cu\_ue\_f1ap\_id\_t\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_a68b504a46ae14abb9fd24d601a5f93d6}{get\_gnb\_cu\_ue\_f1ap\_id}}(\textcolor{keyword}{const}\ gnb\_du\_ue\_f1ap\_id\_t\&\ gnb\_du\_ue\_f1ap\_id)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00310\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00311\ \ \ \ \ gnb\_cu\_ue\_f1ap\_id\_t\ gnb\_cu\_ue\_f1ap\_id\ =\ \mbox{\hyperlink{namespacesrsran_acb1f9974408354de95ccc776851ac026}{int\_to\_gnb\_cu\_ue\_f1ap\_id}}(gnb\_du\_ue\_f1ap\_id\_to\_uint(gnb\_du\_ue\_f1ap\_id));}
+\DoxyCodeLine{00312\ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_cu\_ue\_f1ap\_id;}
+\DoxyCodeLine{00313\ \ \ \}}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ gnb\_du\_ue\_f1ap\_id\_t\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_a01a4323799d72fae3fc4d24380bdb200}{get\_gnb\_du\_ue\_f1ap\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\&\ ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00316\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00317\ \ \ \ \ gnb\_du\_ue\_f1ap\_id\_t\ gnb\_du\_ue\_f1ap\_id\ =\ \mbox{\hyperlink{namespacesrsran_a45a44b24193e6aa0f6d09fb85f8f192f}{int\_to\_gnb\_du\_ue\_f1ap\_id}}(ue\_index);}
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_du\_ue\_f1ap\_id;}
+\DoxyCodeLine{00319\ \ \ \}}
+\DoxyCodeLine{00320\ \ \ gnb\_du\_ue\_f1ap\_id\_t\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_a83eefbdcaa7437203cd5e81f21a37a4d}{get\_gnb\_du\_ue\_f1ap\_id}}(\textcolor{keyword}{const}\ gnb\_cu\_ue\_f1ap\_id\_t\&\ gnb\_cu\_ue\_f1ap\_id)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00321\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00322\ \ \ \ \ gnb\_du\_ue\_f1ap\_id\_t\ gnb\_du\_ue\_f1ap\_id\ =\ \mbox{\hyperlink{namespacesrsran_a45a44b24193e6aa0f6d09fb85f8f192f}{int\_to\_gnb\_du\_ue\_f1ap\_id}}(gnb\_cu\_ue\_f1ap\_id\_to\_uint(gnb\_cu\_ue\_f1ap\_id));}
+\DoxyCodeLine{00323\ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_du\_ue\_f1ap\_id;}
+\DoxyCodeLine{00324\ \ \ \}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_a06dbe10e6d31f1ffaac13ca279c44909}{get\_ue\_index}}(\textcolor{keyword}{const}\ gnb\_du\_ue\_f1ap\_id\_t\&\ gnb\_du\_ue\_f1ap\_id)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00327\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00328\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ du\_ue\_index\ =\ \mbox{\hyperlink{namespacesrsran_a652cd3c03af6e027f63c65f3ab458577}{to\_du\_ue\_index}}(gnb\_du\_ue\_f1ap\_id\_to\_uint(gnb\_du\_ue\_f1ap\_id));}
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_ue\_index;}
+\DoxyCodeLine{00330\ \ \ \}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \mbox{\hyperlink{classsrsran_1_1dummy__f1ap__ue__id__translator_afb7af5038e18f3fe6d6f3e67728d4700}{get\_ue\_index}}(\textcolor{keyword}{const}\ gnb\_cu\_ue\_f1ap\_id\_t\&\ gnb\_cu\_ue\_f1ap\_id)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00333\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00334\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ du\_ue\_index\ =\ \mbox{\hyperlink{namespacesrsran_a652cd3c03af6e027f63c65f3ab458577}{to\_du\_ue\_index}}(gnb\_cu\_ue\_f1ap\_id\_to\_uint(gnb\_cu\_ue\_f1ap\_id));}
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_ue\_index;}
+\DoxyCodeLine{00336\ \ \ \}}
+\DoxyCodeLine{00337\ \};}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider}{dummy\_e2sm\_kpm\_du\_meas\_provider}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2sm__kpm__meas__provider}{e2sm\_kpm\_meas\_provider}}}
+\DoxyCodeLine{00340\ \{}
+\DoxyCodeLine{00341\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00342\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider}{dummy\_e2sm\_kpm\_du\_meas\_provider}}()\{\};}
+\DoxyCodeLine{00343\ \ \ std::vector<std::string>\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_abbe2f1f8ee2a289fe23a5c60e66d3659}{get\_supported\_metric\_names}}(e2sm\_kpm\_metric\_level\_enum\ level)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00344\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keywordflow}{return}\ supported\_metrics;}
+\DoxyCodeLine{00346\ \ \ \};}
+\DoxyCodeLine{00347\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_a7eeae8bf3aad42a7212201fe9e01050d}{cell\_supported}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1cgi__c}{asn1::e2sm\_kpm::cgi\_c}}\&\ cell\_global\_id)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \};}
+\DoxyCodeLine{00348\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_a92e76d63bb68a6c4ef541aa26031f936}{ue\_supported}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1ueid__c}{asn1::e2sm\_kpm::ueid\_c}}\&\ ueid)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \};}
+\DoxyCodeLine{00349\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_a6253398fe22284464ecea90df8907167}{test\_cond\_supported}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1test__cond__type__c}{asn1::e2sm\_kpm::test\_cond\_type\_c}}\&\ test\_cond\_type)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \};}
+\DoxyCodeLine{00350\ }
+\DoxyCodeLine{00351\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ get\_ues\_matching\_test\_conditions(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1dyn__array}{asn1::e2sm\_kpm::matching\_cond\_list\_l}}\&\ matching\_cond\_list,}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<asn1::e2sm\_kpm::ueid\_c>\&\ \ \ \ \ \ \ \ ues)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00353\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00354\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_ues\_matching\_cond(ues);}
+\DoxyCodeLine{00355\ \ \ \};}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{00358\ \ \ get\_ues\_matching\_test\_conditions(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1dyn__array}{asn1::e2sm\_kpm::matching\_ue\_cond\_per\_sub\_list\_l}}\&\ matching\_ue\_cond\_list,}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<asn1::e2sm\_kpm::ueid\_c>\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ues)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00360\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_ues\_matching\_cond(ues);}
+\DoxyCodeLine{00362\ \ \ \};}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_af420a7ea8d978ac9f47d36412484c26e}{metric\_supported}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1meas__type__c}{asn1::e2sm\_kpm::meas\_type\_c}}\&\ \ meas\_type,}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1meas__label__s}{asn1::e2sm\_kpm::meas\_label\_s}}\&\ label,}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ e2sm\_kpm\_metric\_level\_enum\ \ \ \ level,}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_scope)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00368\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00369\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::find(supported\_metrics.begin(),\ supported\_metrics.end(),\ meas\_type.meas\_name().to\_string())\ !=}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ supported\_metrics.end())\ \{}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00372\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00374\ \ \ \ \ \}}
+\DoxyCodeLine{00375\ \ \ \};}
+\DoxyCodeLine{00377\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2sm__kpm__du__meas__provider_ad35fe11e9bda4ad7a82aca996dd98bde}{get\_meas\_data}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1meas__type__c}{asn1::e2sm\_kpm::meas\_type\_c}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_type,}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1dyn__array}{asn1::e2sm\_kpm::label\_info\_list\_l}}\ \ \ \ \ \ \ \ \ \ label\_info\_list,}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<asn1::e2sm\_kpm::ueid\_c>\&\ \ \ \ \ \ \ ues,}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional<asn1::e2sm\_kpm::cgi\_c>}}\ \ \ \ \ \ \ \ \ \ \ \ cell\_global\_id,}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<asn1::e2sm\_kpm::meas\_record\_item\_c>\&\ items)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00382\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues.size()\ ==\ 0)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \textcolor{comment}{//\ E2\ Node\ level\ measurements}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1meas__record__item__c}{meas\_record\_item\_c}}\ meas\_record\_item;}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_type.meas\_name().to\_string()\ ==\ \textcolor{stringliteral}{"{}DRB.RlcSduDelayDl"{}})\ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_values\_float.size())\ \{}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_real();}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.real().value\ =\ meas\_values\_float[0];}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_real();}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.real().value\ =\ 0.15625;}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_values\_int.size())\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.integer()\ =\ meas\_values\_int[0];}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_integer()\ =\ 1;}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ items.push\_back(meas\_record\_item);}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00403\ \ \ \ \ \}}
+\DoxyCodeLine{00404\ \ \ \ \ \textcolor{comment}{//\ UE\ level\ measurements}}
+\DoxyCodeLine{00405\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ ue\_id\ :\ ues)\ \{}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ueid\_\ \ =\ ue\_id.gnb\_du\_ueid().gnb\_cu\_ue\_f1\_ap\_id;}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ std::vector<uint32\_t>::iterator\ it\ \ \ \ \ =\ std::find(ue\_ids.begin(),\ ue\_ids.end(),\ ueid\_);}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_idx\ =\ std::distance(ue\_ids.begin(),\ it);}
+\DoxyCodeLine{00409\ }
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1meas__record__item__c}{meas\_record\_item\_c}}\ meas\_record\_item;}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_idx\ <\ presence.size())\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (presence[ue\_idx])\ \{}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_type.meas\_name().to\_string()\ ==\ \textcolor{stringliteral}{"{}DRB.RlcSduDelayDl"{}})\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_values\_float.size())\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_real();}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.real().value\ =\ meas\_values\_float[ue\_idx];}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_real();}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.real().value\ =\ 0.15625;}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_values\_int.size())\ \{}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_integer()\ =\ meas\_values\_int[ue\_idx];}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_integer()\ =\ 1;}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ meas\_record\_item.set\_no\_value();}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ info\ on\ presence\ nor\ meas\_value,\ by\ default\ return\ value\ 1002}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ meas\_record\_item.set\_integer()\ =\ 1002;}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ items.push\_back(meas\_record\_item);}
+\DoxyCodeLine{00436\ \ \ \ \ \}}
+\DoxyCodeLine{00437\ }
+\DoxyCodeLine{00438\ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size())\ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00440\ \ \ \ \ \}}
+\DoxyCodeLine{00441\ }
+\DoxyCodeLine{00442\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00443\ \ \ \};}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \textcolor{keywordtype}{void}\ push\_measurements\_int(std::vector<uint32\_t>\ presence\_,}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<uint32\_t>\ cond\_satisfied\_,}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<uint32\_t>\ meas\_values\_int\_)}
+\DoxyCodeLine{00448\ \ \ \{}
+\DoxyCodeLine{00449\ \ \ \ \ presence\ \ \ \ \ \ \ \ =\ presence\_;}
+\DoxyCodeLine{00450\ \ \ \ \ cond\_satisfied\ \ =\ cond\_satisfied\_;}
+\DoxyCodeLine{00451\ \ \ \ \ meas\_values\_int\ =\ meas\_values\_int\_;}
+\DoxyCodeLine{00452\ \ \ \};}
+\DoxyCodeLine{00453\ }
+\DoxyCodeLine{00454\ \ \ \textcolor{keywordtype}{void}\ push\_measurements\_float(std::vector<uint32\_t>\ presence\_,}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<uint32\_t>\ cond\_satisfied\_,}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<float>\ \ \ \ meas\_values\_float\_)}
+\DoxyCodeLine{00457\ \ \ \{}
+\DoxyCodeLine{00458\ \ \ \ \ presence\ \ \ \ \ \ \ \ \ \ =\ presence\_;}
+\DoxyCodeLine{00459\ \ \ \ \ cond\_satisfied\ \ \ \ =\ cond\_satisfied\_;}
+\DoxyCodeLine{00460\ \ \ \ \ meas\_values\_float\ =\ meas\_values\_float\_;}
+\DoxyCodeLine{00461\ \ \ \};}
+\DoxyCodeLine{00462\ }
+\DoxyCodeLine{00463\ \ \ \textcolor{keywordtype}{void}\ set\_ue\_ids(std::vector<uint32\_t>\ ue\_ids\_)\ \{\ ue\_ids\ =\ ue\_ids\_;\ \};}
+\DoxyCodeLine{00464\ }
+\DoxyCodeLine{00465\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00466\ \ \ \textcolor{keywordtype}{bool}\ get\_ues\_matching\_cond(std::vector<asn1::e2sm\_kpm::ueid\_c>\&\ ues)}
+\DoxyCodeLine{00467\ \ \ \{}
+\DoxyCodeLine{00468\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ ue\_idx\ =\ 0;\ ue\_idx\ <\ presence.size();\ ue\_idx++)\ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (presence[ue\_idx]\ and\ cond\_satisfied[ue\_idx])\ \{}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1ueid__c}{ueid\_c}}\ \ \ \ \ \ \ \ ueid;}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1ueid__gnb__du__s}{ueid\_gnb\_du\_s}}\ ueid\_gnb\_du;}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ ueid\_gnb\_du.gnb\_cu\_ue\_f1\_ap\_id\ =\ ue\_ids[ue\_idx];}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ ueid\_gnb\_du.ran\_ueid\_present\ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ ueid.set\_gnb\_du\_ueid()\ \ \ \ \ \ \ \ \ =\ ueid\_gnb\_du;}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ ues.push\_back(ueid);}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ \ \ \ \ \}}
+\DoxyCodeLine{00478\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues.size())\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00480\ \ \ \ \ \}}
+\DoxyCodeLine{00481\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00482\ \ \ \};}
+\DoxyCodeLine{00483\ }
+\DoxyCodeLine{00484\ \ \ std::vector<std::string>\ supported\_metrics\ =\ \{\textcolor{stringliteral}{"{}CQI"{}},\ \textcolor{stringliteral}{"{}RSRP"{}},\ \textcolor{stringliteral}{"{}RSRQ"{}},\ \textcolor{stringliteral}{"{}DRB.UEThpDl"{}},\ \textcolor{stringliteral}{"{}DRB.RlcSduDelayDl"{}}\};}
+\DoxyCodeLine{00485\ \ \ std::vector<uint32\_t>\ \ \ \ presence\ \ \ \ \ \ \ \ \ \ =\ \{1\};}
+\DoxyCodeLine{00486\ \ \ std::vector<uint32\_t>\ \ \ \ cond\_satisfied\ \ \ \ =\ \{1\};}
+\DoxyCodeLine{00487\ \ \ std::vector<float>\ \ \ \ \ \ \ meas\_values\_float\ =\ \{0.15625\};}
+\DoxyCodeLine{00488\ \ \ std::vector<uint32\_t>\ \ \ \ meas\_values\_int\ \ \ =\ \{1\};}
+\DoxyCodeLine{00489\ \ \ std::vector<uint32\_t>\ \ \ \ ue\_ids\ \ \ \ \ \ \ \ \ \ \ \ =\ \{0\};}
+\DoxyCodeLine{00490\ \};}
+\DoxyCodeLine{00491\ }
+\DoxyCodeLine{00492\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr}{dummy\_e2\_subscription\_mngr}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__subscription__manager}{e2\_subscription\_manager}}}
+\DoxyCodeLine{00493\ \{}
+\DoxyCodeLine{00494\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00495\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr}{dummy\_e2\_subscription\_mngr}}()\ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}))\{\};}
+\DoxyCodeLine{00496\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__subscribe__reponse__message}{e2\_subscribe\_reponse\_message}}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr_adfe70bf75ba4f630d3b3aacd72b0f888}{handle\_subscription\_setup}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ricsubscription\_request\_s}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00497\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00498\ \ \ \ \ last\_subscription\ =\ request;}
+\DoxyCodeLine{00499\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ subscription\ request\ with\ action\ list\ size\ \{\}"{}},}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_subscription-\/>ricsubscription\_details.value.ric\_action\_to\_be\_setup\_list.size());}
+\DoxyCodeLine{00501\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2__subscribe__reponse__message}{e2\_subscribe\_reponse\_message}}\ msg;}
+\DoxyCodeLine{00502\ \ \ \ \ get\_subscription\_result(msg);}
+\DoxyCodeLine{00503\ \ \ \ \ \textcolor{keywordflow}{return}\ msg;}
+\DoxyCodeLine{00504\ \ \ \}}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__subscribe__delete__response__message}{e2\_subscribe\_delete\_response\_message}}}
+\DoxyCodeLine{00507\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr_a357b835a150c65673ebaa6ebfc17b260}{handle\_subscription\_delete}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ricsubscription\_delete\_request\_s}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00508\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00509\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2__subscribe__delete__response__message}{e2\_subscribe\_delete\_response\_message}}\ outcome;}
+\DoxyCodeLine{00510\ \ \ \ \ \textcolor{keywordflow}{return}\ outcome;}
+\DoxyCodeLine{00511\ \ \ \};}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr_a7f720210bf79b012575e603eaccb1b75}{start\_subscription}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2ap_1_1ri__crequest__id__s}{asn1::e2ap::ri\_crequest\_id\_s}}\&\ ric\_request\_id,}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__event__manager}{e2\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ev\_mng,}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ran\_func\_id)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00516\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00517\ \ \ \}}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr_ab851f80beadb63010c850b4bb288e1bd}{stop\_subscription}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1e2ap_1_1ri__crequest__id__s}{asn1::e2ap::ri\_crequest\_id\_s}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ric\_request\_id,}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__event__manager}{e2\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ev\_mng,}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ricsubscription\_delete\_request\_s}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00522\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00523\ \ \ \}}
+\DoxyCodeLine{00524\ }
+\DoxyCodeLine{00525\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__subscription__mngr_ac1782697da6dd543edbe28f6d4956c0a}{add\_e2sm\_service}}(std::string\ oid,\ std::unique\_ptr<e2sm\_interface>\ e2sm\_iface)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00526\ }
+\DoxyCodeLine{00527\ \ \ \mbox{\hyperlink{classsrsran_1_1e2sm__interface}{e2sm\_interface}}*\ get\_e2sm\_interface(std::string\ oid)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00528\ }
+\DoxyCodeLine{00529\ \ \ \textcolor{keywordtype}{void}\ add\_ran\_function\_oid(uint16\_t\ ran\_func\_id,\ std::string\ oid)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00532\ \ \ \textcolor{keywordtype}{void}\ get\_subscription\_result(e2\_subscribe\_reponse\_message\&\ msg)}
+\DoxyCodeLine{00533\ \ \ \{}
+\DoxyCodeLine{00534\ \ \ \ \ msg.success\ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00535\ \ \ \ \ msg.request\_id\ =\ last\_subscription-\/>ri\_crequest\_id.value;}
+\DoxyCodeLine{00536\ }
+\DoxyCodeLine{00537\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Sending\ subscription\ result\ for\ Request\ instance\ ID\ \{\}"{}},\ msg.request\_id.ric\_instance\_id);}
+\DoxyCodeLine{00538\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ action\_list\_size\ =\ last\_subscription-\/>ricsubscription\_details.value.ric\_action\_to\_be\_setup\_list.size();}
+\DoxyCodeLine{00539\ \ \ \ \ msg.admitted\_list.resize(action\_list\_size);}
+\DoxyCodeLine{00540\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ <\ action\_list\_size;\ i++)\ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ item\ =\ last\_subscription-\/>ricsubscription\_details.value.ric\_action\_to\_be\_setup\_list[i]}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .value()}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .ri\_caction\_to\_be\_setup\_item();}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ msg.admitted\_list[i].value().ri\_caction\_admitted\_item().ric\_action\_id\ =\ item.ric\_action\_id;}
+\DoxyCodeLine{00545\ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \}}
+\DoxyCodeLine{00547\ }
+\DoxyCodeLine{00548\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00549\ \ \ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ricsubscription\_request\_s}}\ last\_subscription;}
+\DoxyCodeLine{00550\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00551\ \};}
+\DoxyCodeLine{00552\ }
+\DoxyCodeLine{00553\ \textcolor{keyword}{inline}\ e2\_message\ generate\_e2\_setup\_request\_message(std::string\ oid)}
+\DoxyCodeLine{00554\ \{}
+\DoxyCodeLine{00555\ \ \ e2\_message\ e2\_msg\ =\ \{\};}
+\DoxyCodeLine{00556\ \ \ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00557\ \ \ e2\_msg.pdu.init\_msg().load\_info\_obj(ASN1\_E2AP\_ID\_E2SETUP);}
+\DoxyCodeLine{00558\ }
+\DoxyCodeLine{00559\ \ \ e2\_msg.pdu.init\_msg().value.e2setup\_request()-\/>transaction\_id.value.value\ =\ 1;}
+\DoxyCodeLine{00560\ \ \ e2\_msg.pdu.init\_msg().value.e2setup\_request()\ =\ generate\_e2\_setup\_request(oid).pdu.init\_msg().value.e2setup\_request();}
+\DoxyCodeLine{00561\ }
+\DoxyCodeLine{00562\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00563\ \}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \textcolor{keyword}{inline}\ e2\_message\ generate\_e2\_setup\_response(\textcolor{keywordtype}{unsigned}\ transaction\_id)}
+\DoxyCodeLine{00566\ \{}
+\DoxyCodeLine{00567\ \ \ e2\_message\ e2\_setup\_response\ =\ \{\};}
+\DoxyCodeLine{00568\ \ \ e2\_setup\_response.pdu.set\_successful\_outcome();}
+\DoxyCodeLine{00569\ \ \ e2\_setup\_response.pdu.successful\_outcome().load\_info\_obj(ASN1\_E2AP\_ID\_E2SETUP);}
+\DoxyCodeLine{00570\ }
+\DoxyCodeLine{00571\ \ \ \textcolor{keyword}{auto}\&\ setup\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ e2\_setup\_response.pdu.successful\_outcome().value.e2setup\_resp();}
+\DoxyCodeLine{00572\ \ \ setup-\/>transaction\_id.value.value\ \ \ \ \ =\ transaction\_id;}
+\DoxyCodeLine{00573\ \ \ setup-\/>ra\_nfunctions\_accepted\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00574\ \ \ \mbox{\hyperlink{structasn1_1_1protocol__ie__single__container__s}{asn1::protocol\_ie\_single\_container\_s<asn1::e2ap::ra\_nfunction\_id\_item\_ies\_o>}}\ ran\_func\_item;}
+\DoxyCodeLine{00575\ \ \ ran\_func\_item.value().ra\_nfunction\_id\_item().ran\_function\_id\ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00576\ \ \ ran\_func\_item.value().ra\_nfunction\_id\_item().ran\_function\_revision\ =\ 0;}
+\DoxyCodeLine{00577\ \ \ setup-\/>ra\_nfunctions\_accepted.value.push\_back(ran\_func\_item);}
+\DoxyCodeLine{00578\ \ \ setup-\/>global\_ric\_id.value.plmn\_id.from\_number(131014);}
+\DoxyCodeLine{00579\ \ \ setup-\/>global\_ric\_id.value.ric\_id.from\_number(699598);}
+\DoxyCodeLine{00580\ \ \ \textcolor{keywordflow}{return}\ e2\_setup\_response;}
+\DoxyCodeLine{00581\ \}}
+\DoxyCodeLine{00582\ }
+\DoxyCodeLine{00583\ \textcolor{keyword}{inline}\ e2\_message\ generate\_e2\_setup\_failure(\textcolor{keywordtype}{unsigned}\ transaction\_id)}
+\DoxyCodeLine{00584\ \{}
+\DoxyCodeLine{00585\ \ \ e2\_message\ e2\_setup\_failure\ =\ \{\};}
+\DoxyCodeLine{00586\ \ \ e2\_setup\_failure.pdu.set\_unsuccessful\_outcome();}
+\DoxyCodeLine{00587\ \ \ e2\_setup\_failure.pdu.unsuccessful\_outcome().load\_info\_obj(ASN1\_E2AP\_ID\_E2SETUP);}
+\DoxyCodeLine{00588\ }
+\DoxyCodeLine{00589\ \ \ \textcolor{keyword}{auto}\&\ setup\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ e2\_setup\_failure.pdu.unsuccessful\_outcome().value.e2setup\_fail();}
+\DoxyCodeLine{00590\ \ \ setup-\/>transaction\_id.value.value\ =\ transaction\_id;}
+\DoxyCodeLine{00591\ \ \ setup-\/>cause.value.set\_misc();}
+\DoxyCodeLine{00592\ \ \ \textcolor{keywordflow}{return}\ e2\_setup\_failure;}
+\DoxyCodeLine{00593\ \}}
+\DoxyCodeLine{00594\ }
+\DoxyCodeLine{00595\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1ueid__gnb__du__s}{ueid\_gnb\_du\_s}}\ generate\_ueid\_gnb\_du(uint32\_t\ ue\_idx)}
+\DoxyCodeLine{00596\ \{}
+\DoxyCodeLine{00597\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1ueid__gnb__du__s}{ueid\_gnb\_du\_s}}\ ueid;}
+\DoxyCodeLine{00598\ \ \ ueid.gnb\_cu\_ue\_f1\_ap\_id\ =\ ue\_idx;}
+\DoxyCodeLine{00599\ \ \ ueid.ran\_ueid\_present\ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00600\ \ \ \textcolor{keywordflow}{return}\ ueid;}
+\DoxyCodeLine{00601\ \}}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structasn1_1_1e2ap_1_1ri__caction__to__be__setup__item__s}{asn1::e2ap::ri\_caction\_to\_be\_setup\_item\_s}}\ generate\_e2sm\_kpm\_ric\_action(\mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1e2__sm__kpm__action__definition__s}{e2\_sm\_kpm\_action\_definition\_s}}\&\ action\_def)}
+\DoxyCodeLine{00604\ \{}
+\DoxyCodeLine{00605\ \ \ \mbox{\hyperlink{structasn1_1_1e2ap_1_1ri__caction__to__be__setup__item__s}{asn1::e2ap::ri\_caction\_to\_be\_setup\_item\_s}}\ ric\_action;}
+\DoxyCodeLine{00606\ \ \ ric\_action.ric\_action\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ asn1::e2ap::ri\_caction\_type\_opts::report;}
+\DoxyCodeLine{00607\ \ \ ric\_action.ric\_action\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00608\ \ \ ric\_action.ric\_subsequent\_action\_present\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00610\ \ \ byte\_buffer\ \ \ buf;}
+\DoxyCodeLine{00611\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ bref(buf);}
+\DoxyCodeLine{00612\ \ \ \textcolor{keywordflow}{if}\ (action\_def.pack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00613\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00614\ \ \ \}}
+\DoxyCodeLine{00615\ }
+\DoxyCodeLine{00616\ \ \ ric\_action.ric\_action\_definition.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a854af8571f283c815b9b429393c5b0dd}{resize}}(buf.length());}
+\DoxyCodeLine{00617\ \ \ std::copy(buf.begin(),\ buf.end(),\ ric\_action.ric\_action\_definition.begin());}
+\DoxyCodeLine{00618\ \ \ \textcolor{keywordflow}{return}\ ric\_action;}
+\DoxyCodeLine{00619\ \}}
+\DoxyCodeLine{00620\ }
+\DoxyCodeLine{00621\ \textcolor{keyword}{inline}\ e2\_message\ generate\_e2sm\_kpm\_subscription\_request(\mbox{\hyperlink{structasn1_1_1e2ap_1_1ri__caction__to__be__setup__item__s}{asn1::e2ap::ri\_caction\_to\_be\_setup\_item\_s}}\&\ ric\_action)}
+\DoxyCodeLine{00622\ \{}
+\DoxyCodeLine{00623\ \ \ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ricsubscription\_request\_s}}\ ric\_subscript\_reqs;}
+\DoxyCodeLine{00624\ \ \ ric\_subscript\_reqs-\/>ra\_nfunction\_id-\/>value\ \ \ \ \ \ \ \ \ \ \ =\ e2sm\_kpm\_asn1\_packer::ran\_func\_id;}
+\DoxyCodeLine{00625\ \ \ ric\_subscript\_reqs-\/>ri\_crequest\_id-\/>ric\_requestor\_id\ =\ 1;}
+\DoxyCodeLine{00626\ \ \ ric\_subscript\_reqs-\/>ri\_crequest\_id-\/>ric\_instance\_id\ \ =\ 0;}
+\DoxyCodeLine{00627\ \ \ ric\_subscript\_reqs-\/>ricsubscription\_details-\/>ric\_action\_to\_be\_setup\_list.resize(1);}
+\DoxyCodeLine{00628\ \ \ ric\_subscript\_reqs-\/>ricsubscription\_details-\/>ric\_action\_to\_be\_setup\_list[0]-\/>ri\_caction\_to\_be\_setup\_item()\ =}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ ric\_action;}
+\DoxyCodeLine{00630\ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1e2__sm__kpm__event__trigger__definition__s}{e2\_sm\_kpm\_event\_trigger\_definition\_s}}\ e2sm\_kpm\_event\_trigger\_def;}
+\DoxyCodeLine{00631\ \ \ e2sm\_kpm\_event\_trigger\_def.event\_definition\_formats.event\_definition\_format1().report\_period\ =\ 1000;}
+\DoxyCodeLine{00632\ }
+\DoxyCodeLine{00633\ \ \ byte\_buffer\ \ \ buf;}
+\DoxyCodeLine{00634\ \ \ \mbox{\hyperlink{structasn1_1_1bit__ref}{asn1::bit\_ref}}\ bref(buf);}
+\DoxyCodeLine{00635\ \ \ \textcolor{keywordflow}{if}\ (e2sm\_kpm\_event\_trigger\_def.pack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00636\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00637\ \ \ \}}
+\DoxyCodeLine{00638\ }
+\DoxyCodeLine{00639\ \ \ ric\_subscript\_reqs-\/>ricsubscription\_details-\/>ric\_event\_trigger\_definition.resize(buf.length());}
+\DoxyCodeLine{00640\ \ \ std::copy(buf.begin(),\ buf.end(),\ ric\_subscript\_reqs-\/>ricsubscription\_details-\/>ric\_event\_trigger\_definition.begin());}
+\DoxyCodeLine{00641\ }
+\DoxyCodeLine{00642\ \ \ e2\_message\ e2\_msg;}
+\DoxyCodeLine{00643\ \ \ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00644\ \ \ e2\_msg.pdu.init\_msg().load\_info\_obj(ASN1\_E2AP\_ID\_RICSUBSCRIPTION);}
+\DoxyCodeLine{00645\ \ \ e2\_msg.pdu.init\_msg().value.ricsubscription\_request()\ =\ ric\_subscript\_reqs;}
+\DoxyCodeLine{00646\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00647\ \}}
+\DoxyCodeLine{00648\ }
+\DoxyCodeLine{00649\ \textcolor{keyword}{inline}\ e2\_message\ generate\_e2\_ind\_msg(byte\_buffer\&\ ind\_hdr\_bytes,\ byte\_buffer\&\ ind\_msg\_bytes)}
+\DoxyCodeLine{00650\ \{}
+\DoxyCodeLine{00651\ \ \ e2\_indication\_message\ e2\_ind;}
+\DoxyCodeLine{00652\ \ \ e2\_ind.request\_id.ric\_requestor\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00653\ \ \ e2\_ind.request\_id.ric\_instance\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00654\ \ \ e2\_ind.indication-\/>ri\_cind\_msg.crit\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ asn1::crit\_opts::reject;}
+\DoxyCodeLine{00655\ \ \ e2\_ind.indication-\/>ri\_crequest\_id-\/>ric\_requestor\_id\ =\ 1;}
+\DoxyCodeLine{00656\ \ \ e2\_ind.indication-\/>ri\_crequest\_id-\/>ric\_instance\_id\ \ =\ 0;}
+\DoxyCodeLine{00657\ \ \ e2\_ind.indication-\/>ra\_nfunction\_id.value\ \ \ \ \ \ \ \ \ \ \ \ =\ e2sm\_kpm\_asn1\_packer::ran\_func\_id;}
+\DoxyCodeLine{00658\ \ \ e2\_ind.indication-\/>ri\_caction\_id.value\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 4;}
+\DoxyCodeLine{00659\ \ \ e2\_ind.indication-\/>ri\_cind\_sn\_present\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00660\ \ \ e2\_ind.indication-\/>ri\_cind\_sn-\/>value\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 1234;}
+\DoxyCodeLine{00661\ \ \ e2\_ind.indication-\/>ri\_cind\_type.value\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ asn1::e2ap::ri\_cind\_type\_e::ri\_cind\_type\_opts::report;}
+\DoxyCodeLine{00662\ \ \ e2\_ind.indication-\/>ri\_ccall\_process\_id\_present\ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00663\ }
+\DoxyCodeLine{00664\ \ \ \textcolor{comment}{//\ put\ RIC\ indication\ content\ into\ message}}
+\DoxyCodeLine{00665\ \ \ e2\_ind.indication-\/>ri\_cind\_msg.value.resize(ind\_msg\_bytes.length());}
+\DoxyCodeLine{00666\ \ \ std::copy(ind\_msg\_bytes.begin(),\ ind\_msg\_bytes.end(),\ e2\_ind.indication-\/>ri\_cind\_msg.value.begin());}
+\DoxyCodeLine{00667\ \ \ e2\_ind.indication-\/>ri\_cind\_hdr.value.resize(ind\_hdr\_bytes.length());}
+\DoxyCodeLine{00668\ \ \ std::copy(ind\_hdr\_bytes.begin(),\ ind\_hdr\_bytes.end(),\ e2\_ind.indication-\/>ri\_cind\_hdr.value.begin());}
+\DoxyCodeLine{00669\ }
+\DoxyCodeLine{00670\ \ \ e2\_message\ e2\_msg;}
+\DoxyCodeLine{00671\ \ \ e2\_msg.pdu.set\_init\_msg();}
+\DoxyCodeLine{00672\ \ \ e2\_msg.pdu.init\_msg().load\_info\_obj(ASN1\_E2AP\_ID\_RI\_CIND);}
+\DoxyCodeLine{00673\ \ \ e2\_msg.pdu.init\_msg().value.ri\_cind()\ =\ e2\_ind.indication;}
+\DoxyCodeLine{00674\ \ \ \textcolor{keywordflow}{return}\ e2\_msg;}
+\DoxyCodeLine{00675\ \}}
+\DoxyCodeLine{00676\ }
+\DoxyCodeLine{00678\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2__message__handler}{dummy\_e2\_message\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__message__handler}{e2\_message\_handler}}}
+\DoxyCodeLine{00679\ \{}
+\DoxyCodeLine{00680\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00681\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__message__handler}{dummy\_e2\_message\_handler}}()\ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}))\{\};}
+\DoxyCodeLine{00682\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__message__handler_a3396749e6d78dbb659782e4639900f2b}{handle\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00683\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00684\ \ \ \ \ last\_msg\ =\ msg;}
+\DoxyCodeLine{00685\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ E2AP\ PDU\ of\ type\ \{\}"{}},\ msg.pdu.type().to\_string());}
+\DoxyCodeLine{00686\ \ \ \}}
+\DoxyCodeLine{00687\ }
+\DoxyCodeLine{00688\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\ last\_msg;}
+\DoxyCodeLine{00689\ }
+\DoxyCodeLine{00690\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00691\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00692\ \};}
+\DoxyCodeLine{00693\ }
+\DoxyCodeLine{00695\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__network__gateway__data__handler}{dummy\_network\_gateway\_data\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1sctp__network__gateway__data__handler}{srsran::sctp\_network\_gateway\_data\_handler}}}
+\DoxyCodeLine{00696\ \{}
+\DoxyCodeLine{00697\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00698\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__network__gateway__data__handler}{dummy\_network\_gateway\_data\_handler}}()\{\};}
+\DoxyCodeLine{00699\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__network__gateway__data__handler_a5198d185211f93ccabee73e2eda6dba4}{handle\_pdu}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ pdu)\textcolor{keyword}{\ override\ }\{\ last\_pdu\ =\ pdu.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a1f08be439b9c2c174b4b2827c18feda6}{copy}}();\ \}}
+\DoxyCodeLine{00700\ }
+\DoxyCodeLine{00701\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ last\_pdu;}
+\DoxyCodeLine{00702\ \};}
+\DoxyCodeLine{00703\ }
+\DoxyCodeLine{00704\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2sm__handler}{dummy\_e2sm\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2sm__handler}{e2sm\_handler}}}
+\DoxyCodeLine{00705\ \{}
+\DoxyCodeLine{00706\ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__action__definition}{e2sm\_action\_definition}}\ handle\_packed\_e2sm\_action\_definition(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\&\ buf)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00707\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00708\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__action__definition}{e2sm\_action\_definition}}\ action\_def;}
+\DoxyCodeLine{00709\ \ \ \ \ action\_def.service\_model\ =\ e2sm\_service\_model\_t::KPM;}
+\DoxyCodeLine{00710\ \ \ \ \ \mbox{\hyperlink{structasn1_1_1e2sm__kpm_1_1e2__sm__kpm__action__definition__s}{e2\_sm\_kpm\_action\_definition\_s}}\&\ e2\_sm\_kpm\_action\_definition\ =}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ variant\_get<e2\_sm\_kpm\_action\_definition\_s>(action\_def.action\_definition);}
+\DoxyCodeLine{00712\ \ \ \ \ e2\_sm\_kpm\_action\_definition.ric\_style\_type\ =\ 3;}
+\DoxyCodeLine{00713\ \ \ \ \ e2\_sm\_kpm\_action\_definition.action\_definition\_formats.set\_action\_definition\_format3();}
+\DoxyCodeLine{00714\ \ \ \ \ e2\_sm\_kpm\_action\_definition.action\_definition\_formats.action\_definition\_format3().meas\_cond\_list.resize(1);}
+\DoxyCodeLine{00715\ \ \ \ \ e2\_sm\_kpm\_action\_definition.action\_definition\_formats.action\_definition\_format3()}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ .meas\_cond\_list[0]}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ .meas\_type.set\_meas\_name()}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ .from\_string(\textcolor{stringliteral}{"{}RSRP"{}});}
+\DoxyCodeLine{00719\ \ \ \ \ e2\_sm\_kpm\_action\_definition.action\_definition\_formats.action\_definition\_format3().granul\_period\ =\ 10;}
+\DoxyCodeLine{00720\ \ \ \ \ \textcolor{keywordflow}{return}\ action\_def;}
+\DoxyCodeLine{00721\ \ \ \}}
+\DoxyCodeLine{00722\ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__ric__control__request}{e2sm\_ric\_control\_request}}\ handle\_packed\_ric\_control\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::e2ap::ri\_cctrl\_request\_s}}\&\ req)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00723\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00724\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__ric__control__request}{e2sm\_ric\_control\_request}}\ ric\_control\_request\ =\ \{\};}
+\DoxyCodeLine{00725\ \ \ \ \ \textcolor{keywordflow}{return}\ ric\_control\_request;}
+\DoxyCodeLine{00726\ \ \ \}}
+\DoxyCodeLine{00727\ \ \ \mbox{\hyperlink{structsrsran_1_1e2__ric__control__response}{e2\_ric\_control\_response}}\ pack\_ric\_control\_response(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2sm__ric__control__response}{e2sm\_ric\_control\_response}}\&\ e2sm\_response)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00728\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00729\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2__ric__control__response}{e2\_ric\_control\_response}}\ ric\_control\_response\ =\ \{\};}
+\DoxyCodeLine{00730\ \ \ \ \ \textcolor{keywordflow}{return}\ ric\_control\_response;}
+\DoxyCodeLine{00731\ \ \ \}}
+\DoxyCodeLine{00732\ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__event__trigger__definition}{e2sm\_event\_trigger\_definition}}\ handle\_packed\_event\_trigger\_definition(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{srsran::byte\_buffer}}\&\ buf)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00733\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00734\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e2sm__event__trigger__definition}{e2sm\_event\_trigger\_definition}}\ e2sm\_event\_trigger\_def;}
+\DoxyCodeLine{00735\ \ \ \ \ e2sm\_event\_trigger\_def.report\_period\ =\ 10;}
+\DoxyCodeLine{00736\ \ \ \ \ \textcolor{keywordflow}{return}\ e2sm\_event\_trigger\_def;}
+\DoxyCodeLine{00737\ \ \ \}}
+\DoxyCodeLine{00738\ \ \ \mbox{\hyperlink{classasn1_1_1unbounded__octstring}{asn1::unbounded\_octstring<true>}}\ pack\_ran\_function\_description()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \{\};\ \};}
+\DoxyCodeLine{00739\ \};}
+\DoxyCodeLine{00740\ }
+\DoxyCodeLine{00741\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__e2__connection__client}{dummy\_e2\_connection\_client}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__connection__client}{e2\_connection\_client}}}
+\DoxyCodeLine{00742\ \{}
+\DoxyCodeLine{00743\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00744\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__connection__client}{dummy\_e2\_connection\_client}}(\mbox{\hyperlink{classsrsran_1_1e2ap__packer}{e2ap\_packer}}\&\ packer\_)\ :}
+\DoxyCodeLine{00745\ \ \ \ \ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}})),\ packer(packer\_)\{\};}
+\DoxyCodeLine{00746\ }
+\DoxyCodeLine{00747\ \ \ \textcolor{comment}{//\ E2\ Agent\ interface.}}
+\DoxyCodeLine{00748\ \ \ std::unique\_ptr<e2\_message\_notifier>\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__connection__client_a831edc3fab3f9f0d0b57e8593c214b25}{handle\_connection\_request}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00749\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00750\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<dummy\_e2\_pdu\_notifier>(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00751\ \ \ \}}
+\DoxyCodeLine{00752\ }
+\DoxyCodeLine{00753\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__connection__client_ac05c1ef6d1085dc4ac1086dd83258892}{connect\_e2ap}}(\mbox{\hyperlink{classsrsran_1_1e2__message__notifier}{e2\_message\_notifier}}*\ e2\_rx\_pdu\_notifier,}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__message__handler}{e2\_message\_handler}}*\ \ e2ap\_msg\_handler\_,}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__event__handler}{e2\_event\_handler}}*\ \ \ \ event\_handler\_)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00756\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00757\ \ \ \ \ msg\_notifier\ =\ \textcolor{keyword}{dynamic\_cast<}\mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier}{dummy\_e2\_pdu\_notifier}}*\textcolor{keyword}{>}(e2\_rx\_pdu\_notifier);}
+\DoxyCodeLine{00758\ \ \ \ \ msg\_notifier-\/>attach\_handler(\&packer);}
+\DoxyCodeLine{00759\ \ \ \}}
+\DoxyCodeLine{00760\ }
+\DoxyCodeLine{00761\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier}{dummy\_e2\_pdu\_notifier}}*\ get\_e2\_msg\_notifier()\ \{\ \textcolor{keywordflow}{return}\ msg\_notifier;\ \}}
+\DoxyCodeLine{00762\ }
+\DoxyCodeLine{00763\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dummy__e2__connection__client_a30d38efc658afc587f2a61e977cbc297}{close}}()\textcolor{keyword}{\ override}\{\};}
+\DoxyCodeLine{00764\ }
+\DoxyCodeLine{00765\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00766\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ logger;}
+\DoxyCodeLine{00767\ \ \ \mbox{\hyperlink{classsrsran_1_1e2ap__packer}{e2ap\_packer}}\&\ \ \ \ \ \ \ \ \ \ \ packer;}
+\DoxyCodeLine{00768\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__e2__pdu__notifier}{dummy\_e2\_pdu\_notifier}}*\ msg\_notifier;}
+\DoxyCodeLine{00769\ \};}
+\DoxyCodeLine{00770\ }
+\DoxyCodeLine{00771\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dummy__du__configurator}{dummy\_du\_configurator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__configurator}{du\_configurator}}}
+\DoxyCodeLine{00772\ \{}
+\DoxyCodeLine{00773\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00774\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__du__configurator}{dummy\_du\_configurator}}()\{\};}
+\DoxyCodeLine{00775\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<du\_mac\_sched\_control\_config\_response>}}}
+\DoxyCodeLine{00776\ \ \ configure\_ue\_mac\_scheduler(\mbox{\hyperlink{structsrsran_1_1du__mac__sched__control__config}{du\_mac\_sched\_control\_config}}\ reconf)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00777\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00778\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1du__mac__sched__control__config}{du\_mac\_sched\_control\_config}}\ config;}
+\DoxyCodeLine{00779\ \ \ \ \ config\ =\ reconf;}
+\DoxyCodeLine{00780\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<du\_mac\_sched\_control\_config\_response>}}>\&\ ctx)\ \{}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ CORO\_RETURN(\mbox{\hyperlink{structsrsran_1_1du__mac__sched__control__config__response}{du\_mac\_sched\_control\_config\_response}}\{\textcolor{keyword}{true},\ \textcolor{keyword}{true},\ \textcolor{keyword}{true}\});}
+\DoxyCodeLine{00783\ \ \ \ \ \});}
+\DoxyCodeLine{00784\ \ \ \}}
+\DoxyCodeLine{00785\ \};}
+\DoxyCodeLine{00786\ }
+\DoxyCodeLine{00788\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}\ :\ \textcolor{keyword}{public}\ ::testing::Test}
+\DoxyCodeLine{00789\ \{}
+\DoxyCodeLine{00790\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00791\ \ \ \textcolor{keywordtype}{void}\ tick()}
+\DoxyCodeLine{00792\ \ \ \{}
+\DoxyCodeLine{00793\ \ \ \ \ timers.\mbox{\hyperlink{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}{tick}}();}
+\DoxyCodeLine{00794\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}.run\_pending\_tasks();}
+\DoxyCodeLine{00795\ \ \ \}}
+\DoxyCodeLine{00796\ \ \ \mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg\ =\ \{\};}
+\DoxyCodeLine{00797\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ factory;}
+\DoxyCodeLine{00798\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00799\ \ \ std::unique\_ptr<dummy\_network\_gateway\_data\_handler>\ gw;}
+\DoxyCodeLine{00800\ \ \ std::unique\_ptr<e2\_interface>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2;}
+\DoxyCodeLine{00801\ \ \ std::unique\_ptr<dummy\_e2ap\_pcap>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap;}
+\DoxyCodeLine{00802\ \ \ std::unique\_ptr<srsran::e2ap\_asn1\_packer>\ \ \ \ \ \ \ \ \ \ \ packer;}
+\DoxyCodeLine{00803\ \ \ std::unique\_ptr<e2sm\_interface>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_kpm\_iface;}
+\DoxyCodeLine{00804\ \ \ std::unique\_ptr<e2sm\_interface>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_rc\_iface;}
+\DoxyCodeLine{00805\ \ \ std::unique\_ptr<e2sm\_control\_service>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_rc\_control\_service\_style2;}
+\DoxyCodeLine{00806\ \ \ std::unique\_ptr<e2sm\_control\_action\_executor>\ \ \ \ \ \ \ rc\_control\_action\_2\_6\_executor;}
+\DoxyCodeLine{00807\ \ \ std::unique\_ptr<e2sm\_handler>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_kpm\_packer;}
+\DoxyCodeLine{00808\ \ \ std::unique\_ptr<e2sm\_rc\_asn1\_packer>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_rc\_packer;}
+\DoxyCodeLine{00809\ \ \ std::unique\_ptr<du\_configurator>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rc\_param\_configurator;}
+\DoxyCodeLine{00810\ \ \ std::unique\_ptr<e2\_subscription\_manager>\ \ \ \ \ \ \ \ \ \ \ \ e2\_subscription\_mngr;}
+\DoxyCodeLine{00811\ \ \ std::unique\_ptr<e2\_du\_metrics\_interface>\ \ \ \ \ \ \ \ \ \ \ \ du\_metrics;}
+\DoxyCodeLine{00812\ \ \ std::unique\_ptr<srs\_du::f1ap\_ue\_id\_translator>\ \ \ \ \ \ f1ap\_ue\_id\_mapper;}
+\DoxyCodeLine{00813\ \ \ std::unique\_ptr<dummy\_e2sm\_kpm\_du\_meas\_provider>\ \ \ \ du\_meas\_provider;}
+\DoxyCodeLine{00814\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker}{manual\_task\_worker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\{64\};}
+\DoxyCodeLine{00815\ \ \ std::unique\_ptr<dummy\_e2\_pdu\_notifier>\ \ \ \ \ \ \ \ \ \ \ \ \ \ msg\_notifier;}
+\DoxyCodeLine{00816\ \ \ std::unique\_ptr<dummy\_e2\_connection\_client>\ \ \ \ \ \ \ \ \ e2\_client;}
+\DoxyCodeLine{00817\ \ \ std::unique\_ptr<e2sm\_manager>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_mngr;}
+\DoxyCodeLine{00818\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ test\_logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00819\ \};}
+\DoxyCodeLine{00820\ }
+\DoxyCodeLine{00821\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__test}{e2\_test}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}}
+\DoxyCodeLine{00822\ \{}
+\DoxyCodeLine{00823\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00824\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00825\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00826\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00827\ }
+\DoxyCodeLine{00828\ \ \ \ \ msg\_notifier\ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_pdu\_notifier>(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00829\ \ \ \ \ e2\_subscription\_mngr\ =\ std::make\_unique<dummy\_e2\_subscription\_mngr>();}
+\DoxyCodeLine{00830\ \ \ \ \ du\_metrics\ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_du\_metrics>();}
+\DoxyCodeLine{00831\ \ \ \ \ factory\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\{timers,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\};}
+\DoxyCodeLine{00832\ \ \ \ \ e2sm\_mngr\ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_manager>(test\_logger);}
+\DoxyCodeLine{00833\ \ \ \ \ e2\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ad881e56f18bdb498f7972186481a6995}{create\_e2}}(cfg,\ factory,\ *msg\_notifier,\ *e2\_subscription\_mngr,\ *e2sm\_mngr);}
+\DoxyCodeLine{00834\ \ \ \ \ gw\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_network\_gateway\_data\_handler>();}
+\DoxyCodeLine{00835\ \ \ \ \ pcap\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2ap\_pcap>();}
+\DoxyCodeLine{00836\ \ \ \ \ packer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<srsran::e2ap\_asn1\_packer>(*gw,\ *e2,\ *pcap);}
+\DoxyCodeLine{00837\ \ \ \ \ msg\_notifier-\/>attach\_handler(\&(*packer));}
+\DoxyCodeLine{00838\ \ \ \}}
+\DoxyCodeLine{00839\ }
+\DoxyCodeLine{00840\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00841\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00842\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00843\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00844\ \ \ \}}
+\DoxyCodeLine{00845\ \};}
+\DoxyCodeLine{00846\ }
+\DoxyCodeLine{00847\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__external__test}{e2\_external\_test}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}}
+\DoxyCodeLine{00848\ \{}
+\DoxyCodeLine{00849\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00850\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00851\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00852\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00853\ }
+\DoxyCodeLine{00854\ \ \ \ \ cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::config\_helpers::make\_default\_e2ap\_config();}
+\DoxyCodeLine{00855\ \ \ \ \ cfg.e2sm\_kpm\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00856\ }
+\DoxyCodeLine{00857\ \ \ \ \ msg\_notifier\ \ \ \ \ =\ std::make\_unique<dummy\_e2\_pdu\_notifier>(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00858\ \ \ \ \ du\_metrics\ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_du\_metrics>();}
+\DoxyCodeLine{00859\ \ \ \ \ du\_meas\_provider\ =\ std::make\_unique<dummy\_e2sm\_kpm\_du\_meas\_provider>();}
+\DoxyCodeLine{00860\ \ \ \ \ e2sm\_kpm\_packer\ \ =\ std::make\_unique<e2sm\_kpm\_asn1\_packer>(*du\_meas\_provider);}
+\DoxyCodeLine{00861\ \ \ \ \ e2sm\_kpm\_iface\ \ \ =\ std::make\_unique<e2sm\_kpm\_impl>(test\_logger,\ *e2sm\_kpm\_packer,\ *du\_meas\_provider);}
+\DoxyCodeLine{00862\ \ \ \ \ e2sm\_mngr\ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_manager>(test\_logger);}
+\DoxyCodeLine{00863\ \ \ \ \ e2sm\_mngr-\/>add\_e2sm\_service(\textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.2.2.2"{}},\ std::move(e2sm\_kpm\_iface));}
+\DoxyCodeLine{00864\ \ \ \ \ e2\_subscription\_mngr\ =\ std::make\_unique<e2\_subscription\_manager\_impl>(*msg\_notifier,\ *e2sm\_mngr);}
+\DoxyCodeLine{00865\ \ \ \ \ factory\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\{timers,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\};}
+\DoxyCodeLine{00866\ \ \ \ \ e2\ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a95da2117de4641a673322f744f6b48da}{create\_e2\_with\_task\_exec}}(cfg,\ factory,\ *msg\_notifier,\ *e2\_subscription\_mngr,\ *e2sm\_mngr,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}});}
+\DoxyCodeLine{00867\ \ \ \ \ gw\ \ \ \ \ =\ std::make\_unique<dummy\_network\_gateway\_data\_handler>();}
+\DoxyCodeLine{00868\ \ \ \ \ pcap\ \ \ =\ std::make\_unique<dummy\_e2ap\_pcap>();}
+\DoxyCodeLine{00869\ \ \ \ \ packer\ =\ std::make\_unique<srsran::e2ap\_asn1\_packer>(*gw,\ *e2,\ *pcap);}
+\DoxyCodeLine{00870\ \ \ \ \ msg\_notifier-\/>attach\_handler(\&(*packer));}
+\DoxyCodeLine{00871\ \ \ \}}
+\DoxyCodeLine{00872\ }
+\DoxyCodeLine{00873\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00874\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00875\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00876\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00877\ \ \ \}}
+\DoxyCodeLine{00878\ \};}
+\DoxyCodeLine{00879\ }
+\DoxyCodeLine{00880\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__entity__test}{e2\_entity\_test}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}}
+\DoxyCodeLine{00881\ \{}
+\DoxyCodeLine{00882\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00883\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00884\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00885\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00886\ }
+\DoxyCodeLine{00887\ \ \ \ \ cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::config\_helpers::make\_default\_e2ap\_config();}
+\DoxyCodeLine{00888\ \ \ \ \ cfg.e2sm\_kpm\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00889\ }
+\DoxyCodeLine{00890\ \ \ \ \ gw\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_network\_gateway\_data\_handler>();}
+\DoxyCodeLine{00891\ \ \ \ \ pcap\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2ap\_pcap>();}
+\DoxyCodeLine{00892\ \ \ \ \ packer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<srsran::e2ap\_asn1\_packer>(*gw,\ *e2,\ *pcap);}
+\DoxyCodeLine{00893\ \ \ \ \ e2\_client\ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_connection\_client>(*packer);}
+\DoxyCodeLine{00894\ \ \ \ \ du\_metrics\ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_du\_metrics>();}
+\DoxyCodeLine{00895\ \ \ \ \ f1ap\_ue\_id\_mapper\ \ \ \ \ =\ std::make\_unique<dummy\_f1ap\_ue\_id\_translator>();}
+\DoxyCodeLine{00896\ \ \ \ \ factory\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\{timers,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\};}
+\DoxyCodeLine{00897\ \ \ \ \ rc\_param\_configurator\ =\ std::make\_unique<dummy\_du\_configurator>();}
+\DoxyCodeLine{00898\ \ \ \ \ e2\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ae85c50c28e54f5640b582d3040c74688}{create\_e2\_entity}}(}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ cfg,\ e2\_client.get(),\ *du\_metrics,\ *f1ap\_ue\_id\_mapper,\ *rc\_param\_configurator,\ factory,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}});}
+\DoxyCodeLine{00900\ \ \ \}}
+\DoxyCodeLine{00901\ }
+\DoxyCodeLine{00902\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00903\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00904\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00905\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00906\ \ \ \}}
+\DoxyCodeLine{00907\ \};}
+\DoxyCodeLine{00908\ }
+\DoxyCodeLine{00909\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__test__subscriber}{e2\_test\_subscriber}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}}
+\DoxyCodeLine{00910\ \{}
+\DoxyCodeLine{00911\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00912\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00913\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00914\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00915\ \ \ \ \ cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::config\_helpers::make\_default\_e2ap\_config();}
+\DoxyCodeLine{00916\ \ \ \ \ cfg.e2sm\_kpm\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00917\ }
+\DoxyCodeLine{00918\ \ \ \ \ factory\ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\{timers,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\};}
+\DoxyCodeLine{00919\ \ \ \ \ msg\_notifier\ \ \ \ \ =\ std::make\_unique<dummy\_e2\_pdu\_notifier>(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00920\ \ \ \ \ e2sm\_kpm\_packer\ \ =\ std::make\_unique<dummy\_e2sm\_handler>();}
+\DoxyCodeLine{00921\ \ \ \ \ du\_metrics\ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_du\_metrics>();}
+\DoxyCodeLine{00922\ \ \ \ \ du\_meas\_provider\ =\ std::make\_unique<dummy\_e2sm\_kpm\_du\_meas\_provider>();}
+\DoxyCodeLine{00923\ \ \ \ \ e2sm\_kpm\_iface\ \ \ =\ std::make\_unique<e2sm\_kpm\_impl>(test\_logger,\ *e2sm\_kpm\_packer,\ *du\_meas\_provider);}
+\DoxyCodeLine{00924\ \ \ \ \ e2sm\_mngr\ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_manager>(test\_logger);}
+\DoxyCodeLine{00925\ \ \ \ \ e2sm\_mngr-\/>add\_e2sm\_service(\textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.2.2.2"{}},\ std::move(e2sm\_kpm\_iface));}
+\DoxyCodeLine{00926\ \ \ \ \ e2sm\_mngr-\/>add\_supported\_ran\_function(1,\ \textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.2.2.2"{}});}
+\DoxyCodeLine{00927\ \ \ \ \ e2\_subscription\_mngr\ =\ std::make\_unique<e2\_subscription\_manager\_impl>(*msg\_notifier,\ *e2sm\_mngr);}
+\DoxyCodeLine{00928\ \ \ \ \ e2\_subscription\_mngr-\/>add\_ran\_function\_oid(1,\ \textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.2.2.2"{}});}
+\DoxyCodeLine{00929\ \ \ \ \ e2\ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ad881e56f18bdb498f7972186481a6995}{create\_e2}}(cfg,\ factory,\ *msg\_notifier,\ *e2\_subscription\_mngr,\ *e2sm\_mngr);}
+\DoxyCodeLine{00930\ \ \ \ \ gw\ \ \ \ \ =\ std::make\_unique<dummy\_network\_gateway\_data\_handler>();}
+\DoxyCodeLine{00931\ \ \ \ \ pcap\ \ \ =\ std::make\_unique<dummy\_e2ap\_pcap>();}
+\DoxyCodeLine{00932\ \ \ \ \ packer\ =\ std::make\_unique<srsran::e2ap\_asn1\_packer>(*gw,\ *e2,\ *pcap);}
+\DoxyCodeLine{00933\ \ \ \ \ msg\_notifier-\/>attach\_handler(\&(*packer));}
+\DoxyCodeLine{00934\ \ \ \}}
+\DoxyCodeLine{00935\ }
+\DoxyCodeLine{00936\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00937\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00938\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00939\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00940\ \ \ \}}
+\DoxyCodeLine{00941\ \};}
+\DoxyCodeLine{00942\ }
+\DoxyCodeLine{00943\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e2__test__setup}{e2\_test\_setup}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__test__base}{e2\_test\_base}}}
+\DoxyCodeLine{00944\ \{}
+\DoxyCodeLine{00945\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00946\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00947\ \ \ \ \ cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srsran::config\_helpers::make\_default\_e2ap\_config();}
+\DoxyCodeLine{00948\ \ \ \ \ cfg.e2sm\_kpm\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00949\ }
+\DoxyCodeLine{00950\ \ \ \ \ factory\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\{timers,\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\};}
+\DoxyCodeLine{00951\ \ \ \ \ msg\_notifier\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_pdu\_notifier>(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00952\ \ \ \ \ du\_metrics\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2\_du\_metrics>();}
+\DoxyCodeLine{00953\ \ \ \ \ du\_meas\_provider\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2sm\_kpm\_du\_meas\_provider>();}
+\DoxyCodeLine{00954\ \ \ \ \ e2sm\_kpm\_packer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_kpm\_asn1\_packer>(*du\_meas\_provider);}
+\DoxyCodeLine{00955\ \ \ \ \ e2sm\_kpm\_iface\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_kpm\_impl>(test\_logger,\ *e2sm\_kpm\_packer,\ *du\_meas\_provider);}
+\DoxyCodeLine{00956\ \ \ \ \ e2sm\_rc\_packer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_rc\_asn1\_packer>();}
+\DoxyCodeLine{00957\ \ \ \ \ rc\_param\_configurator\ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_du\_configurator>();}
+\DoxyCodeLine{00958\ \ \ \ \ e2sm\_rc\_iface\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<e2sm\_rc\_impl>(test\_logger,\ *e2sm\_rc\_packer);}
+\DoxyCodeLine{00959\ \ \ \ \ e2sm\_rc\_control\_service\_style2\ =\ std::make\_unique<e2sm\_rc\_control\_service>(2);}
+\DoxyCodeLine{00960\ \ \ \ \ rc\_control\_action\_2\_6\_executor\ =\ std::make\_unique<e2sm\_rc\_control\_action\_2\_6\_du\_executor>(*rc\_param\_configurator);}
+\DoxyCodeLine{00961\ \ \ \ \ e2sm\_rc\_control\_service\_style2-\/>add\_e2sm\_rc\_control\_action\_executor(std::move(rc\_control\_action\_2\_6\_executor));}
+\DoxyCodeLine{00962\ \ \ \ \ e2sm\_rc\_packer-\/>add\_e2sm\_control\_service(e2sm\_rc\_control\_service\_style2.get());}
+\DoxyCodeLine{00963\ \ \ \ \ e2sm\_rc\_iface-\/>add\_e2sm\_control\_service(std::move(e2sm\_rc\_control\_service\_style2));}
+\DoxyCodeLine{00964\ \ \ \ \ e2sm\_mngr\ =\ std::make\_unique<e2sm\_manager>(test\_logger);}
+\DoxyCodeLine{00965\ \ \ \ \ e2sm\_mngr-\/>add\_e2sm\_service(\textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.2.2.2"{}},\ std::move(e2sm\_kpm\_iface));}
+\DoxyCodeLine{00966\ \ \ \ \ e2sm\_mngr-\/>add\_e2sm\_service(\textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.1.2.3"{}},\ std::move(e2sm\_rc\_iface));}
+\DoxyCodeLine{00967\ \ \ \ \ e2sm\_mngr-\/>add\_supported\_ran\_function(1,\ \textcolor{stringliteral}{"{}1.3.6.1.4.1.53148.1.1.2.3"{}});}
+\DoxyCodeLine{00968\ \ \ \ \ e2\_subscription\_mngr\ =\ std::make\_unique<e2\_subscription\_manager\_impl>(*msg\_notifier,\ *e2sm\_mngr);}
+\DoxyCodeLine{00969\ \ \ \ \ e2\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ad881e56f18bdb498f7972186481a6995}{create\_e2}}(cfg,\ factory,\ *msg\_notifier,\ *e2\_subscription\_mngr,\ *e2sm\_mngr);}
+\DoxyCodeLine{00970\ \ \ \ \ gw\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_network\_gateway\_data\_handler>();}
+\DoxyCodeLine{00971\ \ \ \ \ pcap\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_e2ap\_pcap>();}
+\DoxyCodeLine{00972\ \ \ \ \ packer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<srsran::e2ap\_asn1\_packer>(*gw,\ *e2,\ *pcap);}
+\DoxyCodeLine{00973\ \ \ \ \ msg\_notifier-\/>attach\_handler(\&(*packer));}
+\DoxyCodeLine{00974\ \ \ \}}
+\DoxyCodeLine{00975\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00976\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00977\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00978\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00979\ \ \ \}}
+\DoxyCodeLine{00980\ \};}
+\DoxyCodeLine{00981\ }
+\DoxyCodeLine{00982\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

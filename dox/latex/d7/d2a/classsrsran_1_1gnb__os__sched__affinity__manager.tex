@@ -1,0 +1,91 @@
+\doxysection{srsran\+::gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager Class Reference}
+\hypertarget{classsrsran_1_1gnb__os__sched__affinity__manager}{}\label{classsrsran_1_1gnb__os__sched__affinity__manager}\index{srsran::gnb\_os\_sched\_affinity\_manager@{srsran::gnb\_os\_sched\_affinity\_manager}}
+
+
+Scheduler affinity mask manager.  
+
+
+
+
+{\ttfamily \#include $<$gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=216pt]{da/d02/classsrsran_1_1gnb__os__sched__affinity__manager__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1gnb__os__sched__affinity__manager_ae28aa1c4a81d213397293eede8be7de1}{gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager}} (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} std\+::vector$<$ \mbox{\hyperlink{structsrsran_1_1gnb__os__sched__affinity__config}{gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+config}} $>$ \&entries)
+\item 
+\mbox{\hyperlink{structsrsran_1_1os__sched__affinity__bitmask}{os\+\_\+sched\+\_\+affinity\+\_\+bitmask}} \mbox{\hyperlink{classsrsran_1_1gnb__os__sched__affinity__manager_aa3c74d1b4b113ac05d13129392a5de8a}{calcute\+\_\+affinity\+\_\+mask}} (\mbox{\hyperlink{namespacesrsran_ae5f7346a9680f812f197c6066a399743}{gnb\+\_\+sched\+\_\+affinity\+\_\+mask\+\_\+types}} type)
+\begin{DoxyCompactList}\small\item\em Calculate and returns the affinity mask for the given type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Scheduler affinity mask manager. 
+
+Manages the CPU affinity mask for the g\+NB application. It calculates and returns a mask using on a round-\/robin algorithm on a configured mask. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1gnb__os__sched__affinity__manager_ae28aa1c4a81d213397293eede8be7de1}\label{classsrsran_1_1gnb__os__sched__affinity__manager_ae28aa1c4a81d213397293eede8be7de1} 
+\index{srsran::gnb\_os\_sched\_affinity\_manager@{srsran::gnb\_os\_sched\_affinity\_manager}!gnb\_os\_sched\_affinity\_manager@{gnb\_os\_sched\_affinity\_manager}}
+\index{gnb\_os\_sched\_affinity\_manager@{gnb\_os\_sched\_affinity\_manager}!srsran::gnb\_os\_sched\_affinity\_manager@{srsran::gnb\_os\_sched\_affinity\_manager}}
+\doxysubsubsection{\texorpdfstring{gnb\_os\_sched\_affinity\_manager()}{gnb\_os\_sched\_affinity\_manager()}}
+{\footnotesize\ttfamily srsran\+::gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager\+::gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} std\+::vector$<$ \mbox{\hyperlink{structsrsran_1_1gnb__os__sched__affinity__config}{gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+config}} $>$ \&}]{entries }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00136\ \ \ \ \ cpu\_masks(\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(gnb\_sched\_affinity\_mask\_types::last))}
+\DoxyCodeLine{00137\ \ \ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ entry\ :\ entries)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ srsran\_assert(entry.type\ !=\ gnb\_sched\_affinity\_mask\_types::last,\ \textcolor{stringliteral}{"{}Invalid\ type\ '\{\}'"{}},\ \mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(entry.type));}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (entry.pinning\_policy)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fba4412c3395f407a75c2adce7824ebf428}{gnb\_sched\_affinity\_mask\_policy::round\_robin}}:}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ cpu\_masks[\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(entry.type)]\ =\ std::make\_unique<affinity\_entry\_rr>(entry.mask);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{gnb\_sched\_affinity\_mask\_policy::mask}}:}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ cpu\_masks[\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(entry.type)]\ =\ std::make\_unique<affinity\_entry\_mask>(entry.mask);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ cpu\_masks[\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(entry.type)]\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1gnb__os__sched__affinity__manager_aa3c74d1b4b113ac05d13129392a5de8a}\label{classsrsran_1_1gnb__os__sched__affinity__manager_aa3c74d1b4b113ac05d13129392a5de8a} 
+\index{srsran::gnb\_os\_sched\_affinity\_manager@{srsran::gnb\_os\_sched\_affinity\_manager}!calcute\_affinity\_mask@{calcute\_affinity\_mask}}
+\index{calcute\_affinity\_mask@{calcute\_affinity\_mask}!srsran::gnb\_os\_sched\_affinity\_manager@{srsran::gnb\_os\_sched\_affinity\_manager}}
+\doxysubsubsection{\texorpdfstring{calcute\_affinity\_mask()}{calcute\_affinity\_mask()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structsrsran_1_1os__sched__affinity__bitmask}{os\+\_\+sched\+\_\+affinity\+\_\+bitmask}} srsran\+::gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager\+::calcute\+\_\+affinity\+\_\+mask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_ae5f7346a9680f812f197c6066a399743}{gnb\+\_\+sched\+\_\+affinity\+\_\+mask\+\_\+types}}}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Calculate and returns the affinity mask for the given type. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00155\ \ \ \{}
+\DoxyCodeLine{00156\ \ \ \ \ srsran\_assert(type\ !=\ gnb\_sched\_affinity\_mask\_types::last,\ \textcolor{stringliteral}{"{}Invalid\ type\ '\{\}'"{}},\ \mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(type));}
+\DoxyCodeLine{00157\ \ \ \ \ srsran\_assert(cpu\_masks[\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(type)],\ \textcolor{stringliteral}{"{}Invalid\ manager\ for\ type\ '\{\}'"{}},\ \mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(type));}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{return}\ cpu\_masks[\mbox{\hyperlink{namespacesrsran_a1ccaefcc6a0383418d549196f3d06739}{to\_unsigned}}(type)]-\/>calculate\_mask();}
+\DoxyCodeLine{00160\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+apps/gnb/gnb\+\_\+os\+\_\+sched\+\_\+affinity\+\_\+manager.\+h\end{DoxyCompactItemize}

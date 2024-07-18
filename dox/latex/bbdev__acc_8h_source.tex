@@ -1,0 +1,98 @@
+\doxysection{bbdev\+\_\+acc.\+h}
+\hypertarget{bbdev__acc_8h_source}{}\label{bbdev__acc_8h_source}\index{include/srsran/hal/dpdk/bbdev/bbdev\_acc.h@{include/srsran/hal/dpdk/bbdev/bbdev\_acc.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/logger.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/units.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <rte\_bbdev.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <rte\_bbdev\_op.h>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }dpdk\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_BBDEV\_QUEUES\ =\ 128;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_OP\_IN\_QUEUE\ =\ 16;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration}{bbdev\_acc\_configuration}}\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_ad34d84153dcbd2a18abf0e16785c7132}{id}};}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_a7db5fc1a09cd0ea681d08b9d3a412498}{nof\_ldpc\_enc\_lcores}}\ =\ 0;}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_ae0675776d8c130748cad82cf9449e15e}{nof\_ldpc\_dec\_lcores}}\ =\ 0;}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_a84a8e55559d3cdac1418baa434035654}{nof\_fft\_lcores}}\ =\ 0;}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_aa54d2c4b5bc3637f7111487d86b8a3f3}{msg\_mbuf\_size}}\ =\ RTE\_BBDEV\_LDPC\_E\_MAX\_MBUF;}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_a4adf8c9fc1afc17d79c33bc848a98def}{rm\_mbuf\_size}}\ =\ RTE\_BBDEV\_LDPC\_E\_MAX\_MBUF;}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration_ac04621508d2bd3900b692edce3c9d35b}{nof\_mbuf}}\ =\ 256;}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc}{bbdev\_acc}}}
+\DoxyCodeLine{00061\ \{}
+\DoxyCodeLine{00062\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_afffa80e342e42737c75d624229a8684c}{bbdev\_acc}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dpdk_1_1bbdev__acc__configuration}{bbdev\_acc\_configuration}}\&\ cfg,\ const\ ::rte\_bbdev\_info\&\ info\_,\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_ad258a0c2f6ec537ac047fe3d62c1044c}{\string~bbdev\_acc}}();}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a0c9b5f210cdd5b4d02387674a082bbf4}{get\_device\_id}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ id;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a80aa653e1fd1a7aa3bbb452334686469}{get\_socket\_id}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ info.socket\_id;\ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a2d352d819d0fdf6e0b6617e8790cbf27}{get\_nof\_ldpc\_enc\_cores}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nof\_ldpc\_enc\_lcores;\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_aa3811e12c2c26ce81f575caf04280baa}{get\_nof\_ldpc\_dec\_cores}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nof\_ldpc\_dec\_lcores;\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_abab6efc2d34be500cc66e54c7352e6ab}{get\_nof\_fft\_cores}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nof\_fft\_lcores;\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a00be25c054d7ba72d901b54df8b228f1}{get\_harq\_buff\_size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}(1024\ *\ info.drv.harq\_buffer\_size);\ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a075d9ab6f71aeedbe503bb3138b55335}{get\_msg\_mbuf\_size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}(msg\_mbuf\_size);\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a412f3885d478b77e9588a92af07376c7}{get\_rm\_mbuf\_size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}(rm\_mbuf\_size);\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a3d1a1b8b16d1b6f64c2077a400c3cd02}{get\_nof\_mbuf}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ nof\_mbuf;\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a6ae9cad05f1ccebd501259b85e6eeb20}{get\_logger}}()\ \{\ \textcolor{keywordflow}{return}\ logger;\ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_a1f650f892bdf8d0c0f1121f7ef772bce}{reserve\_queue}}(rte\_bbdev\_op\_type\ op\_type);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__acc_ac35d56ee37d4db642ea0b56abb1f6fea}{free\_queue}}(\textcolor{keywordtype}{unsigned}\ queue\_id);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{unsigned}\ id;}
+\DoxyCodeLine{00125\ \ \ ::rte\_bbdev\_info\ info;}
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_ldpc\_enc\_lcores;}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_ldpc\_dec\_lcores;}
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_fft\_lcores;}
+\DoxyCodeLine{00133\ \ \ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset<MAX\_NOF\_BBDEV\_QUEUES>}}\ queue\_used;}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{unsigned}\ msg\_mbuf\_size;}
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{unsigned}\ rm\_mbuf\_size;}
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_mbuf;}
+\DoxyCodeLine{00141\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00142\ \};}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \}\ \textcolor{comment}{//\ namespace\ dpdk}}
+\DoxyCodeLine{00145\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

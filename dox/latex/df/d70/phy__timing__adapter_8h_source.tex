@@ -1,0 +1,74 @@
+\doxysection{phy\+\_\+timing\+\_\+adapter.\+h}
+\hypertarget{phy__timing__adapter_8h_source}{}\label{phy__timing__adapter_8h_source}\index{include/srsran/phy/adapters/phy\_timing\_adapter.h@{include/srsran/phy/adapters/phy\_timing\_adapter.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/lower\_phy\_timing\_notifier.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/upper\_phy\_timing\_handler.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ Implements\ a\ generic\ physical\ layer\ timing\ adapter.}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1phy__timing__adapter}{phy\_timing\_adapter}}\ :\ \textcolor{keyword}{public}\ lower\_phy\_timing\_notifier}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler}{upper\_phy\_timing\_handler}}*\ timing\_handler;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ Connects\ the\ adaptor\ to\ the\ upper\ physical\ layer\ handler.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1phy__timing__adapter_a57796755828b03925a066e7ed0b6db0e}{connect}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler}{upper\_phy\_timing\_handler}}*\ upper\_handler)\ \{\ timing\_handler\ =\ upper\_handler;\ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1phy__timing__adapter_a096cf74a5acda6ee161ff42d303807c9}{on\_tti\_boundary}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context}{lower\_phy\_timing\_context}}\&\ context)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ report\_fatal\_error\_if\_not(timing\_handler,\ \textcolor{stringliteral}{"{}Adapter\ is\ not\ connected."{}});}
+\DoxyCodeLine{00044\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\ upper\_context;}
+\DoxyCodeLine{00045\ \ \ \ \ upper\_context\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{.}}\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{slot}}\ =\ context\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{.}}\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{slot}};}
+\DoxyCodeLine{00046\ \ \ \ \ timing\_handler\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a790ec0cc017d7ea43381c55c9d9a0bf0}{-\/>}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a790ec0cc017d7ea43381c55c9d9a0bf0}{handle\_tti\_boundary}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a790ec0cc017d7ea43381c55c9d9a0bf0}{(}}upper\_context\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a790ec0cc017d7ea43381c55c9d9a0bf0}{)}};}
+\DoxyCodeLine{00047\ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1phy__timing__adapter_ae3e80805d78e1e28aa1818ff11a3fcfd}{on\_ul\_half\_slot\_boundary}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context}{lower\_phy\_timing\_context}}\&\ context)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ report\_fatal\_error\_if\_not(timing\_handler,\ \textcolor{stringliteral}{"{}Adapter\ is\ not\ connected."{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\ upper\_context;}
+\DoxyCodeLine{00054\ \ \ \ \ upper\_context\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{.}}\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{slot}}\ =\ context\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{.}}\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{slot}};}
+\DoxyCodeLine{00055\ \ \ \ \ timing\_handler\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a585f700cc1bc0244b9866fb6292f6328}{-\/>}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a585f700cc1bc0244b9866fb6292f6328}{handle\_ul\_half\_slot\_boundary}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a585f700cc1bc0244b9866fb6292f6328}{(}}upper\_context\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_a585f700cc1bc0244b9866fb6292f6328}{)}};}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1phy__timing__adapter_a659efbc73411f427db79fe375e9872c2}{on\_ul\_full\_slot\_boundary}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context}{lower\_phy\_timing\_context}}\&\ context)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ report\_fatal\_error\_if\_not(timing\_handler,\ \textcolor{stringliteral}{"{}Adapter\ is\ not\ connected."{}});}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\ upper\_context;}
+\DoxyCodeLine{00063\ \ \ \ \ upper\_context\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{.}}\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{slot}}\ =\ context\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{.}}\mbox{\hyperlink{structsrsran_1_1lower__phy__timing__context_a0e971009bcce62ffe9af28fadc4dd139}{slot}};}
+\DoxyCodeLine{00064\ \ \ \ \ timing\_handler\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_af061e20a0c71b86ea72667d65ae6cd41}{-\/>}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_af061e20a0c71b86ea72667d65ae6cd41}{handle\_ul\_full\_slot\_boundary}}\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_af061e20a0c71b86ea72667d65ae6cd41}{(}}upper\_context\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler_af061e20a0c71b86ea72667d65ae6cd41}{)}};}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,86 @@
+\doxysection{ru\+\_\+generic\+\_\+impl.\+h}
+\hypertarget{ru__generic__impl_8h_source}{}\label{ru__generic__impl_8h_source}\index{lib/ru/generic/ru\_generic\_impl.h@{lib/ru/generic/ru\_generic\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ru__controller__generic__impl_8h}{"{}ru\_controller\_generic\_impl.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ru__downlink__handler__generic__impl_8h}{"{}ru\_downlink\_handler\_generic\_impl.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ru__timing__adapter_8h}{"{}ru\_timing\_adapter.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ru__uplink__request__handler__generic__impl_8h}{"{}ru\_uplink\_request\_handler\_generic\_impl.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rx__symbol__adapter_8h}{"{}rx\_symbol\_adapter.h"{}}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/adapters/phy\_error\_adapter.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/lower\_phy.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/radio/radio\_session.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ru/ru.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Radio\ Unit\ generic\ implementation\ configuration.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{struct}\ ru\_generic\_impl\_config\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Sampling\ rate\ in\ MHz.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{double}\ srate\_MHz;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ PHY\ error\ printer.}}
+\DoxyCodeLine{00043\ \ \ std::vector<std::unique\_ptr<phy\_error\_adapter>>\ phy\_err\_printer;}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Radio\ Unit\ received\ symbol\ adapter.}}
+\DoxyCodeLine{00045\ \ \ std::unique\_ptr<ru\_rx\_symbol\_adapter>\ ru\_rx\_adapter;}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Radio\ Unit\ timing\ adapter.}}
+\DoxyCodeLine{00047\ \ \ std::vector<std::unique\_ptr<lower\_phy\_timing\_notifier>>\ ru\_time\_adapter;}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Radio\ session\ instance.}}
+\DoxyCodeLine{00049\ \ \ std::unique\_ptr<radio\_session>\ radio;}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Lower\ PHY\ instance.}}
+\DoxyCodeLine{00051\ \ \ std::vector<std::unique\_ptr<lower\_phy>>\ low\_phy;}
+\DoxyCodeLine{00052\ \};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ Radio\ Unit\ generic\ implementation.}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{class}\ ru\_generic\_impl\ :\ \textcolor{keyword}{public}\ radio\_unit}
+\DoxyCodeLine{00056\ \{}
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{explicit}\ ru\_generic\_impl(ru\_generic\_impl\_config\&\&\ config);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00061\ \ \ ru\_controller\&\ get\_controller()\ override;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation}}
+\DoxyCodeLine{00064\ \ \ ru\_downlink\_plane\_handler\&\ get\_downlink\_plane\_handler()\ override;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00067\ \ \ ru\_uplink\_plane\_handler\&\ get\_uplink\_plane\_handler()\ override;}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00070\ \ \ std::vector<std::unique\_ptr<phy\_error\_adapter>>\ \ \ \ \ \ \ \ \ phy\_err\_printer;}
+\DoxyCodeLine{00071\ \ \ std::unique\_ptr<ru\_rx\_symbol\_adapter>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_rx\_adapter;}
+\DoxyCodeLine{00072\ \ \ std::vector<std::unique\_ptr<lower\_phy\_timing\_notifier>>\ ru\_time\_adapter;}
+\DoxyCodeLine{00073\ \ \ std::unique\_ptr<radio\_session>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radio;}
+\DoxyCodeLine{00074\ \ \ std::vector<std::unique\_ptr<lower\_phy>>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ low\_phy;}
+\DoxyCodeLine{00075\ \ \ ru\_controller\_generic\_impl\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_ctrl;}
+\DoxyCodeLine{00076\ \ \ ru\_downlink\_handler\_generic\_impl\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_downlink\_hdlr;}
+\DoxyCodeLine{00077\ \ \ ru\_uplink\_request\_handler\_generic\_impl\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_uplink\_request\_hdlr;}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

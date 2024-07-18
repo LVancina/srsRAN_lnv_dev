@@ -48,22 +48,11 @@ struct pdu_session {
       pdu_session_res_ambr = session.pdu_session_res_dl_ambr.value();
     }
   };
-  ~pdu_session() { stop(); }
-
-  void stop()
+  ~pdu_session()
   {
-    if (not stopped) {
-      gtpu_rx_demux.remove_tunnel(local_teid);
-
-      // Stop DRBs
-      for (const auto& drb : drbs) {
-        drb.second->stop();
-      }
-    }
-    stopped = true;
+    // Remove GTP-U tunnel from GTP-U demux.
+    gtpu_rx_demux.remove_tunnel(local_teid);
   }
-
-  bool stopped = false;
 
   std::unique_ptr<sdap_entity>     sdap;
   std::unique_ptr<gtpu_tunnel_ngu> gtpu;

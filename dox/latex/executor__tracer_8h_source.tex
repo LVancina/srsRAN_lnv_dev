@@ -1,0 +1,140 @@
+\doxysection{executor\+\_\+tracer.\+h}
+\hypertarget{executor__tracer_8h_source}{}\label{executor__tracer_8h_source}\index{include/srsran/support/executors/executor\_tracer.h@{include/srsran/support/executors/executor\_tracer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/event\_tracing.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Exec,\ \textcolor{keyword}{typename}\ Tracer>}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1executor__tracer}{executor\_tracer}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ExecType>}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{classsrsran_1_1executor__tracer}{executor\_tracer}}(ExecType\&\&\ exec\_,\ Tracer\&\ tracer\_,\ \textcolor{keyword}{const}\ std::string\&\ name\_)\ :}
+\DoxyCodeLine{00037\ \ \ \ \ exec(std::forward<ExecType>(exec\_)),}
+\DoxyCodeLine{00038\ \ \ \ \ tracer(tracer\_),}
+\DoxyCodeLine{00039\ \ \ \ \ enqueue\_event\_name(fmt::format(\textcolor{stringliteral}{"{}\{\}\_enqueue"{}},\ name\_)),}
+\DoxyCodeLine{00040\ \ \ \ \ run\_event\_name(fmt::format(\textcolor{stringliteral}{"{}\{\}\_run"{}},\ name\_))}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1executor__tracer_a089a9bd23054d285faf80191e7752575}{execute}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{auto}\ enqueue\_tp\ =\ trace\_clock::now();}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ get(exec).execute([\textcolor{keyword}{this},\ task\ =\ std::move(task),\ enqueue\_tp]()\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ tracer\ <<\ \mbox{\hyperlink{structsrsran_1_1trace__event}{trace\_event}}(enqueue\_event\_name.c\_str(),\ enqueue\_tp);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ process\_tp\ =\ trace\_clock::now();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ task();}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ tracer\ <<\ \mbox{\hyperlink{structsrsran_1_1trace__event}{trace\_event}}(run\_event\_name.c\_str(),\ process\_tp);}
+\DoxyCodeLine{00052\ \ \ \ \ \});}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1executor__tracer_ac07009eaf0ed90b31e49c41bba32d182}{defer}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00056\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{auto}\ enqueue\_tp\ =\ trace\_clock::now();}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{return}\ get(exec).defer([\textcolor{keyword}{this},\ task\ =\ std::move(task),\ enqueue\_tp]()\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ tracer\ <<\ \mbox{\hyperlink{structsrsran_1_1trace__event}{trace\_event}}(enqueue\_event\_name.c\_str(),\ enqueue\_tp);}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ process\_tp\ =\ trace\_clock::now();}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ task();}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ tracer\ <<\ \mbox{\hyperlink{structsrsran_1_1trace__event}{trace\_event}}(run\_event\_name.c\_str(),\ process\_tp);}
+\DoxyCodeLine{00063\ \ \ \ \ \});}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00068\ \ \ U\&\ get(U*\ u)}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{return}\ *u;}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00074\ \ \ U\&\ get(std::unique\_ptr<U>\&\ u)}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ *u;}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00080\ \ \ U\&\ get(U\&\ u)}
+\DoxyCodeLine{00081\ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ u;}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ Exec\ \ \ \ \ \ \ \ exec;}
+\DoxyCodeLine{00086\ \ \ Tracer\&\ \ \ \ \ tracer;}
+\DoxyCodeLine{00087\ \ \ std::string\ enqueue\_event\_name;}
+\DoxyCodeLine{00088\ \ \ std::string\ run\_event\_name;}
+\DoxyCodeLine{00089\ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00092\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Exec>}
+\DoxyCodeLine{00093\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1executor__tracer}{executor\_tracer}}<Exec,\ detail::null\_event\_tracer>\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1executor__tracer}{executor\_tracer}}(Exec\ exec\_,\ \mbox{\hyperlink{classsrsran_1_1detail_1_1null__event__tracer}{detail::null\_event\_tracer}}\&\ ,\ \textcolor{keyword}{const}\ std::string\&\ )\ :\ exec(std::move(exec\_))\ \{\}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1executor__tracer_3_01Exec_00_01detail_1_1null__event__tracer_01_4_a3aa8c3d170e34a9dc25abbd690043b82}{execute}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ get(exec).execute(std::move(task));\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1executor__tracer_3_01Exec_00_01detail_1_1null__event__tracer_01_4_ad4397ed89edf5290546a0a11119d8335}{defer}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ get(exec).defer(std::move(task));\ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00104\ \ \ U\&\ get(U*\ u)}
+\DoxyCodeLine{00105\ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ *u;}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00110\ \ \ U\&\ get(std::unique\_ptr<U>\ u)}
+\DoxyCodeLine{00111\ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{return}\ *u;}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00116\ \ \ U\&\ get(U\&\ u)}
+\DoxyCodeLine{00117\ \ \ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{return}\ u;}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ Exec\ exec;}
+\DoxyCodeLine{00122\ \};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Exec,\ \textcolor{keyword}{typename}\ Tracer>}
+\DoxyCodeLine{00125\ executor\_tracer<Exec,\ Tracer>\ make\_trace\_executor(\textcolor{keyword}{const}\ std::string\&\ name,\ Exec\&\&\ exec,\ Tracer\&\ tracer)}
+\DoxyCodeLine{00126\ \{}
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordflow}{return}\ executor\_tracer<Exec,\ Tracer>(std::forward<Exec>(exec),\ tracer,\ name);}
+\DoxyCodeLine{00128\ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Exec,\ \textcolor{keyword}{typename}\ Tracer>}
+\DoxyCodeLine{00131\ std::unique\_ptr<task\_executor>\ make\_trace\_executor\_ptr(\textcolor{keyword}{const}\ std::string\&\ name,\ Exec\&\&\ exec,\ Tracer\&\ tracer)}
+\DoxyCodeLine{00132\ \{}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<executor\_tracer<Exec,\ Tracer>>(std::forward<Exec>(exec),\ tracer,\ name);}
+\DoxyCodeLine{00134\ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

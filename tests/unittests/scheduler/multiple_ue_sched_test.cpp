@@ -22,7 +22,7 @@
 
 #include "lib/scheduler/scheduler_impl.h"
 #include "lib/scheduler/ue_scheduling/ue_cell_grid_allocator.h"
-#include "lib/scheduler/ue_scheduling/ue_fallback_scheduler.h"
+#include "lib/scheduler/ue_scheduling/ue_srb0_scheduler.h"
 #include "test_utils/dummy_test_components.h"
 #include "tests/unittests/scheduler/test_utils/config_generators.h"
 #include "tests/unittests/scheduler/test_utils/scheduler_test_suite.h"
@@ -142,12 +142,10 @@ protected:
     test_scheduler_result_consistency(bench->cell_cfg, current_slot, *bench->sched_res);
   }
 
-  static scheduler_expert_config create_expert_config(sch_mcs_index max_msg4_mcs_index,
-                                                      bool          enable_csi_rs_pdsch_multiplexing = true)
+  static scheduler_expert_config create_expert_config(sch_mcs_index max_msg4_mcs_index)
   {
-    auto cfg                                = config_helpers::make_default_scheduler_expert_config();
-    cfg.ue.enable_csi_rs_pdsch_multiplexing = enable_csi_rs_pdsch_multiplexing;
-    cfg.ue.max_msg4_mcs                     = max_msg4_mcs_index;
+    auto cfg            = config_helpers::make_default_scheduler_expert_config();
+    cfg.ue.max_msg4_mcs = max_msg4_mcs_index;
     return cfg;
   }
 
@@ -217,20 +215,15 @@ protected:
     return cell_cfg;
   }
 
-  void add_ue(du_ue_index_t ue_index, lcid_t lcid_, lcg_id_t lcgid_, duplex_mode mode, bool is_fallback = false)
+  void add_ue(du_ue_index_t ue_index, lcid_t lcid_, lcg_id_t lcgid_, duplex_mode mode)
   {
     const auto& cell_cfg_params = create_custom_cell_cfg_builder_params(mode);
-    add_ue(ue_index, lcid_, lcgid_, cell_cfg_params, is_fallback);
+    add_ue(ue_index, lcid_, lcgid_, cell_cfg_params);
   }
 
-  void add_ue(du_ue_index_t                     ue_index,
-              lcid_t                            lcid_,
-              lcg_id_t                          lcgid_,
-              const cell_config_builder_params& params,
-              bool                              is_fallback = false)
+  void add_ue(du_ue_index_t ue_index, lcid_t lcid_, lcg_id_t lcgid_, const cell_config_builder_params& params)
   {
-    auto ue_creation_req               = test_helpers::create_default_sched_ue_creation_request(params);
-    ue_creation_req.starts_in_fallback = is_fallback;
+    auto ue_creation_req = test_helpers::create_default_sched_ue_creation_request(params);
 
     ue_creation_req.ue_index = ue_index;
     ue_creation_req.crnti    = to_rnti(allocate_rnti());
@@ -248,9 +241,9 @@ protected:
         variant_get<csi_report_config::periodic_or_semi_persistent_report_on_pucch>(
             ue_creation_req.cfg.cells.value()[0].serv_cell_cfg.csi_meas_cfg->csi_report_cfg_list[0].report_cfg_type)
             .report_slot_period);
-    if (bench->cell_cfg.tdd_cfg_common.has_value()) {
+    if (params.tdd_ul_dl_cfg_common.has_value()) {
       optional<unsigned> slot_offset =
-          find_next_tdd_full_ul_slot(bench->cell_cfg.tdd_cfg_common.value(), last_csi_report_offset + 1);
+          find_next_tdd_full_ul_slot(params.tdd_ul_dl_cfg_common.value(), last_csi_report_offset + 1);
       srsran_assert(slot_offset.has_value(), "Unable to find a valid CSI report slot offset UE={}", ue_index);
       srsran_assert(slot_offset.value() < csi_report_period_slots,
                     "Unable to find a valid CSI report slot offset UE={}",
@@ -493,13 +486,12 @@ protected:
           // Auto ACK harqs.
           pucch_pdu.harqs.resize(pucch.format_1.harq_ack_nof_bits, mac_harq_ack_report_status::ack);
         }
-        pucch_pdu.ul_sinr_dB = 55;
-        pdu.pdu              = pucch_pdu;
+        pucch_pdu.ul_sinr = 55;
+        pdu.pdu           = pucch_pdu;
         break;
       }
       case pucch_format::FORMAT_2: {
         uci_indication::uci_pdu::uci_pucch_f2_or_f3_or_f4_pdu pucch_pdu{};
-        pucch_pdu.sr_info.resize(sr_nof_bits_to_uint(pucch.format_2.sr_bits));
         pucch_pdu.sr_info.fill(0, sr_nof_bits_to_uint(pucch.format_2.sr_bits), true);
         // Auto ACK harqs.
         pucch_pdu.harqs.resize(pucch.format_2.harq_ack_nof_bits, mac_harq_ack_report_status::ack);
@@ -509,8 +501,8 @@ protected:
           pucch_pdu.csi->ri                    = 1;
           pucch_pdu.csi->first_tb_wideband_cqi = 15;
         }
-        pucch_pdu.ul_sinr_dB = 55;
-        pdu.pdu              = pucch_pdu;
+        pucch_pdu.ul_sinr = 55;
+        pdu.pdu           = pucch_pdu;
         break;
       }
       default:
@@ -549,7 +541,7 @@ protected:
     pdu.rnti           = u.crnti;
     pdu.harq_id        = (harq_id_t)harq_id;
     pdu.tb_crc_success = true;
-    pdu.ul_sinr_dB     = 55;
+    pdu.ul_sinr_metric = 55;
 
     return pdu;
   }
@@ -585,7 +577,7 @@ struct multiple_ue_test_params {
 class multiple_ue_sched_tester : public scheduler_impl_tester, public ::testing::TestWithParam<multiple_ue_test_params>
 {
 public:
-  multiple_ue_sched_tester() : params{GetParam()} {}
+  multiple_ue_sched_tester() : params{GetParam()} {};
 
 protected:
   multiple_ue_test_params params;
@@ -724,7 +716,7 @@ TEST_P(multiple_ue_sched_tester, ul_buffer_state_indication_test)
       if (is_bsr_zero_sent[idx] && pusch_scheduled_slot_in_future[idx].has_value() &&
           current_slot > pusch_scheduled_slot_in_future[idx].value()) {
         ASSERT_TRUE(pusch == nullptr or not pusch->pusch_cfg.new_data)
-            << fmt::format("Condition failed for UE with CRNTI={}", test_ue.crnti);
+            << fmt::format("Condition failed for UE with CRNTI=0x{:x}", test_ue.crnti);
         continue;
       }
 
@@ -793,9 +785,7 @@ TEST_P(multiple_ue_sched_tester, when_scheduling_multiple_ue_in_small_bw_neither
   builder_params.coreset0_index    = ssb_freq_loc->coreset0_idx;
 
   config_helpers::cell_config_builder_params_extended extended_params{builder_params};
-  const bool                                          enable_csi_rs_pdsch_multiplexing = true;
-  setup_sched(create_expert_config(10, enable_csi_rs_pdsch_multiplexing),
-              test_helpers::make_default_sched_cell_configuration_request(extended_params));
+  setup_sched(create_expert_config(10), test_helpers::make_default_sched_cell_configuration_request(extended_params));
 
   // NOTE: The buffer size must be high enough for the scheduler to keep allocating resources to the UE. In order to
   // avoid failing of test we ignore the min_buffer_size_in_bytes and max_buffer_size_in_bytes set in params.
@@ -877,18 +867,18 @@ TEST_P(multiple_ue_sched_tester, when_scheduling_multiple_ue_in_small_bw_neither
       notify_ul_bsr_from_ue(to_du_ue_index(idx), ul_buffer_size + test_ue.ul_bsr_list.at(lcgid).nof_bytes, lcgid);
     }
 
-    // Ensure there is at least one PDSCH scheduled in each DL slot and one PUSCH scheduled in each UL slot.
+    // Ensure there is atleast one PDSCH scheduled in each DL slot and one PUSCH scheduled in each UL slot.
     if (first_pusch_scheduled and first_pdsch_scheduled and nof_cqi_reported >= params.nof_ues) {
       if (bench->cell_cfg.tdd_cfg_common.has_value()) {
         if (has_active_tdd_dl_symbols(bench->cell_cfg.tdd_cfg_common.value(), current_slot.slot_index())) {
-          ASSERT_GE(bench->sched_res->dl.ue_grants.size(), 1) << fmt::format("Failed at slot: {}", current_slot);
+          ASSERT_GE(bench->sched_res->dl.ue_grants.size(), 1);
         } else if (is_tdd_full_ul_slot(bench->cell_cfg.tdd_cfg_common.value(), current_slot.slot_index())) {
-          ASSERT_GE(bench->sched_res->ul.puschs.size(), 1) << fmt::format("Failed at slot: {}", current_slot);
+          ASSERT_GE(bench->sched_res->ul.puschs.size(), 1);
         }
       } else {
         // FDD.
-        ASSERT_GE(bench->sched_res->dl.ue_grants.size(), 1) << fmt::format("Failed at slot: {}", current_slot);
-        ASSERT_GE(bench->sched_res->ul.puschs.size(), 1) << fmt::format("Failed at slot: {}", current_slot);
+        ASSERT_GE(bench->sched_res->dl.ue_grants.size(), 1);
+        ASSERT_GE(bench->sched_res->ul.puschs.size(), 1);
       }
     }
   }
@@ -1148,7 +1138,7 @@ TEST_P(multiple_ue_sched_tester, ul_dci_format_0_1_test)
       if (is_bsr_zero_sent[idx] && pusch_scheduled_slot_in_future[idx].has_value() &&
           current_slot > pusch_scheduled_slot_in_future[idx].value()) {
         ASSERT_TRUE(pusch == nullptr or not pusch->pusch_cfg.new_data)
-            << fmt::format("Condition failed for UE with CRNTI={}", test_ue.crnti);
+            << fmt::format("Condition failed for UE with CRNTI=0x{:x}", test_ue.crnti);
         continue;
       }
 
@@ -1192,8 +1182,7 @@ TEST_F(single_ue_sched_tester, successfully_schedule_srb0_retransmission_fdd)
 
   // Add UE(s) and notify UL BSR + DL Buffer status with 110 value.
   // Assumption: LCID is SRB0.
-  const bool is_fallback = true;
-  add_ue(to_du_ue_index(0), LCID_SRB0, static_cast<lcg_id_t>(0), duplex_mode::FDD, is_fallback);
+  add_ue(to_du_ue_index(0), LCID_SRB0, static_cast<lcg_id_t>(0), duplex_mode::FDD);
 
   // Enqueue ConRes CE.
   bench->sch.handle_dl_mac_ce_indication(dl_mac_ce_indication{to_du_ue_index(0), lcid_dl_sch_t::UE_CON_RES_ID});
@@ -1307,7 +1296,6 @@ INSTANTIATE_TEST_SUITE_P(multiple_ue_sched_tester,
                                                                  .min_buffer_size_in_bytes = 1000,
                                                                  .max_buffer_size_in_bytes = 3000,
                                                                  .duplx_mode               = duplex_mode::FDD},
-
                                          multiple_ue_test_params{.nof_ues                  = 3,
                                                                  .min_buffer_size_in_bytes = 2000,
                                                                  .max_buffer_size_in_bytes = 3000,

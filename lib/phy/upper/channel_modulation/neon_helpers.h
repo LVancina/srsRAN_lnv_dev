@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include "srsran/support/math_utils.h"
 #include <arm_neon.h>
 
 namespace srsran {
@@ -221,13 +220,7 @@ inline float32x4_t interval_function(float32x4_t  value,
   float32x4_t slope     = neon::look_up_table(slopes.data(), interval_index);
   float32x4_t intercept = neon::look_up_table(intercepts.data(), interval_index);
 
-  float32x4_t result = vmulq_f32(vaddq_f32(vmulq_f32(slope, value), intercept), rcp_noise);
-
-  float32x4_t threshold = vdupq_n_f32(near_zero);
-  float32x4_t zero      = vdupq_n_f32(0.0f);
-  result                = vbslq_f32(vcgeq_f32(vabdq_f32(value, zero), threshold), result, zero);
-
-  return result;
+  return vmulq_f32(vaddq_f32(vmulq_f32(slope, value), intercept), rcp_noise);
 }
 
 /// \brief Safe division.

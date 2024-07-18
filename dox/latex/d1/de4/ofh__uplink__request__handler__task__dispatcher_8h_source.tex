@@ -1,0 +1,71 @@
+\doxysection{ofh\+\_\+uplink\+\_\+request\+\_\+handler\+\_\+task\+\_\+dispatcher.\+h}
+\hypertarget{ofh__uplink__request__handler__task__dispatcher_8h_source}{}\label{ofh__uplink__request__handler__task__dispatcher_8h_source}\index{lib/ofh/transmitter/ofh\_uplink\_request\_handler\_task\_dispatcher.h@{lib/ofh/transmitter/ofh\_uplink\_request\_handler\_task\_dispatcher.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/transmitter/ofh\_uplink\_request\_handler.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Open\ Fronthaul\ uplink\ request\ handler\ task\ dispatcher\ implementation.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__request__handler__task__dispatcher}{uplink\_request\_handler\_task\_dispatcher}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__request__handler}{uplink\_request\_handler}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ uplink\_request\_handler\_task\_dispatcher(std::unique\_ptr<uplink\_request\_handler>\ ul\_handler\_,}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ executor\_)\ :}
+\DoxyCodeLine{00038\ \ \ \ \ ul\_handler(std::move(ul\_handler\_)),\ executor(executor\_)}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ul\_handler,\ \textcolor{stringliteral}{"{}Invalid\ uplink\ request\ handler"{}});}
+\DoxyCodeLine{00041\ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__request__handler__task__dispatcher_af752d1e4b4e6db0ffc0c935b39d4e34a}{handle\_prach\_occasion}}(\textcolor{keyword}{const}\ prach\_buffer\_context\&\ context,\ prach\_buffer\&\ buffer)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00045\ \ \ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{if}\ (!executor.execute([\textcolor{keyword}{this},\ context,\ \&buffer]()\ \{\ ul\_handler-\/>handle\_prach\_occasion(context,\ buffer);\ \}))\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}OFH"{}}).warning(\textcolor{stringliteral}{"{}Failed\ to\ dispatch\ PRACH\ occasion\ for\ slot\ '\{\}'"{}},\ context.slot);}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__request__handler__task__dispatcher_a5b5db72cd42cba8fafab47edfb19ac51}{handle\_new\_uplink\_slot}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__context}{resource\_grid\_context}}\&\ context,\ \mbox{\hyperlink{classsrsran_1_1resource__grid}{resource\_grid}}\&\ grid)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (!executor.execute([\textcolor{keyword}{this},\ context,\ \&grid]()\ \{\ ul\_handler-\/>handle\_new\_uplink\_slot(context,\ grid);\ \}))\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}OFH"{}}).warning(\textcolor{stringliteral}{"{}Failed\ to\ dispatch\ new\ uplink\ slot\ for\ slot\ '\{\}'"{}},\ context.slot);}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00060\ \ \ std::unique\_ptr<uplink\_request\_handler>\ ul\_handler;}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ executor;}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00065\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,223 @@
+\doxysection{prach\+\_\+context\+\_\+repository.\+h}
+\hypertarget{prach__context__repository_8h_source}{}\label{prach__context__repository_8h_source}\index{lib/ofh/support/prach\_context\_repository.h@{lib/ofh/support/prach\_context\_repository.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ofh/ofh\_constants.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer\_context.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/prach/prach\_constants.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/prach/prach\_frequency\_mapping.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/prach/prach\_preamble\_information.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <numeric>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }ofh\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context}{prach\_context}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{struct\ }prach\_buffer\_writer\_stats\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ prach\_buffer\_writer\_stats(\textcolor{keywordtype}{unsigned}\ nof\_ports,\ \textcolor{keywordtype}{size\_t}\ nof\_res)\ :}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ re\_written(nof\_ports,\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset<prach\_constants::LONG\_SEQUENCE\_LENGTH>}}(nof\_res))}
+\DoxyCodeLine{00046\ \ \ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00050\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<bounded\_bitset<prach\_constants::LONG\_SEQUENCE\_LENGTH>}},\ MAX\_NOF\_SUPPORTED\_EAXC>\ re\_written;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{bool}\ have\_all\_res\_been\_written()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::all\_of(re\_written.begin(),\ re\_written.end(),\ [\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ port)\ \{\ return\ port.all();\ \});}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information}{prach\_context\_information}}\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_acbc86585d2764fb31ede043603bc67f2}{context}};}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}*\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00065\ \ \ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_ad67768b0a5ea63d8b33d6e3fe0e89562}{prach\_context}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a209f9bb92444daed860e97d93fddece9}{prach\_context}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ context,\ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}\&\ buffer)\ :}
+\DoxyCodeLine{00072\ \ \ \ \ context\_info(\{context,\ \&buffer\}),\ nof\_symbols(\mbox{\hyperlink{namespacesrsran_a7c4ecbbc13088764ba440e5bb5f62a35}{get\_preamble\_duration}}(context.format))}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ srsran\_assert(context.nof\_fd\_occasions\ ==\ 1,\ \textcolor{stringliteral}{"{}Only\ supporting\ one\ frequency\ domain\ occasion"{}});}
+\DoxyCodeLine{00075\ \ \ \ \ srsran\_assert(context.nof\_td\_occasions\ ==\ 1,\ \textcolor{stringliteral}{"{}Only\ supporting\ one\ time\ domain\ occasion"{}});}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{//\ Get\ preamble\ information.}}
+\DoxyCodeLine{00078\ \ \ \ \ preamble\_info\ =}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaea6c484cd5f8113a5b11434d68e371b}{is\_long\_preamble}}(context.format)}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ ?\ \mbox{\hyperlink{namespacesrsran_a41d072dc823c78c2627da83a877dcf5a}{get\_prach\_preamble\_long\_info}}(context.format)}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{namespacesrsran_a33cfd882b612da5eceff76a95662d0b3}{get\_prach\_preamble\_short\_info}}(context.format,\ \mbox{\hyperlink{namespacesrsran_a0d5bec5128991413e4e3a59ca6e16426}{to\_ra\_subcarrier\_spacing}}(context.pusch\_scs),\ true);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ freq\_mapping\_info\ =\ \mbox{\hyperlink{namespacesrsran_a4ec686128158cd9524f64b7df77762bd}{prach\_frequency\_mapping\_get}}(preamble\_info.\mbox{\hyperlink{structsrsran_1_1prach__preamble__information_a1cf7f9574b0a8249a736a0b6f39b6f1e}{scs}},\ context.pusch\_scs);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{if}\ (!nof\_symbols)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ nof\_symbols\ =\ 1;}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//\ Initialize\ statistic.}}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ nof\_symbols;\ ++i)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ buffer\_stats.push\_back(\{buffer.get\_max\_nof\_ports(),\ preamble\_info.\mbox{\hyperlink{structsrsran_1_1prach__preamble__information_a6a616871a84db7e2b294d8d43da76f02}{sequence\_length}}\});}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a06f26303bee030b5fb6587714c61dae3}{empty}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}}\ ==\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a3112d68d3036bd28d9bdc010dc902c86}{get\_context}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_acbc86585d2764fb31ede043603bc67f2}{context}};\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_ac941e34993b27db07826bda80d168669}{get\_prach\_nof\_re}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a06f26303bee030b5fb6587714c61dae3}{empty}}()\ ?\ 0U\ :\ preamble\_info.\mbox{\hyperlink{structsrsran_1_1prach__preamble__information_a6a616871a84db7e2b294d8d43da76f02}{sequence\_length}};\ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a52bac6da9d3e99f0818229a00d17be8b}{get\_prach\_offset\_to\_first\_re}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ freq\_mapping\_info.\mbox{\hyperlink{structsrsran_1_1prach__frequency__mapping__information_ae6530746f66c58e7963de2d1bc4960b0}{k\_bar}};\ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a2cf07870a5f62b9247d122df176b30d6}{get\_max\_nof\_ports}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a06f26303bee030b5fb6587714c61dae3}{empty}}()\ ?\ 0U\ :\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}}-\/>\mbox{\hyperlink{classsrsran_1_1prach__buffer_a907028ab71829eacba8111ac864ed2da}{get\_max\_nof\_ports}}();\ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00111\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ bounded\_bitset<prach\_constants::LONG\_SEQUENCE\_LENGTH>}}>\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a9e61fa755ce4c00f0562fb1a5b82514f}{get\_symbol\_re\_written}}(\textcolor{keywordtype}{unsigned}\ symbol)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00112\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00113\ \ \ \ \ srsran\_assert(symbol\ <\ nof\_symbols,\ \textcolor{stringliteral}{"{}Invalid\ symbol\ index"{}});}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer\_stats[symbol].re\_written;}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a783e73ae12bd2e76067074e7fdc8df19}{write\_iq}}(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keywordtype}{unsigned}\ re\_start,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ iq\_buffer)}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ symbol\ -\/=\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_acbc86585d2764fb31ede043603bc67f2}{context}}.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a1530821e8cd26832c55cf63ceecaac38}{start\_symbol}};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ srsran\_assert(context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}},\ \textcolor{stringliteral}{"{}No\ valid\ PRACH\ buffer\ in\ the\ context"{}});}
+\DoxyCodeLine{00123\ \ \ \ \ srsran\_assert(symbol\ <\ nof\_symbols,\ \textcolor{stringliteral}{"{}Invalid\ symbol\ index"{}});}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ Skip\ writing\ if\ the\ given\ port\ does\ not\ fit\ in\ the\ PRACH\ buffer.}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{if}\ (port\ >=\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}}-\/>\mbox{\hyperlink{classsrsran_1_1prach__buffer_a907028ab71829eacba8111ac864ed2da}{get\_max\_nof\_ports}}())\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00128\ \ \ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{comment}{//\ Update\ the\ buffer.}}
+\DoxyCodeLine{00131\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ prach\_out\_buffer\ =\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}}-\/>\mbox{\hyperlink{classsrsran_1_1prach__buffer_a9393f0ec690ad95fab986ae6d5d93fa3}{get\_symbol}}(}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ port,\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_acbc86585d2764fb31ede043603bc67f2}{context}}.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_aa03d6585a9bfd487b5a069e300eab827}{nof\_fd\_occasions}}\ -\/\ 1,\ context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_acbc86585d2764fb31ede043603bc67f2}{context}}.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a8d9d2418d876fd2bb2083974fb4b6181}{nof\_td\_occasions}}\ -\/\ 1,\ symbol);}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ srsran\_assert(prach\_out\_buffer.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(prach\_out\_buffer.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ re\_start).size()\ >=\ iq\_buffer.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ IQ\ data\ buffer\ size\ to\ copy\ as\ it\ does\ not\ fit\ into\ the\ PRACH\ buffer"{}});}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ std::copy(iq\_buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ iq\_buffer.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}(),\ prach\_out\_buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}()\ +\ re\_start);}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{comment}{//\ Update\ statistics.}}
+\DoxyCodeLine{00140\ \ \ \ \ buffer\_stats[symbol].re\_written[port].fill(re\_start,\ re\_start\ +\ iq\_buffer.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}());}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{classsrsran_1_1expected}{expected<prach\_context\_information>}}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_ac6c53f9d93440abcf498f47a8d5d557f}{try\_getting\_complete\_prach\_buffer}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00146\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{if}\ (!context\_info.\mbox{\hyperlink{structsrsran_1_1ofh_1_1prach__context_1_1prach__context__information_a008737bfb9c65f4662aadbcbeefa7cca}{buffer}})\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1default__error__t}{default\_error\_t}}(\{\});}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::all\_of(buffer\_stats.begin(),\ buffer\_stats.end(),\ [\&](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ symbol)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ return\ symbol.have\_all\_res\_been\_written();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \}))\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1default__error__t}{default\_error\_t}}(\{\});}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{return}\ \{context\_info\};}
+\DoxyCodeLine{00158\ \ \ \}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00162\ \ \ prach\_context\_information\ context\_info;}
+\DoxyCodeLine{00164\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<prach\_buffer\_writer\_stats,\ prach\_constants::SHORT\_SEQUENCE\_MAX\_NOF\_SYMBOLS>}}\ buffer\_stats;}
+\DoxyCodeLine{00166\ \ \ \mbox{\hyperlink{structsrsran_1_1prach__preamble__information}{prach\_preamble\_information}}\ preamble\_info;}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{structsrsran_1_1prach__frequency__mapping__information}{prach\_frequency\_mapping\_information}}\ freq\_mapping\_info;}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols;}
+\DoxyCodeLine{00171\ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00174\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository}{prach\_context\_repository}}}
+\DoxyCodeLine{00175\ \{}
+\DoxyCodeLine{00177\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ SFN\_MAX\_VALUE\ =\ 1U\ <<\ 8;}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}*\ \ \ \ \ \ logger;}
+\DoxyCodeLine{00180\ \ \ std::vector<prach\_context>\ buffer;}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{//:\ TODO:\ make\ this\ lock\ free}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ mutex;}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00185\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context}{prach\_context}}\&\ entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})}
+\DoxyCodeLine{00186\ \ \ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ entry\_slot(\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.numerology(),\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.sfn()\ \%\ SFN\_MAX\_VALUE,\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.slot\_index());}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ index\ =\ entry\_slot.\mbox{\hyperlink{classsrsran_1_1slot__point_a2b47aa352e7f3081b464676c5a2d91b9}{system\_slot}}()\ \%\ buffer.size();}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer[index];}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context}{prach\_context}}\&\ entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00194\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00195\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ entry\_slot(\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.numerology(),\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.sfn()\ \%\ SFN\_MAX\_VALUE,\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.slot\_index());}
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ index\ =\ entry\_slot.\mbox{\hyperlink{classsrsran_1_1slot__point_a2b47aa352e7f3081b464676c5a2d91b9}{system\_slot}}()\ \%\ buffer.size();}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer[index];}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00201\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository}{prach\_context\_repository}}(\textcolor{keywordtype}{unsigned}\ size\_,\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}*\ logger\_\ =\ \textcolor{keyword}{nullptr})\ :}
+\DoxyCodeLine{00202\ \ \ \ \ logger(logger\_),\ buffer(size\_)}
+\DoxyCodeLine{00203\ \ \ \{}
+\DoxyCodeLine{00204\ \ \ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository_a5690531464cd4ef63cf6a844d64ac6fe}{add}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ context,\ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}\&\ buffer\_,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}\ =\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}())}
+\DoxyCodeLine{00208\ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ current\_slot\ =\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a988d40945efc785f48725c857852c922}{valid}}()\ ?\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}\ :\ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a814ea3070cc63fb8dff774e11223cddf}{slot}};}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keywordflow}{if}\ (logger)\ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!entry(current\_slot).empty())\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ previous\_context\ =\ entry(current\_slot).\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a3112d68d3036bd28d9bdc010dc902c86}{get\_context}}();}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ logger-\/>warning(\textcolor{stringliteral}{"{}Missed\ incoming\ User-\/Plane\ PRACH\ messages\ for\ slot\ '\{\}'\ and\ sector\#\{\}"{}},}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ previous\_context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a814ea3070cc63fb8dff774e11223cddf}{slot}},}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ previous\_context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_aac17f389286b5f746f90619989c0ee90}{sector}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ entry(current\_slot)\ =\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context}{prach\_context}}(context,\ buffer\_);}
+\DoxyCodeLine{00223\ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository_a09f1b33181ffe9c2d0672ddf190ce62a}{write\_iq}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}},\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keywordtype}{unsigned}\ re\_start,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ iq\_buffer)}
+\DoxyCodeLine{00227\ \ \ \{}
+\DoxyCodeLine{00228\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00229\ \ \ \ \ entry(\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}}).\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context_a783e73ae12bd2e76067074e7fdc8df19}{write\_iq}}(port,\ symbol,\ re\_start,\ iq\_buffer);}
+\DoxyCodeLine{00230\ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00233\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context}{prach\_context}}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository_a74374b9920c3d9dd87333ea81a62b029}{get}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00234\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00235\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{return}\ entry(\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}});}
+\DoxyCodeLine{00237\ \ \ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository_ab2830011ba8ecc3e90cbcbfbc9ea83a1}{clear}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})}
+\DoxyCodeLine{00241\ \ \ \{}
+\DoxyCodeLine{00242\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00243\ \ \ \ \ entry(\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})\ =\ \{\};}
+\DoxyCodeLine{00244\ \ \ \}}
+\DoxyCodeLine{00245\ \};}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00248\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

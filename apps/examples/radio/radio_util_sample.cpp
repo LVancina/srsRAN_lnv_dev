@@ -21,7 +21,6 @@
  */
 
 #include "radio_notifier_sample.h"
-#include "srsran/adt/spsc_queue.h"
 #include "srsran/gateways/baseband/baseband_gateway_receiver.h"
 #include "srsran/gateways/baseband/baseband_gateway_transmitter.h"
 #include "srsran/gateways/baseband/buffer/baseband_gateway_buffer_dynamic.h"
@@ -281,8 +280,7 @@ int main(int argc, char** argv)
   config.clock.clock      = radio_configuration::clock_sources::source::DEFAULT;
   config.sampling_rate_hz = sampling_rate_hz;
   config.otw_format       = otw_format;
-  config.tx_mode          = enable_discontinuous_tx ? radio_configuration::transmission_mode::discontinuous
-                                                    : radio_configuration::transmission_mode::continuous;
+  config.discontinuous_tx = enable_discontinuous_tx;
   config.power_ramping_us = power_ramping_us;
   config.args             = device_arguments;
   config.log_level        = log_level;

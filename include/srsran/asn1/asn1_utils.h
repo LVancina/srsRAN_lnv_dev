@@ -172,16 +172,12 @@ struct cbit_ref {
   cbit_ref(srsran::byte_buffer_view buffer_) : buffer(buffer_), it(buffer.begin()) {}
   cbit_ref(const bit_ref& bref) : buffer(bref.data()), it(bref.data().begin()) {}
 
-  /// Construct a cbit_ref with an offset and max size, starting from the current cbit_ref position.
-  cbit_ref subview(uint32_t offset_bytes, uint32_t len_bytes) const;
-
   srsran::byte_buffer_view data() const { return buffer; }
 
   int         distance_bytes() const;
   int         distance() const;
   int         distance(const cbit_ref& other) const;
   SRSASN_CODE advance_bits(uint32_t n_bits);
-  SRSASN_CODE advance_bytes(uint32_t bytes);
 
   template <class T>
   SRSASN_CODE unpack(T& val, uint32_t n_bits);
@@ -265,8 +261,7 @@ public:
     if (new_cap > 0) {
       new_data = new T[new_cap];
       if (data_ != nullptr) {
-        unsigned min_size = std::min(size_, new_size);
-        std::move(data_, data_ + min_size, new_data);
+        std::move(data_, data_ + size_, new_data);
       }
     }
     cap_  = new_cap;
@@ -834,7 +829,7 @@ public:
   {
     HANDLE_CODE(pack_length(bref, size(), LB, UB, aligned));
     if (aligned) {
-      HANDLE_CODE(bref.align_bytes_zero());
+      bref.align_bytes_zero();
     }
     for (uint32_t i = 0; i < size(); ++i) {
       HANDLE_CODE(bref.pack(octets_[i], 8));
@@ -847,7 +842,7 @@ public:
     HANDLE_CODE(unpack_length(len, bref, LB, UB, aligned));
     resize(len);
     if (aligned) {
-      HANDLE_CODE(bref.align_bytes());
+      bref.align_bytes();
     }
     for (uint32_t i = 0; i < size(); ++i) {
       HANDLE_CODE(bref.unpack(octets_[i], 8));
@@ -874,7 +869,7 @@ public:
 
   using srsran::byte_buffer::byte_buffer;
   unbounded_octstring(byte_buffer other) noexcept : srsran::byte_buffer(std::move(other)) {}
-  unbounded_octstring(const unbounded_octstring& other) noexcept;
+  unbounded_octstring(const unbounded_octstring& other) noexcept : srsran::byte_buffer(other.deep_copy()) {}
   unbounded_octstring(unbounded_octstring&& other) noexcept : srsran::byte_buffer(std::move(other)) {}
 
   unbounded_octstring& operator=(byte_buffer other) noexcept
@@ -1347,12 +1342,12 @@ struct choice_buffer_base_t {
   template <typename T>
   T& get()
   {
-    return *SRSRAN_LAUNDER(reinterpret_cast<T*>(&buffer));
+    return *(reinterpret_cast<T*>(&buffer));
   }
   template <typename T>
   const T& get() const
   {
-    return *SRSRAN_LAUNDER(reinterpret_cast<const T*>(&buffer));
+    return *(reinterpret_cast<const T*>(&buffer));
   }
   template <typename T>
   void destroy()

@@ -1,0 +1,94 @@
+\doxysection{indication\+\_\+generators.\+h}
+\hypertarget{indication__generators_8h_source}{}\label{indication__generators_8h_source}\index{tests/unittests/scheduler/test\_utils/indication\_generators.h@{tests/unittests/scheduler/test\_utils/indication\_generators.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/scheduler\_feedback\_handler.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{inline}\ rach\_indication\_message::preamble\ create\_preamble(\textcolor{keywordtype}{unsigned}\ preamble\_id,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ tc\_rnti)}
+\DoxyCodeLine{00030\ \{}
+\DoxyCodeLine{00031\ \ \ rach\_indication\_message::preamble\ preamble\{\};}
+\DoxyCodeLine{00032\ \ \ preamble.preamble\_id\ \ =\ preamble\_id;}
+\DoxyCodeLine{00033\ \ \ preamble.time\_advance\ =\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a9759195d4f33e9afbf1c790ab103af94}{phy\_time\_unit::from\_seconds}}(0);}
+\DoxyCodeLine{00034\ \ \ preamble.tc\_rnti\ \ \ \ \ \ =\ tc\_rnti;}
+\DoxyCodeLine{00035\ \ \ \textcolor{keywordflow}{return}\ preamble;}
+\DoxyCodeLine{00036\ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{inline}\ rach\_indication\_message}
+\DoxyCodeLine{00039\ create\_rach\_indication(slot\_point\ next\_slot\_rx,\ std::initializer\_list<rach\_indication\_message::preamble>\ preambles)}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ rach\_indication\_message\ rach\_ind\{\};}
+\DoxyCodeLine{00042\ \ \ rach\_ind.cell\_index\ =\ \mbox{\hyperlink{namespacesrsran_a85fcbfef630498e3919ccc9d5d48b07c}{to\_du\_cell\_index}}(0);}
+\DoxyCodeLine{00043\ \ \ rach\_ind.slot\_rx\ \ \ \ =\ next\_slot\_rx;}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordflow}{if}\ (preambles.size()\ ==\ 0)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{return}\ rach\_ind;}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ \ \ rach\_ind.occasions.emplace\_back();}
+\DoxyCodeLine{00048\ \ \ rach\_ind.occasions.back().start\_symbol\ \ \ \ =\ 0;}
+\DoxyCodeLine{00049\ \ \ rach\_ind.occasions.back().frequency\_index\ =\ 0;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ preamble\ :\ preambles)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ rach\_ind.occasions.back().preambles.push\_back(preamble);}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordflow}{return}\ rach\_ind;}
+\DoxyCodeLine{00055\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{inline}\ uci\_indication\ create\_uci\_indication(slot\_point\ uci\_sl,\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_idx,\ \textcolor{keyword}{const}\ pucch\_info\&\ pucch\_pdu)}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \ \ uci\_indication\ uci\_ind\{\};}
+\DoxyCodeLine{00060\ \ \ uci\_ind.cell\_index\ =\ \mbox{\hyperlink{namespacesrsran_a85fcbfef630498e3919ccc9d5d48b07c}{to\_du\_cell\_index}}(0);}
+\DoxyCodeLine{00061\ \ \ uci\_ind.slot\_rx\ \ \ \ =\ uci\_sl;}
+\DoxyCodeLine{00062\ \ \ uci\_ind.ucis.resize(1);}
+\DoxyCodeLine{00063\ \ \ uci\_ind.ucis[0].crnti\ \ \ \ =\ pucch\_pdu.crnti;}
+\DoxyCodeLine{00064\ \ \ uci\_ind.ucis[0].ue\_index\ =\ ue\_idx;}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordflow}{switch}\ (pucch\_pdu.format)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{case}\ pucch\_format::FORMAT\_1:\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ uci\_indication::uci\_pdu::uci\_pucch\_f0\_or\_f1\_pdu\ f1\{\};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ f1.harqs.resize(pucch\_pdu.format\_1.harq\_ack\_nof\_bits);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ std::fill(f1.harqs.begin(),\ f1.harqs.end(),\ mac\_harq\_ack\_report\_status::ack);}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ uci\_ind.ucis[0].pdu\ =\ f1;}
+\DoxyCodeLine{00071\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{case}\ pucch\_format::FORMAT\_2:\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ uci\_indication::uci\_pdu::uci\_pucch\_f2\_or\_f3\_or\_f4\_pdu\ f2\{\};}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ f2.harqs.resize(pucch\_pdu.format\_2.harq\_ack\_nof\_bits);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ std::fill(f2.harqs.begin(),\ f2.harqs.end(),\ mac\_harq\_ack\_report\_status::ack);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ uci\_ind.ucis[0].pdu\ =\ f2;}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pucch\_pdu.format\_2.csi\_part1\_bits\ >\ 0)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ f2.csi.emplace();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ f2.csi-\/>first\_tb\_wideband\_cqi\ =\ 15;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a630688b51219f81c5a47ec5650326afc}{report\_fatal\_error}}(\textcolor{stringliteral}{"{}Unsupported\ PUCCH\ format"{}});}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordflow}{return}\ uci\_ind;}
+\DoxyCodeLine{00086\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

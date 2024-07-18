@@ -1,0 +1,168 @@
+\doxysection{pucch\+\_\+uci\+\_\+message.\+h}
+\hypertarget{pucch__uci__message_8h_source}{}\label{pucch__uci__message_8h_source}\index{include/srsran/phy/upper/channel\_processors/pucch\_uci\_message.h@{include/srsran/phy/upper/channel\_processors/pucch\_uci\_message.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/uci/uci\_status.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/uci/uci\_constants.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ Collects\ the\ uplink\ control\ information\ message.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ As\ the\ total\ number\ of\ bits\ is\ limited\ to\ \(\backslash\)ref\ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS,\ the\ UCI\ payload\ storage\ is}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ common\ for\ all\ fields\ and\ each\ of\ the\ fields\ point\ to\ a\ view\ of\ the\ common\ storage\ \(\backslash\)c\ data.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ The\ payload\ size\ of\ each\ field\ is\ determined\ by\ the\ field\ view\ size.\ A\ field\ is\ not\ present\ if\ it\ is\ empty.\ The}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ total\ payload\ size\ does\ not\ exceed\ \(\backslash\)c\ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message}{pucch\_uci\_message}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Default\ constructor:\ sets\ the\ status\ to\ unknown\ and\ all\ number\ of\ bits\ to\ zero.}}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ac17648360b0351920105a38f02b1eac5}{pucch\_uci\_message}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Collects\ the\ number\ of\ information\ bits\ for\ each\ of\ the\ PUCCH\ message\ fields.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ Scheduling\ Request\ (SR)\ information\ bits.}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ab4c94ec41890456033a05b2efe32814e}{nof\_sr}};}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ HARQ-\/ACK\ information\ bits.}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ac39cf2ddd90c3356ff46c46ce99879d6}{nof\_harq\_ack}};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ CSI\ Part\ 1\ information\ bits.}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a53078dc34ffcd675b0d7c76de03cbd38}{nof\_csi\_part1}};}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ CSI\ Part\ 2\ information\ bits.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a9b7f2198e60b3d83baa9161cfc8a0a8f}{nof\_csi\_part2}};}
+\DoxyCodeLine{00054\ \ \ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ and\ initializes\ a\ PUCCH\ UCI\ message\ from\ the\ number\ of\ bits\ of\ each\ of\ the\ fields.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Configuration\ parameters.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ total\ number\ of\ payload\ bits\ exceed\ \(\backslash\)ref}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ae8c6ccc2ef10f92f478c69f5cdf97bb3}{pucch\_uci\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration}{configuration}}\&\ config)\ :}
+\DoxyCodeLine{00061\ \ \ \ \ nof\_sr\_bits(config\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ab4c94ec41890456033a05b2efe32814e}{.}}\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ab4c94ec41890456033a05b2efe32814e}{nof\_sr}}),}
+\DoxyCodeLine{00062\ \ \ \ \ nof\_harq\_ack\_bits(config\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ac39cf2ddd90c3356ff46c46ce99879d6}{.}}\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_ac39cf2ddd90c3356ff46c46ce99879d6}{nof\_harq\_ack}}),}
+\DoxyCodeLine{00063\ \ \ \ \ nof\_csi\_part1\_bits(config\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a53078dc34ffcd675b0d7c76de03cbd38}{.}}\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a53078dc34ffcd675b0d7c76de03cbd38}{nof\_csi\_part1}}),}
+\DoxyCodeLine{00064\ \ \ \ \ nof\_csi\_part2\_bits(config\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a9b7f2198e60b3d83baa9161cfc8a0a8f}{.}}\mbox{\hyperlink{structsrsran_1_1pucch__uci__message_1_1configuration_a9b7f2198e60b3d83baa9161cfc8a0a8f}{nof\_csi\_part2}})}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(config.nof\_sr\ +\ config.nof\_harq\_ack\ +\ config.nof\_csi\_part1\ +\ config.nof\_csi\_part2\ <=}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ total\ number\ of\ payload\ bits\ (i.e.\ \{\})\ shall\ not\ exceed\ \{\}."{}},}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ config.nof\_sr\ +\ config.nof\_harq\_ack\ +\ config.nof\_csi\_part1\ +\ config.nof\_csi\_part2,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS);}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Sets\ the\ message\ status.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a55c45f6aa4219e5d3da3ee8601babfa4}{set\_status}}(uci\_status\ status\_)\ \{\ status\ =\ status\_;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Gets\ the\ message\ status.}}
+\DoxyCodeLine{00077\ \ \ uci\_status\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a562416dec2c545bf88273cd957e41492}{get\_status}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ status;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/write\ view\ of\ the\ full\ payload.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ UCI\ payload\ fields\ are\ arranged\ following\ TS38.212\ Section\ 6.3.1.1.3.}}
+\DoxyCodeLine{00081\ \ \ span<uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ab6b9bf2969da4256c3e14aea4aa4286e}{get\_full\_payload}}()}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{return}\ span<uint8\_t>(data).first(nof\_sr\_bits\ +\ nof\_harq\_ack\_bits\ +\ nof\_csi\_part1\_bits\ +\ nof\_csi\_part2\_bits);}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/only\ view\ of\ the\ full\ payload.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ UCI\ payload\ fields\ are\ arranged\ following\ TS38.212\ Section\ 6.3.1.1.3.}}
+\DoxyCodeLine{00088\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a73b2e66559b97f68e2dd8d65e3175b0c}{get\_full\_payload}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{return}\ span<\textcolor{keyword}{const}\ uint8\_t>(data).first(nof\_sr\_bits\ +\ nof\_harq\_ack\_bits\ +\ nof\_csi\_part1\_bits\ +\ nof\_csi\_part2\_bits);}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ expected\ information\ bits\ for\ the\ full\ UCI\ payload.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_af6ac794212437009a26d40d3a391f721}{get\_expected\_nof\_bits\_full\_payload}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00095\ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ nof\_sr\_bits\ +\ nof\_harq\_ack\_bits\ +\ nof\_csi\_part1\_bits\ +\ nof\_csi\_part2\_bits;}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ expected\ Scheduling\ Request\ (SR)\ information\ bits.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a9844f49805ffbb946cd4a7fd71a923d2}{get\_expected\_nof\_sr\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_sr\_bits;\ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ expected\ HARQ-\/ACK\ information\ bits.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a80a1bdfa99f64e8b233c91bf85e759ea}{get\_expected\_nof\_harq\_ack\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_harq\_ack\_bits;\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ expected\ of\ CSI\ Part\ 1\ information\ bits.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ade71d2423b7c9eb8f8635c112758facf}{get\_expected\_nof\_csi\_part1\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_csi\_part1\_bits;\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ expected\ of\ CSI\ Part\ 2\ information\ bits.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a891ea5eec809c4561a29c9742895351d}{get\_expected\_nof\_csi\_part2\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_csi\_part2\_bits;\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/write\ view\ of\ the\ SR\ bits.}}
+\DoxyCodeLine{00112\ \ \ span<uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a7e8a267cb8e9b07825ce4ea7b75ce89d}{get\_sr\_bits}}()\ \{\ \textcolor{keywordflow}{return}\ span<uint8\_t>(data).subspan(nof\_harq\_ack\_bits,\ nof\_sr\_bits);\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/only\ view\ of\ the\ SR\ bits.}}
+\DoxyCodeLine{00115\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ad0fddaeac0987e6b1b9d2592b24c7928}{get\_sr\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ span<\textcolor{keyword}{const}\ uint8\_t>(data).subspan(nof\_harq\_ack\_bits,\ nof\_sr\_bits);\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/write\ view\ of\ the\ HARQ-\/ACK\ bits.}}
+\DoxyCodeLine{00118\ \ \ span<uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_a065c1f0b6d4364d8550bcc4966b60bec}{get\_harq\_ack\_bits}}()\ \{\ \textcolor{keywordflow}{return}\ span<uint8\_t>(data).subspan(0,\ nof\_harq\_ack\_bits);\ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/only\ view\ of\ the\ HARQ-\/ACK\ bits.}}
+\DoxyCodeLine{00121\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ac260e95880685f30773c5963bb3fbf7d}{get\_harq\_ack\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ span<\textcolor{keyword}{const}\ uint8\_t>(data).subspan(0,\ nof\_harq\_ack\_bits);\ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/write\ view\ of\ the\ CSI\ Part\ 1\ bits.}}
+\DoxyCodeLine{00124\ \ \ span<uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ad863d0492f477d3d44d8922181139a94}{get\_csi\_part1\_bits}}()}
+\DoxyCodeLine{00125\ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{return}\ span<uint8\_t>(data).subspan(nof\_sr\_bits\ +\ nof\_harq\_ack\_bits,\ nof\_csi\_part1\_bits);}
+\DoxyCodeLine{00127\ \ \ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/only\ view\ of\ the\ CSI\ Part\ 1\ bits.}}
+\DoxyCodeLine{00130\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_abd68e8717011fd28d45f574fac1449b7}{get\_csi\_part1\_bits}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00131\ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{return}\ span<\textcolor{keyword}{const}\ uint8\_t>(data).subspan(nof\_harq\_ack\_bits\ +\ nof\_sr\_bits,\ nof\_csi\_part1\_bits);}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/write\ view\ of\ the\ CSI\ Part\ 1\ bits.}}
+\DoxyCodeLine{00136\ \ \ span<uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_ad8e7d81e930b4d965bda0ff187744d4c}{get\_csi\_part2\_bits}}()}
+\DoxyCodeLine{00137\ \ \ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{return}\ span<uint8\_t>(data).subspan(nof\_harq\_ack\_bits\ +\ nof\_sr\_bits\ +\ nof\_csi\_part1\_bits,\ nof\_csi\_part2\_bits);}
+\DoxyCodeLine{00139\ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ Gets\ a\ read-\/only\ view\ of\ the\ CSI\ Part\ 1\ bits.}}
+\DoxyCodeLine{00142\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \mbox{\hyperlink{classsrsran_1_1pucch__uci__message_aa1e0cabbfe32fc0f94f2c0f5da252c8e}{get\_csi\_part2\_bits}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{return}\ span<\textcolor{keyword}{const}\ uint8\_t>(data).subspan(nof\_harq\_ack\_bits\ +\ nof\_sr\_bits\ +\ nof\_csi\_part1\_bits,\ nof\_csi\_part2\_bits);}
+\DoxyCodeLine{00145\ \ \ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ Payload\ data\ storage.}}
+\DoxyCodeLine{00149\ \ \ std::array<uint8\_t,\ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS>\ data;}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ Number\ of\ SR\ bits.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_sr\_bits\ =\ 0;}
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Number\ of\ HARQ-\/ACK\ bits.}}
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_harq\_ack\_bits\ =\ 0;}
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ Number\ of\ CSI\ Part\ 1\ bits.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_csi\_part1\_bits\ =\ 0;}
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ Number\ of\ CSI\ Part\ 2\ bits.}}
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_csi\_part2\_bits\ =\ 0;}
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ Message\ decode\ or\ detection\ status.}}
+\DoxyCodeLine{00159\ \ \ uci\_status\ status\ =\ uci\_status::invalid;}
+\DoxyCodeLine{00160\ \};}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

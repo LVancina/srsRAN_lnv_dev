@@ -1,0 +1,150 @@
+\doxysection{awaiter\+\_\+memory\+\_\+storage.\+h}
+\hypertarget{awaiter__memory__storage_8h_source}{}\label{awaiter__memory__storage_8h_source}\index{include/srsran/support/async/awaiter\_memory\_storage.h@{include/srsran/support/async/awaiter\_memory\_storage.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstddef}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Memory\ chunk\ to\ store\ object.\ It\ uses\ small\ object\ optimization}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{template}\ <std::size\_t\ SmallBufferSize,\ std::size\_t\ SmallBufferAlignment\ =\ \textcolor{keyword}{alignof}(\mbox{\hyperlink{structsrsran_1_1detail_1_1small__memory__buffer__t}{std}}::\mbox{\hyperlink{structsrsran_1_1detail_1_1small__memory__buffer__t}{max\_align\_t}})>}
+\DoxyCodeLine{00036\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1small__memory__buffer__t}{small\_memory\_buffer\_t}}\ \{}
+\DoxyCodeLine{00037\ \ \ \string~small\_memory\_buffer\_t()\ \{\ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(empty(),\ \textcolor{stringliteral}{"{}Removing\ small\ memory\ buffer\ without\ deleting\ object"{}});\ \}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Object>}
+\DoxyCodeLine{00040\ \ \ Object*\ get()}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast}<Object*>(mem\_ptr);}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Object,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ emplace(Args\&\&...\ args)}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{alignof}(Object)\ <=\ SmallBufferAlignment,\ \textcolor{stringliteral}{"{}Trying\ to\ store\ object\ with\ invalid\ alignment"{}});}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(empty(),\ \textcolor{stringliteral}{"{}Overwrites\ are\ not\ supported"{}});}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{sizeof}(Object)\ <=\ \textcolor{keyword}{sizeof}(inline\_storage))\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ mem\_ptr\ =\ \&inline\_storage;}
+\DoxyCodeLine{00052\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ out\_storage.resize(\textcolor{keyword}{sizeof}(Object));}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ mem\_ptr\ =\ out\_storage.data();}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{new}\ (mem\_ptr)\ Object(std::forward<Args>(args)...);}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Clear\ memory\ buffer}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Object>}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1small__memory__buffer__t_a4db6db39056e2d06b83b1e0853c363c1}{clear}}()}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ get<Object>()-\/>\string~Object();}
+\DoxyCodeLine{00064\ \ \ \ \ mem\_ptr\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ Checks\ whether\ memory\ buffer\ has\ no\ object}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1small__memory__buffer__t_a81ddb28c5cc63c6c3ca88e5c3637d82a}{empty}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ mem\_ptr\ ==\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ std::aligned\_storage\_t<SmallBufferSize,\ SmallBufferAlignment>\ inline\_storage;}
+\DoxyCodeLine{00072\ \ \ std::vector<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out\_storage;}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{void}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mem\_ptr\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00074\ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ Metafunction\ to\ get\ Awaiter\ Type\ from\ Awaitable}}
+\DoxyCodeLine{00077\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00078\ \textcolor{keyword}{using}\ awaiter\_t\ =\ \textcolor{keyword}{decltype}(std::declval<Awaitable>().get\_awaiter());}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ Memory\ chunk\ to\ store\ Awaitable\ (value\ or\ reference)\ +\ Awaiter}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{template}\ <std::size\_t\ InlineBuffer>}
+\DoxyCodeLine{00082\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t}{awaiter\_memory\_storage\_t}}\ \{}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00084\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{awaitable\_type}}\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{std}}::\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{decay\_t}}<\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{Awaitable}}>;}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{awaiter\_type}}\ \ \ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{awaiter\_t}}<\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{Awaitable}}>;}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{explicit}\ stored\_awaiter(Awaitable\ a)\ :\ awaitable(std::forward<Awaitable>(a)),\ awaiter(awaitable.get\_awaiter())\ \{\}}
+\DoxyCodeLine{00089\ \ \ \ \ stored\_awaiter(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00090\ \ \ \ \ stored\_awaiter(\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00091\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ Awaitable\ \ \ \ awaitable;}
+\DoxyCodeLine{00095\ \ \ \ \ awaiter\_type\ awaiter;}
+\DoxyCodeLine{00096\ \ \ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \string~awaiter\_memory\_storage\_t()\ \{\ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(empty(),\ \textcolor{stringliteral}{"{}Emptying\ non-\/destroyed\ object"{}});\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ Get\ stored\ awaiter\ object}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>*\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_ac07af3570af826a48a4aeefe2da69a74}{get\_storage}}()}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{return}\ storage.\textcolor{keyword}{template}\ get<stored\_awaiter<Awaitable>>();}
+\DoxyCodeLine{00105\ \ \ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ Storage\ Awaitable\ and\ respective\ awaiter}}
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a736d29f38f5e05d5fada6752f8f11057}{emplace}}(Awaitable\&\&\ a)}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ storage.\textcolor{keyword}{template}\ emplace<stored\_awaiter<Awaitable>>(std::forward<Awaitable>(a));}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Clear\ memory\ buffer}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a9b622d8ca117a939d37a7823b4f84b08}{clear}}()}
+\DoxyCodeLine{00117\ \ \ \{}
+\DoxyCodeLine{00118\ \ \ \ \ storage.\textcolor{keyword}{template}\ clear<stored\_awaiter<Awaitable>>();}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ Get\ stored\ awaiter\ reference}}
+\DoxyCodeLine{00122\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>::\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a3a09164cdf114a5023a0cd3c09fe1f43}{awaiter\_type}}\&\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a3a09164cdf114a5023a0cd3c09fe1f43}{get\_awaiter}}()}
+\DoxyCodeLine{00124\ \ \ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_storage<Awaitable>()-\/>awaiter;}
+\DoxyCodeLine{00126\ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ Get\ stored\ awaitable\ reference}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_1_1stored__awaiter}{stored\_awaiter}}<Awaitable>::\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a551555a94a8f641838779037913bb796}{awaitable\_type}}\&\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a551555a94a8f641838779037913bb796}{get\_awaitable}}()}
+\DoxyCodeLine{00131\ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_storage<Awaitable>()-\/>awaitable;}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ Checks\ whether\ awaiter\ is\ stored\ in\ memory\ buffer}}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_ac2737e2703d4c00e100a571953a54959}{empty}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ storage.empty();\ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00139\ \ \ small\_memory\_buffer\_t<InlineBuffer,\ \textcolor{keyword}{alignof}(std::max\_align\_t)>\ storage;}
+\DoxyCodeLine{00140\ \};}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

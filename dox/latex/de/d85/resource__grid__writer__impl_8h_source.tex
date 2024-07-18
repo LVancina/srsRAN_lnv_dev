@@ -1,0 +1,81 @@
+\doxysection{resource\+\_\+grid\+\_\+writer\+\_\+impl.\+h}
+\hypertarget{resource__grid__writer__impl_8h_source}{}\label{resource__grid__writer__impl_8h_source}\index{lib/phy/support/resource\_grid\_writer\_impl.h@{lib/phy/support/resource\_grid\_writer\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{resource__grid__dimensions_8h}{"{}resource\_grid\_dimensions.h"{}}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_writer.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ Implements\ the\ resource\ grid\ writer\ interface.}}
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ resource\_grid\_writer\_impl\ :\ \textcolor{keyword}{public}\ resource\_grid\_writer}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{using}\ storage\_type\ =\ tensor<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(resource\_grid\_dimensions::all),\ cf\_t,\ resource\_grid\_dimensions>;}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ Constructs\ a\ resource\ grid\ writer\ implementation\ from\ a\ tensor.}}
+\DoxyCodeLine{00036\ \ \ resource\_grid\_writer\_impl(storage\_type\&\ data\_,\ std::atomic<\textcolor{keywordtype}{unsigned}>\&\ empty\_)\ :\ data(data\_),\ empty(empty\_)\ \{\}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_ports()\ \textcolor{keyword}{const}\ override;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_subc()\ \textcolor{keyword}{const}\ override;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_symbols()\ \textcolor{keyword}{const}\ override;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}\ put(\textcolor{keywordtype}{unsigned}\ port,\ span<\textcolor{keyword}{const}\ resource\_grid\_coordinate>\ coordinates,\ span<\textcolor{keyword}{const}\ cf\_t>\ symbols)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00051\ \ \ span<\textcolor{keyword}{const}\ cf\_t>}
+\DoxyCodeLine{00052\ \ \ put(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}>\ mask,\ span<\textcolor{keyword}{const}\ cf\_t>\ symbols)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00055\ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ put(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ bounded\_bitset<NRE\ *\ MAX\_RB>\&\ mask,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbols)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{void}\ put(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ span<\textcolor{keyword}{const}\ cf\_t>\ symbols)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{void}\ put(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ \textcolor{keywordtype}{unsigned}\ stride,\ span<\textcolor{keyword}{const}\ cf\_t>\ symbols)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ Helper\ function\ to\ mark\ port\ as\ not\ empty.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ clear\_empty(\textcolor{keywordtype}{unsigned}\ i\_port)\ \{\ empty\ \&=\ \string~(1U\ <<\ i\_port);\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ storage\_type\&\ \ \ \ \ \ \ \ \ \ data;}
+\DoxyCodeLine{00072\ \ \ std::atomic<\textcolor{keywordtype}{unsigned}>\&\ empty;}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

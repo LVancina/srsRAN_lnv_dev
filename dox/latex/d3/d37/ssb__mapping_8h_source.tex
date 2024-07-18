@@ -1,0 +1,201 @@
+\doxysection{ssb\+\_\+mapping.\+h}
+\hypertarget{ssb__mapping_8h_source}{}\label{ssb__mapping_8h_source}\index{include/srsran/ran/ssb\_mapping.h@{include/srsran/ran/ssb\_mapping.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{band__helper_8h}{"{}band\_helper.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/frequency\_range.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/resource\_allocation/rb\_interval.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/ssb\_properties.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/math\_utils.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cassert}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)brief\ Calculates\ the\ first\ OFDM\ symbol\ in\ a\ 5ms\ SS/PBCH\ block\ burst}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)param\ [in]\ pattern\_case\ Provides\ the\ pattern}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)param\ [in]\ ssb\_idx\ Provides\ the\ SS/PBCH\ block\ opportunity\ index}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)return\ the\ first\ OFDM\ symbol\ index\ in\ a\ half-\/frame}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_af3ecd82986081a12142b41ea23496694}{ssb\_get\_l\_first}}(\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\ pattern\_case,\ \textcolor{keywordtype}{unsigned}\ ssb\_idx)}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{//\ Case\ A\ -\/\ 15\ kHz\ SCS:\ the\ first\ symbols\ of\ the\ candidate\ SS/PBCH\ blocks\ have\ indexes\ of\ \{\ 2\ ,\ 8\ \}\ +\ 14\ ⋅\ n\ .\ For}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ carrier\ frequencies\ smaller\ than\ or\ equal\ to\ 3\ GHz,\ n\ =\ 0\ ,\ 1\ .\ For\ carrier\ frequencies\ within\ FR1\ larger\ than\ 3}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{//\ GHz,\ n\ =\ 0\ ,\ 1\ ,\ 2\ ,\ 3\ .}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{if}\ (pattern\_case\ ==\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea7fc56270e7a70fa81a5935b72eacbe29}{::}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea7fc56270e7a70fa81a5935b72eacbe29}{A}})\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 2>\ first\_symbols\ =\ \{2,\ 8\};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ first\_symbols[ssb\_idx\ \%\ first\_symbols.size()]\ +\ 14\ *\ (ssb\_idx\ /\ first\_symbols.size());}
+\DoxyCodeLine{00050\ \ \ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ Case\ B\ -\/\ 30\ kHz\ SCS:\ the\ first\ symbols\ of\ the\ candidate\ SS/PBCH\ blocks\ have\ indexes\ \{\ 4\ ,\ 8\ ,\ 16\ ,\ 20\ \}\ +\ 28\ ⋅\ n\ .}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ For\ carrier\ frequencies\ smaller\ than\ or\ equal\ to\ 3\ GHz,\ n\ =\ 0\ .\ For\ carrier\ frequencies\ within\ FR1\ larger\ than\ 3}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ GHz,\ n\ =\ 0\ ,\ 1\ .}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordflow}{if}\ (pattern\_case\ ==\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea9d5ed678fe57bcca610140957afab571}{::}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea9d5ed678fe57bcca610140957afab571}{B}})\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 4>\ first\_symbols\ =\ \{4,\ 8,\ 16,\ 20\};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{return}\ first\_symbols[ssb\_idx\ \%\ first\_symbols.size()]\ +\ 28\ *\ (ssb\_idx\ /\ first\_symbols.size());}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ Case\ C\ -\/\ 30\ kHz\ SCS:\ the\ first\ symbols\ of\ the\ candidate\ SS/PBCH\ blocks\ have\ indexes\ \{\ 2\ ,\ 8\ \}\ +\ 14\ ⋅\ n\ .}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{//\ -\/\ For\ paired\ spectrum\ operation}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{//\ For\ carrier\ frequencies\ smaller\ than\ or\ equal\ to\ 3\ GHz,\ n\ =\ 0\ ,\ 1\ .\ For\ carrier\ frequencies\ within\ FR1\ larger}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ than\ 3\ GHz,\ n\ =\ 0\ ,\ 1\ ,\ 2\ ,\ 3\ .}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ -\/\ For\ unpaired\ spectrum\ operation}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ For\ carrier\ frequencies\ smaller\ than\ 1.88\ GHz,\ n\ =\ 0\ ,\ 1\ .\ For\ carrier\ frequencies\ within\ FR1\ equal\ to\ or}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ larger\ than\ 1.88\ GHz,\ n\ =\ 0\ ,\ 1\ ,\ 2\ ,\ 3\ .}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordflow}{if}\ (pattern\_case\ ==\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea0d61f8370cad1d412f80b84d143e1257}{::}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea0d61f8370cad1d412f80b84d143e1257}{C}})\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 2>\ first\_symbols\ =\ \{2,\ 8\};}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{return}\ first\_symbols[ssb\_idx\ \%\ first\_symbols.size()]\ +\ 14\ *\ (ssb\_idx\ /\ first\_symbols.size());}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ Case\ D\ -\/\ 120\ kHz\ SCS:\ the\ first\ symbols\ of\ the\ candidate\ SS/PBCH\ blocks\ have\ indexes\ \{\ 4\ ,\ 8\ ,\ 16\ ,\ 20\ \}\ +\ 28\ ⋅\ n\ .}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ For\ carrier\ frequencies\ within\ FR2,\ n\ =\ 0\ ,\ 1\ ,\ 2\ ,\ 3\ ,\ 5\ ,\ 6\ ,\ 7\ ,\ 8\ ,\ 10\ ,\ 11\ ,\ 12\ ,\ 13\ ,\ 15\ ,\ 16\ ,\ 17\ ,\ 18\ .}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordflow}{if}\ (pattern\_case\ ==\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3eaf623e75af30e62bbd73d6df5b50bb7b5}{::}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3eaf623e75af30e62bbd73d6df5b50bb7b5}{D}})\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 4>\ \ first\_symbols\ =\ \{4,\ 8,\ 16,\ 20\};}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 16>\ n\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{0,\ 1,\ 2,\ 3,\ 5,\ 6,\ 7,\ 8,\ 10,\ 11,\ 12,\ 13,\ 15,\ 16,\ 17,\ 18\};}
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_idx\ <\ first\_symbols.size()\ *\ n.size(),\ \textcolor{stringliteral}{"{}SSB\ index\ out\ of\ range."{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{return}\ first\_symbols[ssb\_idx\ \%\ first\_symbols.size()]\ +\ 28\ *\ n[ssb\_idx\ /\ first\_symbols.size()];}
+\DoxyCodeLine{00079\ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ Case\ E\ -\/\ 240\ kHz\ SCS:\ the\ first\ symbols\ of\ the\ candidate\ SS/PBCH\ blocks\ have\ indexes}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\{\ 8\ ,\ 12\ ,\ 16\ ,\ 20\ ,\ 32\ ,\ 36\ ,\ 40\ ,\ 44\ \}\ +\ 56\ ⋅\ n\ .\ For\ carrier\ frequencies\ within\ FR2,\ n\ =\ 0\ ,\ 1\ ,\ 2\ ,\ 3\ ,\ 5\ ,\ 6\ ,}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ 7\ ,\ 8\ .}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordflow}{if}\ (pattern\_case\ ==\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea3a3ea00cfc35332cedf6e5e9a32e94da}{::}}\mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3ea3a3ea00cfc35332cedf6e5e9a32e94da}{E}})\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 8>\ \ first\_symbols\ =\ \{8,\ 12,\ 16,\ 20,\ 32,\ 36,\ 40,\ 44\};}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keywordtype}{unsigned},\ 16>\ n\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{0,\ 1,\ 2,\ 3,\ 5,\ 6,\ 7,\ 8,\ 10,\ 11,\ 12,\ 13,\ 15,\ 16,\ 17,\ 18\};}
+\DoxyCodeLine{00087\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ssb\_idx\ <\ first\_symbols.size()\ *\ n.size(),\ \textcolor{stringliteral}{"{}SSB\ index\ out\ of\ range."{}});}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ first\_symbols[ssb\_idx\ \%\ first\_symbols.size()]\ +\ 56\ *\ n[ssb\_idx\ /\ first\_symbols.size()];}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{//\ Impossible!}}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{false},\ \textcolor{stringliteral}{"{}Invalid\ SSB\ pattern\ case"{}});}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00094\ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{comment}{///\ \(\backslash\)brief\ Calculates\ the\ position\ of\ the\ first\ SS/PBCH\ block\ subcarrier\ relative\ to\ Point\ A.}}
+\DoxyCodeLine{00097\ \textcolor{comment}{///}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///\ The\ result\ is\ expressed\ in\ units\ of\ subcarriers\ of\ SS/PBCH\ block\ SCS\ \(\backslash\)c\ ssb\_scs\ assuming\ that:}}
+\DoxyCodeLine{00099\ \textcolor{comment}{///\ -\/\ the\ lowest\ subcarrier\ of\ the\ resource\ grid\ overlaps\ with\ Point\ A,\ and}}
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ -\/\ the\ resource\ grid\ SCS\ matches\ the\ SS/PBCH\ block\ SCS.}}
+\DoxyCodeLine{00101\ \textcolor{comment}{///}}
+\DoxyCodeLine{00102\ \textcolor{comment}{///\ In\ other\ words,\ it\ is\ not\ possible\ to\ determine\ an\ SS/PBCH\ block\ position\ in\ the\ grid\ if\ the\ SS/PBCH\ block}}
+\DoxyCodeLine{00103\ \textcolor{comment}{///\ subcarrier\ offset\ does\ not\ match\ the\ position\ of\ the\ resource\ grid\ subcarriers.\ Because\ of\ this,\ the\ parameters\ must}}
+\DoxyCodeLine{00104\ \textcolor{comment}{///\ result\ in\ an\ integer\ subcarrier\ index\ of\ the\ SS/PBCH\ block\ SCS.}}
+\DoxyCodeLine{00105\ \textcolor{comment}{///}}
+\DoxyCodeLine{00106\ \textcolor{comment}{///\ Assertions\ are\ triggered\ if:}}
+\DoxyCodeLine{00107\ \textcolor{comment}{///\ -\/\ the\ provided\ SS/PBCH\ SCS\ and\ frequency\ range\ combination\ is\ invalid,\ or}}
+\DoxyCodeLine{00108\ \textcolor{comment}{///\ -\/\ the\ result\ would\ point\ to\ a\ non-\/integer\ subcarrier\ index.}}
+\DoxyCodeLine{00109\ \textcolor{comment}{///}}
+\DoxyCodeLine{00110\ \textcolor{comment}{///\ \(\backslash\)param[in]\ fr\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Frequency\ range.}}
+\DoxyCodeLine{00111\ \textcolor{comment}{///\ \(\backslash\)param[in]\ ssb\_scs\ \ \ \ \ \ \ \ \ \ \ SS/PBCH\ block\ subcarrier\ spacing.}}
+\DoxyCodeLine{00112\ \textcolor{comment}{///\ \(\backslash\)param[in]\ common\_scs\ \ \ \ \ \ \ \ Higher\ layer\ parameter\ \(\backslash\)e\ subCarrierSpacingCommon\ as\ per\ TS38.331\ \(\backslash\)e\ MIB.}}
+\DoxyCodeLine{00113\ \textcolor{comment}{///\ \(\backslash\)param[in]\ offset\_to\_pointA\ \ Offset\ to\ Point\ A\ (see\ [here](\(\backslash\)ref\ ssb\_offset\_to\_pointA)\ for\ more\ information).}}
+\DoxyCodeLine{00114\ \textcolor{comment}{///\ \(\backslash\)param[in]\ subcarrier\_offset\ Subcarrier\ offset\ (see\ [here](\(\backslash\)ref\ ssb\_subcarrier\_offset)\ for\ more\ information).}}
+\DoxyCodeLine{00115\ \textcolor{comment}{///\ \(\backslash\)return\ The\ index\ of\ the\ lowest\ subcarrier\ of\ the\ SS/PBCH\ block.}}
+\DoxyCodeLine{00116\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a43f6bb66ce6ef238e439f0beaee7002c}{ssb\_get\_k\_first}}(\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5}{frequency\_range}}\ \ \ \ \ \ \ fr,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ ssb\_scs,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ common\_scs,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ssb__offset__to__pointA}{ssb\_offset\_to\_pointA}}\ \ offset\_to\_pointA,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ssb__subcarrier__offset}{ssb\_subcarrier\_offset}}\ subcarrier\_offset)}
+\DoxyCodeLine{00121\ \{}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{//\ Verify\ the\ SCS\ are\ valid\ for\ the\ frequency\ range.}}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(is\_scs\_valid(ssb\_scs,\ fr),}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Unsupported\ combination\ of\ FR\{\}\ and\ SSB\ SCS\ \{\}kHz."{}},}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fr\ ==\ frequency\_range::FR1\ ?\ 1\ :\ 2,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scs\_to\_khz(ssb\_scs));}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(is\_scs\_valid(common\_scs,\ fr),}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Unsupported\ combination\ of\ FR\{\}\ and\ \ Common\ SCS\ \{\}kHz."{}},}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fr\ ==\ frequency\_range::FR1\ ?\ 1\ :\ 2,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scs\_to\_khz(common\_scs));}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{//\ Verify\ the\ offset\ to\ Point\ A\ and\ the\ subcarrier\ offset\ are\ valid.}}
+\DoxyCodeLine{00133\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(offset\_to\_pointA.valid(),}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ offset\ to\ Point\ A\ \{\}\ (max\ \{\})"{}},}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset\_to\_pointA.to\_uint(),}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_offset\_to\_pointA::max());}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(subcarrier\_offset.is\_valid(fr),}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ subcarrier\ offset\ \{\}\ for\ FR\{\}\ (max\ \{\})"{}},}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier\_offset.to\_uint(),}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fr\ ==\ frequency\_range::FR1\ ?\ 1\ :\ 2,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_subcarrier\_offset::max(fr));}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{//\ Select\ Point\ A\ offset\ SCS\ depending\ on\ the\ frequency\ range\ and\ convert\ SCS\ to\ kHz.}}
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordtype}{unsigned}\ pointA\_offset\_scs\_kHz\ =}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{scs\_to\_khz}}\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{(}}(fr\ ==\ \mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5}{frequency\_range}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{::}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{FR1}})\ ?\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}::kHz15\ :\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}::kHz60\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{)}};}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{//\ Select\ the\ subcarrier\ offset\ SCS\ depending\ on\ the\ frequency\ range\ and\ convert\ it\ to\ kHz.}}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{unsigned}\ subcarrier\_offset\_scs\_kHz\ =}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{scs\_to\_khz}}\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{(}}(fr\ ==\ \mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5}{frequency\_range}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{::}}\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{FR1}})\ ?\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}::kHz15\ :\ common\_scs\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{)}};}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{//\ SS/PBCH\ block\ SCS\ in\ kHz.}}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{unsigned}\ ssb\_scs\_kHz\ =\ \mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{scs\_to\_khz}}\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{(}}ssb\_scs\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{)}};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{//\ Calculate\ the\ number\ of\ 15kHz\ subcarriers\ from\ point\ A\ to\ the\ first\ subcarrier\ of\ the\ SS/PBCH\ block.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{unsigned}\ k\_first\_15kHz\ =\ (offset\_to\_pointA.to\_uint()\ *\ NRE\ *\ pointA\_offset\_scs\_kHz\ +}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier\_offset.to\_uint()\ *\ subcarrier\_offset\_scs\_kHz)\ /}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 15;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{//\ Make\ sure\ the\ above\ conversion\ is\ exact\ and\ has\ no\ remainder.}}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((k\_first\_15kHz\ *\ 15)\ \%\ ssb\_scs\_kHz\ ==\ 0,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Unsupported\ combination\ of\ FR\{\},\ SSB\ SCS\ \{\}kHz,\ Common\ SCS\ \{\}kHz,\ offsetToPointA\ \{\}\ and\ "{}}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ssb-\/SubcarrierOffset\ \{\}."{}},}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fr\ ==\ frequency\_range::FR1\ ?\ 1\ :\ 2,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_scs\_kHz,}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scs\_to\_khz(common\_scs),}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset\_to\_pointA.to\_uint(),}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier\_offset.to\_uint());}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \textcolor{comment}{//\ Calculate\ actual\ result.}}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordflow}{return}\ (k\_first\_15kHz\ *\ 15)\ /\ ssb\_scs\_kHz;}
+\DoxyCodeLine{00171\ \}}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \textcolor{comment}{///\ Calculates\ SSB\ pattern\ from\ SSB\ subcarrier\ spacing\ and\ DL\ ARFCN.}}
+\DoxyCodeLine{00174\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}}\ \mbox{\hyperlink{namespacesrsran_aaae2f3752469d0800c1e06a3fd3b9c46}{ssb\_get\_ssb\_pattern}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ ssb\_scs,\ \textcolor{keywordtype}{unsigned}\ dl\_arfcn);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{comment}{///\ \(\backslash\)brief\ Calculates\ L\_max,\ ie\ max\ number\ of\ SSB\ occasions\ per\ SSB\ period.\ Possible\ values\ are\ \{4,\ 8,\ 64\}.}}
+\DoxyCodeLine{00177\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.213,\ Section\ 4.1.}}
+\DoxyCodeLine{00178\ \textcolor{comment}{///\ \(\backslash\)param\ ssb\_scs\ SSB\ Subcarrier\ Spacing.}}
+\DoxyCodeLine{00179\ \textcolor{comment}{///\ \(\backslash\)param\ dl\_arfcn\ DL\ ARFCN.}}
+\DoxyCodeLine{00180\ \textcolor{comment}{///\ \(\backslash\)param\ band\ NR\ band.\ If\ not\ provided,\ it\ will\ be\ derived\ from\ the\ DL-\/ARFCN.}}
+\DoxyCodeLine{00181\ \textcolor{comment}{///\ \(\backslash\)return\ L\_max\ value.}}
+\DoxyCodeLine{00182\ uint8\_t\ \mbox{\hyperlink{namespacesrsran_a215b4e6138c8014a679643e272ad5d42}{ssb\_get\_L\_max}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ ssb\_scs,\ \textcolor{keywordtype}{unsigned}\ dl\_arfcn,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_a9e91de4bdf4fc6af2e4fba60dde4d0c5}{nr\_band}}>\ band\ =\ \{\});}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \textcolor{comment}{///\ \(\backslash\)brief\ Calculate\ the\ CRBs\ (with\ reference\ to\ SCS\ common\ grid)\ where\ the\ SSB\ is\ allocated.}}
+\DoxyCodeLine{00185\ \textcolor{comment}{///\ \(\backslash\)param[in]\ ssb\_scs\ \ \ \ \ \ is\ the\ SSB\ Sub-\/Carrier\ Spacing,\ as\ per\ TS\ 38.213,\ Section\ 4.1.}}
+\DoxyCodeLine{00186\ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\_common\ \ \ is\ the\ Sub-\/Carrier\ Spacing\ of\ the\ Initial\ DL\ BWP.}}
+\DoxyCodeLine{00187\ \textcolor{comment}{///\ \(\backslash\)param[in]\ offset\_to\_pA\ is\ the\ OffsetToPointA,\ ,\ as\ per\ TS\ 38.211,\ Section\ 4.4.4.2.}}
+\DoxyCodeLine{00188\ \textcolor{comment}{///\ \(\backslash\)param[in]\ k\_ssb\ \ \ \ \ \ \ \ is\ the\ SSB\ subcarrier\ offset,\ or\ k\_ssb,\ as\ per\ TS\ 38.211,\ Section\ 7.4.3.1.}}
+\DoxyCodeLine{00189\ \textcolor{comment}{///\ \(\backslash\)return\ The\ CRB\ interval\ (with\ reference\ to\ SCS\ common\ grid)\ where\ the\ SSB\ is\ allocated.}}
+\DoxyCodeLine{00190\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \mbox{\hyperlink{namespacesrsran_a05018072e9a80490ba7792ab0543e908}{get\_ssb\_crbs}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ ssb\_scs,}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ scs\_common,}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ssb__offset__to__pointA}{ssb\_offset\_to\_pointA}}\ \ offset\_to\_pA,}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ssb__subcarrier__offset}{ssb\_subcarrier\_offset}}\ k\_ssb);}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

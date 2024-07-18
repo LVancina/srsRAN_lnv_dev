@@ -32,10 +32,11 @@ namespace srsran {
 namespace srs_cu_cp {
 
 /// Main UE representation in RRC
-class rrc_ue_impl final : public rrc_ue_interface, public rrc_ue_controller
+class rrc_ue_impl final : public rrc_ue_interface
 {
 public:
   rrc_ue_impl(up_resource_manager&              up_resource_mng_,
+              rrc_ue_du_processor_notifier&     du_proc_notif_,
               rrc_pdu_f1ap_notifier&            f1ap_pdu_notifier_,
               rrc_ue_nas_notifier&              nas_notif_,
               rrc_ue_control_notifier&          ngap_ctrl_notif_,
@@ -48,7 +49,7 @@ public:
               const byte_buffer                 du_to_cu_container,
               rrc_ue_task_scheduler&            task_sched,
               optional<rrc_ue_transfer_context> rrc_context);
-  ~rrc_ue_impl();
+  ~rrc_ue_impl() = default;
 
   // rrc_ul_ccch_pdu_handler
   void handle_ul_ccch_pdu(byte_buffer pdu) override;
@@ -56,7 +57,6 @@ public:
   void handle_ul_dcch_pdu(const srb_id_t srb_id, byte_buffer pdcp_pdu) override;
 
   // rrc_ue_interface
-  rrc_ue_controller&                    get_controller() override { return *this; }
   rrc_ul_ccch_pdu_handler&              get_ul_ccch_pdu_handler() override { return *this; }
   rrc_ul_dcch_pdu_handler&              get_ul_dcch_pdu_handler() override { return *this; }
   rrc_dl_nas_message_handler&           get_rrc_dl_nas_message_handler() override { return *this; }
@@ -76,11 +76,10 @@ public:
 
   // rrc_ue_control_message_handler
   async_task<bool> handle_rrc_reconfiguration_request(const rrc_reconfiguration_procedure_request& msg) override;
-  rrc_ue_handover_reconfiguration_context
-  get_rrc_ue_handover_reconfiguration_context(const rrc_reconfiguration_procedure_request& request) override;
+  uint8_t          handle_handover_reconfiguration_request(const rrc_reconfiguration_procedure_request& msg) override;
   async_task<bool> handle_handover_reconfiguration_complete_expected(uint8_t transaction_id) override;
   async_task<bool> handle_rrc_ue_capability_transfer_request(const rrc_ue_capability_transfer_request& msg) override;
-  rrc_ue_release_context  get_rrc_ue_release_context(bool requires_rrc_msg) override;
+  rrc_ue_release_context  get_rrc_ue_release_context() override;
   rrc_ue_transfer_context get_transfer_context() override;
   optional<rrc_meas_cfg>  generate_meas_config(optional<rrc_meas_cfg> current_meas_config) override;
   bool                    handle_new_security_context(const security::security_context& sec_context) override;
@@ -89,14 +88,12 @@ public:
 
   // rrc_ue_handover_preparation_handler
   byte_buffer get_packed_handover_preparation_message() override;
-  byte_buffer handle_rrc_handover_command(byte_buffer cmd) override;
+  bool        handle_rrc_handover_command(byte_buffer cmd) override;
 
   // rrc_ue_context_handler
-  rrc_ue_reestablishment_context_response get_context() override;
+  rrc_reestablishment_ue_context_t get_context() override;
 
 private:
-  void stop() override;
-
   // message handlers
   void handle_pdu(const srb_id_t srb_id, byte_buffer rrc_pdu);
   void handle_rrc_setup_request(const asn1::rrc_nr::rrc_setup_request_s& msg);
@@ -112,7 +109,7 @@ private:
 
   // rrc_ue_setup_proc_notifier
   void on_new_dl_ccch(const asn1::rrc_nr::dl_ccch_msg_s& dl_ccch_msg) override;
-  void on_ue_release_required(const ngap_cause_t& cause) override;
+  void on_ue_release_required(const cause_t& cause) override;
 
   // rrc_ue_security_mode_command_proc_notifier
   void on_new_dl_dcch(srb_id_t srb_id, const asn1::rrc_nr::dl_dcch_msg_s& dl_ccch_msg) override;
@@ -124,13 +121,14 @@ private:
   async_task<bool> handle_init_security_context(const security::security_context& sec_ctx) override;
 
   rrc_ue_context_t                context;
-  up_resource_manager&            up_resource_mng;      // UP resource manager
-  rrc_pdu_f1ap_notifier&          f1ap_pdu_notifier;    // PDU notifier to the F1AP
-  rrc_ue_nas_notifier&            nas_notifier;         // PDU notifier to the NGAP
-  rrc_ue_control_notifier&        ngap_ctrl_notifier;   // Control message notifier to the NGAP
-  rrc_ue_context_update_notifier& cu_cp_notifier;       // notifier to the CU-CP
-  rrc_ue_measurement_notifier&    measurement_notifier; // cell measurement notifier
-  byte_buffer                     du_to_cu_container;   // initial RRC message from DU to CU
+  up_resource_manager&            up_resource_mng;       // UP resource manager
+  rrc_ue_du_processor_notifier&   du_processor_notifier; // notifier to the DU processor
+  rrc_pdu_f1ap_notifier&          f1ap_pdu_notifier;     // PDU notifier to the F1AP
+  rrc_ue_nas_notifier&            nas_notifier;          // PDU notifier to the NGAP
+  rrc_ue_control_notifier&        ngap_ctrl_notifier;    // Control message notifier to the NGAP
+  rrc_ue_context_update_notifier& cu_cp_notifier;        // notifier to the CU-CP
+  rrc_ue_measurement_notifier&    measurement_notifier;  // cell measurement notifier
+  byte_buffer                     du_to_cu_container;    // initial RRC message from DU to CU
   rrc_ue_task_scheduler&          task_sched;
   rrc_ue_logger                   logger;
 

@@ -1,0 +1,93 @@
+\doxysection{pdu\+\_\+session\+\_\+resource\+\_\+setup\+\_\+routine.\+h}
+\hypertarget{pdu__session__resource__setup__routine_8h_source}{}\label{pdu__session__resource__setup__routine_8h_source}\index{lib/cu\_cp/routines/pdu\_session\_resource\_setup\_routine.h@{lib/cu\_cp/routines/pdu\_session\_resource\_setup\_routine.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}../du\_processor/du\_processor\_impl\_interface.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/ue\_manager.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1pdu__session__resource__setup__routine}{pdu\_session\_resource\_setup\_routine}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1pdu__session__resource__setup__routine}{pdu\_session\_resource\_setup\_routine}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__request}{cu\_cp\_pdu\_session\_resource\_setup\_request}}\&\ setup\_msg\_,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ue__configuration}{ue\_configuration}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_cfg\_,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{srsran::security::sec\_as\_config}}\&\ \ \ \ \ \ \ \ \ \ security\_cfg\_,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_security\_indication\_,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__e1ap__control__notifier}{du\_processor\_e1ap\_control\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ e1ap\_ctrl\_notif\_,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__f1ap__ue__context__notifier}{du\_processor\_f1ap\_ue\_context\_notifier}}\&\ \ \ \ \ \ \ \ \ \ f1ap\_ue\_ctxt\_notif\_,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__rrc__ue__control__message__notifier}{du\_processor\_rrc\_ue\_control\_message\_notifier}}\&\ \ \ rrc\_ue\_notifier\_,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1up__resource__manager}{up\_resource\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_up\_resource\_manager\_,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{void}\ operator()(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<cu\_cp\_pdu\_session\_resource\_setup\_response>}}>\&\ ctx);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PDU\ Session\ Resource\ Setup\ Routine"{}};\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ fill\_e1ap\_bearer\_context\_setup\_request(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__request}{e1ap\_bearer\_context\_setup\_request}}\&\ e1ap\_request);}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ fill\_initial\_e1ap\_bearer\_context\_modification\_request(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__request}{e1ap\_bearer\_context\_modification\_request}}\&\ e1ap\_request);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__response}{cu\_cp\_pdu\_session\_resource\_setup\_response}}\ handle\_pdu\_session\_resource\_setup\_result(\textcolor{keywordtype}{bool}\ success);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__request}{cu\_cp\_pdu\_session\_resource\_setup\_request}}\ setup\_msg;}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ue__configuration}{ue\_configuration}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_cfg;}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{srsran::security::sec\_as\_config}}\ \ \ \ \ \ \ \ \ \ security\_cfg;}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_security\_indication;\ \textcolor{comment}{//\ default\ if\ not\ signaled\ via\ NGAP}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1up__config__update}{up\_config\_update}}\ next\_config;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__e1ap__control__notifier}{du\_processor\_e1ap\_control\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ e1ap\_ctrl\_notifier;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ to\ trigger\ bearer\ context\ setup\ at\ CU-\/UP}}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__f1ap__ue__context__notifier}{du\_processor\_f1ap\_ue\_context\_notifier}}\&\ \ \ \ \ \ \ \ f1ap\_ue\_ctxt\_notifier;\ \ \ \ \ \ \textcolor{comment}{//\ to\ trigger\ UE\ context\ modification\ at\ DU}}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__rrc__ue__control__message__notifier}{du\_processor\_rrc\_ue\_control\_message\_notifier}}\&\ rrc\_ue\_notifier;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ to\ trigger\ RRC\ Reconfiguration\ at\ UE}}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1up__resource__manager}{up\_resource\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_up\_resource\_manager;\ \textcolor{comment}{//\ to\ get\ RRC\ DRB\ config}}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ (sub-\/)routine\ requests}}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__capability__transfer__request}{rrc\_ue\_capability\_transfer\_request}}\ \ \ \ \ \ \ ue\_capability\_transfer\_request;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__request}{e1ap\_bearer\_context\_setup\_request}}\ \ \ \ \ \ \ \ bearer\_context\_setup\_request;}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__modification__request}{f1ap\_ue\_context\_modification\_request}}\ \ \ \ \ ue\_context\_mod\_request;}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__request}{e1ap\_bearer\_context\_modification\_request}}\ bearer\_context\_modification\_request;}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__reconfiguration__procedure__request}{rrc\_reconfiguration\_procedure\_request}}\ \ \ \ rrc\_reconfig\_args;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{//\ (sub-\/)routine\ results}}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__response}{cu\_cp\_pdu\_session\_resource\_setup\_response}}\ response\_msg;}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_capability\_transfer\_result\ =\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ to\ query\ the\ UE\ capabilities}}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__response}{e1ap\_bearer\_context\_setup\_response}}\ \ \ \ \ \ \ \ bearer\_context\_setup\_response;\ \textcolor{comment}{//\ to\ initially\ setup\ the\ DRBs\ at\ the\ CU-\/UP}}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__modification__response}{f1ap\_ue\_context\_modification\_response}}\ \ \ \ \ ue\_context\_modification\_response;\ \textcolor{comment}{//\ to\ inform\ DU\ about\ the\ new\ DRBs}}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__response}{e1ap\_bearer\_context\_modification\_response}}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ bearer\_context\_modification\_response;\ \textcolor{comment}{//\ to\ inform\ CU-\/UP\ about\ the\ new\ TEID\ for\ UL\ F1u\ traffic}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ rrc\_reconfig\_result\ =\ \textcolor{keyword}{false};\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ the\ final\ UE\ reconfiguration}}
+\DoxyCodeLine{00100\ \};}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00103\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

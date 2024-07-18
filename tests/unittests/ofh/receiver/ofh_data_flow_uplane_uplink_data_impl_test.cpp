@@ -35,6 +35,13 @@ class uplane_message_decoder_spy : public uplane_message_decoder
   uplane_message_decoder_results spy_results;
 
 public:
+  slot_symbol_point peek_slot_symbol_point(span<const uint8_t> message) const override { return {0, 0, 14}; }
+
+  filter_index_type peek_filter_index(span<const uint8_t> message) const override
+  {
+    return filter_index_type::standard_channel_filter;
+  }
+
   bool decode(uplane_message_decoder_results& results, span<const uint8_t> message) override
   {
     results = spy_results;
@@ -95,9 +102,9 @@ public:
   {
     data_flow_uplane_uplink_data_impl_dependencies dependencies;
 
-    dependencies.logger                 = &srslog::fetch_basic_logger("TEST");
-    dependencies.ul_cplane_context_repo = ul_cplane_context_repo_ptr;
-    dependencies.ul_context_repo        = ul_context_repo;
+    dependencies.logger                     = &srslog::fetch_basic_logger("TEST");
+    dependencies.ul_cplane_context_repo_ptr = ul_cplane_context_repo_ptr;
+    dependencies.ul_context_repo            = ul_context_repo;
 
     {
       auto temp             = std::make_shared<uplane_rx_symbol_notifier_spy>();

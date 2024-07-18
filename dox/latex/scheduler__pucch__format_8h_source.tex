@@ -1,0 +1,125 @@
+\doxysection{scheduler\+\_\+pucch\+\_\+format.\+h}
+\hypertarget{scheduler__pucch__format_8h_source}{}\label{scheduler__pucch__format_8h_source}\index{include/srsran/scheduler/scheduler\_pucch\_format.h@{include/srsran/scheduler/scheduler\_pucch\_format.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/pucch/pucch\_configuration.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/pucch/pucch\_mapping.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/resource\_allocation/ofdm\_symbol\_range.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/resource\_allocation/rb\_interval.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ :\ \textcolor{keywordtype}{unsigned}\ \{\ no\_sr\ =\ 0,\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29af97c5d29941bfb1b2fdab0874906ab82}{one}},\ two,\ three,\ four\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_acff4c186b475dae1e4ef3faf32a2f128}{sr\_nof\_bits\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ sr\_bits)}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(sr\_bits);}
+\DoxyCodeLine{00042\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ \mbox{\hyperlink{namespacesrsran_a039ad32c101e7f4d733257418417b2a5}{operator+}}(\mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ x,\ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ y)}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ sum\ =\ \mbox{\hyperlink{namespacesrsran_acff4c186b475dae1e4ef3faf32a2f128}{sr\_nof\_bits\_to\_uint}}(x)\ +\ \mbox{\hyperlink{namespacesrsran_acff4c186b475dae1e4ef3faf32a2f128}{sr\_nof\_bits\_to\_uint}}(y);}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordflow}{return}\ sum\ >\ \mbox{\hyperlink{namespacesrsran_acff4c186b475dae1e4ef3faf32a2f128}{sr\_nof\_bits\_to\_uint}}(sr\_nof\_bits::four)\ ?\ sr\_nof\_bits::four\ :\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\textcolor{keyword}{>}(sum);}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespacesrsran_a1cce9f477d045d820a694ce712983069}{pucch\_format\_4\_sf}}\ \{\ sf2,\ sf4\ \};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__resources}{pucch\_resources}}\ \{}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \ \ \ \ \ prbs;}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{structsrsran_1_1ofdm__symbol__range}{ofdm\_symbol\_range}}\ symbols;}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \ \ \ \ \ second\_hop\_prbs;}
+\DoxyCodeLine{00059\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__format__0}{pucch\_format\_0}}\ \{}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{namespacesrsran_afd00fa3eb3bf558276dee93d12e9964c}{pucch\_group\_hopping}}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__0_a96ddc794a0c45a56fe01a605e14b99e2}{group\_hopping}};}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__0_ac1c2fdf78cd950cbfbf7d82cd279b5fd}{n\_id\_hopping}};}
+\DoxyCodeLine{00068\ \ \ uint8\_t\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__0_a9359eaa906d3b49f9121acc7445b6070}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ sr\_bits;}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ harq\_ack\_nof\_bits;}
+\DoxyCodeLine{00071\ \};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__format__1}{pucch\_format\_1}}\ \{}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{namespacesrsran_afd00fa3eb3bf558276dee93d12e9964c}{pucch\_group\_hopping}}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__1_aec29242b8453e2ec6f76f5a7c0692d51}{group\_hopping}};}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__1_a394fb8d0d8b1a046e1fae26b8b442849}{n\_id\_hopping}};}
+\DoxyCodeLine{00080\ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__format__1_a7dfe7e86ae2dd86feeeef77c3bbcbf07}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00082\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__1_af263c17d4c0921c69695587bdc24eef9}{time\_domain\_occ}};}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ sr\_bits;}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_ack\_nof\_bits;}
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{namespacesrsran_a8500b0add803bca384434db9546ed742}{pucch\_repetition\_tx\_slot}}\ slot\_repetition;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__format__2}{pucch\_format\_2}}\ \{}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ sr\_bits;}
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ harq\_ack\_nof\_bits;}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ csi\_part1\_bits;}
+\DoxyCodeLine{00094\ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__format__2_af582b37425af39261d844407c5175b4b}{n\_id\_scambling}};}
+\DoxyCodeLine{00096\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__2_a5a73e9c5e378f43e9ab73e835c28d56e}{n\_id\_0\_scrambling}};}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{namespacesrsran_a797f741c4d9706d2527924e7904889e2}{max\_pucch\_code\_rate}}\ max\_code\_rate;}
+\DoxyCodeLine{00098\ \};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00101\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__format__3}{pucch\_format\_3}}\ \{}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{namespacesrsran_afd00fa3eb3bf558276dee93d12e9964c}{pucch\_group\_hopping}}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__3_abc3295e1a65eca82d55703662dce0fb1}{group\_hopping}};}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__3_ae63f5d13eb83cae2961e67eba1505f9a}{n\_id\_hopping}};}
+\DoxyCodeLine{00107\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__3_a29acbb9ec5def5fa69b9af21e629319c}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ sr\_bits;}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_ack\_nof\_bits;}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_part1\_bits;}
+\DoxyCodeLine{00111\ \ \ \mbox{\hyperlink{namespacesrsran_a8500b0add803bca384434db9546ed742}{pucch\_repetition\_tx\_slot}}\ slot\_repetition;}
+\DoxyCodeLine{00114\ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__format__3_afc0394c095a787f8786993b42c617a06}{n\_id\_scambling}};}
+\DoxyCodeLine{00115\ \ \ uint8\_t\ \ time\_domain\_occ;}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ pi\_2\_bpsk;}
+\DoxyCodeLine{00117\ \ \ uint8\_t\ \ max\_code\_rate;}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__3_ab4f3a09b27b452ad83555ae9c5c8f39b}{additional\_dmrs}};}
+\DoxyCodeLine{00120\ \ \ uint16\_t\ n\_id\_0\_scrambling;}
+\DoxyCodeLine{00121\ \ \ uint16\_t\ m\_0\_cyclic\_shift;}
+\DoxyCodeLine{00122\ \};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00125\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pucch__format__4}{pucch\_format\_4}}\ \{}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{namespacesrsran_afd00fa3eb3bf558276dee93d12e9964c}{pucch\_group\_hopping}}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_ab580c9597b4ffba872ec58f5c8a36c5d}{group\_hopping}};}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_aef1d087b02e965b0f5bf79338e3d2cd2}{n\_id\_hopping}};}
+\DoxyCodeLine{00131\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_af77905fed1702f2fc2d91df69ac87b52}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{namespacesrsran_a58a09a569471bda9fd79223cbddc408d}{sr\_nof\_bits}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ sr\_bits;}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_ack\_nof\_bits;}
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_part1\_bits;}
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{namespacesrsran_a8500b0add803bca384434db9546ed742}{pucch\_repetition\_tx\_slot}}\ slot\_repetition;}
+\DoxyCodeLine{00138\ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_a2f7e229a7c903ab4cc14b2f34a2fdc9c}{n\_id\_scambling}};}
+\DoxyCodeLine{00139\ \ \ uint8\_t\ \ time\_domain\_occ;}
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ pi\_2\_bpsk;}
+\DoxyCodeLine{00141\ \ \ uint8\_t\ \ max\_code\_rate;}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00144\ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_a7ebfc6195157945cc122da6c6bb57f4e}{orthog\_seq\_idx}};}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{namespacesrsran_a1cce9f477d045d820a694ce712983069}{pucch\_format\_4\_sf}}\ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_a997f5c63d733d63a2cbc0400c9771838}{n\_sf\_pucch\_f4}};}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__format__4_a75ff82dd749ca289d33d3203755b3833}{additional\_dmrs}};}
+\DoxyCodeLine{00151\ \ \ uint16\_t\ n\_id\_0\_scrambling;}
+\DoxyCodeLine{00152\ \ \ uint16\_t\ m\_0\_cyclic\_shift;}
+\DoxyCodeLine{00153\ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -22,7 +22,6 @@
 #pragma once
 
 #include "srsran/cu_cp/cu_cp_types.h"
-#include "srsran/ran/rnti.h"
 #include "srsran/support/prefixed_logger.h"
 #include "fmt/format.h"
 #include <string.h>

@@ -1,0 +1,179 @@
+\doxysection{ra\+\_\+scheduler.\+h}
+\hypertarget{ra__scheduler_8h_source}{}\label{ra__scheduler_8h_source}\index{lib/scheduler/common\_scheduling/ra\_scheduler.h@{lib/scheduler/common\_scheduling/ra\_scheduler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../cell/resource\_grid.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../pdcch\_scheduling/pdcch\_resource\_allocator.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../support/prbs\_calculator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../support/slot\_event\_list.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../ue\_scheduling/harq\_process.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/prach/prach\_configuration.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/scheduler\_expert\_config.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{deque}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Get\ MSG3\ Delay.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)param[in]\ pusch\_td\_res\_alloc\ PUSCH-\/TimeDomainResourceAllocation.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)param[in]\ pusch\_scs\ SCS\ used\ by\ initial\ UL\ BWP.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)return\ Msg3\ delay\ in\ number\ of\ slots.}}
+\DoxyCodeLine{00042\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a8c795956c8ae20343d8fa1ae8b30d29e}{get\_msg3\_delay}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation}{pusch\_time\_domain\_resource\_allocation}}\&\ pusch\_td\_res\_alloc,\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ pusch\_scs);}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ RA-\/RNTI\ based\ on\ PRACH\ parameters,\ as\ per\ TS\ 38.321,\ Section\ 5.1.3.}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_index\ Index\ of\ the\ first\ slot\ of\ the\ PRACH\ occasion\ in\ a\ system\ frame.\ Values\ \{0,...,79\}.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_index\ Index\ of\ the\ first\ OFDM\ symbol\ of\ the\ first\ PRACH\ occasion.\ Values\ \{0,...,13\}.}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \(\backslash\)param[in]\ frequency\_index\ Index\ of\ the\ PRACH\ occation\ in\ the\ frequency\ domain.\ Values\ \{0,...,7\}.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ \(\backslash\)param[in]\ is\_sul\ true\ is\ this\ is\ SUL\ carrier,\ false\ otherwise.}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)return\ the\ RA-\/RNRI,\ as\ per\ ,\ as\ per\ TS\ 38.321,\ Section\ 5.1.3.}}
+\DoxyCodeLine{00050\ uint16\_t\ \mbox{\hyperlink{namespacesrsran_ade5e85289a042fec7981ced865f7a0a3}{get\_ra\_rnti}}(\textcolor{keywordtype}{unsigned}\ slot\_index,\ \textcolor{keywordtype}{unsigned}\ symbol\_index,\ \textcolor{keywordtype}{unsigned}\ frequency\_index,\ \textcolor{keywordtype}{bool}\ is\_sul\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ Scheduler\ for\ PRACH\ occasions,\ RAR\ PDSCHs\ and\ Msg3\ PUSCH\ grants.}}
+\DoxyCodeLine{00053\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ra__scheduler}{ra\_scheduler}}}
+\DoxyCodeLine{00054\ \{}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Implementation-\/defined\ limit\ for\ maximum\ number\ of\ concurrent\ Msg3s.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ MAX\_NOF\_MSG3\ =\ 1024;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{explicit}\ ra\_scheduler(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__ra__expert__config}{scheduler\_ra\_expert\_config}}\&\ sched\_cfg\_,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}\&\ \ \ \ \ \ \ \ \ cfg\_,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__resource__allocator}{pdcch\_resource\_allocator}}\&\ \ \ \ \ \ \ \ \ pdcch\_sched\_,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ ev\_logger\_);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ Enqueue\ RACH\ indication}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.321,\ 5.1.3\ -\/\ RAP\ transmission.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ra__scheduler_a458acf6cb413052be3cfa62d81d67387}{handle\_rach\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}\&\ msg);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ Handle\ UL\ CRC\ directed\ at\ Msg3\ HARQ.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ra__scheduler_a0e269324af31260a0a428f36e491a63c}{handle\_crc\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__crc__indication}{ul\_crc\_indication}}\&\ crc\_ind);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Allocate\ pending\ RARs\ +\ Msg3s}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ra__scheduler_a218ba7f4d2fe7d8d8f3f6b6e8eb82066}{run\_slot}}(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ res\_alloc);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{struct}\ pending\_rar\_t\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ra\_rnti\ =\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}::INVALID\_RNTI;}
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prach\_slot\_rx;}
+\DoxyCodeLine{00078\ \ \ \ \ slot\_interval\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rar\_window;}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}},\ MAX\_PREAMBLES\_PER\_PRACH\_OCCASION>\ tc\_rntis;}
+\DoxyCodeLine{00080\ \ \ \};}
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{struct}\ pending\_msg3\_t\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{comment}{///\ Detected\ PRACH\ Preamble\ associated\ to\ this\ Msg3.}}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}::\mbox{\hyperlink{structsrsran_1_1rach__indication__message_1_1preamble}{preamble}}\ preamble\{\};}
+\DoxyCodeLine{00084\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1harq__logger}{harq\_logger}}\ msg3\_harq\_logger\{srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SCHED"{}}),\ rnti\_t::INVALID\_RNTI,\ to\_du\_cell\_index(0),\ \textcolor{keyword}{false}\};}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{///\ UL\ Harq\ used\ to\ schedule\ Msg3.}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{///\ Note:\ [TS\ 38.321,\ 5.4.2.1]\ "{}For\ UL\ transmission\ with\ UL\ grant\ in\ RA\ Response,\ HARQ\ process\ identifier\ 0\ is}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{///\ used"{}.}}
+\DoxyCodeLine{00088\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ul__harq__process}{ul\_harq\_process}}\ harq\{to\_harq\_id(0),\ msg3\_harq\_logger\};}
+\DoxyCodeLine{00089\ \ \ \};}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{struct}\ msg3\_alloc\_candidate\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ pusch\_td\_res\_index;}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ crbs;}
+\DoxyCodeLine{00093\ \ \ \};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1bwp__configuration}{bwp\_configuration}}\&\ \ \ get\_dl\_bwp\_cfg()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cell\_cfg.dl\_cfg\_common.init\_dl\_bwp.generic\_params;\ \}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__config__common}{pdsch\_config\_common}}\&\ get\_pdsch\_cfg()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cell\_cfg.dl\_cfg\_common.init\_dl\_bwp.pdsch\_common;\ \}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1bwp__configuration}{bwp\_configuration}}\&\ \ \ get\_ul\_bwp\_cfg()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params;\ \}}
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__config__common}{pusch\_config\_common}}\&\ get\_pusch\_cfg()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.pusch\_cfg\_common;\ \}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rach__config__common}{rach\_config\_common}}\&\ \ get\_rach\_cfg()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.rach\_cfg\_common;\ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Pre-\/compute\ invariant\ fields\ of\ RAR\ PDUs\ (PDSCH,\ DCI,\ etc.)\ for\ faster\ scheduling.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ precompute\_rar\_fields();}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Pre-\/compute\ invariant\ fields\ of\ Msg3\ PDUs\ (PUSCH,\ DCI,\ etc.)\ for\ faster\ scheduling.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ precompute\_msg3\_pdus();}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{void}\ handle\_rach\_indication\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}\&\ msg);}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ handle\_pending\_crc\_indications\_impl(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ res\_alloc);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{void}\ log\_postponed\_rar(\textcolor{keyword}{const}\ pending\_rar\_t\&\ rar,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ cause\_str)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ Find\ and\ allocate\ DL\ and\ UL\ resources\ for\ pending\ RAR\ and\ associated\ Msg3\ grants.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ allocated\ Msg3\ grants.}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{unsigned}\ schedule\_rar(\textcolor{keyword}{const}\ pending\_rar\_t\&\ rar,\ \mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ res\_alloc);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Schedule\ RAR\ grant\ and\ associated\ Msg3\ grants\ in\ the\ provided\ scheduling\ resources.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ res\_alloc\ Cell\ Resource\ Allocator.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rar\ pending\ RAR\ with\ an\ associated\ RA-\/RNTI\ that\ is\ going\ to\ be\ scheduled.}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rar\_crbs\ CRBs\ of\ the\ RAR\ to\ be\ scheduled.}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdsch\_time\_res\_index\ Index\ of\ PDSCH\ time\ domain\ resource.}}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ msg3\_candidates\ List\ of\ Msg3s\ with\ respective\ resource\ information\ (e.g.\ RBs\ and\ symbols)\ to\ allocate.}}
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{void}\ fill\_rar\_grant(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ \ \ \ \ \ \ \ \ res\_alloc,}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ pending\_rar\_t\&\ \ \ \ \ \ \ \ \ \ \ \ \ pending\_rar,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rar\_crbs,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdsch\_time\_res\_index,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ msg3\_alloc\_candidate>\ msg3\_candidates);}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Schedule\ retransmission\ of\ Msg3.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ schedule\_msg3\_retx(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ res\_alloc,\ pending\_msg3\_t\&\ msg3\_ctx);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{structsrsran_1_1sch__prbs__tbs}{sch\_prbs\_tbs}}\ get\_nof\_pdsch\_prbs\_required(\textcolor{keywordtype}{unsigned}\ time\_res\_idx,\ \textcolor{keywordtype}{unsigned}\ nof\_ul\_grants)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{//\ args}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__ra__expert__config}{scheduler\_ra\_expert\_config}}\&\ sched\_cfg;}
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}\&\ \ \ \ \ \ \ \ \ cell\_cfg;}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__resource__allocator}{pdcch\_resource\_allocator}}\&\ \ \ \ \ \ \ \ \ pdcch\_sch;}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ ev\_logger;}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{//\ derived\ from\ args}}
+\DoxyCodeLine{00141\ \ \ srslog::basic\_logger\&\ logger\ =\ \mbox{\hyperlink{classsrsran_1_1ra__scheduler}{srslog}}::\mbox{\hyperlink{classsrsran_1_1ra__scheduler}{fetch\_basic\_logger}}(\textcolor{stringliteral}{"{}SCHED"{}});}
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{///\ RA\ window\ size\ in\ number\ of\ slots.}}
+\DoxyCodeLine{00143\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ ra\_win\_nof\_slots;}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \ \ ra\_crb\_lims;}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \ \ \ \ prach\_format\_is\_long;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ Pre-\/cached\ information\ related\ to\ RAR\ for\ a\ given\ PDSCH\ time\ resource.}}
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{struct}\ rar\_param\_cached\_data\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ dmrs\_info;}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ PRBs\ and\ TBS\ required\ for\ different\ numbers\ of\ grants.\ Index=0\ corresponds\ to\ 1\ grant.}}
+\DoxyCodeLine{00151\ \ \ \ \ std::vector<sch\_prbs\_tbs>\ prbs\_tbs\_per\_nof\_grants;}
+\DoxyCodeLine{00152\ \ \ \};}
+\DoxyCodeLine{00153\ \ \ std::vector<rar\_param\_cached\_data>\ rar\_data;}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ Modulation\ and\ coding\ scheme.}}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{structsrsran_1_1sch__mcs__description}{sch\_mcs\_description}}\ rar\_mcs\_config;}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ Pre-\/cached\ information\ related\ to\ Msg3\ for\ different\ PUSCH\ time\ resources.}}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{struct}\ msg3\_param\_cached\_data\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dci__ul__info}{dci\_ul\_info}}\ \ \ \ \ \ \ dci;}
+\DoxyCodeLine{00161\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pusch__information}{pusch\_information}}\ pusch;}
+\DoxyCodeLine{00162\ \ \ \};}
+\DoxyCodeLine{00163\ \ \ std::vector<msg3\_param\_cached\_data>\ msg3\_data;}
+\DoxyCodeLine{00164\ \ \ \mbox{\hyperlink{structsrsran_1_1sch__mcs__description}{sch\_mcs\_description}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg3\_mcs\_config;}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{//\ variables}}
+\DoxyCodeLine{00167\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__event__list}{slot\_event\_list}}<\mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}>\ pending\_rachs;}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__event__list}{slot\_event\_list}}<\mbox{\hyperlink{structsrsran_1_1ul__crc__indication}{ul\_crc\_indication}}>\ \ \ \ \ \ \ pending\_crcs;}
+\DoxyCodeLine{00169\ \ \ std::deque<pending\_rar\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pending\_rars;}
+\DoxyCodeLine{00170\ \ \ std::vector<pending\_msg3\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ pending\_msg3s;}
+\DoxyCodeLine{00171\ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

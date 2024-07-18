@@ -1,0 +1,165 @@
+\doxysection{sched\+\_\+config\+\_\+manager.\+h}
+\hypertarget{sched__config__manager_8h_source}{}\label{sched__config__manager_8h_source}\index{lib/scheduler/config/sched\_config\_manager.h@{lib/scheduler/config/sched\_config\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ue__configuration_8h}{"{}ue\_configuration.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/detail/operations.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/scheduler\_config.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}};}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__metrics__ue__configurator}{sched\_metrics\_ue\_configurator}};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Event\ to\ create/reconfigure\ a\ UE\ in\ the\ scheduler.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ ue\_config\_update\_event()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00039\ \ \ ue\_config\_update\_event(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ parent\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<ue\_configuration>\ next\_cfg\ \ \ \ \ =\ \textcolor{keywordtype}{nullptr},}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\&\ \ \ \ \ \ \ \ \ \ \ \ \ set\_fallback\ =\ \{\});}
+\DoxyCodeLine{00043\ \ \ ue\_config\_update\_event(\mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\&\&)\ \textcolor{keyword}{noexcept}\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\&\&)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00045\ \ \ \string~ue\_config\_update\_event();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{bool}\ valid()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ next\_ded\_cfg\ !=\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ get\_ue\_index()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ue\_index;\ \}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__configuration}{ue\_configuration}}\&\ next\_config()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *next\_ded\_cfg;\ \}}
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ get\_fallback\_command()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ set\_fallback\_mode;\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ abort();}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\ =\ INVALID\_DU\_UE\_INDEX;}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ We\ use\ a\ unique\_ptr\ with\ no\ deleter\ to\ automatically\ set\ the\ ptr\ to\ null\ on\ move.}}
+\DoxyCodeLine{00058\ \ \ std::unique\_ptr<\mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}},\ detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1noop__operation}{noop\_operation}}>\ parent;}
+\DoxyCodeLine{00059\ \ \ std::unique\_ptr<ue\_configuration>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_ded\_cfg;}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ set\_fallback\_mode;}
+\DoxyCodeLine{00061\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ Event\ to\ delete\ a\ UE\ in\ the\ scheduler.}}
+\DoxyCodeLine{00064\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00067\ \ \ ue\_config\_delete\_event()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00068\ \ \ ue\_config\_delete\_event(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_,\ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}}\&\ parent\_);}
+\DoxyCodeLine{00069\ \ \ ue\_config\_delete\_event(\mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}\&\&)\ \textcolor{keyword}{noexcept}\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}\&\&)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00071\ \ \ \string~ue\_config\_delete\_event();}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{bool}\ valid()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parent\ !=\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ reset();}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ue\_idx;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_idx\ =\ INVALID\_DU\_UE\_INDEX;}
+\DoxyCodeLine{00081\ \ \ std::unique\_ptr<\mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}},\ detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1noop__operation}{noop\_operation}}>\ parent;}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ \(\backslash\)brief\ Internal\ scheduler\ interface\ to\ create/update/delete\ UEs.}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__ue__configuration__handler}{sched\_ue\_configuration\_handler}}}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{virtual}\ \string~sched\_ue\_configuration\_handler()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Create\ a\ new\ UE\ instance.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sched__ue__configuration__handler_a8791881c0f2df65f0cfa634c1746422a}{handle\_ue\_creation}}(\mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\ ev)\ =\ 0;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Reconfigure\ an\ existing\ UE\ instance.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sched__ue__configuration__handler_a798fcde164362476cff04cf62b7c32d4}{handle\_ue\_reconfiguration}}(\mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\ ev)\ =\ 0;}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Reconfigure\ an\ existing\ UE\ instance.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sched__ue__configuration__handler_ae3e64d59ca2d1987180a4c407b712027}{handle\_ue\_deletion}}(\mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}\ ev)\ =\ 0;}
+\DoxyCodeLine{00098\ \};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ Class\ that\ handles\ the\ creation/reconfiguration/deletion\ of\ cell\ and\ UE\ configurations\ in\ the\ scheduler.}}
+\DoxyCodeLine{00101\ \textcolor{comment}{///}}
+\DoxyCodeLine{00102\ \textcolor{comment}{///\ In\ particular,\ this\ class\ is\ responsible\ for:}}
+\DoxyCodeLine{00103\ \textcolor{comment}{///\ -\/\ notifying\ back\ to\ the\ MAC\ when\ the\ configurations\ are\ complete,}}
+\DoxyCodeLine{00104\ \textcolor{comment}{///\ -\/\ adding/removing\ UE\ entries\ in\ the\ scheduler\ reported\ metrics,}}
+\DoxyCodeLine{00105\ \textcolor{comment}{///\ -\/\ validating\ the\ configuration\ requests\ provided\ by\ the\ MAC.}}
+\DoxyCodeLine{00106\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}}}
+\DoxyCodeLine{00107\ \{}
+\DoxyCodeLine{00108\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00109\ \ \ sched\_config\_manager(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__config}{scheduler\_config}}\&\ sched\_cfg\_,\ \mbox{\hyperlink{classsrsran_1_1sched__metrics__ue__configurator}{sched\_metrics\_ue\_configurator}}\&\ metrics\_handler\_);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}*\ add\_cell(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message}{sched\_cell\_configuration\_request\_message}}\&\ msg);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\ add\_ue(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message}{sched\_ue\_creation\_request\_message}}\&\ cfg\_req);}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__config__update__event}{ue\_config\_update\_event}}\ update\_ue(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__reconfiguration__message}{sched\_ue\_reconfiguration\_message}}\&\ cfg\_req);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \mbox{\hyperlink{classsrsran_1_1ue__config__delete__event}{ue\_config\_delete\_event}}\ remove\_ue(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{bool}\ contains(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ added\_cells.contains(cell\_index);\ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{namespacesrsran_a42e64ab4491198c0eb3d9415e05ca976}{du\_cell\_group\_index\_t}}\ get\_cell\_group\_index(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00122\ \ \ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_cell\_to\_cell\_group\_index.contains(cell\_index)\ ?\ du\_cell\_to\_cell\_group\_index[cell\_index]}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ INVALID\_DU\_CELL\_GROUP\_INDEX;}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{namespacesrsran_a42e64ab4491198c0eb3d9415e05ca976}{du\_cell\_group\_index\_t}}\ get\_cell\_group\_index(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00128\ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ue\_index\ <\ MAX\_NOF\_DU\_UES,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{return}\ ue\_to\_cell\_group\_index[ue\_index].load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{const}\ cell\_common\_configuration\_list\&\ common\_cell\_list()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ added\_cells;\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{ue\_config\_update\_event}};}
+\DoxyCodeLine{00137\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{ue\_config\_delete\_event}};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_config\_complete(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ std::unique\_ptr<ue\_configuration>\ next\_cfg);}
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_delete\_complete(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index);}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__expert__config}{scheduler\_expert\_config}}\ \ expert\_params;}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{classsrsran_1_1sched__configuration__notifier}{sched\_configuration\_notifier}}\&\ \ config\_notifier;}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{classsrsran_1_1sched__metrics__ue__configurator}{sched\_metrics\_ue\_configurator}}\&\ metrics\_handler;}
+\DoxyCodeLine{00145\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{//\ List\ of\ common\ configs\ for\ the\ scheduler\ cells.}}
+\DoxyCodeLine{00148\ \ \ cell\_common\_configuration\_list\ added\_cells;}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ std::array<std::unique\_ptr<ue\_configuration>,\ MAX\_NOF\_DU\_UES>\ ue\_cfg\_list;}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Mapping\ of\ DU\ cells\ to\ DU\ Cell\ Groups.}}
+\DoxyCodeLine{00153\ \ \ slotted\_id\_table<du\_cell\_index\_t,\ du\_cell\_group\_index\_t,\ MAX\_NOF\_DU\_CELLS>\ du\_cell\_to\_cell\_group\_index;}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ Mapping\ of\ UEs\ to\ DU\ Cell\ Groups.}}
+\DoxyCodeLine{00156\ \ \ std::array<std::atomic<\mbox{\hyperlink{namespacesrsran_a42e64ab4491198c0eb3d9415e05ca976}{du\_cell\_group\_index\_t}}>,\ MAX\_NOF\_DU\_UES>\ ue\_to\_cell\_group\_index;}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

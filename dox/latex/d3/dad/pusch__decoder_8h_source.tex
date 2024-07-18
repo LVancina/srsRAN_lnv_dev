@@ -1,0 +1,107 @@
+\doxysection{pusch\+\_\+decoder.\+h}
+\hypertarget{pusch__decoder_8h_source}{}\label{pusch__decoder_8h_source}\index{include/srsran/phy/upper/channel\_processors/pusch/pusch\_decoder.h@{include/srsran/phy/upper/channel\_processors/pusch/pusch\_decoder.h}}
+\mbox{\hyperlink{pusch__decoder_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ decoder\ interface\ declaration.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/ldpc\_base\_graph.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/modulation\_scheme.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}};}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__notifier}{pusch\_decoder\_notifier}};}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ rx\_buffer;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1unique__rx__buffer}{unique\_rx\_buffer}};}
+\DoxyCodeLine{00039\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder__result}{pusch\_decoder\_result}};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ decoder\ interface.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ Recovers\ a\ UL-\/SCH\ transport\ block\ from\ a\ PUSCH\ codeword.\ Reverting\ the\ encoding\ operations\ described\ in\ TS38.212}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ Sections\ 6.2.1-\/6.2.6,\ the\ codeword\ is\ first\ split\ into\ rate-\/matched\ codeblocks.\ Then,\ each\ codeblock\ is\ restored}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ to\ its\ base\ rate,\ combined\ with\ previous\ retransmissions,\ and\ decoded.\ Finally,\ if\ all\ blocks\ pass\ the\ CRC\ check,}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ the\ data\ bits\ from\ all\ codeblocks\ are\ concatenated\ to\ form\ the\ UL-\/SCH\ transport\ block.\ If\ applicable,\ a\ last}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ transport-\/block\ CRC\ is\ computed\ and\ verified.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ The\ PUSCH\ decoder\ is\ configured\ using\ the\ method\ \(\backslash\)ref\ new\_data.\ This\ method\ returns\ a\ \(\backslash\)ref\ pusch\_decoder\_buffer}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ which\ is\ used\ to\ write\ softbits\ into\ the\ decoder.}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ The\ decoder\ could\ potentially\ start\ the\ code\ block\ processing\ if\ a\ codeword\ length\ is\ provided\ (see}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ \(\backslash\)ref\ set\_codeword\_length)\ prior\ \(\backslash\)ref\ pusch\_decoder\_buffer::on\_end\_softbits.}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder}{pusch\_decoder}}}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Collects\ the\ parameters\ necessary\ for\ decoding\ a\ PUSCH\ transport\ block.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{///\ Code\ base\ graph.}}
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a18a774c3f10110a7d2cf89b8bcb008b8}{base\_graph}}\ =\ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}::BG1;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{///\ Redundancy\ version,\ values\ in\ \{0,\ 1,\ 2,\ 3\}.}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a271f2978f990a6ad33ac89406d411490}{rv}}\ =\ 0;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{///\ Modulation\ scheme.}}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a32f27180cf4f71f158766e17617923c8}{mod}}\ =\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802dfacfd8f331d281b0da79e7c6ed6988243c}{::}}\mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802dfacfd8f331d281b0da79e7c6ed6988243c}{BPSK}};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Limited\ buffer\ rate\ matching\ length\ in\ bits,\ as\ per\ TS38.212\ Section\ 5.4.2.}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)note\ Set\ to\ zero\ for\ unlimited\ buffer\ length.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a5ca6455d1610b04412d1ca70b3005006}{Nref}}\ =\ 0;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ transmission\ layers\ the\ transport\ block\ is\ mapped\ onto.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a441fa8661be8c41b5e44335a62a59fd1}{nof\_layers}}\ =\ 0;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ iterations\ of\ the\ LDPC\ decoder.}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a0dc01831635a99b214491248f320745b}{nof\_ldpc\_iterations}}\ =\ 6;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{///\ Flag\ for\ LDPC\ decoder\ early\ stopping:\ \(\backslash\)c\ true\ to\ activate.}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a796452f8ea641b20e6d6528990a498ac}{use\_early\_stop}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{///\ Flag\ to\ denote\ new\ data\ (first\ HARQ\ transmission).}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration_a14ac9b624cde5e22b3fb5f1b4226f540}{new\_data}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00076\ \ \ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pusch__decoder_ad0b126e9b7f3c910983fec6a388cd773}{pusch\_decoder}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Decodes\ a\ PUSCH\ codeword.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ \ \ \ transport\_block\ The\ decoded\ transport\ block,\ with\ packed\ (8\ bits\ per\ entry)\ representation.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ rm\_buffer\ \ \ \ \ \ \ A\ buffer\ for\ combining\ log-\/likelihood\ ratios\ from\ different\ retransmissions.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ \ \ \ notifier\ \ \ \ \ \ \ \ Interface\ for\ notifying\ the\ completion\ of\ the\ TB\ processing.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ \ \ \ cfg\ \ \ \ \ \ \ \ \ \ \ \ \ Decoder\ configuration\ parameters.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \ A\ \(\backslash\)ref\ pusch\_decoder\_buffer,\ used\ to\ write\ softbits\ into\ the\ decoder.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}}\&\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder_abfc3c42e784ff24d28827bb5973782c3}{new\_data}}(span<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ transport\_block,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__rx__buffer}{unique\_rx\_buffer}}\ \ \ \ \ \ \ \ rm\_buffer,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__notifier}{pusch\_decoder\_notifier}}\&\ notifier,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration}{configuration}}\&\ \ \ \ cfg)\ =\ 0;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ number\ of\ UL-\/SCH\ codeword\ softbits\ expected\ by\ the\ PUSCH\ decoder.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ It\ allows\ the\ decoder\ to\ start\ decoding\ codeblocks\ before\ receiving\ the\ entire\ codeword.\ If\ it\ is\ called\ before}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)ref\ new\_data\ or\ after\ decoding\ has\ started,\ it\ has\ no\ effect.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_softbits\ Number\ of\ codeword\ softbits,\ parameter\ \(\backslash\)f\$G\string^\(\backslash\)textup\{UL-\/SCH\}\(\backslash\)f\$\ in\ TS38.212\ Section\ 6.2.7.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder_a06627763d4c15a248b389602dc818a45}{set\_nof\_softbits}}(units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_softbits)\ =\ 0;}
+\DoxyCodeLine{00099\ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

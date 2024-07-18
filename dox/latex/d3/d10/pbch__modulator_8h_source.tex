@@ -1,0 +1,77 @@
+\doxysection{pbch\+\_\+modulator.\+h}
+\hypertarget{pbch__modulator_8h_source}{}\label{pbch__modulator_8h_source}\index{include/srsran/phy/upper/channel\_processors/pbch\_modulator.h@{include/srsran/phy/upper/channel\_processors/pbch\_modulator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pci.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ resource\_grid\_writer;}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Describes\ a\ PBCH\ modulator\ interface}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pbch__modulator}{pbch\_modulator}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Number\ of\ bits\ to\ modulate.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pbch__modulator_a23a050d1882ecb4312d606655f292f11}{M\_bit}}\ =\ 864;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ after\ modulation.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pbch__modulator_ac85c87e2d6e5ef7536bb6723a8662464}{M\_symb}}\ =\ \mbox{\hyperlink{classsrsran_1_1pbch__modulator_a23a050d1882ecb4312d606655f292f11}{M\_bit}}\ /\ 2;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Describes\ the\ PBCH\ modulator\ arguments.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t}{config\_t}}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ Physical\ cell\ identifier.}}
+\DoxyCodeLine{00048\ \ \ \ \ pci\_t\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_a97402e6c208cde464a42fc6907cab98b}{phys\_cell\_id}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{///\ SS/PBCH\ block\ index.}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_ab6237403dd79531354e2b86b0040c5c2}{ssb\_idx}};}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{///\ First\ subcarrier\ in\ the\ resource\ grid.}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_a0bbc963c1a271419399f92d3e4109229}{ssb\_first\_subcarrier}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{///\ First\ symbol\ of\ the\ SS/PBCH\ block\ within\ the\ slot.}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_aee1eeea131e7f40d8dc355d24b7f1df8}{ssb\_first\_symbol}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ PSS\ linear\ signal\ amplitude.}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_afa01f7cabb4088f7cc860301be43d567}{amplitude}};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{///\ Port\ indexes\ to\ map\ the\ channel.}}
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ MAX\_PORTS>\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t_aeb7e5fe035beaa5b9bf920398efc0bb1}{ports}};}
+\DoxyCodeLine{00059\ \ \ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pbch__modulator_ae2483b1b0151ba1b45f20d23c864d6f4}{pbch\_modulator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Modulates\ a\ PBCH\ message\ according\ to\ TS38.211\ Section\ 7.3.3.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ bits\ Input\ bits.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ Destination\ resource\ grid.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ Destination\ resource\ grid.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pbch__modulator_a97023f2c7c7752a42412b02a1cec5b0f}{put}}(span<\textcolor{keyword}{const}\ uint8\_t>\ bits,\ resource\_grid\_writer\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pbch__modulator_1_1config__t}{config\_t}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

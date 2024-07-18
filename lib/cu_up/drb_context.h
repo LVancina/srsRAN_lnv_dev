@@ -25,7 +25,6 @@
 #include "adapters/f1u_adapters.h"
 #include "adapters/pdcp_adapters.h"
 #include "qos_flow_context.h"
-#include "srsran/f1u/cu_up/f1u_config.h"
 #include "srsran/pdcp/pdcp_entity.h"
 #include "srsran/ran/lcid.h"
 #include <map>
@@ -37,11 +36,8 @@ namespace srs_cu_up {
 struct drb_context {
   drb_context(const drb_id_t& drb_id_) : drb_id(drb_id_){};
 
-  void stop() { f1u->stop(); }
-
   drb_id_t    drb_id;
   gtpu_teid_t f1u_ul_teid;
-  f1u_config  f1u_cfg;
 
   std::unique_ptr<f1u_bearer>  f1u;
   std::unique_ptr<pdcp_entity> pdcp;

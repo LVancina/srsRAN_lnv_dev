@@ -1,0 +1,126 @@
+\doxysection{ru\+\_\+dummy\+\_\+impl.\+h}
+\hypertarget{ru__dummy__impl_8h_source}{}\label{ru__dummy__impl_8h_source}\index{lib/ru/dummy/ru\_dummy\_impl.h@{lib/ru/dummy/ru\_dummy\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}ru\_dummy\_sector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/interval.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer\_context.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_context.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru\_controller.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru\_downlink\_plane.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru\_dummy\_configuration.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru\_timing\_notifier.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/ru/ru\_uplink\_plane.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/logger.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ru__dummy__impl}{ru\_dummy\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1radio__unit}{radio\_unit}},}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1ru__controller}{ru\_controller}},}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1ru__downlink__plane__handler}{ru\_downlink\_plane\_handler}},}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1ru__uplink__plane__handler}{ru\_uplink\_plane\_handler}}}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1ru__dummy__impl_a141008c0135efd66925116564600ff10}{ru\_dummy\_impl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ru__dummy__configuration}{ru\_dummy\_configuration}}\&\ config,\ \mbox{\hyperlink{structsrsran_1_1ru__dummy__dependencies}{ru\_dummy\_dependencies}}\ dependencies)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ See\ radio\_unit\ interface\ for\ documentation.}}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1ru__controller}{ru\_controller}}\&\ \mbox{\hyperlink{classsrsran_1_1ru__dummy__impl_a3756ba9def681393c6119eb912bee716}{get\_controller}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ radio\_unit\ interface\ for\ documentation.}}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1ru__downlink__plane__handler}{ru\_downlink\_plane\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1ru__dummy__impl_ad4fe5376d457cbcc6546890977745e8f}{get\_downlink\_plane\_handler}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ See\ radio\_unit\ interface\ for\ documentation.}}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1ru__uplink__plane__handler}{ru\_uplink\_plane\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1ru__dummy__impl_a96bde7168a5050cd2fe69e3dbe5083b1}{get\_uplink\_plane\_handler}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{enum\ class}\ state\ :\ uint8\_t\ \{\ idle\ =\ 0,\ running,\ wait\_stop,\ stopped\ \};}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{const}\ std::chrono::microseconds\ minimum\_loop\_time\ =\ std::chrono::microseconds(10);}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ See\ ru\_controller\ for\ documentation.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ start()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ See\ ru\_controller\ for\ documentation.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ stop()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{//\ See\ ru\_downlink\_plane\_handler\ for\ documentation.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{void}\ handle\_dl\_data(\textcolor{keyword}{const}\ resource\_grid\_context\&\ context,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00086\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00087\ \ \ \ \ interval<unsigned>\ sector\_range(0,\ sectors.size());}
+\DoxyCodeLine{00088\ \ \ \ \ srsran\_assert(sector\_range.contains(context.sector),}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Sector\ identifier\ (i.e.,\ \{\})\ is\ out-\/of-\/bounds\ \{\}."{}},}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.sector,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_range);}
+\DoxyCodeLine{00092\ \ \ \ \ sectors[context.sector].handle\_dl\_data(context,\ grid);}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{//\ See\ ru\_uplink\_plane\_handler\ for\ documentation.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ handle\_prach\_occasion(\textcolor{keyword}{const}\ prach\_buffer\_context\&\ context,\ prach\_buffer\&\ buffer)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00097\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00098\ \ \ \ \ interval<unsigned>\ sector\_range(0,\ sectors.size());}
+\DoxyCodeLine{00099\ \ \ \ \ srsran\_assert(sector\_range.contains(context.sector),}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Sector\ identifier\ (i.e.,\ \{\})\ is\ out-\/of-\/bounds\ \{\}."{}},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.sector,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_range);}
+\DoxyCodeLine{00103\ \ \ \ \ sectors[context.sector].handle\_prach\_occasion(context,\ buffer);}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{//\ See\ ru\_uplink\_plane\_handler\ for\ documentation.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{void}\ handle\_new\_uplink\_slot(\textcolor{keyword}{const}\ resource\_grid\_context\&\ context,\ resource\_grid\&\ grid)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00109\ \ \ \ \ interval<unsigned>\ sector\_range(0,\ sectors.size());}
+\DoxyCodeLine{00110\ \ \ \ \ srsran\_assert(sector\_range.contains(context.sector),}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Sector\ identifier\ (i.e.,\ \{\})\ is\ out-\/of-\/bounds\ \{\}."{}},}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.sector,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_range);}
+\DoxyCodeLine{00114\ \ \ \ \ sectors[context.sector].handle\_new\_uplink\_slot(context,\ grid);}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ loop();}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00123\ \ \ task\_executor\&\ executor;}
+\DoxyCodeLine{00125\ \ \ ru\_timing\_notifier\&\ timing\_notifier;}
+\DoxyCodeLine{00127\ \ \ std::atomic<state>\ current\_state\ =\ \{state::idle\};}
+\DoxyCodeLine{00129\ \ \ std::chrono::microseconds\ slot\_duration;}
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{unsigned}\ max\_processing\_delay\_slots;}
+\DoxyCodeLine{00133\ \ \ slot\_point\ current\_slot;}
+\DoxyCodeLine{00135\ \ \ std::vector<ru\_dummy\_sector>\ sectors;}
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -49,9 +49,6 @@ constexpr uint32_t sec_key_len = 32;
 /// Security Key length in bytes (for 128 bit algorithms)
 constexpr uint32_t sec_128_key_len = 16;
 
-/// Maximum PDU length. This should not be smaller than maximum PDCP SDU size (9000).
-constexpr uint32_t sec_max_pdu_size = 9100;
-
 enum class ciphering_algorithm {
   nea0 = 0,
   nea1,
@@ -428,54 +425,6 @@ struct formatter<srsran::security::sec_domain> {
   {
     constexpr static const char* options[] = {"RRC", "UP"};
     return format_to(ctx.out(), "{}", options[static_cast<unsigned>(domain)]);
-  }
-};
-
-// Key formatting
-template <>
-struct formatter<srsran::security::sec_128_key> {
-  template <typename ParseContext>
-  auto parse(ParseContext& ctx) -> decltype(ctx.begin())
-  {
-    return ctx.begin();
-  }
-
-  template <typename FormatContext>
-  auto format(const srsran::security::sec_128_key& key, FormatContext& ctx)
-      -> decltype(std::declval<FormatContext>().out())
-  {
-    return format_to(ctx.out(), "\n\t{:02x}", fmt::join(key, " "));
-  }
-};
-
-template <>
-struct formatter<srsran::security::sec_key> {
-  template <typename ParseContext>
-  auto parse(ParseContext& ctx) -> decltype(ctx.begin())
-  {
-    return ctx.begin();
-  }
-
-  template <typename FormatContext>
-  auto format(const srsran::security::sec_key& key, FormatContext& ctx) -> decltype(std::declval<FormatContext>().out())
-  {
-    format_to(ctx.out(), "\n\t{:02x}", fmt::join(key.begin(), key.begin() + 16, " "));
-    return format_to(ctx.out(), "\n\t{:02x}", fmt::join(key.begin() + 16, key.end(), " "));
-  }
-};
-
-template <>
-struct formatter<srsran::security::sec_mac> {
-  template <typename ParseContext>
-  auto parse(ParseContext& ctx) -> decltype(ctx.begin())
-  {
-    return ctx.begin();
-  }
-
-  template <typename FormatContext>
-  auto format(const srsran::security::sec_mac& mac, FormatContext& ctx) -> decltype(std::declval<FormatContext>().out())
-  {
-    return format_to(ctx.out(), "\n\t{:02x}", fmt::join(mac, " "));
   }
 };
 

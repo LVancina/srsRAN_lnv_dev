@@ -1,0 +1,47 @@
+\doxysection{sliv.\+h}
+\hypertarget{sliv_8h_source}{}\label{sliv_8h_source}\index{include/srsran/ran/resource\_allocation/sliv.h@{include/srsran/ran/resource\_allocation/sliv.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ SLIV\ to\ start\ S\ and\ length\ L.}}
+\DoxyCodeLine{00009\ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\ Max\ length.}}
+\DoxyCodeLine{00010\ \textcolor{comment}{///\ \(\backslash\)param[in]\ sliv\ An\ index\ giving\ a\ combination\ (jointly\ encoded)\ of\ start\ and\ length\ indicator\ (SLIV).}}
+\DoxyCodeLine{00011\ \textcolor{comment}{///\ \(\backslash\)param[out]\ S\ Start.}}
+\DoxyCodeLine{00012\ \textcolor{comment}{///\ \(\backslash\)param[out]\ L\ Length.}}
+\DoxyCodeLine{00013\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00014\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a55486002d3d50c15de8aab5f38ba9087}{sliv\_to\_s\_and\_l}}(\textcolor{keywordtype}{unsigned}\ N,\ \textcolor{keywordtype}{unsigned}\ sliv,\ Integer\&\ S,\ Integer\&\ L)}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \textcolor{keyword}{static\_assert}(std::is\_integral<Integer>::value,\ \textcolor{stringliteral}{"{}Non-\/integer\ type\ passed\ as\ S\ +\ L\ output."{}});}
+\DoxyCodeLine{00017\ \ \ \textcolor{keywordtype}{unsigned}\ low\ \ =\ sliv\ \%\ N;}
+\DoxyCodeLine{00018\ \ \ \textcolor{keywordtype}{unsigned}\ high\ =\ sliv\ /\ N;}
+\DoxyCodeLine{00019\ \ \ \textcolor{keywordflow}{if}\ (high\ +\ 1\ +\ low\ <=\ N)\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ S\ =\ low;}
+\DoxyCodeLine{00021\ \ \ \ \ L\ =\ high\ +\ 1;}
+\DoxyCodeLine{00022\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ S\ =\ N\ -\/\ 1\ -\/\ low;}
+\DoxyCodeLine{00024\ \ \ \ \ L\ =\ N\ -\/\ high\ +\ 1;}
+\DoxyCodeLine{00025\ \ \ \}}
+\DoxyCodeLine{00026\ \}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ start\ S\ and\ length\ L\ into\ SLIV.}}
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ \(\backslash\)param[in]\ N\ Max\ length.}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ \(\backslash\)param[out]\ S\ Start\ symbols.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)param[out]\ L\ Length.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)return\ An\ index\ giving\ a\ combination\ (jointly\ encoded)\ of\ start\ symbols\ and\ length\ indicator\ (SLIV).}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a0cfe6a4ca32d40877e69da72f54567c0}{sliv\_from\_s\_and\_l}}(\textcolor{keywordtype}{unsigned}\ N,\ \textcolor{keywordtype}{unsigned}\ S,\ \textcolor{keywordtype}{unsigned}\ L)}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \ \ \textcolor{keywordflow}{if}\ ((L\ -\/\ 1)\ <=\ N\ /\ 2)\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordflow}{return}\ N\ *\ (L\ -\/\ 1)\ +\ S;}
+\DoxyCodeLine{00037\ \ \ \}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordflow}{return}\ N\ *\ (N\ -\/\ L\ +\ 1)\ +\ (N\ -\/\ 1\ -\/\ S);}
+\DoxyCodeLine{00039\ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

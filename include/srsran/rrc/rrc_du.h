@@ -67,6 +67,9 @@ public:
   /// Creates a new RRC UE object and returns a handle to it.
   virtual rrc_ue_interface* add_ue(up_resource_manager& resource_mng, const rrc_ue_creation_message& msg) = 0;
 
+  /// Get a RRC UE object.
+  virtual rrc_ue_interface* find_ue(ue_index_t ue_index) = 0;
+
   /// Send RRC Release to all UEs connected to this DU.
   virtual void release_ues() = 0;
 };
@@ -81,16 +84,16 @@ public:
   /// \param[in] nci The cell id of the serving cell to update.
   /// \param[in] serv_cell_cfg_ The serving cell meas config to update.
   /// \param[in] ncells_ Optional neigbor cells to replace the current neighbor cells with.
-  virtual bool on_cell_config_update_request(nr_cell_id_t nci, const serving_cell_meas_config& serv_cell_cfg_) = 0;
+  virtual void on_cell_config_update_request(nr_cell_id_t                           nci,
+                                             const serving_cell_meas_config&        serv_cell_cfg_,
+                                             std::vector<neighbor_cell_meas_config> ncells_ = {}) = 0;
 };
 
 /// Handle RRC UE removal
-class rrc_ue_handler
+class rrc_ue_removal_handler
 {
 public:
-  virtual ~rrc_ue_handler() = default;
-
-  virtual rrc_ue_interface* find_ue(ue_index_t ue_index) = 0;
+  virtual ~rrc_ue_removal_handler() = default;
 
   /// Remove a RRC UE object.
   /// \param[in] ue_index The index of the UE object to remove.
@@ -111,7 +114,7 @@ public:
 /// Combined entry point for the RRC DU handling.
 class rrc_du_interface : public rrc_du_cell_manager,
                          public rrc_du_ue_repository,
-                         public rrc_ue_handler,
+                         public rrc_ue_removal_handler,
                          public rrc_du_statistics_handler
 {
 public:
@@ -119,7 +122,7 @@ public:
 
   virtual rrc_du_cell_manager&       get_rrc_du_cell_manager()       = 0;
   virtual rrc_du_ue_repository&      get_rrc_du_ue_repository()      = 0;
-  virtual rrc_ue_handler&            get_rrc_ue_handler()            = 0;
+  virtual rrc_ue_removal_handler&    get_rrc_ue_removal_handler()    = 0;
   virtual rrc_du_statistics_handler& get_rrc_du_statistics_handler() = 0;
 };
 

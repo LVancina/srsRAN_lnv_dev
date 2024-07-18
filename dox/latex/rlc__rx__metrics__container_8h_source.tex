@@ -1,0 +1,139 @@
+\doxysection{rlc\+\_\+rx\+\_\+metrics\+\_\+container.\+h}
+\hypertarget{rlc__rx__metrics__container_8h_source}{}\label{rlc__rx__metrics__container_8h_source}\index{lib/rlc/rlc\_rx\_metrics\_container.h@{lib/rlc/rlc\_rx\_metrics\_container.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_rx\_metrics.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlc__rx__metrics__container}{rlc\_rx\_metrics\_container}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics}{rlc\_rx\_metrics}}\ metrics\ =\ \{\};}
+\DoxyCodeLine{00034\ \ \ std::mutex\ \ \ \ \ metrics\_mutex;}
+\DoxyCodeLine{00035\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ enabled\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__rx__metrics__container}{rlc\_rx\_metrics\_container}}(\textcolor{keywordtype}{bool}\ enabled\_)\ :\ enabled(enabled\_)\ \{\}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{void}\ metrics\_set\_mode(\mbox{\hyperlink{namespacesrsran_a1c771f379fa63ba2137654c259563308}{rlc\_mode}}\ mode)}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00046\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a0d00bc7c580a9236f58ef1cb52f02910}{mode}}\ =\ mode;}
+\DoxyCodeLine{00047\ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ metrics\_add\_sdus(uint32\_t\ num\_sdus\_,\ \textcolor{keywordtype}{size\_t}\ num\_sdu\_bytes\_)}
+\DoxyCodeLine{00050\ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00055\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_afb5be3ab4fc158cc197c44a5f3675ec7}{num\_sdus}}\ +=\ num\_sdus\_;}
+\DoxyCodeLine{00056\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a08a1696aaa8e0e8908b904179781eea2}{num\_sdu\_bytes}}\ +=\ num\_sdu\_bytes\_;}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ metrics\_add\_pdus(uint32\_t\ num\_pdus\_,\ \textcolor{keywordtype}{size\_t}\ num\_pdu\_bytes\_)}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00065\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a5e58bbfa4df3108a0661a5db51f9d422}{num\_pdus}}\ +=\ num\_pdus\_;}
+\DoxyCodeLine{00066\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a62f61f7a5fd95cf058a796d56da09169}{num\_pdu\_bytes}}\ +=\ num\_pdu\_bytes\_;}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ metrics\_add\_lost\_pdus(uint32\_t\ num\_pdus\_)}
+\DoxyCodeLine{00070\ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00075\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_aa5711240a2dadf2d0f61c36952bf47a9}{num\_lost\_pdus}}\ +=\ num\_pdus\_;}
+\DoxyCodeLine{00076\ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ metrics\_add\_malformed\_pdus(uint32\_t\ num\_pdus\_)}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00084\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_aad5acfe491bc4ba2bb62a48d6172c206}{num\_malformed\_pdus}}\ +=\ num\_pdus\_;}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__metrics__container_ab67f1f7437618e81749fdd71f8636f2a}{metrics\_add\_ctrl\_pdus}}(uint32\_t\ num\_ctrl\_,\ uint32\_t\ num\_ctrl\_pdu\_bytes\_)}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00094\ \ \ \ \ srsran\_assert(metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a0d00bc7c580a9236f58ef1cb52f02910}{mode}}\ ==\ rlc\_mode::am,\ \textcolor{stringliteral}{"{}Wrong\ mode\ for\ AM\ metrics."{}});}
+\DoxyCodeLine{00095\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a12d1cc6d32193fb9f7351811fd9aff2c}{mode\_specific}}.am.\mbox{\hyperlink{structsrsran_1_1rlc__am__rx__metrics_aa0b73afc7831a2114e7a536737e9d1e9}{num\_ctrl\_pdus}}\ +=\ num\_ctrl\_;}
+\DoxyCodeLine{00096\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a12d1cc6d32193fb9f7351811fd9aff2c}{mode\_specific}}.am.\mbox{\hyperlink{structsrsran_1_1rlc__am__rx__metrics_a2742df84228fac3134f6f2d51e11cee8}{num\_ctrl\_pdu\_bytes}}\ +=\ num\_ctrl\_pdu\_bytes\_;}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics}{rlc\_rx\_metrics}}\ get\_metrics()}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ srsran\_assert(enabled,\ \textcolor{stringliteral}{"{}Trying\ to\ get\ metrics,\ but\ metrics\ are\ disabled."{}});}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ metrics;}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ rlc\_rx\_metrics\ get\_and\_reset\_metrics()}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ srsran\_assert(enabled,\ \textcolor{stringliteral}{"{}Trying\ to\ get\ and\ reset\ metrics,\ but\ metrics\ are\ disabled."{}});}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00114\ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00116\ \ \ \ \ rlc\_rx\_metrics\ \ \ \ \ \ \ \ \ \ \ \ \ \ ret\ =\ metrics;}
+\DoxyCodeLine{00117\ \ \ \ \ metrics\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{\};}
+\DoxyCodeLine{00118\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a0d00bc7c580a9236f58ef1cb52f02910}{mode}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ ret.mode;}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00120\ \ \ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordtype}{void}\ reset\_metrics()}
+\DoxyCodeLine{00123\ \ \ \{}
+\DoxyCodeLine{00124\ \ \ \ \ srsran\_assert(enabled,\ \textcolor{stringliteral}{"{}Trying\ to\ reset\ metrics,\ but\ metrics\ are\ disabled."{}});}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ enabled)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(metrics\_mutex);}
+\DoxyCodeLine{00129\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1c771f379fa63ba2137654c259563308}{rlc\_mode}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_mode\ =\ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a0d00bc7c580a9236f58ef1cb52f02910}{mode}};}
+\DoxyCodeLine{00130\ \ \ \ \ metrics\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{\};}
+\DoxyCodeLine{00131\ \ \ \ \ metrics.\mbox{\hyperlink{structsrsran_1_1rlc__rx__metrics_a0d00bc7c580a9236f58ef1cb52f02910}{mode}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ tmp\_mode;}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ \};}
+\DoxyCodeLine{00134\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

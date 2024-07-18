@@ -1,0 +1,101 @@
+\doxysection{dot\+\_\+prod.\+h}
+\hypertarget{dot__prod_8h_source}{}\label{dot__prod_8h_source}\index{include/srsran/srsvec/dot\_prod.h@{include/srsran/srsvec/dot\_prod.h}}
+\mbox{\hyperlink{dot__prod_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Dot\ product\ declarations.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/detail/traits.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/types.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{numeric}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ srsvec\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)brief\ Dot\ product\ of\ two\ spans.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Computes\ the\ dot\ product\ (a.k.a.\ inner\ product\ or\ scalar\ product)\ of\ the\ two\ sequences\ represented\ by\ the\ input}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ spans,\ adding\ an\ initial\ offset.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ \ \ \ \ \ \ \ \ A\ span\ of\ an\ arithmetic\ type.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ \ \ \ \ \ \ \ \ A\ span\ of\ an\ arithmetic\ type.}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)tparam\ V\ \ \ \ \ \ \ \ \ Output\ type\ (must\ be\ compatible\ with\ the\ product\ of\ object\ of\ type\ \(\backslash\)c\ T\ and\ \(\backslash\)c\ U).}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ \ \ \ \ First\ span.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)param[in]\ y\ \ \ \ \ \ Second\ span.}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \(\backslash\)param[in]\ init\ \ \ Initialization\ value.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ \(\backslash\)return\ The\ dot\ product\ between\ the\ two\ spans\ plus\ \(\backslash\)c\ init,\ i.e.\ \(\backslash\)f\$\ x\ \(\backslash\)cdot\ y\ +\ \(\backslash\)textup\{init\}\ =\ \(\backslash\)sum\_i\ x\_i\ y\_i\ +}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)textup\{init\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ two\ input\ spans\ must\ have\ the\ same\ length.}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ V>}
+\DoxyCodeLine{00052\ \textcolor{keyword}{inline}\ V\ dot\_prod(\textcolor{keyword}{const}\ T\&\ x,\ \textcolor{keyword}{const}\ U\&\ y,\ V\ init)}
+\DoxyCodeLine{00053\ \{}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_arithmetic\_span\_compatible<T>::value,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics"{}});}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_arithmetic\_span\_compatible<U>::value,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics"{}});}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{types_8h_acdb1ab36b8a44f874dbabf478a19c64d}{srsran\_srsvec\_assert\_size}}(x,\ y);}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordflow}{return}\ std::inner\_product(x.begin(),\ x.end(),\ y.begin(),\ init);}
+\DoxyCodeLine{00060\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)brief\ Dot\ product\ of\ two\ complex\ spans.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ Computes\ the\ dot\ product\ (a.k.a.\ inner\ product\ or\ scalar\ product)\ of\ the\ two\ complex\ sequences.\ The\ sequences\ are}}
+\DoxyCodeLine{00065\ \textcolor{comment}{///\ represented\ by\ the\ input\ spans\ \(\backslash\)c\ x\ and\ \(\backslash\)c\ y,\ the\ second\ sequence\ \(\backslash\)c\ y\ is\ conjugated.}}
+\DoxyCodeLine{00066\ \textcolor{comment}{///}}
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ The\ implementation\ is\ equivalent\ to:}}
+\DoxyCodeLine{00068\ \textcolor{comment}{///\ \(\backslash\)code}}
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ cf\_t\ dot\_prod(span<const\ cf\_t>\ x,\ span<const\ cf\_t>\ y)\ \{}}
+\DoxyCodeLine{00070\ \textcolor{comment}{///\ \ \ return\ std::inner\_product(x.begin(),\ x.end(),\ y.begin(),\ cf\_t(0.0F),\ std::plus<>(),\ [](cf\_t\ a,\ cf\_t\ b)\ \{\ return\ a}}
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \ \ *\ std::conj(b);\ \});}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ \}}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ \(\backslash\)endcode}}
+\DoxyCodeLine{00074\ \textcolor{comment}{///}}
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ \ \ \ \ First\ span.}}
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ \(\backslash\)param[in]\ y\ \ \ \ \ \ Second\ span.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)return\ The\ dot\ product\ between\ the\ two\ spans,\ i.e.\ \(\backslash\)f\$\ x\ \(\backslash\)cdot\ \(\backslash\)conj\{y\}=\ \(\backslash\)sum\_i\ x\_i\ \(\backslash\)conj\{y\}\_i\ \(\backslash\)f\$.}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ two\ input\ spans\ must\ have\ the\ same\ length.}}
+\DoxyCodeLine{00079\ cf\_t\ dot\_prod(span<\textcolor{keyword}{const}\ cf\_t>\ x,\ span<\textcolor{keyword}{const}\ cf\_t>\ y);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{comment}{///\ \(\backslash\)brief\ Estimates\ the\ average\ power\ of\ a\ complex\ span\ -\/\ linear\ scale.}}
+\DoxyCodeLine{00082\ \textcolor{comment}{///}}
+\DoxyCodeLine{00083\ \textcolor{comment}{///\ The\ average\ power\ of\ a\ span\ is\ defined\ as\ its\ squared\ Euclidean\ norm\ divided\ by\ the\ number\ of\ its\ elements,\ i.e.}}
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ <tt>dot\_prod(x,\ x)\ /\ x.size()</tt>.}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{float}\ average\_power(span<\textcolor{keyword}{const}\ cf\_t>\ x)}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordflow}{if}\ (x.empty())\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ 0.0F;}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordflow}{return}\ std::real(srsvec::dot\_prod(x,\ x))\ /\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{float}>(x.size());}
+\DoxyCodeLine{00092\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \}\ \textcolor{comment}{//\ namespace\ srsvec}}
+\DoxyCodeLine{00095\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

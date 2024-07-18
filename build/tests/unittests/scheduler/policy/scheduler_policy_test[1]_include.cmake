@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/scheduler/policy/scheduler_policy_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/scheduler/policy/scheduler_policy_test[1]_tests.cmake")
+else()
+  add_test(scheduler_policy_test_NOT_BUILT scheduler_policy_test_NOT_BUILT)
+endif()

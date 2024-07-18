@@ -1,0 +1,245 @@
+\doxysection{ciphering.\+h}
+\hypertarget{ciphering_8h_source}{}\label{ciphering_8h_source}\index{include/srsran/security/ciphering.h@{include/srsran/security/ciphering.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}s3g.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}security.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}ssl.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}zuc.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }security\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{00035\ \textcolor{comment}{\ *\ Encryption\ /\ Decryption}}
+\DoxyCodeLine{00036\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea1(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ msg\_len)}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \ \ S3G\_STATE\ state,\ *state\_ptr;}
+\DoxyCodeLine{00045\ \ \ uint32\_t\ \ k[]\ \ =\ \{0,\ 0,\ 0,\ 0\};}
+\DoxyCodeLine{00046\ \ \ uint32\_t\ \ iv[]\ =\ \{0,\ 0,\ 0,\ 0\};}
+\DoxyCodeLine{00047\ \ \ uint32\_t*\ ks;}
+\DoxyCodeLine{00048\ \ \ int32\_t\ \ \ i;}
+\DoxyCodeLine{00049\ \ \ uint32\_t\ \ msg\_len\_block\_8,\ msg\_len\_block\_32;}
+\DoxyCodeLine{00050\ \ \ uint32\_t\ \ len\ =\ msg.length();}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ state\_ptr\ \ \ \ \ \ \ \ =\ \&state;}
+\DoxyCodeLine{00053\ \ \ msg\_len\_block\_8\ \ =\ (msg\_len\ +\ 7)\ /\ 8;}
+\DoxyCodeLine{00054\ \ \ msg\_len\_block\_32\ =\ (msg\_len\ +\ 31)\ /\ 32;}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordflow}{if}\ (msg\_len\_block\_8\ <=\ len)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Transform\ key}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{for}\ (i\ =\ 3;\ i\ >=\ 0;\ i-\/-\/)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ k[i]\ =\ (key[4\ *\ (3\ -\/\ i)\ +\ 0]\ <<\ 24)\ |\ (key[4\ *\ (3\ -\/\ i)\ +\ 1]\ <<\ 16)\ |\ (key[4\ *\ (3\ -\/\ i)\ +\ 2]\ <<\ 8)\ |}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ (key[4\ *\ (3\ -\/\ i)\ +\ 3]);}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{//\ Construct\ iv}}
+\DoxyCodeLine{00063\ \ \ \ \ iv[3]\ =\ count;}
+\DoxyCodeLine{00064\ \ \ \ \ iv[2]\ =\ ((bearer\ \&\ 0x1f)\ <<\ 27)\ |\ ((\textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(direction)\ \&\ 0x01)\ <<\ 26);}
+\DoxyCodeLine{00065\ \ \ \ \ iv[1]\ =\ iv[3];}
+\DoxyCodeLine{00066\ \ \ \ \ iv[0]\ =\ iv[2];}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Initialize\ keystream}}
+\DoxyCodeLine{00069\ \ \ \ \ s3g\_initialize(state\_ptr,\ k,\ iv);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{comment}{//\ Generate\ keystream}}
+\DoxyCodeLine{00072\ \ \ \ \ ks\ =\ (uint32\_t*)calloc(msg\_len\_block\_32,\ \textcolor{keyword}{sizeof}(uint32\_t));}
+\DoxyCodeLine{00073\ \ \ \ \ s3g\_generate\_keystream(state\_ptr,\ msg\_len\_block\_32,\ ks);}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{comment}{//\ Generate\ output\ except\ last\ block}}
+\DoxyCodeLine{00076\ \ \ \ \ uint32\_t\ offset\ =\ 0;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{for}\ (i\ =\ 0;\ i\ <\ (int32\_t)msg\_len\_block\_32\ -\/\ 1;\ i++)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ msg[offset]\ \ \ \ \ =\ msg[offset]\ \string^\ ((ks[i]\ >>\ 24)\ \&\ 0xff);}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ msg[offset\ +\ 1]\ =\ msg[offset\ +\ 1]\ \string^\ ((ks[i]\ >>\ 16)\ \&\ 0xff);}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ msg[offset\ +\ 2]\ =\ msg[offset\ +\ 2]\ \string^\ ((ks[i]\ >>\ 8)\ \&\ 0xff);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ msg[offset\ +\ 3]\ =\ msg[offset\ +\ 3]\ \string^\ ((ks[i])\ \&\ 0xff);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ offset\ +=\ 4;}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ process\ last\ bytes}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{for}\ (i\ =\ (msg\_len\_block\_32\ -\/\ 1)\ *\ 4;\ i\ <\ (int32\_t)msg\_len\_block\_8;\ i++)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ msg[offset]\ =\ msg[offset]\ \string^\ ((ks[i\ /\ 4]\ >>\ ((3\ -\/\ (i\ \%\ 4))\ *\ 8))\ \&\ 0xff);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ offset++;}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ Zero\ tailing\ bits}}
+\DoxyCodeLine{00092\ \ \ \ \ zero\_tailing\_bits(msg[offset\ -\/\ 1],\ msg\_len);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{//\ Clean\ up}}
+\DoxyCodeLine{00095\ \ \ \ \ free(ks);}
+\DoxyCodeLine{00096\ \ \ \ \ s3g\_deinitialize(state\_ptr);}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea1(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg)}
+\DoxyCodeLine{00105\ \{}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordflow}{return}\ security\_nea1(key,\ count,\ bearer,\ direction,\ msg,\ msg.length()\ *\ 8);}
+\DoxyCodeLine{00107\ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea2(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ msg\_len)}
+\DoxyCodeLine{00115\ \{}
+\DoxyCodeLine{00116\ \ \ aes\_context\ \ \ ctx;}
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\ stream\_blk[16]\ =\ \{0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0\};}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}\ nonce\_cnt[16]\ \ =\ \{0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0\};}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ ret;}
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ nc\_off\ =\ 0;}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ uint32\_t\ msg\_len\_block\_8\ =\ (msg\_len\ +\ 7)\ /\ 8;}
+\DoxyCodeLine{00123\ \ \ uint32\_t\ len\ \ \ \ \ \ \ \ \ \ \ \ \ =\ msg.length();}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ ret\ =\ aes\_setkey\_enc(\&ctx,\ key.data(),\ 128);}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordflow}{if}\ (ret\ !=\ 0)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordflow}{if}\ (msg\_len\_block\_8\ <=\ len)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{if}\ (ret\ ==\ 0)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \textcolor{comment}{//\ Construct\ nonce}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ nonce\_cnt[0]\ =\ (count\ >>\ 24)\ \&\ 0xff;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ nonce\_cnt[1]\ =\ (count\ >>\ 16)\ \&\ 0xff;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ nonce\_cnt[2]\ =\ (count\ >>\ 8)\ \&\ 0xff;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ nonce\_cnt[3]\ =\ (count)\&0xff;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ nonce\_cnt[4]\ =\ ((bearer\ \&\ 0x1f)\ <<\ 3)\ |\ ((to\_number(direction)\ \&\ 0x01)\ <<\ 2);}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \textcolor{comment}{//\ Encryption}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a2c874a03d72343d6bd7fd30e8b9b2ff1}{byte\_buffer\_segment\_span\_range}}\ segments\ =\ msg.modifiable\_segments();}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ segment\ :\ segments)\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ ret\ =\ aes\_crypt\_ctr(\&ctx,\ segment.size(),\ \&nc\_off,\ nonce\_cnt,\ stream\_blk,\ segment.data(),\ segment.data());}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordflow}{if}\ (ret\ ==\ 0)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{comment}{//\ \ Zero\ tailing\ bits}}
+\DoxyCodeLine{00148\ \ \ \ \ zero\_tailing\_bits(msg[msg.length()\ -\/\ 1],\ msg\_len);}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00150\ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea2(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg)}
+\DoxyCodeLine{00157\ \{}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordflow}{return}\ security\_nea2(key,\ count,\ bearer,\ direction,\ msg,\ msg.length()\ *\ 8);}
+\DoxyCodeLine{00159\ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea3(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ msg\_len)}
+\DoxyCodeLine{00167\ \{}
+\DoxyCodeLine{00168\ \ \ uint8\_t\ iv[16]\ =\ \{0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0,\ 0\};}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ uint32\_t*\ ks;}
+\DoxyCodeLine{00171\ \ \ int32\_t\ \ \ i;}
+\DoxyCodeLine{00172\ \ \ uint32\_t\ \ msg\_len\_block\_8;}
+\DoxyCodeLine{00173\ \ \ uint32\_t\ \ msg\_len\_block\_32;}
+\DoxyCodeLine{00174\ \ \ uint32\_t\ \ len\ =\ msg.length();}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ msg\_len\_block\_8\ \ =\ (msg\_len\ +\ 7)\ /\ 8;}
+\DoxyCodeLine{00177\ \ \ msg\_len\_block\_32\ =\ (msg\_len\ +\ 31)\ /\ 32;}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordflow}{if}\ (msg\_len\_block\_8\ <=\ len)\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{comment}{//\ Construct\ iv}}
+\DoxyCodeLine{00180\ \ \ \ \ iv[0]\ \ =\ (count\ >>\ 24)\ \&\ 0xff;}
+\DoxyCodeLine{00181\ \ \ \ \ iv[1]\ \ =\ (count\ >>\ 16)\ \&\ 0xff;}
+\DoxyCodeLine{00182\ \ \ \ \ iv[2]\ \ =\ (count\ >>\ 8)\ \&\ 0xff;}
+\DoxyCodeLine{00183\ \ \ \ \ iv[3]\ \ =\ (count)\&0xff;}
+\DoxyCodeLine{00184\ \ \ \ \ iv[4]\ \ =\ ((bearer\ \&\ 0x1f)\ <<\ 3)\ |\ ((to\_number(direction)\ \&\ 0x01)\ <<\ 2);}
+\DoxyCodeLine{00185\ \ \ \ \ iv[5]\ \ =\ 0;}
+\DoxyCodeLine{00186\ \ \ \ \ iv[6]\ \ =\ 0;}
+\DoxyCodeLine{00187\ \ \ \ \ iv[7]\ \ =\ 0;}
+\DoxyCodeLine{00188\ \ \ \ \ iv[8]\ \ =\ iv[0];}
+\DoxyCodeLine{00189\ \ \ \ \ iv[9]\ \ =\ iv[1];}
+\DoxyCodeLine{00190\ \ \ \ \ iv[10]\ =\ iv[2];}
+\DoxyCodeLine{00191\ \ \ \ \ iv[11]\ =\ iv[3];}
+\DoxyCodeLine{00192\ \ \ \ \ iv[12]\ =\ iv[4];}
+\DoxyCodeLine{00193\ \ \ \ \ iv[13]\ =\ iv[5];}
+\DoxyCodeLine{00194\ \ \ \ \ iv[14]\ =\ iv[6];}
+\DoxyCodeLine{00195\ \ \ \ \ iv[15]\ =\ iv[7];}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ zuc\_state\_t\ zuc\_state;}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{comment}{//\ Initialize\ keystream}}
+\DoxyCodeLine{00199\ \ \ \ \ zuc\_initialize(\&zuc\_state,\ key.data(),\ iv);}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{comment}{//\ Generate\ keystream}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \ \ ks\ =\ (uint32\_t*)calloc(msg\_len\_block\_32,\ \textcolor{keyword}{sizeof}(uint32\_t));}
+\DoxyCodeLine{00204\ \ \ \ \ zuc\_generate\_keystream(\&zuc\_state,\ msg\_len\_block\_32,\ ks);}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{comment}{//\ Generate\ output\ except\ last\ block}}
+\DoxyCodeLine{00207\ \ \ \ \ uint32\_t\ offset\ =\ 0;}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{for}\ (i\ =\ 0;\ i\ <\ (int32\_t)msg\_len\_block\_32\ -\/\ 1;\ i++)\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ msg[offset]\ \ \ \ \ =\ msg[offset]\ \string^\ ((ks[i]\ >>\ 24)\ \&\ 0xff);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ msg[offset\ +\ 1]\ =\ msg[offset\ +\ 1]\ \string^\ ((ks[i]\ >>\ 16)\ \&\ 0xff);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ msg[offset\ +\ 2]\ =\ msg[offset\ +\ 2]\ \string^\ ((ks[i]\ >>\ 8)\ \&\ 0xff);}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ msg[offset\ +\ 3]\ =\ msg[offset\ +\ 3]\ \string^\ ((ks[i])\ \&\ 0xff);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ offset\ +=\ 4;}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{comment}{//\ process\ last\ bytes}}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keywordflow}{for}\ (i\ =\ (msg\_len\_block\_32\ -\/\ 1)\ *\ 4;\ i\ <\ (int32\_t)msg\_len\_block\_8;\ i++)\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ msg[offset]\ =\ msg[offset]\ \string^\ ((ks[i\ /\ 4]\ >>\ ((3\ -\/\ (i\ \%\ 4))\ *\ 8))\ \&\ 0xff);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ offset++;}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ zero\_tailing\_bits(msg[msg.length()\ -\/\ 1],\ msg\_len);}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{comment}{//\ Clean\ up}}
+\DoxyCodeLine{00225\ \ \ \ \ free(ks);}
+\DoxyCodeLine{00226\ \ \ \}}
+\DoxyCodeLine{00227\ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ security\_nea3(\textcolor{keyword}{const}\ sec\_128\_key\&\ key,}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ bearer,}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_direction\ direction,}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ byte\_buffer\_view\&\ \ msg)}
+\DoxyCodeLine{00234\ \{}
+\DoxyCodeLine{00235\ \ \ security\_nea3(key,\ count,\ bearer,\ direction,\ msg,\ msg.length()\ *\ 8);}
+\DoxyCodeLine{00236\ \}}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \}\ \textcolor{comment}{//\ namespace\ security}}
+\DoxyCodeLine{00239\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

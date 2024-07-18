@@ -1,0 +1,158 @@
+\doxysection{upper\+\_\+phy\+\_\+impl.\+h}
+\hypertarget{upper__phy__impl_8h_source}{}\label{upper__phy__impl_8h_source}\index{lib/phy/upper/upper\_phy\_impl.h@{lib/phy/upper/upper\_phy\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}uplink\_request\_processor\_impl.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}upper\_phy\_error\_handler\_impl.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}upper\_phy\_pdu\_validators.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}upper\_phy\_rx\_results\_notifier\_wrapper.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}upper\_phy\_rx\_symbol\_handler\_impl.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/instrumentation/traces/du\_traces.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer\_pool.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_pool.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/downlink\_processor.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/rx\_buffer\_pool.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{upper_2uplink__processor_8h}{srsran/phy/upper/uplink\_processor.h}}"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/upper\_phy.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/upper\_phy\_timing\_handler.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/upper\_phy\_timing\_notifier.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config}{upper\_phy\_impl\_config}}\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a14e72e374789955258a7f4007ae6054d}{sector\_id}};}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a8b2ccdcef7a7a9efeed286ca567cbc04}{ul\_bw\_rb}};}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a3618df6de9325fed2fe9190806881de1}{nof\_rx\_ports}};}
+\DoxyCodeLine{00053\ \ \ std::unique\_ptr<downlink\_processor\_pool>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a5294ce16fc52bb9404e774b653147a39}{dl\_processor\_pool}};}
+\DoxyCodeLine{00055\ \ \ std::unique\_ptr<uplink\_processor\_pool>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_aca048f2669dd9b3a4a787fd99afc91f7}{ul\_processor\_pool}};}
+\DoxyCodeLine{00057\ \ \ std::unique\_ptr<resource\_grid\_pool>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a49acb97c4b99e2ab4c2cb60fd479c1cd}{dl\_rg\_pool}};}
+\DoxyCodeLine{00059\ \ \ std::unique\_ptr<resource\_grid\_pool>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a4790010ffedb199e931915e2da20b417}{ul\_rg\_pool}};}
+\DoxyCodeLine{00061\ \ \ std::unique\_ptr<prach\_buffer\_pool>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a4fa5247332423d5e51560642ac7041a5}{prach\_pool}};}
+\DoxyCodeLine{00063\ \ \ std::unique\_ptr<rx\_buffer\_pool\_controller>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_ae09a4275f0612dddb359017c514dee5a}{rx\_buf\_pool}};}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__symbol__request__notifier}{upper\_phy\_rx\_symbol\_request\_notifier}}*\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a922dc546195b84ecefe3df70582a2eea}{rx\_symbol\_request\_notifier}};}
+\DoxyCodeLine{00067\ \ \ srslog::basic\_levels\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a9e353ee088339ba4732af0529924093a}{log\_level}};}
+\DoxyCodeLine{00069\ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a51da62952a38c33c1591bc7847409519}{rx\_symbol\_printer\_filename}};}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<unsigned>}}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_af2adf0bfe622d444c5ec56f970f5bfaf}{rx\_symbol\_printer\_port}};}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a84f2cf014d44138390e0f8abee580582}{rx\_symbol\_printer\_prach}};}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a79c30ca2556d9ac3b532cb294dd98cb8}{nof\_slots\_ul\_pdu\_repository}};}
+\DoxyCodeLine{00077\ \ \ std::unique\_ptr<downlink\_pdu\_validator>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_ad7594e040c99bf52982359f499db90ab}{dl\_pdu\_validator}};}
+\DoxyCodeLine{00079\ \ \ std::unique\_ptr<uplink\_pdu\_validator>\ \mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config_a9d2520b10d1806b07212b104cd1b629a}{ul\_pdu\_validator}};}
+\DoxyCodeLine{00080\ \};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1upper__phy__impl}{upper\_phy\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1upper__phy}{upper\_phy}}}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{class\ }upper\_phy\_timing\_handler\_impl\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler}{upper\_phy\_timing\_handler}}}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ std::reference\_wrapper<upper\_phy\_timing\_notifier>\ notifier;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00093\ \ \ \ \ upper\_phy\_timing\_handler\_impl(\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__notifier}{upper\_phy\_timing\_notifier}}\&\ notifier\_)\ :\ notifier(notifier\_)\ \{\}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{void}\ handle\_tti\_boundary(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\&\ context)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00097\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{comment}{//\ Propagate\ the\ event.}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ notifier.get().on\_tti\_boundary(context.\mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context_a282128a9a9ba1c1501cece3d564958a2}{slot}});}
+\DoxyCodeLine{00100\ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{void}\ handle\_ul\_half\_slot\_boundary(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\&\ context)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{void}\ handle\_ul\_full\_slot\_boundary(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__timing__context}{upper\_phy\_timing\_context}}\&\ context)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{void}\ set\_upper\_phy\_notifier(\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__notifier}{upper\_phy\_timing\_notifier}}\&\ n)\ \{\ notifier\ =\ std::ref(n);\ \}}
+\DoxyCodeLine{00109\ \ \ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a9bfaa28c7e51c7ac5e90a9822f709311}{upper\_phy\_impl}}(\mbox{\hyperlink{structsrsran_1_1upper__phy__impl__config}{upper\_phy\_impl\_config}}\&\&\ config);}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__error__handler}{upper\_phy\_error\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_aa349b6de5bdb635a863475d1b8570d98}{get\_error\_handler}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__symbol__handler}{upper\_phy\_rx\_symbol\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_ab5cf18743b1f9f5a1681b5ac9e1bb3dc}{get\_rx\_symbol\_handler}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00122\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__timing__handler}{upper\_phy\_timing\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a72f3ffeb747297ce3530dee03a2afbb1}{get\_timing\_handler}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_aba770fed51fcf86e9e4fa676e5e34cc9}{get\_downlink\_processor\_pool}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00128\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a3c2b202a6a1f638517d9cdf4b497a3ee}{get\_downlink\_resource\_grid\_pool}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a2e0286bd70cf1fd93d6f9a2d2f728b77}{get\_uplink\_resource\_grid\_pool}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00134\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__request__processor}{uplink\_request\_processor}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_ad3e372c5809b860f86eaabfaa8035733}{get\_uplink\_request\_processor}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__slot__pdu__repository}{uplink\_slot\_pdu\_repository}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_aa69d0dcca75259c06cb81bcde69bcbf2}{get\_uplink\_slot\_pdu\_repository}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00140\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1downlink__pdu__validator}{downlink\_pdu\_validator}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a136cd8494b510f66314f118387d238dc}{get\_downlink\_pdu\_validator}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00143\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1uplink__pdu__validator}{uplink\_pdu\_validator}}\&\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a25dfc1c2f73c2766479a6decf571a8d0}{get\_uplink\_pdu\_validator}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a157d695895ae002c095567bd797d7803}{set\_error\_notifier}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__error__notifier}{upper\_phy\_error\_notifier}}\&\ notifier)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_a3f93e9f54a9e8f6576653c8d0cdbd58a}{set\_timing\_notifier}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__timing__notifier}{upper\_phy\_timing\_notifier}}\&\ notifier)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_aeec264e173481bd9b41b0ee422ad84c2}{set\_rx\_results\_notifier}}(\mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier}{upper\_phy\_rx\_results\_notifier}}\&\ notifier)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__impl_ab288e8784a1e695252f5b73c4751b002}{stop}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ sector\_id;}
+\DoxyCodeLine{00162\ \ \ std::unique\_ptr<rx\_buffer\_pool\_controller>\ rx\_buf\_pool;}
+\DoxyCodeLine{00164\ \ \ std::unique\_ptr<resource\_grid\_pool>\ dl\_rg\_pool;}
+\DoxyCodeLine{00166\ \ \ std::unique\_ptr<resource\_grid\_pool>\ ul\_rg\_pool;}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__slot__pdu__repository}{uplink\_slot\_pdu\_repository}}\ pdu\_repository;}
+\DoxyCodeLine{00170\ \ \ std::unique\_ptr<prach\_buffer\_pool>\ prach\_pool;}
+\DoxyCodeLine{00172\ \ \ std::unique\_ptr<downlink\_processor\_pool>\ dl\_processor\_pool;}
+\DoxyCodeLine{00174\ \ \ std::unique\_ptr<uplink\_processor\_pool>\ ul\_processor\_pool;}
+\DoxyCodeLine{00176\ \ \ std::unique\_ptr<downlink\_pdu\_validator>\ dl\_pdu\_validator;}
+\DoxyCodeLine{00178\ \ \ std::unique\_ptr<uplink\_pdu\_validator>\ ul\_pdu\_validator;}
+\DoxyCodeLine{00180\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__request__processor__impl}{uplink\_request\_processor\_impl}}\ ul\_request\_processor;}
+\DoxyCodeLine{00182\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__results__notifier__wrapper}{upper\_phy\_rx\_results\_notifier\_wrapper}}\ rx\_results\_notifier;}
+\DoxyCodeLine{00184\ \ \ std::unique\_ptr<upper\_phy\_rx\_symbol\_handler>\ rx\_symbol\_handler;}
+\DoxyCodeLine{00186\ \ \ upper\_phy\_timing\_handler\_impl\ timing\_handler;}
+\DoxyCodeLine{00188\ \ \ \mbox{\hyperlink{classsrsran_1_1upper__phy__error__handler__impl}{upper\_phy\_error\_handler\_impl}}\ error\_handler;}
+\DoxyCodeLine{00189\ \};}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,131 @@
+\doxysection{avx2\+\_\+helpers.\+h}
+\hypertarget{ofh_2compression_2avx2__helpers_8h_source}{}\label{ofh_2compression_2avx2__helpers_8h_source}\index{lib/ofh/compression/avx2\_helpers.h@{lib/ofh/compression/avx2\_helpers.h}}
+\mbox{\hyperlink{ofh_2compression_2avx2__helpers_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ AVX2\ support\ for\ OFH\ Compression\ algorithms.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{immintrin}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ mm256\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Type\ of\ AVX2\ intrinsic\ calculating\ min\ or\ max\ values\ between\ two\ vectors.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{using}\ \_mm256\_comparator\ =\ \_\_m256i\ (*)(\_\_m256i\ a,\ \_\_m256i\ b);}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)brief\ Finds\ the\ maximum\ (or\ minimum)\ 16bit\ sample\ in\ each\ of\ the\ two\ input\ resource\ blocks,\ returns\ its\ absolute}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ value.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ Finds\ absolute\ maximum\ (or\ minimum,\ depending\ on\ the\ comparator\ passed\ as\ the\ template\ argument)\ values}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ for\ each\ of\ the\ two\ RBs\ passed\ in\ a\ three\ AVX2\ registers.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ Registers\ are\ evenly\ divided\ between\ two\ RBs\ so\ that\ IQ\ samples\ of\ each\ RB\ occupy\ one\ 128bit\ lane.}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ The\ following\ diagram\ shows\ the\ input\ format.\ Here\ RBx\ stands\ for\ one\ unique\ RE\ (a\ pair\ of\ IQ\ samples,\ 32\ bits\ long)}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ pertaining\ to\ a\ respective\ RB:}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ |\ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ |\ -\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ |\ \(\backslash\)c\ v0\_epi16:\ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ |}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ |\ \(\backslash\)c\ v1\_epi16:\ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ |}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ |\ \(\backslash\)c\ v2\_epi16:\ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ |}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ The\ function\ first\ performs\ vertical\ min/max\ search\ across\ the\ three\ registers\ (comparing\ 16bit\ samples),\ then}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ horizontal\ min/max\ across\ elements\ in\ each\ 128bit\ lane\ of\ the\ resulting\ vector.\ Finally,\ the\ function\ takes\ the}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ absolute\ value\ of\ the\ two\ 16bit\ samples\ computed\ thus\ far\ and\ stores\ them\ in\ the\ output\ span.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \(\backslash\)tparam\ \ \ \ COMPARE\ \ AVX2\ intrinsic\ used\ for\ comparison,\ either\ \(\backslash\)c\ mm256\_min\_epi16\ or\ \(\backslash\)c\ \_mm256\_max\_epi16.}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \(\backslash\)param[out]\ abs\ \ \ \ \ A\ span\ of\ two\ absolute\ values\ of\ max\ (or\ min)\ samples\ in\ each\ of\ the\ two\ input\ RBs.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ \(\backslash\)param[in]\ v0\_epi16\ AVX2\ register\ storing\ first\ four\ IQ\ pairs\ of\ each\ of\ the\ two\ RB.}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ \(\backslash\)param[in]\ v1\_epi16\ AVX2\ register\ storing\ second\ four\ IQ\ pairs\ of\ each\ of\ the\ two\ RB.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)param[in]\ v2\_epi16\ AVX2\ register\ storing\ last\ four\ IQ\ pairs\ of\ each\ of\ the\ two\ RB.}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{template}\ <\_mm256\_comparator\ COMPARE>}
+\DoxyCodeLine{00063\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ find\_rbs\_abs\_min\_max\_values(span<uint16\_t>\ abs,\ \_\_m256i\ v0\_epi16,\ \_\_m256i\ v1\_epi16,\ \_\_m256i\ v2\_epi16)}
+\DoxyCodeLine{00064\ \{}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ Find\ vertical\ min/max\ across\ every\ 3\ 16bit\ values\ in\ each\ resource\ block.}}
+\DoxyCodeLine{00066\ \ \ \_\_m256i\ cmp\_8val\_epi16\ =\ COMPARE(COMPARE(v0\_epi16,\ v1\_epi16),\ v2\_epi16);}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{//\ Now\ 16bit\ vector\ elements\ look\ as\ follows:}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{//\ [max(I00,\ I08,\ I04),\ max(Q00,\ Q08,\ Q04),\ max(I01,\ I09,\ I05),\ max(Q01,\ Q09,\ Q05),\ ...].}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{//\ Swap\ 64bit\ words\ inside\ 128bit\ lanes\ and\ find\ 4\ min/max\ values.}}
+\DoxyCodeLine{00071\ \ \ \_\_m256i\ cmp\_8val\_swp\_epi16\ =\ \_mm256\_shuffle\_epi32(cmp\_8val\_epi16,\ 0x4e);}
+\DoxyCodeLine{00072\ \ \ \_\_m256i\ cmp\_4val\_epi16\ \ \ \ \ =\ COMPARE(cmp\_8val\_epi16,\ cmp\_8val\_swp\_epi16);}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ Swap\ 32bit\ words\ and\ find\ 2\ min/max\ values.}}
+\DoxyCodeLine{00074\ \ \ \_\_m256i\ cmp\_4val\_swp\_epi16\ =\ \_mm256\_shuffle\_epi32(cmp\_4val\_epi16,\ 0x1b);}
+\DoxyCodeLine{00075\ \ \ \_\_m256i\ cmp\_2val\_epi16\ \ \ \ \ =\ COMPARE(cmp\_4val\_epi16,\ cmp\_4val\_swp\_epi16);}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{//\ Swap\ 16bit\ words\ and\ find\ final\ min/max\ values\ for\ each\ RB.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{const}\ \_\_m256i\ shuffle\_mask\ =\ \_mm256\_setr\_epi8(}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ 2,\ 3,\ 0,\ 1,\ 6,\ 7,\ 4,\ 5,\ 8,\ 9,\ 10,\ 11,\ 14,\ 15,\ 12,\ 13,\ 2,\ 3,\ 0,\ 1,\ 6,\ 7,\ 4,\ 5,\ 8,\ 9,\ 10,\ 11,\ 14,\ 15,\ 12,\ 13);}
+\DoxyCodeLine{00079\ \ \ \_\_m256i\ cmp\_2val\_swp\_epi16\ =\ \_mm256\_shuffle\_epi8(cmp\_2val\_epi16,\ shuffle\_mask);}
+\DoxyCodeLine{00080\ \ \ \_\_m256i\ cmp\_rb0\_rb1\_epi16\ \ =\ COMPARE(cmp\_2val\_epi16,\ cmp\_2val\_swp\_epi16);}
+\DoxyCodeLine{00081\ \ \ \_\_m256i\ cmp\_rb0\_rb1\_epu16\ \ =\ \_mm256\_abs\_epi16(cmp\_rb0\_rb1\_epi16);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ Extract\ absolute\ minimum/maximum\ values\ for\ each\ RB.}}
+\DoxyCodeLine{00084\ \ \ abs[0]\ =\ \_mm256\_extract\_epi16(cmp\_rb0\_rb1\_epu16,\ 0);}
+\DoxyCodeLine{00085\ \ \ abs[1]\ =\ \_mm256\_extract\_epi16(cmp\_rb0\_rb1\_epu16,\ 8);}
+\DoxyCodeLine{00086\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{comment}{///\ \(\backslash\)brief\ Finds\ maximum\ absolute\ value\ across\ 16bit\ IQ\ samples\ in\ each\ of\ the\ two\ input\ resource\ blocks\ passed\ in\ three}}
+\DoxyCodeLine{00089\ \textcolor{comment}{///\ AVX2\ registers.}}
+\DoxyCodeLine{00090\ \textcolor{comment}{///}}
+\DoxyCodeLine{00091\ \textcolor{comment}{///\ The\ content\ of\ the\ three\ input\ AVX2\ registers\ is\ represented\ in\ the\ table\ below.\ Here\ RBx\ means\ one\ unique\ RE}}
+\DoxyCodeLine{00092\ \textcolor{comment}{///\ (pair\ of\ IQ\ samples,\ 32\ bits\ long)\ pertaining\ to\ a\ respective\ RB:}}
+\DoxyCodeLine{00093\ \textcolor{comment}{///\ |\ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |\ \ \ \ \ \ \ \ \ |}}
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ |\ -\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |\ -\/-\/-\/-\/-\/-\/-\/\ |}}
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ |\ \(\backslash\)c\ rb0\_epi16:\ \ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB0\ RB0\ |}}
+\DoxyCodeLine{00096\ \textcolor{comment}{///\ |\ \(\backslash\)c\ rb01\_epi16:\ |\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ |}}
+\DoxyCodeLine{00097\ \textcolor{comment}{///\ |\ \(\backslash\)c\ rb1\_epi16:\ \ |\ RB1\ RB1\ |\ RB1\ RB1\ |\ RB1\ RB1\ |\ RB1\ RB1\ |}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///}}
+\DoxyCodeLine{00099\ \textcolor{comment}{///\ \(\backslash\)param[out]\ max\_abs\ \ \ A\ span\ of\ two\ maximum\ absolute\ values\ in\ the\ two\ input\ RBs.}}
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb0\_epi16\ \ AVX2\ register\ storing\ 16bit\ IQ\ pairs\ of\ the\ first\ RB.}}
+\DoxyCodeLine{00101\ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb01\_epi16\ AVX2\ register\ storing\ 16bit\ IQ\ pairs\ of\ the\ first\ and\ second\ RBs.}}
+\DoxyCodeLine{00102\ \textcolor{comment}{///\ \(\backslash\)param[in]\ rb1\_epi16\ \ AVX2\ register\ storing\ 16bit\ IQ\ pairs\ of\ the\ second\ RB.}}
+\DoxyCodeLine{00103\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ calculate\_max\_abs(span<\textcolor{keywordtype}{unsigned}>\ max\_abs,\ \_\_m256i\ rb0\_epi16,\ \_\_m256i\ rb01\_epi16,\ \_\_m256i\ rb1\_epi16)}
+\DoxyCodeLine{00104\ \{}
+\DoxyCodeLine{00105\ \ \ std::array<uint16\_t,\ 2>\ abs\_min\_values;}
+\DoxyCodeLine{00106\ \ \ std::array<uint16\_t,\ 2>\ abs\_max\_values;}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{//\ Reorganize\ vectors\ to\ be\ able\ to\ vertically\ compare\ 16bit\ samples\ pertaining\ to\ the\ same\ resource\ block:}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{//\ [\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ ]}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{//\ [\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ ]}}
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{//\ [\ RB0\ RB0\ |\ RB0\ RB0\ |\ RB1\ RB1\ |\ RB1\ RB1\ ]}}
+\DoxyCodeLine{00112\ \ \ \_\_m256i\ v0\_epi16\ =\ \_mm256\_permute2f128\_si256(rb0\_epi16,\ rb1\_epi16,\ 0x20);}
+\DoxyCodeLine{00113\ \ \ \_\_m256i\ v2\_epi16\ =\ \_mm256\_permute2f128\_si256(rb0\_epi16,\ rb1\_epi16,\ 0x31);}
+\DoxyCodeLine{00114\ \ \ \_\_m256i\ v1\_epi16\ =\ rb01\_epi16;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ find\_rbs\_abs\_min\_max\_values<\_mm256\_min\_epi16>(abs\_min\_values,\ v0\_epi16,\ v1\_epi16,\ v2\_epi16);}
+\DoxyCodeLine{00117\ \ \ find\_rbs\_abs\_min\_max\_values<\_mm256\_max\_epi16>(abs\_max\_values,\ v0\_epi16,\ v1\_epi16,\ v2\_epi16);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ max\_abs[0]\ =\ std::max<\textcolor{keywordtype}{unsigned}>(abs\_max\_values[0],\ abs\_min\_values[0]\ -\/\ 1U);}
+\DoxyCodeLine{00120\ \ \ max\_abs[1]\ =\ std::max<\textcolor{keywordtype}{unsigned}>(abs\_max\_values[1],\ abs\_min\_values[1]\ -\/\ 1U);}
+\DoxyCodeLine{00121\ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \}\ \textcolor{comment}{//\ namespace\ mm256}}
+\DoxyCodeLine{00124\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00125\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

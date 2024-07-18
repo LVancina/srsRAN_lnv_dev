@@ -30,11 +30,7 @@
 #include "srsran/ran/pci.h"
 #include "srsran/ran/phy_time_unit.h"
 #include "srsran/ran/prach/prach_constants.h"
-#include "srsran/ran/qos/five_qi_qos_mapping.h"
-#include "srsran/ran/qos/qos_info.h"
 #include "srsran/ran/rnti.h"
-#include "srsran/ran/rrm.h"
-#include "srsran/ran/s_nssai.h"
 #include "srsran/ran/sib/sib_configuration.h"
 #include "srsran/ran/slot_pdu_capacity_constants.h"
 #include "srsran/ran/slot_point.h"
@@ -110,30 +106,12 @@ struct sched_cell_configuration_request_message {
 struct sched_ue_resource_alloc_config {
   /// Minimum and maximum PDSCH grant sizes for the given UE.
   prb_interval pdsch_grant_size_limits{0, MAX_NOF_PRBS};
-  /// Boundaries within which PDSCH needs to be allocated.
-  crb_interval pdsch_crb_limits{0, MAX_NOF_PRBS};
   /// Minimum and maximum PUSCH grant sizes for the given UE.
   prb_interval pusch_grant_size_limits{0, MAX_NOF_PRBS};
-  /// Boundaries within which PUSCH needs to be allocated.
-  crb_interval pusch_crb_limits{0, MAX_NOF_PRBS};
   /// Maximum PDSCH HARQ retransmissions.
   unsigned max_pdsch_harq_retxs = 4;
   /// Maximum PUSCH HARQ retransmissions.
   unsigned max_pusch_harq_retxs = 4;
-  // RRM policy for the UE.
-  rrm_policy_ratio_group rrm_policy_group;
-};
-
-/// QoS and slicing information associated with a DRB provided to the scheduler.
-struct sched_drb_info {
-  /// Logical Channel ID.
-  lcid_t lcid;
-  /// Single Network Slice Selection Assistance Information (S-NSSAI).
-  s_nssai_t s_nssai;
-  /// QoS characteristics associated with the logical channel.
-  qos_characteristics qos_info;
-  /// QoS information present only for GBR QoS flows.
-  optional<gbr_qos_info_t> gbr_qos_info;
 };
 
 /// Request for a new UE configuration provided to the scheduler during UE creation or reconfiguration.
@@ -146,8 +124,6 @@ struct sched_ue_config_request {
   optional<std::vector<cell_config_dedicated>> cells;
   /// Resource allocation configuration for the given UE.
   optional<sched_ue_resource_alloc_config> res_alloc_cfg;
-  /// List of QoS and slicing information for DRBs.
-  std::vector<sched_drb_info> drb_info_list;
 };
 
 /// Request to create a new UE in scheduler.
@@ -212,7 +188,6 @@ public:
   virtual void handle_ue_creation_request(const sched_ue_creation_request_message& ue_request)       = 0;
   virtual void handle_ue_reconfiguration_request(const sched_ue_reconfiguration_message& ue_request) = 0;
   virtual void handle_ue_removal_request(du_ue_index_t ue_index)                                     = 0;
-  virtual void handle_ue_config_applied(du_ue_index_t ue_index)                                      = 0;
 };
 
 /// Interface used by scheduler to notify MAC that a configuration is complete.

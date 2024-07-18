@@ -1,0 +1,117 @@
+\doxysection{f1ap\+\_\+adapters.\+h}
+\hypertarget{du__high_2adapters_2f1ap__adapters_8h_source}{}\label{du__high_2adapters_2f1ap__adapters_8h_source}\index{lib/du\_high/adapters/f1ap\_adapters.h@{lib/du\_high/adapters/f1ap\_adapters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/du\_manager/du\_manager.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/f1ap/du/f1ap\_du.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/execute\_on.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }timer\_manager;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }srs\_du\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler__adapter}{f1ap\_ue\_task\_scheduler\_adapter}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler}{f1ap\_ue\_task\_scheduler}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler__adapter}{f1ap\_ue\_task\_scheduler\_adapter}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_,\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ timers\_)\ :}
+\DoxyCodeLine{00040\ \ \ \ \ ue\_index(ue\_index\_),\ timers(timers\_)}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler__adapter_a04380ff23fc2ac6b3c9daaafe9e36696}{create\_timer}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ timers.create\_timer();\ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler__adapter_a88e7140aeb39173b97bb723ccdd5862c}{schedule\_async\_task}}(\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\&\&\ task)\textcolor{keyword}{\ override\ }\{\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a0b8e30ad9e80c9a8e375aa6a5d2b4af5}{schedule\_async\_task}}(ue\_index,\ std::move(task));\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator}{du\_manager\_configurator}}\&\ du\_mng\_)\ \{\ du\_mng\ =\ \&du\_mng\_;\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00053\ \ \ du\_manager\_configurator*\ du\_mng\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter}{f1ap\_du\_configurator\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator}{f1ap\_du\_configurator}}}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter}{f1ap\_du\_configurator\_adapter}}(\mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ timers\_)\ :\ timers(timers\_)}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ MAX\_NOF\_DU\_UES;\ ++i)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ ues.emplace(i,\ \mbox{\hyperlink{namespacesrsran_a652cd3c03af6e027f63c65f3ab458577}{to\_du\_ue\_index}}(i),\ timers);}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator}{du\_manager\_configurator}}\&\ du\_mng\_)}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ du\_mng\ =\ \&du\_mng\_;}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ MAX\_NOF\_DU\_UES;\ ++i)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ ues[i].connect(*du\_mng);}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\&\ get\_timer\_factory()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ timers;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_acc932e44775198b8c4862e38346107ce}{schedule\_async\_task}}(\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\&\&\ task)\textcolor{keyword}{\ override\ }\{\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a0b8e30ad9e80c9a8e375aa6a5d2b4af5}{schedule\_async\_task}}(std::move(task));\ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__task__scheduler}{f1ap\_ue\_task\_scheduler}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_a2142ea34cbd172f4691b25145df1361d}{get\_ue\_handler}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ ues[ue\_index];\ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_a0d8bb587e71c07fbee34303b06f88201}{find\_free\_ue\_index}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a1331a76b747b896539d1fb2c6a5dfe0c}{find\_unused\_du\_ue\_index}}();\ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1ap\_ue\_context\_creation\_response>}}}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_aae2f54ee7abf27af6ed7cd8bd3d80f06}{request\_ue\_creation}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__creation__request}{f1ap\_ue\_context\_creation\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00084\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_aadd46ec9a68cee0a808ac8e70b23883d}{handle\_ue\_context\_creation}}(request);}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1ap\_ue\_context\_update\_response>}}}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_a7adfcc6685770e35cb563cbe178793a8}{request\_ue\_context\_update}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__request}{f1ap\_ue\_context\_update\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00090\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a4b0e7d2cdf91b57d53ab5a56056f1a9e}{handle\_ue\_context\_update}}(request);}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_a27162b402b1b78e401ffe522c7863f04}{request\_ue\_removal}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__delete__request}{f1ap\_ue\_delete\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00095\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a964ab9dc941729229315f0fe0eaae630}{handle\_ue\_delete\_request}}(request);}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__configurator__adapter_a366ab49ae993b0614d2ce192d3180531}{notify\_reestablishment\_of\_old\_ue}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ new\_ue\_index,\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ old\_ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00100\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00101\ \ \ \ \ du\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_af49c43339896a1ce928ed5666e36a5dd}{handle\_ue\_reestablishment}}(new\_ue\_index,\ old\_ue\_index);}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00105\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator}{du\_manager\_configurator}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_mng\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__array}{slotted\_array<f1ap\_ue\_task\_scheduler\_adapter,\ MAX\_NOF\_DU\_UES>}}\ ues;}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00111\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

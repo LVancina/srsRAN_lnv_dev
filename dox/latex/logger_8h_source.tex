@@ -1,0 +1,165 @@
+\doxysection{logger.\+h}
+\hypertarget{logger_8h_source}{}\label{logger_8h_source}\index{include/srsran/srslog/logger.h@{include/srsran/srslog/logger.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/log\_channel.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }srslog\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Enum>}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}\ :\ \textcolor{keyword}{public}\ T}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{static\_assert}(std::is\_enum<Enum>::value,\ \textcolor{stringliteral}{"{}Expected\ enum\ type"{}});}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{using\ }enum\_base\_type\ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{typename}\ std::underlying\_type<Enum>::type;}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ size\ =\ \textcolor{keyword}{static\_cast<}enum\_base\_type\textcolor{keyword}{>}(Enum::LAST)\ -\/\ 1;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}(std::string\ \textcolor{keywordtype}{id},\ Args\&\&...\ args)\ :}
+\DoxyCodeLine{00046\ \ \ \ \ T\{std::forward<Args>(args)...\},\ logger\_id(std::move(\textcolor{keywordtype}{id})),\ channels\{\&args...\}}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{sizeof}...(args)\ ==\ size,\ \textcolor{stringliteral}{"{}Number\ of\ levels\ in\ enum\ does\ not\ match\ number\ of\ log\ channels"{}});}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a44c8bb81e536e744a0b6796fd1a72951}{id}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ logger\_id;\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(Enum\ lvl)}
+\DoxyCodeLine{00059\ \ \ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1scoped__lock}{detail::scoped\_lock}}\ lock(m);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{//\ Disable\ all\ channels\ ...}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{if}\ (lvl\ ==\ Enum::none)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0,\ e\ =\ channels.size();\ i\ !=\ e;\ ++i)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ channels[i]-\/>set\_enabled(\textcolor{keyword}{false});}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{//\ ...\ otherwise\ do\ it\ selectively.}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0,\ e\ =\ channels.size();\ i\ !=\ e;\ ++i)\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ channels[i]-\/>set\_enabled(\textcolor{keyword}{static\_cast<}Enum\textcolor{keyword}{>}(i\ +\ 1)\ <=\ lvl);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a4ebcb18cb0dd7f89ede70804b1d3336b}{set\_context}}(uint32\_t\ a,\ uint32\_t\ b)}
+\DoxyCodeLine{00078\ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1scoped__lock}{detail::scoped\_lock}}\ lock(m);}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ channel\ :\ channels)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ channel-\/>set\_context(a,\ b);}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_abd66c985d09bb6d321627fe302298101}{set\_hex\_dump\_max\_size}}(\textcolor{keywordtype}{int}\ x)}
+\DoxyCodeLine{00088\ \ \ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1scoped__lock}{detail::scoped\_lock}}\ lock(m);}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ channel\ :\ channels)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ channel-\/>set\_hex\_dump\_max\_size(x);}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a98a28e40b4d39cf849e7c2d61b91f072}{operator<=}}(Enum\ lhs,\ Enum\ rhs)}
+\DoxyCodeLine{00098\ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}enum\_base\_type\textcolor{keyword}{>}(lhs)\ <=\ \textcolor{keyword}{static\_cast<}enum\_base\_type\textcolor{keyword}{>}(rhs);}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{const}\ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_id;}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{const}\ std::array<log\_channel*,\ size>\ channels;}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{mutable}\ \mbox{\hyperlink{classsrslog_1_1detail_1_1mutex}{detail::mutex}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m;}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00109\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00110\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1detail_1_1is__logger}{is\_logger}}\ :\ std::false\_type\ \{}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Enum>}
+\DoxyCodeLine{00113\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1detail_1_1is__logger}{is\_logger}}<\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{logger\_impl}}<T,\ Enum>>\ :\ std::true\_type\ \{}
+\DoxyCodeLine{00114\ \};}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00145\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Enum>}
+\DoxyCodeLine{00146\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{build\_logger\_type}}\ =\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{detail::logger\_impl<T,\ Enum>}};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00153\ \textcolor{keyword}{enum\ class}\ basic\_levels\ \{\ none,\ error,\ warning,\ info,\ debug,\ LAST\ \};}
+\DoxyCodeLine{00154\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1basic__logger__channels}{basic\_logger\_channels}}\ \{}
+\DoxyCodeLine{00155\ \ \ \mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ error;}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ warning;}
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ info;}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ debug;}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{basic\_logger}}\ =\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{build\_logger\_type<basic\_logger\_channels,\ basic\_levels>}};}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00163\ \textcolor{keyword}{inline}\ basic\_levels\ str\_to\_basic\_level(std::string\ s)}
+\DoxyCodeLine{00164\ \{}
+\DoxyCodeLine{00165\ \ \ std::transform(s.begin(),\ s.end(),\ s.begin(),\ ::toupper);}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{stringliteral}{"{}NONE"{}}\ ==\ s)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{return}\ basic\_levels::none;}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{stringliteral}{"{}ERROR"{}}\ ==\ s)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keywordflow}{return}\ basic\_levels::error;}
+\DoxyCodeLine{00172\ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{stringliteral}{"{}WARNING"{}}\ ==\ s)\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{return}\ basic\_levels::warning;}
+\DoxyCodeLine{00175\ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{stringliteral}{"{}INFO"{}}\ ==\ s)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{return}\ basic\_levels::info;}
+\DoxyCodeLine{00178\ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{stringliteral}{"{}DEBUG"{}}\ ==\ s)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ basic\_levels::debug;}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordflow}{return}\ basic\_levels::none;}
+\DoxyCodeLine{00183\ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00186\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ basic\_level\_to\_string(basic\_levels\ level)}
+\DoxyCodeLine{00187\ \{}
+\DoxyCodeLine{00188\ \ \ \textcolor{keywordflow}{switch}\ (level)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{case}\ basic\_levels::debug:}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DEBUG"{}};}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{case}\ basic\_levels::info:}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}INFO"{}};}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordflow}{case}\ basic\_levels::warning:}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}WARNING"{}};}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{case}\ basic\_levels::error:}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ERROR"{}};}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}NONE"{}};}
+\DoxyCodeLine{00201\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

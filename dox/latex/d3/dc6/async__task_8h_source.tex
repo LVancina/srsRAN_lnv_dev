@@ -1,0 +1,100 @@
+\doxysection{async\+\_\+task.\+h}
+\hypertarget{async__task_8h_source}{}\label{async__task_8h_source}\index{include/srsran/support/async/async\_task.h@{include/srsran/support/async/async\_task.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}detail/base\_task.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ Lazy\ awaitable\ coroutine\ type\ that\ outputs\ a\ result\ of\ type\ R\ when\ completed.}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ \(\backslash\)tparam\ R\ Result\ of\ the\ task}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ R>}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}\ :\ \textcolor{keyword}{public}\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1common__task__crtp}{common\_task\_crtp}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<R>,\ R>}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{using}\ result\_type\ =\ R;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type}{promise\_type}}\ :\ \textcolor{keyword}{public}\ detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1promise__data}{promise\_data}}<result\_type,\ detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1task__promise__base}{task\_promise\_base}}>\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter}{final\_awaiter}}\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{comment}{///\ Lifetime\ of\ coroutine\ is\ bounded\ to\ the\ lazy\_task\ object.}}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a57b6452d569def6b2a8d8a1dd3a73402}{await\_ready}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Tail-\/resumes\ suspending/awaiting\ coroutine\ continuation.}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{comment}{///\ Lazy\ tasks\ always\ have\ a\ continuation,\ if\ they\ went\ beyond\ the\ initial\ suspension\ point.}}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a8e6134b62a46d9358362168650d82d94}{coro\_handle}}<>\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a8e6134b62a46d9358362168650d82d94}{await\_suspend}}(\mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a8e6134b62a46d9358362168650d82d94}{coro\_handle}}<\mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a8e6134b62a46d9358362168650d82d94}{promise\_type}}>\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_a8e6134b62a46d9358362168650d82d94}{cb}})\ \{\ \textcolor{keywordflow}{return}\ cb.promise().continuation;\ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ await\_resume()\ \{\}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{comment}{///\ Points\ to\ itself\ as\ an\ awaiter}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter}{final\_awaiter}}\&\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter_aab7d768bd3237be993e8e9355f754a91}{get\_awaiter}}()\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00050\ \ \ \ \ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ Initial\ suspension\ awaiter.\ Lazy\_tasks\ always\ suspend\ at\ initial\ suspension\ point.}}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1suspend__always}{suspend\_always}}\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_ae67b898bf3eebb957ac55410fe009469}{initial\_suspend}}()\ \{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ Final\ suspension\ awaiter.\ Tail-\/resumes\ continuation.}}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_1_1final__awaiter}{final\_awaiter}}\ \mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type_aaee5eb03e99773ee41a0900c6cfb111e}{final\_suspend}}()\ \{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<R>\ get\_return\_object()}
+\DoxyCodeLine{00059\ \ \ \ \ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ corohandle\ =\ coro\_handle<\mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type}{promise\_type}}>::from\_promise(\textcolor{keyword}{this});}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ corohandle.resume();}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<R>\{corohandle\};}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ async\_task()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{explicit}\ async\_task(coro\_handle<\mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type}{promise\_type}}>\ cb)\ :\ handle(cb)\ \{\}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Retrieve\ awaiter\ interface.}}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<R>\&\ \mbox{\hyperlink{classsrsran_1_1async__task_ad1f61a304895dcb6d604f434e721427c}{get\_awaiter}}()\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ suspending\ coroutine\ as\ continuation\ of\ the\ current\ lazy\_task.\ Tail-\/resumes\ "{}this"{}\ lazy\_task.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Called\ solely\ when\ "{}this"{}\ lazy\_task\ is\ at\ initial\ suspension\ point.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ h\ suspending\ coroutine\ that\ is\ calling\ await\_suspend.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Coroutine\ handle\ to\ tail-\/resume.}}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task_ab796a40f58f23245923dbbfc21893a6d}{coro\_handle}}<>\ \mbox{\hyperlink{classsrsran_1_1async__task_ab796a40f58f23245923dbbfc21893a6d}{await\_suspend}}(\mbox{\hyperlink{classsrsran_1_1async__task_ab796a40f58f23245923dbbfc21893a6d}{coro\_handle}}<>\ \mbox{\hyperlink{classsrsran_1_1async__task_ab796a40f58f23245923dbbfc21893a6d}{h}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00077\ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(\textcolor{keyword}{not}\ \textcolor{keyword}{this}-\/>empty(),\ \textcolor{stringliteral}{"{}Awaiting\ an\ empty\ task"{}});}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(handle.promise().continuation.empty(),\ \textcolor{stringliteral}{"{}Lazy\ task\ can\ only\ be\ awaited\ once."{}});}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ Store\ continuation\ in\ promise,\ so\ that\ it\ gets\ called\ at\ "{}this"{}\ coroutine\ final\ suspension\ point.}}
+\DoxyCodeLine{00082\ \ \ \ \ handle.promise().continuation\ =\ h;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ We\ tail-\/resume\ the\ current\ awaiter\ task's\ coroutine,\ which\ is\ currently\ suspended\ at\ initial\ suspension\ point.}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ *handle;}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1common__task__crtp}{common\_task\_crtp}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<R>,\ R>;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__coroutine}{unique\_coroutine}}<\mbox{\hyperlink{structsrsran_1_1async__task_1_1promise__type}{promise\_type}}>\ handle;}
+\DoxyCodeLine{00092\ \};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

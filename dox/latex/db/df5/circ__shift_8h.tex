@@ -1,0 +1,121 @@
+\doxysection{include/srsran/srsvec/circ\+\_\+shift.h File Reference}
+\hypertarget{circ__shift_8h}{}\label{circ__shift_8h}\index{include/srsran/srsvec/circ\_shift.h@{include/srsran/srsvec/circ\_shift.h}}
+
+
+Circular shifts.  
+
+
+{\ttfamily \#include "{}srsran/adt/span.\+h"{}}\newline
+{\ttfamily \#include "{}srsran/srsvec/copy.\+h"{}}\newline
+Include dependency graph for circ\+\_\+shift.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d8/d0a/circ__shift_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{da/d0d/circ__shift_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacesrsran}{srsran}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{typename}} T , \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{typename}} U $>$ }\\\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{circ__shift_8h_af72cc937a290f6ef9e8ff8f9e8a8178e}{srsran\+::srsvec\+::circ\+\_\+shift\+\_\+forward}} (T \&\&out, \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} U \&in, \mbox{\hyperlink{classunsigned}{unsigned}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{shift}})
+\begin{DoxyCompactList}\small\item\em Circularly shifts a sequence in the forward direction. \end{DoxyCompactList}\item 
+{\footnotesize template$<$\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{typename}} T , \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{typename}} U $>$ }\\\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{circ__shift_8h_af8445dbb276f692594ce0df7b174aaac}{srsran\+::srsvec\+::circ\+\_\+shift\+\_\+backward}} (T \&\&out, \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} U \&in, \mbox{\hyperlink{classunsigned}{unsigned}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{shift}})
+\begin{DoxyCompactList}\small\item\em Circularly shifts a sequence in the backward direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Circular shifts. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{circ__shift_8h_af8445dbb276f692594ce0df7b174aaac}\label{circ__shift_8h_af8445dbb276f692594ce0df7b174aaac} 
+\index{circ\_shift.h@{circ\_shift.h}!circ\_shift\_backward@{circ\_shift\_backward}}
+\index{circ\_shift\_backward@{circ\_shift\_backward}!circ\_shift.h@{circ\_shift.h}}
+\doxysubsubsection{\texorpdfstring{circ\_shift\_backward()}{circ\_shift\_backward()}}
+{\footnotesize\ttfamily template$<$typename T , typename U $>$ \\
+void srsran\+::srsvec\+::circ\+\_\+shift\+\_\+backward (\begin{DoxyParamCaption}\item[{T \&\&}]{out,  }\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} U \&}]{in,  }\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{shift }\end{DoxyParamCaption})}
+
+
+
+Circularly shifts a sequence in the backward direction. 
+
+The element at position {\ttfamily i} is moved to position {\ttfamily i -\/ shift\texorpdfstring{$<$}{<}\textbackslash{}tt\texorpdfstring{$>$}{>}. Elements that fall beyond the beginning of the sequence are reintroduced at its end. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em out} & Shifted output sequence. \\
+\hline
+\mbox{\texttt{ in}}  & {\em in} & Original input sequence. \\
+\hline
+\mbox{\texttt{ in}}  & {\em shift} & The number of positions the sequence is shifted by. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+Cannot be used to override memory. 
+\end{DoxyRemark}
+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<U>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00069\ \ \ srsran\_srsvec\_assert\_size(out,\ in);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{unsigned}\ length\ =\ out.size();}
+\DoxyCodeLine{00072\ \ \ srsran\_assert(std::abs(in.data()\ -\/\ out.data())\ >=\ length,\ \textcolor{stringliteral}{"{}Input\ and\ output\ memory\ overlap."{}});}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ copy(out.first(length\ -\/\ shift),\ in.last(length\ -\/\ shift));}
+\DoxyCodeLine{00075\ \ \ copy(out.subspan(length\ -\/\ shift,\ shift),\ in.first(shift));}
+\DoxyCodeLine{00076\ \}}
+
+\end{DoxyCode}
+\Hypertarget{circ__shift_8h_af72cc937a290f6ef9e8ff8f9e8a8178e}\label{circ__shift_8h_af72cc937a290f6ef9e8ff8f9e8a8178e} 
+\index{circ\_shift.h@{circ\_shift.h}!circ\_shift\_forward@{circ\_shift\_forward}}
+\index{circ\_shift\_forward@{circ\_shift\_forward}!circ\_shift.h@{circ\_shift.h}}
+\doxysubsubsection{\texorpdfstring{circ\_shift\_forward()}{circ\_shift\_forward()}}
+{\footnotesize\ttfamily template$<$typename T , typename U $>$ \\
+void srsran\+::srsvec\+::circ\+\_\+shift\+\_\+forward (\begin{DoxyParamCaption}\item[{T \&\&}]{out,  }\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} U \&}]{in,  }\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{shift }\end{DoxyParamCaption})}
+
+
+
+Circularly shifts a sequence in the forward direction. 
+
+The element at position {\ttfamily i} is moved to position {\ttfamily i + shift\texorpdfstring{$<$}{<}\textbackslash{}tt\texorpdfstring{$>$}{>}. Elements that fall beyond the end of the sequence are reintroduced at its start. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em out} & Shifted output sequence. \\
+\hline
+\mbox{\texttt{ in}}  & {\em in} & Original input sequence. \\
+\hline
+\mbox{\texttt{ in}}  & {\em shift} & The number of positions the sequence is shifted by. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRemark}{Remarks}
+Cannot be used to override memory. 
+\end{DoxyRemark}
+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<U>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00047\ \ \ srsran\_srsvec\_assert\_size(out,\ in);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ length\ =\ out.size();}
+\DoxyCodeLine{00050\ \ \ srsran\_assert(std::abs(in.data()\ -\/\ out.data())\ >=\ length,\ \textcolor{stringliteral}{"{}Input\ and\ output\ memory\ overlap."{}});}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ copy(out.first(shift),\ in.last(shift));}
+\DoxyCodeLine{00053\ \ \ copy(out.subspan(shift,\ length\ -\/\ shift),\ in.first(length\ -\/\ shift));}
+\DoxyCodeLine{00054\ \}}
+
+\end{DoxyCode}

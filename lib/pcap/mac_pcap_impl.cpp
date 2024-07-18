@@ -25,15 +25,15 @@
 
 using namespace srsran;
 
-static constexpr uint16_t UDP_DLT = 149;
-static constexpr uint16_t MAC_DLT = 157;
+constexpr uint16_t UDP_DLT = 149;
+constexpr uint16_t MAC_DLT = 157;
 
-static int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, span<uint8_t> buffer);
+int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, uint8_t* buffer, unsigned int length);
 
-mac_pcap_impl::mac_pcap_impl(const std::string& filename_, mac_pcap_type type_, task_executor& backend_exec_) :
-  logger(srslog::fetch_basic_logger("ALL")),
+mac_pcap_impl::mac_pcap_impl(const std::string& filename, mac_pcap_type type_, task_executor& backend_exec_) :
   type(type_),
-  writer(type == mac_pcap_type::dlt ? MAC_DLT : UDP_DLT, "MAC", filename_, backend_exec_)
+  logger(srslog::fetch_basic_logger("ALL")),
+  writer(type == mac_pcap_type::dlt ? MAC_DLT : UDP_DLT, "MAC", filename, backend_exec_)
 {
 }
 
@@ -49,11 +49,7 @@ void mac_pcap_impl::close()
 
 void mac_pcap_impl::push_pdu(const mac_nr_context_info& context, const_span<uint8_t> pdu)
 {
-  auto pdu_buffer = byte_buffer::create(pdu);
-  if (pdu_buffer.is_error()) {
-    return;
-  }
-  push_pdu(context, std::move(pdu_buffer.value()));
+  push_pdu(context, byte_buffer{pdu});
 }
 
 void mac_pcap_impl::push_pdu(const mac_nr_context_info& context, byte_buffer pdu)
@@ -63,33 +59,32 @@ void mac_pcap_impl::push_pdu(const mac_nr_context_info& context, byte_buffer pdu
     return;
   }
 
-  std::array<uint8_t, PCAP_CONTEXT_HEADER_MAX> context_header = {};
-  int offset = nr_pcap_pack_mac_context_to_buffer(context, span<uint8_t>(context_header));
+  uint8_t context_header[PCAP_CONTEXT_HEADER_MAX] = {};
+  int     offset = nr_pcap_pack_mac_context_to_buffer(context, &context_header[0], PCAP_CONTEXT_HEADER_MAX);
   if (offset < 0) {
     logger.warning("Discarding MAC PCAP PDU. Cause: Failed to generate header.");
     return;
   }
 
   if (type == mac_pcap_type::udp) {
-    pcap_pdu_data buf{
-        0xbeef, 0xdead, MAC_NR_START_STRING, span<const uint8_t>(context_header).first(offset), std::move(pdu)};
+    pcap_pdu_data buf{0xbeef, 0xdead, MAC_NR_START_STRING, span<const uint8_t>(context_header, offset), std::move(pdu)};
     writer.write_pdu(std::move(buf));
   } else {
-    pcap_pdu_data buf{span<const uint8_t>(context_header).first(offset), std::move(pdu)};
+    pcap_pdu_data buf{span<const uint8_t>(context_header, offset), std::move(pdu)};
     writer.write_pdu(std::move(buf));
   }
 }
 
-/// Helper function to serialize MAC NR context.
-int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, span<uint8_t> buffer)
+/// Helper function to serialize MAC NR context
+int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, uint8_t* buffer, unsigned int length)
 {
-  if (buffer.size() < PCAP_CONTEXT_HEADER_MAX) {
-    srslog::fetch_basic_logger("ALL").error("Writing buffer length is too small");
+  int      offset = 0;
+  uint16_t tmp16  = {};
+
+  if (buffer == nullptr || length < PCAP_CONTEXT_HEADER_MAX) {
+    printf("Error: Writing buffer null or length to small \n");
     return -1;
   }
-
-  int      offset = 0;
-  uint16_t tmp16  = 0;
 
   /*****************************************************************/
   /* Context information (same as written by UDP heuristic clients */
@@ -100,13 +95,13 @@ int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, span<
   /* RNTI */
   buffer[offset++] = MAC_NR_RNTI_TAG;
   tmp16            = htons(context.rnti);
-  std::memcpy(buffer.begin() + offset, &tmp16, 2);
+  memcpy(buffer + offset, &tmp16, 2);
   offset += 2;
 
   /* UEId */
   buffer[offset++] = MAC_NR_UEID_TAG;
   tmp16            = htons(context.ueid);
-  std::memcpy(buffer.begin() + offset, &tmp16, 2);
+  memcpy(buffer + offset, &tmp16, 2);
   offset += 2;
 
   /* HARQID */
@@ -122,7 +117,7 @@ int nr_pcap_pack_mac_context_to_buffer(const mac_nr_context_info& context, span<
   buffer[offset++] = MAC_NR_FRAME_SUBFRAME_TAG;
   tmp16            = (context.system_frame_number << 4) | context.sub_frame_number;
   tmp16            = htons(tmp16);
-  std::memcpy(buffer.begin() + offset, &tmp16, 2);
+  memcpy(buffer + offset, &tmp16, 2);
   offset += 2;
 
   /* Data tag immediately preceding PDU */

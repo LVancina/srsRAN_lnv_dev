@@ -1,0 +1,77 @@
+\doxysection{f1ap\+\_\+du\+\_\+setup\+\_\+procedure.\+h}
+\hypertarget{f1ap__du__setup__procedure_8h_source}{}\label{f1ap__du__setup__procedure_8h_source}\index{lib/f1ap/du/procedures/f1ap\_du\_setup\_procedure.h@{lib/f1ap/du/procedures/f1ap\_du\_setup\_procedure.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../../common/f1ap\_asn1\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{f1ap__du__event__manager_8h}{"{}f1ap\_du\_event\_manager.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1ap/du/f1ap\_du.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srs\_du\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__du__context}{f1ap\_du\_context}};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ F1\ Setup\ Procedure\ for\ the\ gNB-\/DU\ as\ per\ TS\ 38.473,\ 8.2.3.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__du__setup__procedure}{f1ap\_du\_setup\_procedure}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ f1ap\_du\_setup\_procedure(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1__setup__request__message}{f1\_setup\_request\_message}}\&\ request\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1ap\_message\_notifier\&\ \ \ \ \ \ \ \ \ \ cu\_notif\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__event__manager}{f1ap\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ ev\_mng\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__du__context}{f1ap\_du\_context}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_ctxt\_);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ operator()(coro\_context<async\_task<f1\_setup\_response\_message>>\&\ ctx);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Send\ F1\ SETUP\ REQUEST\ to\ CU.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ send\_f1\_setup\_request();}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Checks\ whether\ the\ DU\ should\ attempt\ again\ to\ connect\ to\ CU.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{bool}\ retry\_required();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Creates\ procedure\ result\ to\ send\ back\ to\ procedure\ caller.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1__setup__response__message}{f1\_setup\_response\_message}}\ create\_f1\_setup\_result();}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1__setup__request__message}{f1\_setup\_request\_message}}\ request;}
+\DoxyCodeLine{00058\ \ \ f1ap\_message\_notifier\&\ \ \ \ \ \ \ \ \ cu\_notifier;}
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__event__manager}{f1ap\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ ev\_mng;}
+\DoxyCodeLine{00060\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__du__context}{f1ap\_du\_context}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_ctxt;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ f1\_setup\_wait\_timer;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ f1ap\_transaction\ \ \ \ \ transaction;}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ f1\_setup\_retry\_no\ =\ 0;}
+\DoxyCodeLine{00067\ \ \ std::chrono::seconds\ time\_to\_wait\{0\};}
+\DoxyCodeLine{00068\ \};\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,88 @@
+\doxysection{pdu\+\_\+session.\+h}
+\hypertarget{pdu__session_8h_source}{}\label{pdu__session_8h_source}\index{lib/cu\_up/pdu\_session.h@{lib/cu\_up/pdu\_session.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}adapters/gtpu\_adapters.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}adapters/sdap\_adapters.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{drb__context_8h}{"{}drb\_context.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gtpu/gtpu\_demux.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gtpu/gtpu\_tunnel\_ngu.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/up\_transport\_layer\_info.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ srs\_cu\_up\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{MAX\_NUM\_PDU\_SESSIONS\_PER\_UE}\ \textcolor{preprocessor}{(}8\textcolor{preprocessor}{)}\ \textcolor{comment}{///\ Todo:\ find\ 3GPP\ spec\ reference}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)brief\ Context\ for\ PDU\ session\ with\ session-\/wide\ parameters\ and\ all\ contained\ DRBs.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1pdu__session}{pdu\_session}}\ \{}
+\DoxyCodeLine{00039\ \ \ pdu\_session(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__setup__item}{e1ap\_pdu\_session\_res\_to\_setup\_item}}\&\ session,\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__ctrl}{gtpu\_demux\_ctrl}}\&\ gtpu\_rx\_demux\_)\ :}
+\DoxyCodeLine{00040\ \ \ \ \ pdu\_session\_id(session.pdu\_session\_id),}
+\DoxyCodeLine{00041\ \ \ \ \ session\_type(session.pdu\_session\_type),}
+\DoxyCodeLine{00042\ \ \ \ \ snssai(session.snssai),}
+\DoxyCodeLine{00043\ \ \ \ \ security\_ind(session.security\_ind),}
+\DoxyCodeLine{00044\ \ \ \ \ ul\_tunnel\_info(session.ng\_ul\_up\_tnl\_info),}
+\DoxyCodeLine{00045\ \ \ \ \ gtpu\_rx\_demux(gtpu\_rx\_demux\_)}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{if}\ (session.pdu\_session\_res\_dl\_ambr.has\_value())\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ pdu\_session\_res\_ambr\ =\ session.pdu\_session\_res\_dl\_ambr.value();}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \};}
+\DoxyCodeLine{00051\ \ \ \string~pdu\_session()}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ Remove\ GTP-\/U\ tunnel\ from\ GTP-\/U\ demux.}}
+\DoxyCodeLine{00054\ \ \ \ \ gtpu\_rx\_demux.remove\_tunnel(local\_teid);}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ std::unique\_ptr<sdap\_entity>\ \ \ \ \ sdap;}
+\DoxyCodeLine{00058\ \ \ std::unique\_ptr<gtpu\_tunnel\_ngu>\ gtpu;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ Adapters\ between\ SDAP\ and\ GTPU}}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1gtpu__sdap__adapter}{gtpu\_sdap\_adapter}}\ gtpu\_to\_sdap\_adapter;}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__gtpu__adapter}{sdap\_gtpu\_adapter}}\ sdap\_to\_gtpu\_adapter;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1pdcp__f1u__adapter}{pdcp\_f1u\_adapter}}\ \ \ \ \ \ pdcp\_to\_f1u\_adapter;}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ pdu\_session\_id;\ \textcolor{comment}{//<\ PDU\ session\ ID\ (0-\/255)}}
+\DoxyCodeLine{00066\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ session\_type;}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{structsrsran_1_1s__nssai__t}{s\_nssai\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ snssai;}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\ security\_ind;}
+\DoxyCodeLine{00069\ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_res\_ambr\ =\ 0;}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{//\ Tunneling\ info\ used\ by\ all\ DRBs/QoS\ flows\ in\ this\ PDU\ session}}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\ ul\_tunnel\_info;\ \textcolor{comment}{//\ the\ peer\ GTP-\/U\ address\ and\ TEID}}
+\DoxyCodeLine{00073\ \ \ gtpu\_teid\_t\ \ \ \ \ \ \ \ \ \ \ \ \ local\_teid;\ \ \ \ \ \textcolor{comment}{//\ the\ local\ teid\ used\ by\ the\ gNB\ for\ this\ PDU\ session}}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__ctrl}{gtpu\_demux\_ctrl}}\&\ \ \ \ \ \ \ \ gtpu\_rx\_demux;\ \ \textcolor{comment}{//\ The\ demux\ entity\ to\ register/remove\ the\ tunnel.}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1drb__context}{drb\_context}}*\ default\_drb\ =\ \textcolor{keywordtype}{nullptr};\ \textcolor{comment}{//\ non-\/owning\ pointer\ to\ default\ DRB,\ if\ any}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ std::map<drb\_id\_t,\ std::unique\_ptr<drb\_context>>\ drbs;\ \textcolor{comment}{//\ key\ is\ drb\_id}}
+\DoxyCodeLine{00079\ \};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00082\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

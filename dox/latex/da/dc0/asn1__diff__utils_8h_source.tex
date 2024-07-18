@@ -1,0 +1,275 @@
+\doxysection{asn1\+\_\+diff\+\_\+utils.\+h}
+\hypertarget{asn1__diff__utils_8h_source}{}\label{asn1__diff__utils_8h_source}\index{lib/asn1/asn1\_diff\_utils.h@{lib/asn1/asn1\_diff\_utils.h}}
+\mbox{\hyperlink{asn1__diff__utils_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ asn.1\ utilities.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{///}}
+\DoxyCodeLine{00026\ \textcolor{comment}{///\ In\ this\ file,\ we\ implement\ several\ algorithms\ used\ to\ add/mod/release\ asn.1\ objects\ in\ lists}}
+\DoxyCodeLine{00027\ \textcolor{comment}{///\ based\ on\ their\ ids.\ This\ operations\ are\ commonly\ used\ during\ the\ application\ of\ Diffs/Deltas\ when\ the\ UE\ has}}
+\DoxyCodeLine{00028\ \textcolor{comment}{///\ to\ be\ reconfigured.}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/detail/function\_signature.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/detail/is\_iterable.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{algorithm}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Creates\ an\ functor\ that\ applies\ operator<\ comparison\ between\ objects\ based\ on\ their\ id.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00041\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{obj\_id\_comparator}}\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{id\_type}}\ =\ \mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{detail}}::\mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{function\_return\_t}}<\textcolor{keyword}{decltype}(\&\mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{std}}::\mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{decay\_t}}<\mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{GetId}}>::\mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{operator}}())>;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ obj\_id\_comparator(GetId\&\&\ c\_)\ :\ func(std::forward<GetId>(c\_))\ \{\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{bool}\ operator()(\textcolor{keyword}{const}\ T\&\ lhs,\ \textcolor{keyword}{const}\ U\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_id(lhs)\ <\ get\_id(rhs);}
+\DoxyCodeLine{00050\ \ \ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00054\ \ \ id\_type\ get\_id(\textcolor{keyword}{const}\ T\&\ t)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{return}\ func(t);}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ \ \ id\_type\ get\_id(\textcolor{keyword}{const}\ id\_type\&\ t)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ t;\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ GetId\ func;}
+\DoxyCodeLine{00061\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00064\ \mbox{\hyperlink{structsrsran_1_1obj__id__comparator}{obj\_id\_comparator}}<GetId>\ make\_id\_comparator(GetId\&\&\ g)}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordflow}{return}\ \{std::forward<GetId>(g)\};}
+\DoxyCodeLine{00067\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{/**}}
+\DoxyCodeLine{00070\ \textcolor{comment}{\ *\ Apply\ toAddModList/toRemoveList\ changes}}
+\DoxyCodeLine{00071\ \textcolor{comment}{\ *\ @param\ prev\_list\ original\ list\ of\ rrc\ fields}}
+\DoxyCodeLine{00072\ \textcolor{comment}{\ *\ @param\ add\_diff\_list\ added/modified\ elements}}
+\DoxyCodeLine{00073\ \textcolor{comment}{\ *\ @param\ rm\_diff\_list\ removed\ elements}}
+\DoxyCodeLine{00074\ \textcolor{comment}{\ *\ @param\ next\_list\ resulting\ list.\ (Can\ be\ same\ as\ prev\_list)}}
+\DoxyCodeLine{00075\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00076\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ AddModList,\ \textcolor{keyword}{typename}\ RemoveList,\ \textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00077\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a45eb94d17a15e5fb372ae0c9b449aea9}{apply\_addmodremlist\_diff}}(\textcolor{keyword}{const}\ AddModList\&\ prev\_list,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ AddModList\&\ add\_diff\_list,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ RemoveList\&\ rm\_diff\_list,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AddModList\&\ \ \ \ \ \ \ next\_list,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ GetId\&\ \ \ \ \ \ id\_func)}
+\DoxyCodeLine{00082\ \{}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordflow}{if}\ (add\_diff\_list.size()\ ==\ 0\ \textcolor{keyword}{and}\ rm\_diff\_list.size()\ ==\ 0)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{if}\ (\&next\_list\ !=\ \&prev\_list)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ next\_list\ =\ prev\_list;}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{auto}\ id\_cmp\_op\ =\ make\_id\_comparator(id\_func);}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(std::is\_sorted(prev\_list.begin(),\ prev\_list.end(),\ id\_cmp\_op),\ \textcolor{stringliteral}{"{}Expected\ sorted\ list"{}});}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(std::is\_sorted(add\_diff\_list.begin(),\ add\_diff\_list.end(),\ id\_cmp\_op),\ \textcolor{stringliteral}{"{}Expected\ sorted\ list"{}});}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(std::is\_sorted(rm\_diff\_list.begin(),\ rm\_diff\_list.end()),\ \textcolor{stringliteral}{"{}Expected\ sorted\ list"{}});}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ AddModList\ tmp\_lst;}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{//\ apply\ remove\ list}}
+\DoxyCodeLine{00096\ \ \ std::set\_difference(prev\_list.begin(),}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev\_list.end(),}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm\_diff\_list.begin(),}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm\_diff\_list.end(),}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::back\_inserter(tmp\_lst),}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ id\_cmp\_op);}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{//\ apply\ toaddmodlist}}
+\DoxyCodeLine{00104\ \ \ next\_list.clear();}
+\DoxyCodeLine{00105\ \ \ std::set\_union(add\_diff\_list.begin(),}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add\_diff\_list.end(),}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_lst.begin(),}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_lst.end(),}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::back\_inserter(next\_list),}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ id\_cmp\_op);}
+\DoxyCodeLine{00111\ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ AddModList,\ \textcolor{keyword}{typename}\ RemoveList,\ \textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00114\ \textcolor{keywordtype}{void}\ apply\_addmodremlist\_diff(AddModList\&\ \ \ \ \ \ \ src\_and\_dest\_list,}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ AddModList\&\ add\_diff\_list,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ RemoveList\&\ rm\_diff\_list,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ GetId\&\ \ \ \ \ \ id\_func)}
+\DoxyCodeLine{00118\ \{}
+\DoxyCodeLine{00119\ \ \ apply\_addmodremlist\_diff(src\_and\_dest\_list,\ add\_diff\_list,\ rm\_diff\_list,\ src\_and\_dest\_list,\ id\_func);}
+\DoxyCodeLine{00120\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{comment}{///\ \(\backslash\)brief\ Invokes\ rem\_func,\ add\_func\ and\ mod\_func\ for\ any\ detected\ differences\ between\ prev\_list\ and\ next\_list.}}
+\DoxyCodeLine{00123\ \textcolor{comment}{///\ \(\backslash\)param\ rem\_func\ Callable\ with\ signature\ void(const\ obj\_type\&),\ where\ obj\_type\ is\ the\ value\_type\ of\ \(\backslash\)c\ List,}}
+\DoxyCodeLine{00124\ \textcolor{comment}{///\ which\ gets\ called\ for\ every\ object\ whose\ id\ exists\ in\ \(\backslash\)c\ prev\_list\ but\ does\ not\ exist\ in\ \(\backslash\)c\ next\_list.}}
+\DoxyCodeLine{00125\ \textcolor{comment}{///\ \(\backslash\)param\ add\_func\ Callable\ with\ signature\ void(const\ obj\_type\&),\ where\ obj\_type\ is\ the\ value\_type\ of\ \(\backslash\)c\ List,}}
+\DoxyCodeLine{00126\ \textcolor{comment}{///\ which\ gets\ called\ for\ every\ object\ whose\ id\ exists\ in\ \(\backslash\)c\ next\_list\ but\ does\ not\ exist\ in\ \(\backslash\)c\ prev\_list.}}
+\DoxyCodeLine{00127\ \textcolor{comment}{///\ \(\backslash\)param\ mod\_func\ Callable\ with\ signature\ void(const\ obj\_type\&),\ where\ obj\_type\ is\ the\ value\_type\ of\ \(\backslash\)c\ List,}}
+\DoxyCodeLine{00128\ \textcolor{comment}{///\ which\ gets\ called\ for\ every\ object\ whose\ id\ exists\ in\ both\ \(\backslash\)c\ next\_list\ and\ \(\backslash\)c\ prev\_list,\ but\ its\ parameters\ are}}
+\DoxyCodeLine{00129\ \textcolor{comment}{///\ different\ between\ the\ two\ lists.}}
+\DoxyCodeLine{00130\ \textcolor{comment}{///\ \(\backslash\)tparam\ List\ List\ of\ objects,\ where\ each\ object\ has\ an\ ID.}}
+\DoxyCodeLine{00131\ \textcolor{comment}{///\ \(\backslash\)tparam\ GetId\ Function\ to\ obtain\ ID\ of\ an\ object.}}
+\DoxyCodeLine{00132\ \textcolor{comment}{///\ \(\backslash\)param[in]\ prev\_list\ Previous\ list\ of\ objects.}}
+\DoxyCodeLine{00133\ \textcolor{comment}{///\ \(\backslash\)param[in]\ next\_list\ Next\ list\ of\ objects.}}
+\DoxyCodeLine{00134\ \textcolor{comment}{///\ \(\backslash\)param[in]\ id\_func\ function\ to\ extract\ the\ ID\ from\ an\ object\ with\ type\ equal\ to\ the\ value\_type\ of\ \(\backslash\)c\ List.}}
+\DoxyCodeLine{00135\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ List,\ \textcolor{keyword}{typename}\ RemFunctor,\ \textcolor{keyword}{typename}\ AddFunctor,\ \textcolor{keyword}{typename}\ ModFunctor,\ \textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00136\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{std}}::\mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{enable\_if\_t}}<\textcolor{keyword}{not}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{is\_iterable}}<\mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{AddFunctor}}>::\mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{value}}>\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{calculate\_addmodremlist\_diff}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{RemFunctor}}\&\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{rem\_func}},}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{AddFunctor}}\&\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{add\_func}},}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{ModFunctor}}\&\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{mod\_func}},}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{List}}\&\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{prev\_list}},}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{List}}\&\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{next\_list}},}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{GetId}}\&\ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a212657394327801732ef7e2a7716322b}{id\_func}})}
+\DoxyCodeLine{00142\ \{}
+\DoxyCodeLine{00143\ \ \ \textcolor{keyword}{auto}\ id\_cmp\_op\ =\ make\_id\_comparator(id\_func);}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(std::is\_sorted(prev\_list.begin(),\ prev\_list.end(),\ id\_cmp\_op),\ \textcolor{stringliteral}{"{}Expected\ sorted\ list"{}});}
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(std::is\_sorted(next\_list.begin(),\ next\_list.end(),\ id\_cmp\_op),\ \textcolor{stringliteral}{"{}Expected\ sorted\ list"{}});}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{auto}\ src\_it\ \ \ \ =\ prev\_list.begin();}
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{auto}\ target\_it\ =\ next\_list.begin();}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{bool}\ src\_left\ \ \ \ =\ src\_it\ !=\ prev\_list.end();}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{bool}\ target\_left\ =\ target\_it\ !=\ next\_list.end();}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordflow}{while}\ (src\_left\ \textcolor{keyword}{or}\ target\_left)\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ target\_left\ \textcolor{keyword}{or}\ (src\_left\ \textcolor{keyword}{and}\ id\_cmp\_op(*src\_it,\ *target\_it)))\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ rem\_func(src\_it++);}
+\DoxyCodeLine{00155\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ src\_left\ \textcolor{keyword}{or}\ (target\_left\ \textcolor{keyword}{and}\ id\_cmp\_op(*target\_it,\ *src\_it)))\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \textcolor{comment}{//\ a\ new\ object\ has\ been\ added\ to\ target}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ add\_func(target\_it++);}
+\DoxyCodeLine{00158\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ mod\_func(src\_it++,\ target\_it++);}
+\DoxyCodeLine{00160\ \ \ \ \ \}}
+\DoxyCodeLine{00161\ \ \ \ \ src\_left\ \ \ \ =\ src\_it\ !=\ prev\_list.end();}
+\DoxyCodeLine{00162\ \ \ \ \ target\_left\ =\ target\_it\ !=\ next\_list.end();}
+\DoxyCodeLine{00163\ \ \ \}}
+\DoxyCodeLine{00164\ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{comment}{///\ \(\backslash\)brief\ Generate\ toAddModList\ and\ toReleaseList\ based\ on\ differences\ between\ prev\_list\ and\ next\_list.}}
+\DoxyCodeLine{00167\ \textcolor{comment}{///\ \(\backslash\)tparam\ toAddModList\ List\ of\ objects\ added\ or\ modified.}}
+\DoxyCodeLine{00168\ \textcolor{comment}{///\ \(\backslash\)tparam\ RemoveList\ List\ of\ IDs\ for\ objects\ removed.}}
+\DoxyCodeLine{00169\ \textcolor{comment}{///\ \(\backslash\)tparam\ List\ List\ of\ objects,\ where\ each\ object\ has\ an\ ID.}}
+\DoxyCodeLine{00170\ \textcolor{comment}{///\ \(\backslash\)tparam\ ConvertElem\ Function\ to\ convert\ element\ of\ \(\backslash\)c\ List\ to\ element\ of\ \(\backslash\)c\ toAddModList.}}
+\DoxyCodeLine{00171\ \textcolor{comment}{///\ \(\backslash\)tparam\ GetId\ Function\ to\ obtain\ ID\ of\ an\ object.}}
+\DoxyCodeLine{00172\ \textcolor{comment}{///\ \(\backslash\)param[out]\ add\_diff\_list\ Difference\ in\ terms\ of\ added/modified\ objects\ between\ \(\backslash\)c\ prev\_list\ and\ \(\backslash\)c\ next\_list.}}
+\DoxyCodeLine{00173\ \textcolor{comment}{///\ \(\backslash\)param[out]\ rem\_diff\_list\ Difference\ in\ terms\ of\ removed\ objects\ between\ \ \(\backslash\)c\ prev\_list\ and\ \(\backslash\)c\ next\_list.}}
+\DoxyCodeLine{00174\ \textcolor{comment}{///\ \(\backslash\)param[in]\ prev\_list\ Previous\ list\ of\ objects.}}
+\DoxyCodeLine{00175\ \textcolor{comment}{///\ \(\backslash\)param[in]\ next\_list\ Next\ list\ of\ objects.}}
+\DoxyCodeLine{00176\ \textcolor{comment}{///\ \(\backslash\)param[in]\ convert\_func\ Callable\ used\ to\ convert\ an\ object\ with\ type\ \(\backslash\)c\ List::value\_type\ into\ an\ object\ with\ type}}
+\DoxyCodeLine{00177\ \textcolor{comment}{///\ \(\backslash\)c\ toAddModList::value\_type.}}
+\DoxyCodeLine{00178\ \textcolor{comment}{///\ \(\backslash\)param[in]\ id\_func\ function\ to\ extract\ the\ ID\ from\ an\ object\ with\ type\ equal\ to\ the\ value\_type\ of\ \(\backslash\)c\ List.}}
+\DoxyCodeLine{00179\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ List,\ \textcolor{keyword}{typename}\ toAddModList,\ \textcolor{keyword}{typename}\ RemoveList,\ \textcolor{keyword}{typename}\ ConvertElem,\ \textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00180\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{std}}::\mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{enable\_if\_t}}<\mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{is\_iterable}}<\mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{toAddModList}}>::\mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{value}}>\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{calculate\_addmodremlist\_diff}}(\mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{toAddModList}}\&\ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{add\_diff\_list}},}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{RemoveList}}\&\ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{rem\_diff\_list}},}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{List}}\&\ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{prev\_list}},}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{List}}\&\ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{next\_list}},}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{ConvertElem}}\&\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{convert\_func}},}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{GetId}}\&\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a765c937c1d409815d3011d7bfe81a67e}{id\_func}})}
+\DoxyCodeLine{00186\ \{}
+\DoxyCodeLine{00187\ \ \ \textcolor{keywordflow}{if}\ (\&prev\_list\ ==\ \&next\_list)\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{comment}{//\ No\ difference\ because\ src\ and\ target\ are\ the\ same\ list.\ Early\ return.}}
+\DoxyCodeLine{00189\ \ \ \ \ add\_diff\_list.clear();}
+\DoxyCodeLine{00190\ \ \ \ \ rem\_diff\_list.clear();}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ add\_diff\_list.clear();}
+\DoxyCodeLine{00195\ \ \ rem\_diff\_list.clear();}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \textcolor{keyword}{using}\ it\_t\ \ \ \ =\ \textcolor{keyword}{typename}\ List::const\_iterator;}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{auto}\ rem\_func\ =\ [\&rem\_diff\_list,\ \&id\_func](it\_t\ rem\_it)\ \{\ rem\_diff\_list.push\_back(id\_func(*rem\_it));\ \};}
+\DoxyCodeLine{00199\ \ \ \textcolor{keyword}{auto}\ add\_func\ =\ [\&add\_diff\_list,\ \&convert\_func](it\_t\ add\_it)\ \{\ add\_diff\_list.push\_back(convert\_func(*add\_it));\ \};}
+\DoxyCodeLine{00200\ \ \ \textcolor{keyword}{auto}\ mod\_func\ =\ [\&add\_diff\_list,\ \&convert\_func](it\_t\ src\_it,\ it\_t\ target\_it)\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}(*src\_it\ ==\ *target\_it))\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ add\_diff\_list.push\_back(convert\_func(*target\_it));}
+\DoxyCodeLine{00203\ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \};}
+\DoxyCodeLine{00205\ \ \ calculate\_addmodremlist\_diff(rem\_func,\ add\_func,\ mod\_func,\ prev\_list,\ next\_list,\ id\_func);}
+\DoxyCodeLine{00206\ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{comment}{///\ \(\backslash\)brief\ Generate\ toAddModList\ and\ toReleaseList\ based\ on\ differences\ between\ prev\_list\ and\ next\_list.}}
+\DoxyCodeLine{00209\ \textcolor{comment}{///\ \(\backslash\)tparam\ toAddModList\ List\ of\ objects\ added\ or\ modified.}}
+\DoxyCodeLine{00210\ \textcolor{comment}{///\ \(\backslash\)tparam\ RemoveList\ List\ of\ IDs\ for\ objects\ removed.}}
+\DoxyCodeLine{00211\ \textcolor{comment}{///\ \(\backslash\)tparam\ GetId\ Function\ to\ obtain\ ID\ of\ an\ object.}}
+\DoxyCodeLine{00212\ \textcolor{comment}{///\ \(\backslash\)param[out]\ add\_diff\_list\ Difference\ in\ terms\ of\ added/modified\ objects\ between\ \(\backslash\)c\ prev\_list\ and\ \(\backslash\)c\ next\_list.}}
+\DoxyCodeLine{00213\ \textcolor{comment}{///\ \(\backslash\)param[out]\ rem\_diff\_list\ Difference\ in\ terms\ of\ removed\ objects\ between\ \ \(\backslash\)c\ prev\_list\ and\ \(\backslash\)c\ next\_list.}}
+\DoxyCodeLine{00214\ \textcolor{comment}{///\ \(\backslash\)param[in]\ prev\_list\ Previous\ list\ of\ objects.}}
+\DoxyCodeLine{00215\ \textcolor{comment}{///\ \(\backslash\)param[in]\ next\_list\ Next\ list\ of\ objects.}}
+\DoxyCodeLine{00216\ \textcolor{comment}{///\ \(\backslash\)param[in]\ id\_func\ function\ to\ extract\ the\ ID\ from\ an\ object\ with\ type\ equal\ to\ the\ value\_type\ of\ \(\backslash\)c\ List.}}
+\DoxyCodeLine{00217\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ toAddModList,\ \textcolor{keyword}{typename}\ RemoveList,\ \textcolor{keyword}{typename}\ GetId>}
+\DoxyCodeLine{00218\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_ac25ea9ee4ce1176f65f27b64d6377b05}{calculate\_addmodremlist\_diff}}(toAddModList\&\ \ \ \ \ \ \ add\_diff\_list,}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RemoveList\&\ \ \ \ \ \ \ \ \ rem\_diff\_list,}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ toAddModList\&\ prev\_list,}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ toAddModList\&\ next\_list,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ GetId\&\ \ \ \ \ \ \ \ id\_func)}
+\DoxyCodeLine{00223\ \{}
+\DoxyCodeLine{00224\ \ \ \textcolor{keyword}{using}\ elem\_type\ =\ \textcolor{keyword}{decltype}(*prev\_list.begin());}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordflow}{if}\ (\&prev\_list\ ==\ \&add\_diff\_list)\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{comment}{//\ use\ const\ prev\_list\ instead.}}
+\DoxyCodeLine{00228\ \ \ \ \ toAddModList\ prev\_list2\ =\ prev\_list;}
+\DoxyCodeLine{00229\ \ \ \ \ calculate\_addmodremlist\_diff(add\_diff\_list,\ rem\_diff\_list,\ prev\_list2,\ next\_list,\ id\_func);}
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00231\ \ \ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordflow}{if}\ (\&next\_list\ ==\ \&add\_diff\_list)\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{comment}{//\ use\ const\ next\_list}}
+\DoxyCodeLine{00235\ \ \ \ \ toAddModList\ next\_list2\ =\ next\_list;}
+\DoxyCodeLine{00236\ \ \ \ \ calculate\_addmodremlist\_diff(add\_diff\_list,\ rem\_diff\_list,\ prev\_list,\ next\_list2,\ id\_func);}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ calculate\_addmodremlist\_diff(}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ add\_diff\_list,\ rem\_diff\_list,\ prev\_list,\ next\_list,\ [](\textcolor{keyword}{const}\ elem\_type\&\ e)\ \{\ \textcolor{keywordflow}{return}\ e;\ \},\ id\_func);}
+\DoxyCodeLine{00242\ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ up\ the\ setup/release\ ASN.1\ object\ based\ on\ the\ difference\ between\ prev\ and\ next.}}
+\DoxyCodeLine{00245\ \textcolor{comment}{///}}
+\DoxyCodeLine{00246\ \textcolor{comment}{///\ \(\backslash\)param\ setup\_rel\ Setup/release\ ASN.1\ object.}}
+\DoxyCodeLine{00247\ \textcolor{comment}{///\ \(\backslash\)param\ prev\ Previous\ optional\ value.}}
+\DoxyCodeLine{00248\ \textcolor{comment}{///\ \(\backslash\)param\ next\ New\ optional\ value.}}
+\DoxyCodeLine{00249\ \textcolor{comment}{///\ \(\backslash\)tparam\ ConvertElem\ Function\ to\ convert\ element\ of\ \(\backslash\)c\ OptionalElem\ to\ element\ of\ \(\backslash\)c\ Asn1Type.}}
+\DoxyCodeLine{00250\ \textcolor{comment}{///\ \(\backslash\)return\ Whether\ changes\ were\ made\ to\ Setup/Release\ ASN.1\ object.}}
+\DoxyCodeLine{00251\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Asn1Type,\ \textcolor{keyword}{typename}\ OptionalElem,\ \textcolor{keyword}{typename}\ ConvertElem>}
+\DoxyCodeLine{00252\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a588f4c3c488a77a7a321af16ad91b6a7}{calculate\_setup\_release}}(asn1::\mbox{\hyperlink{structasn1_1_1setup__release__c}{setup\_release\_c}}<Asn1Type>\&\ setup\_rel,}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<OptionalElem>\&\ \ \ \ prev,}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<OptionalElem>\&\ \ \ \ next,}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ConvertElem\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ convert\_func)}
+\DoxyCodeLine{00256\ \{}
+\DoxyCodeLine{00257\ \ \ \textcolor{keywordflow}{if}\ (next.has\_value())\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ prev.has\_value()\ \textcolor{keyword}{or}\ *prev\ !=\ *next)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ setup\_rel.set\_setup()\ =\ convert\_func(*next);}
+\DoxyCodeLine{00260\ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (prev.has\_value())\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ setup\_rel.set\_release();}
+\DoxyCodeLine{00263\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ setup\_rel.set(asn1::\mbox{\hyperlink{structasn1_1_1setup__release__opts}{setup\_release\_opts}}::nulltype);}
+\DoxyCodeLine{00265\ \ \ \}}
+\DoxyCodeLine{00266\ \ \ \textcolor{keywordflow}{return}\ setup\_rel.type().value\ !=\ asn1::\mbox{\hyperlink{structasn1_1_1setup__release__opts}{setup\_release\_opts}}::nulltype;}
+\DoxyCodeLine{00267\ \}}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

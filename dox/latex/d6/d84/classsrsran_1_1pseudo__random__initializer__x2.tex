@@ -1,0 +1,146 @@
+\doxysection{srsran\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2 Class Reference}
+\hypertarget{classsrsran_1_1pseudo__random__initializer__x2}{}\label{classsrsran_1_1pseudo__random__initializer__x2}\index{srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}}
+
+
+State sequence $x_2(n)$ initializer.  
+
+
+
+
+{\ttfamily \#include $<$pseudo\+\_\+random\+\_\+generator\+\_\+initializers.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=255pt]{d6/df6/classsrsran_1_1pseudo__random__initializer__x2__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1pseudo__random__initializer__x2_a3864e12f0f528cf0ebdb143a76b39068}{pseudo\+\_\+random\+\_\+initializer\+\_\+x2}} (\mbox{\hyperlink{classunsigned}{unsigned}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{Nc}})
+\begin{DoxyCompactList}\small\item\em Initializes the first 31 elements of $x_2(n)$ and advances to position $N_{\textup{C}}$. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} \mbox{\hyperlink{classsrsran_1_1pseudo__random__initializer__x2_a8d4c73db7b0a1857b06164fccb34f55d}{get\+\_\+reverse}} (\mbox{\hyperlink{classunsigned}{unsigned}} c\+\_\+init) \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Gets the $x_2(n)$ state register after initialization. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} \mbox{\hyperlink{classsrsran_1_1pseudo__random__initializer__x2_a92435ada85045053b776294173653e39}{get}} (\mbox{\hyperlink{classunsigned}{unsigned}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{init\+\_\+state}}) \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Gets the $x_2(n)$ state register after initialization. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+State sequence $x_2(n)$ initializer. 
+
+Similarly to \doxylink{classsrsran_1_1pseudo__random__initializer__x1}{pseudo\+\_\+random\+\_\+initializer\+\_\+x1}, this class is used to initialize the sequence $x_2(n)$ and advance it until position $n = N_{\textup{C}}$. Here, however, the process is carried out simultaneously for all possible seeds of the form $c_{\textup{init}} = 2^k$ for $k=0,1,\dots,30$. The initial state corresponding to any other seed can easily be computed from these basic ones after noticing that the map sending a seed to the corresponding sequence defines a group isomorphism between the set of seeds and the set of sequences (both groups under bitwise XOR). That is, if \begin{align*} c_{\textup{init}}^{(1)} &\mapsto x_2^{(1)}(n) &&\text{and} &
+c_{\textup{init}}^{(2)} &\mapsto x_2^{(2)}(n)
+\end{align*} then  \[
+c_{\textup{init}}^{(1)} \oplus c_{\textup{init}}^{(2)} \mapsto x_2^{(1)}(n) \oplus x_2^{(2)}(n)
+\] with the XOR operator acting bitwise between seeds and for all $n$ between sequences. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1pseudo__random__initializer__x2_a3864e12f0f528cf0ebdb143a76b39068}\label{classsrsran_1_1pseudo__random__initializer__x2_a3864e12f0f528cf0ebdb143a76b39068} 
+\index{srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}!pseudo\_random\_initializer\_x2@{pseudo\_random\_initializer\_x2}}
+\index{pseudo\_random\_initializer\_x2@{pseudo\_random\_initializer\_x2}!srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}}
+\doxysubsubsection{\texorpdfstring{pseudo\_random\_initializer\_x2()}{pseudo\_random\_initializer\_x2()}}
+{\footnotesize\ttfamily srsran\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{Nc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Initializes the first 31 elements of $x_2(n)$ and advances to position $N_{\textup{C}}$. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00122\ \ \ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ max\_step\_size\ =\ \mbox{\hyperlink{classsrsran_1_1pseudo__random__generator__sequence_ac1b0b854c5a1ce42a68011fb839d8a76}{pseudo\_random\_generator\_sequence::get\_max\_step\_size}}();}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ For\ each\ bit\ of\ the\ seed.}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{classuint32__t}{uint32\_t}}\ i\ =\ 0;\ i\ !=\ pseudo\_random\_generator\_state\_size;\ ++i)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ pseudo\_random\_generator\_sequence\ sequence(0,\ 1\ <<\ (31\ -\/\ i));}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\ =\ 0;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{n\_end}}\ =\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{Nc}}\ /\ max\_step\_size)\ *\ max\_step\_size;\ n\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{n\_end}};\ n\ +=\ max\_step\_size)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ sequence.step<max\_step\_size>();}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ n\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{Nc}};\ ++n)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ sequence.step();}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ table[i]\ =\ sequence.get\_x2();}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1pseudo__random__initializer__x2_a92435ada85045053b776294173653e39}\label{classsrsran_1_1pseudo__random__initializer__x2_a92435ada85045053b776294173653e39} 
+\index{srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}!get@{get}}
+\index{get@{get}!srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} srsran\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2\+::get (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{init\+\_\+state }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the $x_2(n)$ state register after initialization. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em init\+\_\+state} & Initial $x_2(n)$ state. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The $x_2(n)$ state register after initialization. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00162\ \ \ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}}\ =\ 0;}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ pseudo\_random\_generator\_state\_size;\ ++i)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{init\_state}}\ <<\ i)\ \&\ (1U\ <<\ 31U))\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}}\ \string^=\ table[i];}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \}}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}};}
+\DoxyCodeLine{00171\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1pseudo__random__initializer__x2_a8d4c73db7b0a1857b06164fccb34f55d}\label{classsrsran_1_1pseudo__random__initializer__x2_a8d4c73db7b0a1857b06164fccb34f55d} 
+\index{srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}!get\_reverse@{get\_reverse}}
+\index{get\_reverse@{get\_reverse}!srsran::pseudo\_random\_initializer\_x2@{srsran::pseudo\_random\_initializer\_x2}}
+\doxysubsubsection{\texorpdfstring{get\_reverse()}{get\_reverse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} srsran\+::pseudo\+\_\+random\+\_\+initializer\+\_\+x2\+::get\+\_\+reverse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{c\+\_\+init }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the $x_2(n)$ state register after initialization. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em c\+\_\+init} & Initial $x_2(n)$ state as specified by TS38.\+211 Section 5.\+2.\+1. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The $x_2(n)$ state register after initialization. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00146\ \ \ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}}\ =\ 0;}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ pseudo\_random\_generator\_state\_size;\ ++i)\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((c\_init\ >>\ i)\ \&\ 1U)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}}\ \string^=\ table[i];}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{ret}};}
+\DoxyCodeLine{00155\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+lib/phy/upper/sequence\+\_\+generators/pseudo\+\_\+random\+\_\+generator\+\_\+initializers.\+h\end{DoxyCompactItemize}

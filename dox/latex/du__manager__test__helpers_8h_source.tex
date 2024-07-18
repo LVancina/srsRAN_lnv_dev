@@ -1,0 +1,370 @@
+\doxysection{du\+\_\+manager\+\_\+test\+\_\+helpers.\+h}
+\hypertarget{du__manager__test__helpers_8h_source}{}\label{du__manager__test__helpers_8h_source}\index{tests/unittests/du\_manager/du\_manager\_test\_helpers.h@{tests/unittests/du\_manager/du\_manager\_test\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}lib/du\_manager/du\_ue/du\_ue\_manager\_repository.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/du/du\_cell\_config\_helpers.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/du\_manager/du\_manager\_params.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/async\_test\_utils.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/manual\_task\_worker.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }srs\_du\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__teid__pool}{dummy\_teid\_pool}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__teid__pool}{gtpu\_teid\_pool}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \mbox{\hyperlink{classsrsran_1_1expected}{expected<gtpu\_teid\_t>}}\ request\_teid()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00040\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1expected}{expected<gtpu\_teid\_t>}}\ ret\{\mbox{\hyperlink{namespacesrsran_a5275852c5dfe9b8b517ac9f4989cff7d}{int\_to\_gtpu\_teid}}(next\_gtpu\_teid)\};}
+\DoxyCodeLine{00041\ \ \ \ \ next\_gtpu\_teid++;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ release\_teid(\mbox{\hyperlink{classsrsran_1_1strong__type}{gtpu\_teid\_t}}\ teid)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{bool}\ full()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ uint32\_t\ get\_max\_teids()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ std::numeric\_limits<uint32\_t>::max();\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ uint32\_t\ next\_gtpu\_teid\ =\ 0;}
+\DoxyCodeLine{00053\ \};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper}{dummy\_ue\_executor\_mapper}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}}
+\DoxyCodeLine{00056\ \{}
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper}{dummy\_ue\_executor\_mapper}}(\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec\_)\ :\ exec(exec\_)\ \{\}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper_a467541d24b2ac29d745cd778234bc6a8}{rebind\_executors}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ pcell\_index)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper_ac917f10ebe714eac0d5829c3afd495ee}{ctrl\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper_a9ff9e2e913a1be7cd1462760cfd84835}{f1u\_dl\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper_aa260d29f584e85b1cddf7911ad60dba0}{mac\_ul\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec;}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper}{dummy\_cell\_executor\_mapper}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__cell__executor__mapper}{du\_high\_cell\_executor\_mapper}}}
+\DoxyCodeLine{00068\ \{}
+\DoxyCodeLine{00069\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper}{dummy\_cell\_executor\_mapper}}(\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec\_)\ :\ exec(exec\_)\ \{\}}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper_a49d2de4a99aeb26dc12fd2ddbc18d2ed}{executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper_ab7fc3692dfa30ff8295d107cc57990df}{slot\_ind\_executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper_a609a9964b9525fc8ac9bcedf26ccbc5e}{error\_ind\_executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ exec;\ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec;}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1c__bearer}{dummy\_f1c\_bearer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__bearer}{f1c\_bearer}}}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \ \ \ \ \ \ last\_rx\_pdu;}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ last\_tx\_sdu;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1c__bearer_aff399312c9df25aa3c42b8cfee07d29f}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu)\textcolor{keyword}{\ override\ }\{\ last\_rx\_pdu\ =\ std::move(pdu);\ \}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1c__bearer_a6fa3455f5c46954e8b39b163fc43abe1}{handle\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\textcolor{keyword}{\ override\ }\{\ last\_tx\_sdu\ =\ std::move(sdu);\ \}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1c__bearer_a2bc0e0a7798fa0542fee947e449f1e2c}{handle\_transmit\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1c__bearer_a23cb151304d940587c2eba05c6d57092}{handle\_delivery\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1u__bearer}{dummy\_f1u\_bearer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer}{f1u\_bearer}},}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}},}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}},}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{structsrsran_1_1nru__dl__message}{nru\_dl\_message}}\ \ \ \ \ last\_msg;}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ last\_highest\_transmitted\_pdcp\_sn;}
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ last\_highest\_delivered\_pdcp\_sn;}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ \ last\_sdu;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}}\&\ \ \ \ \ \ get\_rx\_pdu\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}}\&\ get\_tx\_delivery\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}\&\ \ \ \ \ \ get\_tx\_sdu\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu(\mbox{\hyperlink{structsrsran_1_1nru__dl__message}{nru\_dl\_message}}\ msg)\textcolor{keyword}{\ override\ }\{\ last\_msg\ =\ std::move(msg);\ \}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1u__bearer_a44f042b7e6b6225f22be461db6f2a297}{handle\_transmit\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00107\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00108\ \ \ \ \ last\_highest\_transmitted\_pdcp\_sn\ =\ highest\_pdcp\_sn;}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__f1u__bearer_a252adf246e7cb32b58242b95e780ae7f}{handle\_delivery\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00111\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00112\ \ \ \ \ last\_highest\_delivered\_pdcp\_sn\ =\ highest\_pdcp\_sn;}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{void}\ handle\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\textcolor{keyword}{\ override\ }\{\ last\_sdu\ =\ std::move(sdu);\ \}}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy}{f1ap\_test\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__connection__manager}{f1ap\_connection\_manager}},}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__ue__context__manager}{f1ap\_ue\_context\_manager}},}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1f1ap__message__handler}{f1ap\_message\_handler}},}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__rrc__message__transfer__procedure__handler}{f1ap\_rrc\_message\_transfer\_procedure\_handler}}}
+\DoxyCodeLine{00121\ \{}
+\DoxyCodeLine{00122\ \ \ \textcolor{keyword}{struct\ }drb\_to\_idx\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ get\_index(drb\_id\_t\ i)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(i)\ -\/\ 1;\ \}}
+\DoxyCodeLine{00124\ \ \ \ \ drb\_id\_t\ get\_id(\textcolor{keywordtype}{size\_t}\ i)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}drb\_id\_t\textcolor{keyword}{>}(i\ +\ 1);\ \}}
+\DoxyCodeLine{00125\ \ \ \};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__test__dummy_1_1f1ap__ue__context}{f1ap\_ue\_context}}\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__table}{slotted\_id\_table<srb\_id\_t,\ dummy\_f1c\_bearer,\ MAX\_NOF\_SRBS>}}\ f1c\_bearers;}
+\DoxyCodeLine{00130\ \ \ \};}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__table}{slotted\_id\_table<du\_ue\_index\_t,\ f1ap\_ue\_context,\ MAX\_NOF\_DU\_UES>}}\ f1ap\_ues;}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \mbox{\hyperlink{classsrsran_1_1wait__manual__event__tester}{wait\_manual\_event\_tester<f1\_setup\_response\_message>}}\ \ \ \ \ \ \ \ \ \ \ \ wait\_f1\_setup;}
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<f1ap\_ue\_creation\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_create;}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__creation__response}{f1ap\_ue\_creation\_response}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_ue\_create\_response;}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<f1ap\_ue\_configuration\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_config;}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__configuration__response}{f1ap\_ue\_configuration\_response}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_ue\_config\_response;}
+\DoxyCodeLine{00139\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<du\_ue\_index\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_deleted;}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<f1ap\_ue\_context\_release\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_release\_req;}
+\DoxyCodeLine{00141\ \ \ \mbox{\hyperlink{classsrsran_1_1wait__manual__event__tester}{wait\_manual\_event\_tester<f1ap\_ue\_context\_modification\_confirm>}}\ wait\_ue\_mod;}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a8cf9ee1d4b31eae912de7374ef60ca25}{connect\_to\_cu\_cp}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1\_setup\_response\_message>}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_ab97d304d84c9e9cc09aa0da4d379577b}{handle\_f1\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1__setup__request__message}{f1\_setup\_request\_message}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00146\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{return}\ wait\_f1\_setup.launch();}
+\DoxyCodeLine{00148\ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__creation__response}{f1ap\_ue\_creation\_response}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a8bb6bc2bed71203f11c4f7cf992a32dc}{handle\_ue\_creation\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__creation__request}{f1ap\_ue\_creation\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00152\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00153\ \ \ \ \ last\_ue\_create\ =\ msg;}
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{return}\ next\_ue\_create\_response;}
+\DoxyCodeLine{00155\ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__configuration__response}{f1ap\_ue\_configuration\_response}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a8f059f30fbcaeb28e168100370854969}{handle\_ue\_configuration\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__configuration__request}{f1ap\_ue\_configuration\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00158\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00159\ \ \ \ \ last\_ue\_config\ =\ msg;}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{return}\ next\_ue\_config\_response;}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a65cde20239db42e6f54677e9c552e848}{handle\_ue\_deletion\_request}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ override\ }\{\ last\_ue\_deleted\ =\ ue\_index;\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a47c2bb90ffbb0d99ff04220281eb7c31}{handle\_ue\_context\_release\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__release__request}{f1ap\_ue\_context\_release\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00166\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00167\ \ \ \ \ last\_ue\_release\_req\ =\ msg;}
+\DoxyCodeLine{00168\ \ \ \}}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1ap\_ue\_context\_modification\_confirm>}}}
+\DoxyCodeLine{00171\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_addb89ac6e8d92f9ae2fe716f2e8c54ba}{handle\_ue\_context\_modification\_required}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__modification__required}{f1ap\_ue\_context\_modification\_required}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00172\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keywordflow}{return}\ wait\_ue\_mod.launch();}
+\DoxyCodeLine{00174\ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_ab66a76983e82c29b3b5858d771a6edcf}{handle\_ue\_inactivity\_notification}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__inactivity__notification__message}{f1ap\_ue\_inactivity\_notification\_message}}\&\ msg)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a02f278f1110ac81d74bee75533ce74e7}{handle\_notify}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__notify__message}{f1ap\_notify\_message}}\&\ msg)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_acf78f31c4a3d487e170ad085d0c78265}{handle\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1f1ap__message}{f1ap\_message}}\&\ msg)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy_a15d0c44129c89ea62a8f64ef2ec4ec7e}{handle\_rrc\_delivery\_report}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__rrc__delivery__report__msg}{f1ap\_rrc\_delivery\_report\_msg}}\&\ report)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00183\ \};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__dummy}{f1u\_bearer\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer}{f1u\_bearer}},}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}},}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}},}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}}
+\DoxyCodeLine{00189\ \{}
+\DoxyCodeLine{00190\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00191\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{srs\_du::f1u\_rx\_sdu\_notifier}}\&\ du\_rx;}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<nru\_dl\_message>}}\ last\_pdu;}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \ \ \ \ \ \ last\_highest\_transmitted\_pdcp\_sn;}
+\DoxyCodeLine{00195\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \ \ \ \ \ \ last\_highest\_delivered\_pdcp\_sn;}
+\DoxyCodeLine{00196\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ \ \ \ \ \ \ \ last\_sdu;}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00198\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__dummy}{f1u\_bearer\_dummy}}(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{srs\_du::f1u\_rx\_sdu\_notifier}}\&\ du\_rx\_)\ :\ du\_rx(du\_rx\_)\ \{\}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}}\&\ \ \ \ \ \ get\_rx\_pdu\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00201\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}}\&\ get\_tx\_delivery\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00202\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}\&\ \ \ \ \ \ get\_tx\_sdu\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu(\mbox{\hyperlink{structsrsran_1_1nru__dl__message}{nru\_dl\_message}}\ msg)\textcolor{keyword}{\ override\ }\{\ last\_pdu\ =\ std::move(msg);\ \}}
+\DoxyCodeLine{00205\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__dummy_af2f6079e1bed9dff82de541b7e5f68ba}{handle\_transmit\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00206\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00207\ \ \ \ \ last\_highest\_transmitted\_pdcp\_sn\ =\ highest\_pdcp\_sn;}
+\DoxyCodeLine{00208\ \ \ \}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__dummy_a24d2eac3ead7365d1537d2c942eff049}{handle\_delivery\_notification}}(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00210\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00211\ \ \ \ \ last\_highest\_delivered\_pdcp\_sn\ =\ highest\_pdcp\_sn;}
+\DoxyCodeLine{00212\ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \textcolor{keywordtype}{void}\ handle\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\textcolor{keyword}{\ override\ }\{\ last\_sdu\ =\ std::move(sdu);\ \}}
+\DoxyCodeLine{00214\ \};}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__gateway__dummy}{f1u\_gateway\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__du__gateway}{f1u\_du\_gateway}}}
+\DoxyCodeLine{00217\ \{}
+\DoxyCodeLine{00218\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00219\ \ \ \textcolor{keywordtype}{bool}\ next\_bearer\_is\_created\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00221\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer}{srs\_du::f1u\_bearer}}*\ create\_du\_bearer(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id,}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1u__config}{srs\_du::f1u\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ config,}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\&\ dl\_tnl\_info,}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\&\ ul\_tnl\_info,}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{srs\_du::f1u\_rx\_sdu\_notifier}}\&\ \ \ du\_rx,}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00228\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordflow}{if}\ (next\_bearer\_is\_created\ and\ f1u\_bearers.count(dl\_tnl\_info)\ ==\ 0)\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ f1u\_bearers.insert(std::make\_pair(dl\_tnl\_info,\ std::map<up\_transport\_layer\_info,\ f1u\_bearer\_dummy>\{\}));}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ f1u\_bearers[dl\_tnl\_info].emplace(ul\_tnl\_info,\ du\_rx);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&f1u\_bearers.at(dl\_tnl\_info).at(ul\_tnl\_info);}
+\DoxyCodeLine{00233\ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \textcolor{keywordtype}{void}\ remove\_du\_bearer(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\&\ dl\_tnl\_info)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00238\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keyword}{auto}\ bearer\_it\ =\ f1u\_bearers.find(dl\_tnl\_info);}
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keywordflow}{if}\ (bearer\_it\ ==\ f1u\_bearers.end())\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).warning(\textcolor{stringliteral}{"{}Could\ not\ find\ DL-\/TEID\ at\ DU\ to\ remove.\ DL-\/TEID=\{\}"{}},}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dl\_tnl\_info.gtp\_teid);}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00244\ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ f1u\_bearers.erase(bearer\_it);}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ std::map<up\_transport\_layer\_info,\ std::map<up\_transport\_layer\_info,\ f1u\_bearer\_dummy>>\ f1u\_bearers;}
+\DoxyCodeLine{00249\ \};}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy}{mac\_test\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__cell__manager}{mac\_cell\_manager}},}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__ue__configurator}{mac\_ue\_configurator}},}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__ue__control__information__handler}{mac\_ue\_control\_information\_handler}},}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__paging__information__handler}{mac\_paging\_information\_handler}}}
+\DoxyCodeLine{00255\ \{}
+\DoxyCodeLine{00256\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00257\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_1_1mac__cell__dummy}{mac\_cell\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__cell__controller}{mac\_cell\_controller}}}
+\DoxyCodeLine{00258\ \ \ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1wait__manual__event__tester}{wait\_manual\_event\_tester<void>}}\ wait\_start;}
+\DoxyCodeLine{00260\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1wait__manual__event__tester}{wait\_manual\_event\_tester<void>}}\ wait\_stop;}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ start()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ wait\_start.launch();\ \}}
+\DoxyCodeLine{00263\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ stop()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ wait\_stop.launch();\ \}}
+\DoxyCodeLine{00264\ \ \ \};}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_1_1mac__cell__dummy}{mac\_cell\_dummy}}\ mac\_cell;}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<mac\_ue\_create\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_create\_msg\{\};}
+\DoxyCodeLine{00269\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<mac\_ue\_reconfiguration\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_reconf\_msg\{\};}
+\DoxyCodeLine{00270\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<mac\_ue\_delete\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_delete\_msg\{\};}
+\DoxyCodeLine{00271\ \ \ optional<mac\_dl\_buffer\_state\_indication\_message>\ \ \ \ \ \ \ \ \ \ last\_dl\_bs;}
+\DoxyCodeLine{00272\ \ \ byte\_buffer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_pushed\_ul\_ccch\_msg;}
+\DoxyCodeLine{00273\ \ \ wait\_manual\_event\_tester<mac\_ue\_create\_response>\ \ \ \ \ \ \ \ \ \ wait\_ue\_create;}
+\DoxyCodeLine{00274\ \ \ wait\_manual\_event\_tester<mac\_ue\_reconfiguration\_response>\ wait\_ue\_reconf;}
+\DoxyCodeLine{00275\ \ \ wait\_manual\_event\_tester<mac\_ue\_delete\_response>\ \ \ \ \ \ \ \ \ \ wait\_ue\_delete;}
+\DoxyCodeLine{00276\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_ul\_ccch\_msg\_result\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add\_cell(\textcolor{keyword}{const}\ mac\_cell\_creation\_request\&\ cell\_cfg)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00279\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ remove\_cell(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00280\ \ \ mac\_cell\_controller\&\ get\_cell\_controller(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ mac\_cell;\ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<mac\_ue\_create\_response>}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_ad9e26ecc1f0d381e719be2343008dc46}{handle\_ue\_create\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__ue__create__request}{mac\_ue\_create\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00283\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00284\ \ \ \ \ last\_ue\_create\_msg\ =\ msg;}
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keywordflow}{return}\ wait\_ue\_create.launch();}
+\DoxyCodeLine{00286\ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<mac\_ue\_reconfiguration\_response>}}}
+\DoxyCodeLine{00288\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_ae222827d85a887e7e083388cc8f4b651}{handle\_ue\_reconfiguration\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__ue__reconfiguration__request}{mac\_ue\_reconfiguration\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00289\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00290\ \ \ \ \ last\_ue\_reconf\_msg\ =\ msg;}
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{keywordflow}{return}\ wait\_ue\_reconf.launch();}
+\DoxyCodeLine{00292\ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<mac\_ue\_delete\_response>}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_ac253831cefe4baf4d3cdf5fc9fbcfdab}{handle\_ue\_delete\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__ue__delete__request}{mac\_ue\_delete\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00294\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00295\ \ \ \ \ last\_ue\_delete\_msg\ =\ msg;}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordflow}{return}\ wait\_ue\_delete.launch();}
+\DoxyCodeLine{00297\ \ \ \}}
+\DoxyCodeLine{00298\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_ae3cb8be3f090e74657f28afcf4c0a188}{handle\_ul\_ccch\_msg}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00299\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00300\ \ \ \ \ last\_pushed\_ul\_ccch\_msg\ =\ std::move(pdu);}
+\DoxyCodeLine{00301\ \ \ \ \ \textcolor{keywordflow}{return}\ next\_ul\_ccch\_msg\_result;}
+\DoxyCodeLine{00302\ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_a2e97373a8dc2ecef73a40c0d252f9380}{handle\_dl\_buffer\_state\_update}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__dl__buffer__state__indication__message}{mac\_dl\_buffer\_state\_indication\_message}}\&\ dl\_bs)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00305\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00306\ \ \ \ \ last\_dl\_bs\ =\ dl\_bs;}
+\DoxyCodeLine{00307\ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy_a0285acd6545c6e7998f815f143233501}{handle\_paging\_information}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1paging__information}{paging\_information}}\&\ msg)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00310\ \};}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory}{dummy\_ue\_resource\_configurator\_factory}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__ran__resource__manager}{du\_ran\_resource\_manager}}}
+\DoxyCodeLine{00313\ \{}
+\DoxyCodeLine{00314\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00315\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory_1_1dummy__resource__updater}{dummy\_resource\_updater}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1ue__ran__resource__configurator_1_1resource__updater}{ue\_ran\_resource\_configurator::resource\_updater}}}
+\DoxyCodeLine{00316\ \ \ \{}
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00318\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory_1_1dummy__resource__updater}{dummy\_resource\_updater}}(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory}{dummy\_ue\_resource\_configurator\_factory}}\&\ parent\_,\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_);}
+\DoxyCodeLine{00319\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory_1_1dummy__resource__updater}{\string~dummy\_resource\_updater}}();}
+\DoxyCodeLine{00320\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1du__ue__resource__update__response}{du\_ue\_resource\_update\_response}}\ update(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcell\_index,}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__request}{f1ap\_ue\_context\_update\_request}}\&\ upd\_req)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1cell__group__config}{cell\_group\_config}}\&\ \ \ \ \ \ \ get()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00325\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory}{dummy\_ue\_resource\_configurator\_factory}}\&\ parent;}
+\DoxyCodeLine{00326\ \ \ \};}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<du\_ue\_index\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_index;}
+\DoxyCodeLine{00329\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<du\_cell\_index\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_pcell;}
+\DoxyCodeLine{00330\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__request}{f1ap\_ue\_context\_update\_request}}\ \ \ \ \ \ \ \ \ \ \ \ \ last\_ue\_ctx\_upd;}
+\DoxyCodeLine{00331\ \ \ std::map<du\_ue\_index\_t,\ cell\_group\_config>\ ue\_resource\_pool;}
+\DoxyCodeLine{00332\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1cell__group__config}{cell\_group\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_context\_update\_result;}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00334\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory}{dummy\_ue\_resource\_configurator\_factory}}();}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1ue__ran__resource__configurator}{ue\_ran\_resource\_configurator}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory_a36e1db403f46daa5632fe81bbea870fc}{create\_ue\_resource\_configurator}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ ue\_index,}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ pcell\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00338\ \};}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__request}{f1ap\_ue\_context\_update\_request}}\ create\_f1ap\_ue\_context\_update\_request(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_idx,}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::initializer\_list<srb\_id\_t>\ srbs\_to\_addmod,}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::initializer\_list<drb\_id\_t>\ drbs\_to\_addmod);}
+\DoxyCodeLine{00343\ }
+\DoxyCodeLine{00344\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__test__bench}{du\_manager\_test\_bench}}}
+\DoxyCodeLine{00345\ \{}
+\DoxyCodeLine{00346\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00347\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__test__bench}{du\_manager\_test\_bench}}(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ du\_cell\_config>}}\ cells);}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ std::vector<du\_cell\_config>\ \ \ \ \ \ \ \ \ \ \ \ du\_cells;}
+\DoxyCodeLine{00350\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00351\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker}{manual\_task\_worker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worker;}
+\DoxyCodeLine{00352\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_mng\_exec;}
+\DoxyCodeLine{00353\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__executor__mapper}{dummy\_ue\_executor\_mapper}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_exec\_mapper;}
+\DoxyCodeLine{00354\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__cell__executor__mapper}{dummy\_cell\_executor\_mapper}}\ \ \ \ \ \ \ \ \ \ \ \ \ cell\_exec\_mapper;}
+\DoxyCodeLine{00355\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1ap__test__dummy}{f1ap\_test\_dummy}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1ap;}
+\DoxyCodeLine{00356\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__gateway__dummy}{f1u\_gateway\_dummy}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_gw;}
+\DoxyCodeLine{00357\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__test__dummy}{mac\_test\_dummy}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mac;}
+\DoxyCodeLine{00358\ \ \ \mbox{\hyperlink{classsrsran_1_1null__rlc__pcap}{null\_rlc\_pcap}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__pcap}{rlc\_pcap}};}
+\DoxyCodeLine{00359\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1du__manager__params}{du\_manager\_params}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structparams}{params}};}
+\DoxyCodeLine{00360\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1dummy__ue__resource__configurator__factory}{dummy\_ue\_resource\_configurator\_factory}}\ cell\_res\_alloc;}
+\DoxyCodeLine{00361\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00362\ \};}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00365\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

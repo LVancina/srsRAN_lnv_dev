@@ -18,10 +18,9 @@
 # and at http://www.gnu.org/licenses/.
 #
 
+add_subdirectory(ngap)
+add_subdirectory(e2ap)
+add_subdirectory(rlc)
 add_subdirectory(du_high)
 add_subdirectory(du_high_cu)
-add_subdirectory(e2ap)
-add_subdirectory(ngap)
 add_subdirectory(ofh)
-add_subdirectory(phy)
-add_subdirectory(rlc)

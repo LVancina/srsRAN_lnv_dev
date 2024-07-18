@@ -1,0 +1,253 @@
+\doxysection{downlink\+\_\+processor\+\_\+baseband\+\_\+impl.\+h}
+\hypertarget{downlink__processor__baseband__impl_8h_source}{}\label{downlink__processor__baseband__impl_8h_source}\index{lib/phy/lower/processors/downlink/downlink\_processor\_baseband\_impl.h@{lib/phy/lower/processors/downlink/downlink\_processor\_baseband\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/blocking\_queue.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_dynamic.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/amplitude\_controller/amplitude\_controller.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/downlink/downlink\_processor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/downlink/downlink\_processor\_baseband.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/downlink/downlink\_processor\_notifier.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/downlink/pdxch/pdxch\_processor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/downlink/pdxch/pdxch\_processor\_baseband.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/sampling\_rate.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/stats.h"{}}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Collects\ downlink\ processor\ baseband\ configuration\ parameters.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration}{downlink\_processor\_baseband\_configuration}}\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Sector\ identifier.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_ab8ac33d690bcac3a905ec2b1dab14db1}{sector\_id}};}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing.}}
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_aa9880e04ba6ce6d66acc6047e542e4ff}{scs}};}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration.}}
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_a37d3a4f606bc7ce914e16640b515ad61}{cp}};}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Baseband\ sampling\ rate.}}
+\DoxyCodeLine{00047\ \ \ sampling\_rate\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_a3ee312d1b46ae37b7ea7cb836008766a}{rate}};}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_af019d32857d166283d9529c0e3078a73}{nof\_tx\_ports}};}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ notified\ in\ advance\ in\ the\ TTI\ boundary\ event.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_aa98505014e1f374e2b8a70a46a0b7555}{nof\_slot\_tti\_in\_advance}};}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_a2b09862431f4a12d0c84e6dc62b56572}{srslog}}::\mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_a2b09862431f4a12d0c84e6dc62b56572}{basic\_logger}}*\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration_a2b09862431f4a12d0c84e6dc62b56572}{logger}};}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ Baseband\ buffer\ that\ stores\ a\ single\ OFDM\ symbol.}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer}{baseband\_symbol\_buffer}}}
+\DoxyCodeLine{00060\ \{}
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Constructs\ a\ baseband\ symbol\ buffer\ from\ a\ number\ of\ ports\ and\ an\ initial\ symbol\ size.}}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_aaa99da3e45a5fa30a970dfbfb55dbce6}{baseband\_symbol\_buffer}}(\textcolor{keywordtype}{unsigned}\ nof\_ports\_,\ \textcolor{keywordtype}{unsigned}\ symbol\_size)\ :}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_aaa99da3e45a5fa30a970dfbfb55dbce6}{buffer}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_aaa99da3e45a5fa30a970dfbfb55dbce6}{nof\_ports\_}},\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_aaa99da3e45a5fa30a970dfbfb55dbce6}{symbol\_size}}),\ nof\_ports(nof\_ports\_)}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ empty\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Clears\ the\ symbol\ buffer,\ allowing\ it\ to\ be\ written.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{clear}}()}
+\DoxyCodeLine{00071\ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ Mark\ buffer\ as\ empty.}}
+\DoxyCodeLine{00073\ \ \ \ \ empty\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Reads\ samples\ from\ the\ buffer,\ starting\ at\ an\ initial\ timestamp.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Copies\ the\ samples\ starting\ at\ the\ sample\ indicated\ by\ \(\backslash\)c\ timestamp\ until\ \(\backslash\)out\ is\ filled\ or\ until\ all\ samples}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ have\ been\ read.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ Destination\ buffer.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ timestamp\ Timestamp\ of\ the\ first\ sample\ to\ read.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ samples\ read\ from\ the\ buffer.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ \(\backslash\)ref\ write\_symbol\ must\ be\ called\ before\ attempting\ to\ read\ from\ the\ buffer.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ number\ of\ ports\ of\ \(\backslash\)c\ out\ must\ match\ the\ number\ of\ ports\ of\ the\ symbol\ buffer.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_a724712f3a0ae147cc12aff400cb63cc5}{read}}(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ out,\ baseband\_gateway\_timestamp\ timestamp)}
+\DoxyCodeLine{00087\ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!empty,\ \textcolor{stringliteral}{"{}Attempting\ to\ read\ from\ empty\ buffer."{}});}
+\DoxyCodeLine{00089\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(out.get\_nof\_channels()\ ==\ nof\_ports,\ \textcolor{stringliteral}{"{}Number\ of\ ports\ does\ not\ match."{}});}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ buffer\ if\ attempting\ to\ read\ samples\ in\ the\ past.}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{if}\ (timestamp\ <\ symbol\_start\_timestamp)\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{clear}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{)}};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ read\_index\ =\ timestamp\ -\/\ symbol\_start\_timestamp;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ buffer\ if\ attempting\ to\ read\ samples\ in\ the\ future.}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{if}\ (read\_index\ >=\ buffer.get\_nof\_samples())\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{clear}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{)}};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00103\ \ \ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{comment}{//\ Select\ the\ minimum\ among\ the\ samples\ to\ process\ and\ the\ number\ of\ stored\ samples\ that\ have\ not\ been\ read.}}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_available\_samples\ =\ buffer.get\_nof\_samples()\ -\/\ read\_index;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::min(out\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer_a1f272dc6d65ebeaba478bab5e9aea5bd}{.}}\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer_a1f272dc6d65ebeaba478bab5e9aea5bd}{get\_nof\_samples}}\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer_a1f272dc6d65ebeaba478bab5e9aea5bd}{(}}\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer_a1f272dc6d65ebeaba478bab5e9aea5bd}{)}},\ nof\_available\_samples);}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ For\ each\ port,\ concatenate\ samples.}}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_port\ =\ 0;\ i\_port\ !=\ nof\_ports;\ ++i\_port)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \textcolor{comment}{//\ Select\ view\ of\ the\ temporary\ buffer.}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ temp\_buffer\_src\ =\ buffer[i\_port].subspan(read\_index,\ count);}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \textcolor{comment}{//\ Select\ view\ of\ the\ output\ samples.}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ span<cf\_t>\ temp\_buffer\_dst\ =\ out.get\_channel\_buffer(i\_port).first(count);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ srsvec::copy(temp\_buffer\_dst,\ temp\_buffer\_src);}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{comment}{//\ Clear\ the\ buffer\ if\ all\ available\ samples\ have\ been\ read.}}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ ==\ nof\_available\_samples)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{clear}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_ade84b1c07cc1c761fb20fb052466f179}{)}};}
+\DoxyCodeLine{00123\ \ \ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ Return\ the\ number\ of\ read\ samples.}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00127\ \ \ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Provides\ write\ access\ into\ the\ symbol\ buffer.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{///\ Allows\ writing\ into\ the\ symbol\ buffer\ by\ means\ of\ a\ writing\ interface.\ It\ also\ sets\ the\ timestamp\ of\ the\ symbol}}
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ stored\ in\ the\ buffer.}}
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_timestamp\ Timestamp\ of\ the\ symbol\ to\ write.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_size\ Number\ of\ samples\ to\ write.}}
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ buffer\ writing\ interface\ that\ can\ be\ used\ to\ write\ samples\ into\ the\ buffer.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ buffer\ must\ be\ cleared\ by\ calling\ \(\backslash\)ref\ clear\ or\ by\ reading\ all\ of\ its\ contents\ between\ writes.}}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_a1842014653c327954be9437d319028fe}{write\_symbol}}(baseband\_gateway\_timestamp\ symbol\_timestamp,\ \textcolor{keywordtype}{unsigned}\ symbol\_size)}
+\DoxyCodeLine{00139\ \ \ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(empty,\ \textcolor{stringliteral}{"{}Attempting\ to\ write\ into\ non-\/empty\ buffer."{}});}
+\DoxyCodeLine{00141\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(symbol\_size\ >\ 0,\ \textcolor{stringliteral}{"{}Symbol\ size\ cannot\ be\ zero."{}});}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ buffer.resize(symbol\_size);}
+\DoxyCodeLine{00144\ \ \ \ \ symbol\_start\_timestamp\ =\ symbol\_timestamp;}
+\DoxyCodeLine{00145\ \ \ \ \ empty\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.get\_writer();}
+\DoxyCodeLine{00148\ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ number\ of\ available\ samples\ for\ a\ given\ initial\ timestamp.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Computes\ the\ number\ of\ samples\ stored\ in\ the\ buffer,\ starting\ at\ the\ sample\ indicated\ by\ \(\backslash\)c\ timestamp.\ It}}
+\DoxyCodeLine{00153\ \ \ \textcolor{comment}{///\ returns\ 0\ if\ the\ buffer\ has\ been\ cleared\ or\ if\ \(\backslash\)c\ timestamp\ belongs\ to\ a\ different\ symbol.}}
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ timestamp\ Timestamp\ of\ the\ first\ sample\ that\ must\ be\ included\ in\ the\ count.}}
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ available\ samples\ starting\ at\ \(\backslash\)c\ timestamp.}}
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer_a784d6482ce6a4f23737b10e143e8bf82}{get\_nof\_available\_samples}}(baseband\_gateway\_timestamp\ timestamp)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00158\ \ \ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{comment}{//\ No\ available\ samples\ if\ the\ buffer\ is\ empty,\ or\ for\ timestamps\ in\ the\ past\ or\ in\ the\ future.}}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{if}\ (empty\ ||\ (timestamp\ <\ symbol\_start\_timestamp)\ ||}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ (timestamp\ >=\ symbol\_start\_timestamp\ +\ buffer.get\_nof\_samples()))\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ read\_index\ =\ timestamp\ -\/\ symbol\_start\_timestamp;}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.get\_nof\_samples()\ -\/\ read\_index;}
+\DoxyCodeLine{00167\ \ \ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ Storage\ of\ baseband\ samples.}}
+\DoxyCodeLine{00171\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__dynamic}{baseband\_gateway\_buffer\_dynamic}}\ buffer;}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ Timestamp\ of\ the\ first\ baseband\ sample\ stored\ in\ the\ temporary\ buffer.}}
+\DoxyCodeLine{00174\ \ \ baseband\_gateway\_timestamp\ symbol\_start\_timestamp;}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ Number\ of\ ports\ of\ the\ buffer.}}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_ports;}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ Indicates\ if\ the\ buffer\ contents\ are\ outdated\ and\ can\ be\ overwritten.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordtype}{bool}\ empty;}
+\DoxyCodeLine{00179\ \};}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \textcolor{comment}{///\ Implements\ a\ software\ generic\ lower\ PHY\ downlink\ baseband\ processor.}}
+\DoxyCodeLine{00184\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor__baseband__impl}{downlink\_processor\_baseband\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor__baseband}{downlink\_processor\_baseband}}}
+\DoxyCodeLine{00185\ \{}
+\DoxyCodeLine{00186\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ software\ generic\ lower\ PHY\ downlink\ processor\ that\ can\ process\ downlink\ resource\ grids.}}
+\DoxyCodeLine{00188\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ pdxch\_proc\_baseband\_\ PDxCH\ processor\ baseband.}}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ amplitude\_control\_\ \ \ Amplitude\ controller.}}
+\DoxyCodeLine{00190\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Downlink\ processor\ configuration.}}
+\DoxyCodeLine{00191\ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor__baseband__impl_a5157501e0d49e46b107303c2e48360e4}{downlink\_processor\_baseband\_impl}}(\mbox{\hyperlink{classsrsran_1_1pdxch__processor__baseband}{pdxch\_processor\_baseband}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdxch\_proc\_baseband\_,}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ amplitude\_controller\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ amplitude\_control\_,}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1downlink__processor__baseband__configuration}{downlink\_processor\_baseband\_configuration}}\&\ config);}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1downlink__processor__notifier}{downlink\_processor\_notifier}}\&\ notifier\_)\ \{\ notifier\ =\ \&notifier\_;\ \}}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00199\ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__transmitter__metadata}{baseband\_gateway\_transmitter\_metadata}}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor__baseband__impl_a33e603ca3078d5235b0e8dcaedecf49f}{process}}(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ buffer,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baseband\_gateway\_timestamp\ \ \ \ \ \ timestamp)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ new\ symbol.}}
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ buffer\ Destination\ buffer.}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ slot\ Slot\ number.}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ i\_symbol\ Symbol\ number\ within\ the\ current\ slot.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \(\backslash\)c\ true\ if\ the\ symbol\ has\ been\ processed,\ \(\backslash\)c\ false\ otherwise.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordtype}{bool}\ process\_new\_symbol(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ buffer,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot,\ \textcolor{keywordtype}{unsigned}\ i\_symbol);}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{///\ Logger\ for\ printing\ amplitude\ control.}}
+\DoxyCodeLine{00212\ \ \ srslog::basic\_logger\&\ amplitude\_control\_logger;}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ PDxCH\ baseband\ processor.}}
+\DoxyCodeLine{00214\ \ \ \mbox{\hyperlink{classsrsran_1_1pdxch__processor__baseband}{pdxch\_processor\_baseband}}\&\ pdxch\_proc\_baseband;}
+\DoxyCodeLine{00215\ \ \ \textcolor{comment}{///\ Amplitude\ control.}}
+\DoxyCodeLine{00216\ \ \ amplitude\_controller\&\ amplitude\_control;}
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ notified\ in\ advanced\ in\ the\ TTI\ boundary.}}
+\DoxyCodeLine{00218\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_slot\_tti\_in\_advance;}
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ Sector\ identifier.}}
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordtype}{unsigned}\ sector\_id;}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing.}}
+\DoxyCodeLine{00222\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs;}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ Number\ of\ receive\ ports.}}
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports;}
+\DoxyCodeLine{00225\ \ \ \textcolor{comment}{///\ Number\ of\ samples\ per\ subframe;}}
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_samples\_per\_subframe;}
+\DoxyCodeLine{00227\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ per\ subframe;}}
+\DoxyCodeLine{00228\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_slots\_per\_subframe;}
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ per\ slot.}}
+\DoxyCodeLine{00230\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\_per\_slot;}
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ List\ of\ the\ symbol\ sizes\ in\ number\ samples\ for\ each\ symbol\ within\ the\ subframe.}}
+\DoxyCodeLine{00232\ \ \ std::vector<\textcolor{keywordtype}{unsigned}>\ symbol\_sizes;}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ Reference\ to\ the\ downlink\ notifier.}}
+\DoxyCodeLine{00234\ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor__notifier}{downlink\_processor\_notifier}}*\ notifier\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00235\ \ \ \textcolor{comment}{///\ Average\ symbol\ power\ statistics.}}
+\DoxyCodeLine{00236\ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics}{sample\_statistics}}<\textcolor{keywordtype}{float}>\ avg\_symbol\_power;}
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{///\ Peak\ symbol\ power\ statistics.}}
+\DoxyCodeLine{00238\ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics}{sample\_statistics}}<\textcolor{keywordtype}{float}>\ peak\_symbol\_power;}
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{///\ Symbol\ PAPR\ statistics.}}
+\DoxyCodeLine{00240\ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics}{sample\_statistics}}<\textcolor{keywordtype}{float}>\ symbol\_papr;}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{///\ Temporal\ storage\ of\ baseband\ samples.}}
+\DoxyCodeLine{00242\ \ \ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1baseband__symbol__buffer}{baseband\_symbol\_buffer}}\ temp\_buffer;}
+\DoxyCodeLine{00243\ \ \ \textcolor{comment}{///\ Last\ notified\ slot\ boundary.}}
+\DoxyCodeLine{00244\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}>\ last\_notified\_slot;}
+\DoxyCodeLine{00245\ \};}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -61,28 +61,24 @@ void fill_drb_to_remove_list(std::vector<drb_id_t>&       e1ap_drb_to_remove_lis
 /// \brief Fill RRC Reconfiguration message content.
 /// \param[out] rrc_reconfig_args The RRC Reconfiguration Arguments struct to fill.
 /// \param[in] srbs_to_be_setup_mod_list SRBs to be setup (only needed if default DRB is being setup).
-/// \param[in] pdu_sessions The PDU sessions to add/mod in the reconfiguration.
-/// \param[in] drb_to_remove DRB to remove from the configurations.
-/// \param[in] du_to_cu_rrc_info RRC container forwarded from the DU to the CU.
+/// \param[in] pdu_sessions The PDU sessions to add to the reconfiguration.
+/// \param[in] ue_context_modification_response The UE Context Modification Response as received by the DU.
 /// \param[in] nas_pdus NAS PDUs to forward to the UE as received by the AMF.
 /// \param[in] rrc_meas_cfg Optional measurement config to include in Reconfiguration.
 /// \param[in] reestablish_srbs Whether to request SRB reestablishment.
 /// \param[in] reestablish_drbs Whether to request DRB reestablishment.
-/// \param[in] sib1 Packed SIB1 content for direct delivery to UE (optional).
 /// \param[in] logger Logger reference.
 /// \return True on success, false otherwise.
 bool fill_rrc_reconfig_args(
     rrc_reconfiguration_procedure_request&                             rrc_reconfig_args,
     const slotted_id_vector<srb_id_t, f1ap_srbs_to_be_setup_mod_item>& srbs_to_be_setup_mod_list,
     const std::map<pdu_session_id_t, up_pdu_session_context_update>&   pdu_sessions,
-    const std::vector<drb_id_t>&                                       drb_to_remove,
     const f1ap_du_to_cu_rrc_info&                                      du_to_cu_rrc_info,
-    const std::vector<byte_buffer>&                                    nas_pdus,
+    const std::map<pdu_session_id_t, byte_buffer>&                     nas_pdus,
     const optional<rrc_meas_cfg>                                       rrc_meas_cfg,
     bool                                                               reestablish_srbs,
     bool                                                               reestablish_drbs,
     bool                                                               update_keys,
-    byte_buffer                                                        sib1,
     const srslog::basic_logger&                                        logger);
 
 bool update_setup_list(

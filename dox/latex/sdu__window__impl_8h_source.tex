@@ -1,0 +1,78 @@
+\doxysection{sdu\+\_\+window\+\_\+impl.\+h}
+\hypertarget{sdu__window__impl_8h_source}{}\label{sdu__window__impl_8h_source}\index{lib/support/sdu\_window\_impl.h@{lib/support/sdu\_window\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/circular\_map.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/sdu\_window.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T,\ std::\textcolor{keywordtype}{size\_t}\ WINDOW\_SIZE,\ \textcolor{keyword}{class}\ PREFIXED\_LOGGER>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1sdu__window__impl}{sdu\_window\_impl}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1sdu__window}{sdu\_window}}<T>}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1sdu__window__impl}{sdu\_window\_impl}}(PREFIXED\_LOGGER\&\ logger\_)\ :\ logger(logger\_)\ \{\}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1sdu__window__impl}{\string~sdu\_window\_impl}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ T\&\ add\_sn(\textcolor{keywordtype}{size\_t}\ sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{if}\ (has\_sn(sn))\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ logger.log\_error(\textcolor{stringliteral}{"{}sn=\{\}\ already\ present\ in\ window,\ overwriting."{}},\ sn);}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}sn=\{\}\ already\ present\ in\ window."{}},\ sn);}
+\DoxyCodeLine{00048\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Adding\ sn=\{\}\ to\ window."{}},\ sn);}
+\DoxyCodeLine{00050\ \ \ \ \ \}}
+\DoxyCodeLine{00051\ \ \ \ \ window.\mbox{\hyperlink{classsrsran_1_1circular__map_a85edf6c0e5ce10608610be37ee28e3b5}{overwrite}}(sn,\ T());}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ window[sn];}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{void}\ remove\_sn(\textcolor{keywordtype}{size\_t}\ sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ has\_sn(sn))\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ logger.log\_error(\textcolor{stringliteral}{"{}Cannot\ remove\ sn=\{\}\ because\ not\ contained\ in\ the\ window."{}},\ sn);}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}Cannot\ remove\ sn=\{\}\ because\ not\ contained\ in\ the\ window."{}},\ sn);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Removing\ sn=\{\}\ from\ window"{}},\ sn);}
+\DoxyCodeLine{00062\ \ \ \ \ window.erase(sn);}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ \ \ T\&\ \ \ \ \ operator[](\textcolor{keywordtype}{size\_t}\ sn)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ window[sn];\ \}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{size\_t}\ size()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ window.size();\ \}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{bool}\ \ \ full()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ window.full();\ \}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{bool}\ \ \ empty()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ window.empty();\ \}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ \ \ clear()\textcolor{keyword}{\ override\ }\{\ window.clear();\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{bool}\ has\_sn(uint32\_t\ sn)\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ window.\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{contains}}(sn);\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00073\ \ \ PREFIXED\_LOGGER\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map}{srsran::circular\_map<uint32\_t,\ T,\ WINDOW\_SIZE>}}\ window;}
+\DoxyCodeLine{00075\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

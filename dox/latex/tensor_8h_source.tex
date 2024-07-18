@@ -1,0 +1,244 @@
+\doxysection{tensor.\+h}
+\hypertarget{tensor_8h_source}{}\label{tensor_8h_source}\index{include/srsran/adt/tensor.h@{include/srsran/adt/tensor.h}}
+\mbox{\hyperlink{tensor_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00022\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <numeric>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NDIMS,\ \textcolor{keyword}{typename}\ Type,\ \textcolor{keyword}{typename}\ Index\_type\ =\ \textcolor{keywordtype}{unsigned}>}
+\DoxyCodeLine{00043\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1tensor}{tensor}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1tensor_a48d648c7dc514f12cc21cf6117ff9b58}{dims}}\ =\ Index\_type;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\ =\ std::array<unsigned,\ NDIMS>;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1tensor_a48c0c0c852a2c5078f68746062878afc}{\string~tensor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ N\ =\ 1>}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ \mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}(\textcolor{keyword}{const}\ std::array<unsigned,\ NDIMS\ -\/\ N>\&\ indices)}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data\ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1tensor_a2f5a0c43bff3a7a9ddfd2eb8b5ca9157}{get\_data}}();}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ dimensions\_size\ =\ \mbox{\hyperlink{classsrsran_1_1tensor_aece9cb0b992cc9c453a3e01e41ee0b8f}{get\_dimensions\_size}}();}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ Calculate\ the\ view\ size\ for\ the\ first\ N\ dimensions.}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ view\_size\ =\ std::accumulate(dimensions\_size.begin(),\ dimensions\_size.begin()\ +\ N,\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{return}\ data.subspan(get\_view\_offset<N>(indices),\ view\_size);}
+\DoxyCodeLine{00069\ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ N\ =\ 1>}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ \mbox{\hyperlink{classsrsran_1_1tensor_a27cf98f291d8ef6b3159ac73f07aa370}{get\_view}}(\textcolor{keyword}{const}\ std::array<unsigned,\ NDIMS\ -\/\ N>\&\ indices)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00077\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ \ \ \ \ \ \ \ \ \ \ \ data\ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1tensor_a2f5a0c43bff3a7a9ddfd2eb8b5ca9157}{get\_data}}();}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ dimensions\_size\ =\ \mbox{\hyperlink{classsrsran_1_1tensor_aece9cb0b992cc9c453a3e01e41ee0b8f}{get\_dimensions\_size}}();}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ Calculate\ the\ view\ size\ for\ the\ first\ N\ dimensions.}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ view\_size\ =\ std::accumulate(dimensions\_size.begin(),\ dimensions\_size.begin()\ +\ N,\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{return}\ data.subspan(get\_view\_offset<N>(indices),\ view\_size);}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \ \ Type\&\ \mbox{\hyperlink{classsrsran_1_1tensor_a349537c9e3c721c9d0acef89dd2b48df}{operator[]}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ indices)}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ data\ =\ \mbox{\hyperlink{classsrsran_1_1tensor_a2f5a0c43bff3a7a9ddfd2eb8b5ca9157}{get\_data}}();}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{return}\ data[get\_view\_offset<0>(indices)];}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keyword}{const}\ Type\&\ \mbox{\hyperlink{classsrsran_1_1tensor_a9e0b34b17933fd533122e1153de54f49}{operator[]}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ indices)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00096\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00097\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ data\ =\ \mbox{\hyperlink{classsrsran_1_1tensor_a2f5a0c43bff3a7a9ddfd2eb8b5ca9157}{get\_data}}();}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{return}\ data[get\_view\_offset<0>(indices)];}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ \mbox{\hyperlink{classsrsran_1_1tensor_aece9cb0b992cc9c453a3e01e41ee0b8f}{get\_dimensions\_size}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1tensor_a8e4d9592972c991c7fede35886d09398}{get\_dimension\_size}}(Index\_type\ i\_dimension)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1tensor_aece9cb0b992cc9c453a3e01e41ee0b8f}{get\_dimensions\_size}}()[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(i\_dimension)];}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1tensor_aaa9f3f36e07141492705b70370cc9910}{resize}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ dimensions)\ =\ 0;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00117\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ \mbox{\hyperlink{classsrsran_1_1tensor_a2f5a0c43bff3a7a9ddfd2eb8b5ca9157}{get\_data}}()\ =\ 0;}
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ \mbox{\hyperlink{classsrsran_1_1tensor_a70c52da0e04428a74bbb1c4f1a9edf3b}{get\_data}}()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ N>}
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordtype}{unsigned}\ get\_view\_offset(\textcolor{keyword}{const}\ std::array<unsigned,\ NDIMS\ -\/\ N>\&\ indices)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00125\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{comment}{//\ Get\ dimensions.}}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor_a754bef499545a887b51328b1e33e0775}{dimensions\_size\_type}}\&\ dimensions\_size\ =\ \mbox{\hyperlink{classsrsran_1_1tensor_aece9cb0b992cc9c453a3e01e41ee0b8f}{get\_dimensions\_size}}();}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{comment}{//\ Dimension\ initial\ stride.}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ stride\ =\ std::accumulate(dimensions\_size.begin(),\ dimensions\_size.begin()\ +\ N,\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{comment}{//\ Current\ offset\ of\ the\ dimension.}}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ offset\ =\ 0;}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{//\ For\ each\ dimension,\ add\ its\ offset.}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ dimension\_index\ =\ 0;\ dimension\_index\ !=\ NDIMS\ -\/\ N;\ ++dimension\_index)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ srsran\_assert(indices[dimension\_index]\ <\ dimensions\_size[dimension\_index\ +\ N],}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Dimension\ \{\}\ index\ \{\}\ exceeds\ the\ maximum\ index\ \{\}."{}},}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dimension\_index\ +\ N,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ indices[dimension\_index],}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dimensions\_size[dimension\_index\ +\ N]);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ offset\ +=\ stride\ *\ indices[dimension\_index];}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ stride\ *=\ dimensions\_size[dimension\_index\ +\ N];}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordflow}{return}\ offset;}
+\DoxyCodeLine{00143\ \ \ \}}
+\DoxyCodeLine{00144\ \};}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00152\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NDIMS,\ \textcolor{keyword}{typename}\ Type,\ \textcolor{keywordtype}{unsigned}\ MAX\_ELEMENTS,\ \textcolor{keyword}{typename}\ Index\_type\ =\ \textcolor{keywordtype}{unsigned}>}
+\DoxyCodeLine{00153\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1tensor}{tensor}}<NDIMS,\ Type,\ Index\_type>}
+\DoxyCodeLine{00154\ \{}
+\DoxyCodeLine{00155\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{using\ }dims\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ Index\_type;}
+\DoxyCodeLine{00157\ \ \ \textcolor{keyword}{using\ }dimensions\_size\_type\ =\ std::array<unsigned,\ NDIMS>;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor_a56062f82cf5ed4cdb4f7ec88d52e0092}{static\_tensor}}()\ :\ dimensions\_size\{\}\ \{\}}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1static__tensor_a5179d6238c6d139f2411d3ec50de6b8d}{static\_tensor}}(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions)\ \{\ \mbox{\hyperlink{classsrsran_1_1static__tensor_aef91c69724fa16cb8ddefca0eb9d88d2}{resize}}(dimensions);\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00166\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1static__tensor_a7e77e2aa95160e3155be8788414f9ce8}{static\_tensor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor}{tensor<NDIMS,\ Type>}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00167\ \ \ \ \ dimensions\_size(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_dimensions\_size()),\ elements(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_data())}
+\DoxyCodeLine{00168\ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00173\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor_a04f6b27ade91fd0722614ca2507799a5}{static\_tensor}}(\mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00174\ \ \ \ \ dimensions\_size(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.dimensions\_size)),\ elements(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.elements))}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1static__tensor_aef91c69724fa16cb8ddefca0eb9d88d2}{resize}}(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00184\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00185\ \ \ \ \ dimensions\_size\ \ \ \ \ =\ dimensions;}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ total\_size\ =\ to\_size(dimensions);}
+\DoxyCodeLine{00187\ \ \ \ \ srsran\_assert(total\_size\ <=\ MAX\_ELEMENTS,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ total\ number\ of\ elements\ \{\}\ (dimensions:\ \{\})\ exceeds\ the\ maximum\ number\ of\ elements\ \{\}."{}},}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ total\_size,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ unsigned>}}(dimensions),}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MAX\_ELEMENTS);}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00195\ \ \ \textcolor{keyword}{const}\ dimensions\_size\_type\&\ \mbox{\hyperlink{classsrsran_1_1static__tensor_a6789b5d452c87625d688cd737e77bbbb}{get\_dimensions\_size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ dimensions\_size;\ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00198\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ \mbox{\hyperlink{classsrsran_1_1static__tensor_a4a29f86b7d16e71ffbe4a5e31f211f51}{get\_data}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00199\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}(\textcolor{keyword}{reinterpret\_cast<}Type*\textcolor{keyword}{>}(elements.data()),\ MAX\_ELEMENTS).\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(to\_size(dimensions\_size));}
+\DoxyCodeLine{00201\ \ \ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00204\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ \mbox{\hyperlink{classsrsran_1_1static__tensor_a2da2c082b483d4886d3e971b1dc38646}{get\_data}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00205\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }Type*\textcolor{keyword}{>}(elements.data()),\ MAX\_ELEMENTS)}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ .\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(to\_size(dimensions\_size));}
+\DoxyCodeLine{00208\ \ \ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00212\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ to\_size(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions\_size)}
+\DoxyCodeLine{00213\ \ \ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{return}\ std::accumulate(begin(dimensions\_size),\ end(dimensions\_size),\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00218\ \ \ dimensions\_size\_type\ dimensions\_size;}
+\DoxyCodeLine{00220\ \ \ std::array<uint8\_t,\ \textcolor{keyword}{sizeof}(Type)\ *\ MAX\_ELEMENTS>\ elements;}
+\DoxyCodeLine{00221\ \};}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00228\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NDIMS,\ \textcolor{keyword}{typename}\ Type,\ \textcolor{keyword}{typename}\ Index\_type\ =\ \textcolor{keywordtype}{unsigned}>}
+\DoxyCodeLine{00229\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dynamic__tensor}{dynamic\_tensor}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1tensor}{tensor}}<NDIMS,\ Type,\ Index\_type>}
+\DoxyCodeLine{00230\ \{}
+\DoxyCodeLine{00231\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00232\ \ \ \textcolor{keyword}{using\ }dims\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ Index\_type;}
+\DoxyCodeLine{00233\ \ \ \textcolor{keyword}{using\ }dimensions\_size\_type\ =\ std::array<unsigned,\ NDIMS>;}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00236\ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a3556874238d974969078ba6db0078c2d}{dynamic\_tensor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00239\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a9dd47a0116e78257e24f4854795e904c}{dynamic\_tensor}}(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions)\ \{\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a05e261813b67240280a1d27961730352}{reserve}}(dimensions);\ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00242\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_ab547c53e8d45ce372599942c550e1ba7}{dynamic\_tensor}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1tensor}{tensor<NDIMS,\ Type>}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00243\ \ \ \ \ dimensions\_size(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_dimensions\_size()),\ elements(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_data())}
+\DoxyCodeLine{00244\ \ \ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00249\ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a93ef0f7290ab0f717a6be81aff2c576f}{dynamic\_tensor}}(\mbox{\hyperlink{classsrsran_1_1dynamic__tensor}{dynamic\_tensor}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00250\ \ \ \ \ dimensions\_size(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.dimensions\_size)),\ elements(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.elements))}
+\DoxyCodeLine{00251\ \ \ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.dimensions\_size\ =\ \{\};}
+\DoxyCodeLine{00253\ \ \ \}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00256\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a05e261813b67240280a1d27961730352}{reserve}}(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions)}
+\DoxyCodeLine{00257\ \ \ \{}
+\DoxyCodeLine{00258\ \ \ \ \ dimensions\_size\ \ \ \ \ =\ dimensions;}
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ total\_size\ =\ std::accumulate(begin(dimensions\_size),\ end(dimensions\_size),\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00260\ \ \ \ \ elements.resize(total\_size);}
+\DoxyCodeLine{00261\ \ \ \}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00268\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_ae3e54a1f77b2ec66b9bd75ca28ad87df}{resize}}(\textcolor{keyword}{const}\ dimensions\_size\_type\&\ dimensions)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00269\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00270\ \ \ \ \ dimensions\_size\ \ \ \ \ =\ dimensions;}
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ total\_size\ =\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_affe4dfd6405f8ff6fc7503aeb4cc4d82}{size}}();}
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{keywordflow}{if}\ (total\_size\ >\ elements.size())\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ elements.resize(total\_size);}
+\DoxyCodeLine{00274\ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00278\ \ \ \textcolor{keyword}{const}\ dimensions\_size\_type\&\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a92d4e2e4f496ac2352c2dfb7c60c8c50}{get\_dimensions\_size}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ dimensions\_size;\ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00281\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a622e571cf6fa34e33e87741bb96edb53}{get\_data}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<Type>}}(elements).\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_affe4dfd6405f8ff6fc7503aeb4cc4d82}{size}}());\ \}}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00284\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a06977945c0924727d25ea07281c9f376}{get\_data}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ Type>}}(elements).\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_affe4dfd6405f8ff6fc7503aeb4cc4d82}{size}}());\ \}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_affe4dfd6405f8ff6fc7503aeb4cc4d82}{size}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00288\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00289\ \ \ \ \ \textcolor{keywordflow}{return}\ std::accumulate(begin(dimensions\_size),\ end(dimensions\_size),\ 1,\ std::multiplies<>());}
+\DoxyCodeLine{00290\ \ \ \}}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00293\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_ac94877d170189c2300cacb42cedfb619}{empty}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor_affe4dfd6405f8ff6fc7503aeb4cc4d82}{size}}()\ ==\ 0;\ \}}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00297\ \ \ dimensions\_size\_type\ dimensions\_size\ =\ \{\};}
+\DoxyCodeLine{00299\ \ \ std::vector<Type>\ elements\ =\ \{\};}
+\DoxyCodeLine{00300\ \};}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

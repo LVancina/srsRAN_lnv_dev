@@ -1,0 +1,93 @@
+\doxysection{du\+\_\+manager.\+h}
+\hypertarget{du__manager_8h_source}{}\label{du__manager_8h_source}\index{include/srsran/du\_manager/du\_manager.h@{include/srsran/du\_manager/du\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{du__configurator_8h}{"{}du\_configurator.h"{}}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1ap/du/f1ap\_du.h"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/lcid.h"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ul__ccch__indication__message}{ul\_ccch\_indication\_message}};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{namespace}\ srs\_du\ \{}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{comment}{///\ Interface\ used\ to\ handle\ external\ events\ (e.g.\ UL\ CCCH).}}
+\DoxyCodeLine{00020\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__mac__event__handler}{du\_manager\_mac\_event\_handler}}}
+\DoxyCodeLine{00021\ \{}
+\DoxyCodeLine{00022\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00023\ \ \ \textcolor{keyword}{virtual}\ \string~du\_manager\_mac\_event\_handler()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ UL\ CCCH\ message\ arrival.}}
+\DoxyCodeLine{00026\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__mac__event__handler_ac0c6f444cc19dcad9f1b6ac1f241a1d2}{handle\_ul\_ccch\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__ccch__indication__message}{ul\_ccch\_indication\_message}}\&\ msg)\ =\ 0;}
+\DoxyCodeLine{00027\ \};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ This\ class\ handles\ updates\ in\ cell\ and\ UE\ configurations.\ TODO:\ Better\ naming\ needed.}}
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator}{du\_manager\_configurator}}}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{virtual}\ \string~du\_manager\_configurator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Schedule\ asynchronous\ task\ in\ a\ DU-\/wide\ scope.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a0b8e30ad9e80c9a8e375aa6a5d2b4af5}{schedule\_async\_task}}(\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\textcolor{keywordtype}{void}>\&\&\ task)\ =\ 0;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Schedule\ asynchronous\ task\ that\ is\ specific\ to\ a\ UE.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a1d3ee0bd070948b652524bb621e3e536}{schedule\_async\_task}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\textcolor{keywordtype}{void}>\&\&\ task)\ =\ 0;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Request\ a\ currently\ unused\ and\ unallocated\ UE\ index\ from\ the\ DU.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a1331a76b747b896539d1fb2c6a5dfe0c}{find\_unused\_du\_ue\_index}}()\ =\ 0;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Create\ a\ new\ UE\ context\ in\ the\ DU\ with\ an\ assigned\ UE\ index.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__creation__response}{f1ap\_ue\_context\_creation\_response}}>}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_aadd46ec9a68cee0a808ac8e70b23883d}{handle\_ue\_context\_creation}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__creation__request}{f1ap\_ue\_context\_creation\_request}}\&\ request)\ =\ 0;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Update\ the\ UE\ configuration\ in\ the\ DU,\ namely\ its\ SRBs\ and\ DRBs.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__response}{f1ap\_ue\_context\_update\_response}}>}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a4b0e7d2cdf91b57d53ab5a56056f1a9e}{handle\_ue\_context\_update}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__context__update__request}{f1ap\_ue\_context\_update\_request}}\&\ request)\ =\ 0;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Remove\ UE\ context\ from\ the\ DU.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\textcolor{keywordtype}{void}>\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_a964ab9dc941729229315f0fe0eaae630}{handle\_ue\_delete\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1ap__ue__delete__request}{f1ap\_ue\_delete\_request}}\&\ request)\ =\ 0;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ the\ transfer\ of\ resources\ of\ old\ UE\ to\ new\ Reestablishing\ UE\ and\ deletion\ of\ the\ old\ UE\ context.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator_af49c43339896a1ce928ed5666e36a5dd}{handle\_ue\_reestablishment}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ new\_ue\_index,\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ old\_ue\_index)\ =\ 0;}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__interface__query}{du\_manager\_interface\_query}}}
+\DoxyCodeLine{00060\ \{}
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{virtual}\ \string~du\_manager\_interface\_query()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{virtual}\ size\_t\ nof\_ues()\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00064\ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__controller}{du\_manager\_controller}}}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{virtual}\ \string~du\_manager\_controller()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ start()\ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Stop\ the\ DU\ manager.\ This\ call\ is\ blocking\ and\ only\ returns\ once\ all\ tasks\ in\ the\ DU\ manager\ are\ completed.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__controller_a5ba2fb4021fdac612cfab9170f9fe972}{stop}}()\ =\ 0;}
+\DoxyCodeLine{00074\ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__interface}{du\_manager\_interface}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__interface__query}{du\_manager\_interface\_query}},}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__controller}{du\_manager\_controller}},}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__configurator}{du\_manager\_configurator}},}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1du__manager__mac__event__handler}{du\_manager\_mac\_event\_handler}},}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__configurator}{du\_configurator}}}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{virtual}\ \string~du\_manager\_interface()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00084\ \};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00087\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

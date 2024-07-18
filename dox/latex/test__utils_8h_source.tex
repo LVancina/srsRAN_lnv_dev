@@ -1,0 +1,316 @@
+\doxysection{test\+\_\+utils.\+h}
+\hypertarget{test__utils_8h_source}{}\label{test__utils_8h_source}\index{include/srsran/support/test\_utils.h@{include/srsran/support/test\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran\_test.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <cstdio>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1log__sink__spy}{log\_sink\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy}{log\_sink\_spy}}(std::unique\_ptr<srslog::log\_formatter>\ f)\ :}
+\DoxyCodeLine{00038\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}(std::move(f)),\ s(srslog::get\_default\_sink())}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ error\_counter.store(0);}
+\DoxyCodeLine{00041\ \ \ \ \ warning\_counter.store(0);}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_a54a956030d976c92f270d8cc5c39654f}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}log\_sink\_spy"{}};\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_ac0ae3c3c2a2b216653a80ea9e0b906dd}{get\_error\_counter}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00049\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{//\ Flush\ to\ make\ sure\ all\ entries\ have\ been\ processed\ by\ the\ backend.}}
+\DoxyCodeLine{00051\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ error\_counter.load();}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_a0f12d7afce3a2915402a933cad9a3527}{get\_warning\_counter}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00057\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ Flush\ to\ make\ sure\ all\ entries\ have\ been\ processed\ by\ the\ backend.}}
+\DoxyCodeLine{00059\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{return}\ warning\_counter.load();}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_a41e7957ea952620e74ca15e753efd747}{reset\_counters}}()}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ Flush\ to\ make\ sure\ all\ entries\ have\ been\ processed\ by\ the\ backend.}}
+\DoxyCodeLine{00067\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00068\ \ \ \ \ error\_counter.store(0);}
+\DoxyCodeLine{00069\ \ \ \ \ warning\_counter.store(0);}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{srslog::detail::error\_string}}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_a9d38934e7d165f35b83397c450d2e8c2}{write}}(\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer}{srslog::detail::memory\_buffer}}\ buffer)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00073\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00074\ \ \ \ \ std::string\ entry(buffer.\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer_a16d30488bcfc2b4dd889f66d7fd64233}{data}}(),\ buffer.\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer_a911bbffed1ea236e25f5533ad1183791}{size}}());}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{if}\ (entry.find(\textcolor{stringliteral}{"{}[E]"{}})\ !=\ std::string::npos)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ error\_counter.fetch\_add(1);}
+\DoxyCodeLine{00077\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (entry.find(\textcolor{stringliteral}{"{}[W]"{}})\ !=\ std::string::npos)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ warning\_counter.fetch\_add(1);}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{return}\ s.\mbox{\hyperlink{classsrslog_1_1sink_ad88268d4cca4ef27ec7c4a95cda288b1}{write}}(buffer);}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{srslog::detail::error\_string}}\ \mbox{\hyperlink{classsrsran_1_1log__sink__spy_a8a89291738d164c1dae24fe907ee15ca}{flush}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ s.\mbox{\hyperlink{classsrslog_1_1sink_a6f32149349a60fcf5c6ee68174ac5aa5}{flush}}();\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}\&\ \ \ \ \ \ \ \ \ s;}
+\DoxyCodeLine{00088\ \ \ std::atomic<unsigned>\ error\_counter;}
+\DoxyCodeLine{00089\ \ \ std::atomic<unsigned>\ warning\_counter;}
+\DoxyCodeLine{00090\ \};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00096\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1log__sink__message__spy}{log\_sink\_message\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}}
+\DoxyCodeLine{00097\ \{}
+\DoxyCodeLine{00098\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy}{log\_sink\_message\_spy}}(std::unique\_ptr<srslog::log\_formatter>\ f)\ :}
+\DoxyCodeLine{00100\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}(std::move(f)),\ s(srslog::get\_default\_sink())}
+\DoxyCodeLine{00101\ \ \ \{}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy_adf4f953a6ff0cd9293d6935e74f0aa27}{name}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}log\_sink\_message\_spy"{}};\ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy_a7ad35db72db59252f91ad255956eb50e}{reset}}()}
+\DoxyCodeLine{00109\ \ \ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ Flush\ to\ make\ sure\ all\ entries\ have\ been\ processed\ by\ the\ backend.}}
+\DoxyCodeLine{00111\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00112\ \ \ \ \ entries.clear();}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy_a4f6ad18f3e6a0f9d9b1f4555537067b2}{has\_message}}(\textcolor{keyword}{const}\ std::string\&\ msg)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00117\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00118\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{return}\ std::find\_if(entries.cbegin(),\ entries.cend(),\ [\&](\textcolor{keyword}{const}\ std::string\&\ entry)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ return\ entry.find(msg)\ !=\ std::string::npos;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \})\ !=\ entries.cend();}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{srslog::detail::error\_string}}\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy_add6ab6922d98be1bb18543ddd84b0f16}{write}}(\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer}{srslog::detail::memory\_buffer}}\ buffer)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00125\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00126\ \ \ \ \ entries.emplace\_back(buffer.\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer_a16d30488bcfc2b4dd889f66d7fd64233}{data}}(),\ buffer.\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer_a911bbffed1ea236e25f5533ad1183791}{size}}());}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{return}\ s.\mbox{\hyperlink{classsrslog_1_1sink_ad88268d4cca4ef27ec7c4a95cda288b1}{write}}(buffer);}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{srslog::detail::error\_string}}\ \mbox{\hyperlink{classsrsran_1_1log__sink__message__spy_a98223c0aa592fa253556968a68149763}{flush}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ s.\mbox{\hyperlink{classsrslog_1_1sink_a6f32149349a60fcf5c6ee68174ac5aa5}{flush}}();\ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00134\ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{srslog::sink}}\&\ \ \ \ \ \ \ \ \ \ \ \ s;}
+\DoxyCodeLine{00135\ \ \ std::vector<std::string>\ entries;}
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00144\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}}
+\DoxyCodeLine{00145\ \{}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ delimiter\_length\ =\ 128;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00149\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ test\_name\_fmt,\ Args\&\&...\ args)}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ test\_name\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ fmt::format(test\_name\_fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00153\ \ \ \ \ std::string\ name\_str\ \ \ \ =\ fmt::format(\textcolor{stringliteral}{"{}[\ Test\ \(\backslash\)"{}\{\}\(\backslash\)"{}\ ]"{}},\ test\_name);}
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordtype}{double}\ \ \ \ \ \ nof\_repeats\ =\ (delimiter\_length\ -\/\ name\_str.size())\ /\ 2.0;}
+\DoxyCodeLine{00155\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}\{0:=>\{1\}\}\{2\}\{0:=>\{3\}\}\(\backslash\)n"{}},\ \textcolor{stringliteral}{"{}"{}},\ (\textcolor{keywordtype}{int})floor(nof\_repeats),\ name\_str,\ (\textcolor{keywordtype}{int})ceil(nof\_repeats));}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}(\mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00159\ \ \ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{test\_delimit\_logger}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00161\ \ \ \mbox{\hyperlink{classsrsran_1_1test__delimit__logger}{\string~test\_delimit\_logger}}()}
+\DoxyCodeLine{00162\ \ \ \{}
+\DoxyCodeLine{00163\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00164\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}\{:=>\{\}\}\(\backslash\)n"{}},\ \textcolor{stringliteral}{"{}"{}},\ delimiter\_length);}
+\DoxyCodeLine{00165\ \ \ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00168\ \ \ std::string\ test\_name;}
+\DoxyCodeLine{00169\ \};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\ \{}
+\DoxyCodeLine{00173\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}()\ :\ val\_ptr(std::make\_unique<int>(object\_count\_impl()))}
+\DoxyCodeLine{00174\ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ object\_count\_impl().fetch\_add(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00176\ \ \ \}}
+\DoxyCodeLine{00177\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}(\textcolor{keywordtype}{int}\ v)\ :\ val\_ptr(std::make\_unique<int>(v))}
+\DoxyCodeLine{00178\ \ \ \{}
+\DoxyCodeLine{00179\ \ \ \ \ object\_count\_impl().fetch\_add(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{\string~moveonly\_test\_object}}()\ \{\ object\_count\_impl().fetch\_sub(1,\ std::memory\_order\_relaxed);\ \}}
+\DoxyCodeLine{00182\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}(\mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :\ val\_ptr(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val\_ptr))}
+\DoxyCodeLine{00183\ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ object\_count\_impl().fetch\_add(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00185\ \ \ \}}
+\DoxyCodeLine{00186\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00187\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\&)\ \textcolor{keyword}{noexcept}\ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00188\ \ \ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordtype}{bool}\ has\_value()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val\_ptr\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{int}\ \ value()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00192\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00193\ \ \ \ \ srsran\_assert(has\_value(),\ \textcolor{stringliteral}{"{}Invalid\ access"{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ *val\_ptr;}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00197\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{return}\ has\_value()\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_value()\ and\ (!has\_value()\ ||\ value()\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.value());}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{moveonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{size\_t}\ object\_count()\ \{\ \textcolor{keywordflow}{return}\ object\_count\_impl().load(std::memory\_order\_relaxed);\ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00205\ \ \ \textcolor{keyword}{static}\ std::atomic<size\_t>\&\ object\_count\_impl()}
+\DoxyCodeLine{00206\ \ \ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keyword}{static}\ std::atomic<size\_t>\ count\{0\};}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00209\ \ \ \}}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ std::unique\_ptr<int>\ val\_ptr;}
+\DoxyCodeLine{00212\ \};}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00215\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\ \{}
+\DoxyCodeLine{00216\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}()\ :\ val(object\_count\_impl())\ \{\ object\_count\_impl()++;\ \}}
+\DoxyCodeLine{00217\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}(\textcolor{keywordtype}{int}\ v)\ :\ val(v)\ \{\ object\_count\_impl()++;\ \}}
+\DoxyCodeLine{00218\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{\string~copyonly\_test\_object}}()\ \{\ object\_count\_impl()-\/-\/;\ \}}
+\DoxyCodeLine{00219\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :\ val(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val)\ \{\ object\_count\_impl()++;\ \}}
+\DoxyCodeLine{00220\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}(\mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00221\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00222\ \ \ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{int}\ \ value()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val;\ \}}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val;\ \}}
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1copyonly__test__object}{copyonly\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val\ !=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val;\ \}}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{size\_t}\ object\_count()\ \{\ \textcolor{keywordflow}{return}\ object\_count\_impl();\ \}}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00231\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{size\_t}\&\ object\_count\_impl()}
+\DoxyCodeLine{00232\ \ \ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{size\_t}\ count\ =\ 0;}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \textcolor{keywordtype}{int}\ val;}
+\DoxyCodeLine{00237\ \};}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1nondefault__ctor__test__object}{nondefault\_ctor\_test\_object}}\ \{}
+\DoxyCodeLine{00240\ \ \ \mbox{\hyperlink{structsrsran_1_1nondefault__ctor__test__object}{nondefault\_ctor\_test\_object}}(\textcolor{keywordtype}{int}\ val\_)\ :\ val(val\_)\ \{\}}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{int}\ \ value()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val;\ \}}
+\DoxyCodeLine{00242\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1nondefault__ctor__test__object}{nondefault\_ctor\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val;\ \}}
+\DoxyCodeLine{00243\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1nondefault__ctor__test__object}{nondefault\_ctor\_test\_object}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ val\ !=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.val;\ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00246\ \ \ \textcolor{keywordtype}{int}\ val;}
+\DoxyCodeLine{00247\ \};}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00251\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1test__rgen}{test\_rgen}}}
+\DoxyCodeLine{00252\ \{}
+\DoxyCodeLine{00253\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00255\ \ \ \textcolor{keyword}{static}\ std::mt19937\&\ \mbox{\hyperlink{classsrsran_1_1test__rgen_adb79a80d7aaee4a1ed79b2936f403a62}{get}}()}
+\DoxyCodeLine{00256\ \ \ \{}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keyword}{thread\_local}\ std::mt19937\&\ random\_generator\ =\ init(std::random\_device\{\}());}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keywordflow}{return}\ random\_generator;}
+\DoxyCodeLine{00259\ \ \ \}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00265\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1test__rgen_a15ccd3c9be108de6aa8b3454e521723f}{set\_seed}}(uint32\_t\ seed)}
+\DoxyCodeLine{00266\ \ \ \{}
+\DoxyCodeLine{00267\ \ \ \ \ init(seed);}
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keywordflow}{if}\ (get\_seed()\ !=\ seed)\ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a630688b51219f81c5a47ec5650326afc}{report\_fatal\_error}}(\textcolor{stringliteral}{"{}Trying\ to\ set\ a\ random\ seed\ multiple\ times\ (not\ thread-\/safe)"{}});}
+\DoxyCodeLine{00270\ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \}}
+\DoxyCodeLine{00272\ }
+\DoxyCodeLine{00274\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00275\ \ \ \textcolor{keyword}{static}\ Integer\ \mbox{\hyperlink{classsrsran_1_1test__rgen_ab00cd183f4bf01382a7f7c982b5365cd}{uniform\_int}}(Integer\ min,\ Integer\ max)}
+\DoxyCodeLine{00276\ \ \ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \textcolor{keywordflow}{return}\ std::uniform\_int\_distribution<Integer>\{\mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}},\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}\}(\mbox{\hyperlink{classsrsran_1_1test__rgen_adb79a80d7aaee4a1ed79b2936f403a62}{get}}());}
+\DoxyCodeLine{00278\ \ \ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00281\ \ \ \textcolor{keyword}{static}\ Integer\ uniform\_int()}
+\DoxyCodeLine{00282\ \ \ \{}
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{keywordflow}{return}\ uniform\_int(std::numeric\_limits<Integer>::min(),\ std::numeric\_limits<Integer>::max());}
+\DoxyCodeLine{00284\ \ \ \}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00288\ \ \ \textcolor{keyword}{static}\ std::vector<Integer>\ \mbox{\hyperlink{classsrsran_1_1test__rgen_a74a59f76d84b777d3b56b0444c87eef7}{random\_vector}}(\textcolor{keywordtype}{size\_t}\ sz)}
+\DoxyCodeLine{00289\ \ \ \{}
+\DoxyCodeLine{00290\ \ \ \ \ std::vector<Integer>\ vec(sz);}
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ sz;\ ++i)\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ vec[i]\ =\ test\_rgen::uniform\_int<Integer>();}
+\DoxyCodeLine{00293\ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \textcolor{keywordflow}{return}\ vec;}
+\DoxyCodeLine{00295\ \ \ \}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00298\ \ \ \textcolor{keyword}{static}\ std::mt19937\&\ init(uint32\_t\ seed)}
+\DoxyCodeLine{00299\ \ \ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{keyword}{thread\_local}\ std::mt19937\ random\_generator(get\_seed(seed));}
+\DoxyCodeLine{00301\ \ \ \ \ \textcolor{keywordflow}{return}\ random\_generator;}
+\DoxyCodeLine{00302\ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \textcolor{keyword}{static}\ uint32\_t\ get\_seed(uint32\_t\ seed\ =\ 0)}
+\DoxyCodeLine{00305\ \ \ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keyword}{static}\ uint32\_t\ locked\_seed\ =\ [](uint32\_t\ seed\_)\ \{}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}-\/-\/\ TEST\ random\ generator\ seed:\ \{\}\(\backslash\)n"{}},\ seed\_);}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ seed\_;}
+\DoxyCodeLine{00309\ \ \ \ \ \}(seed);}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keywordflow}{return}\ locked\_seed;}
+\DoxyCodeLine{00311\ \ \ \}}
+\DoxyCodeLine{00312\ \};}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00315\ \textcolor{preprocessor}{\#define\ TEST\_RGEN\_SET\_SEED(seed)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00316\ \textcolor{preprocessor}{\ \ static\ const\ bool\ dummy\ =\ []()\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00317\ \textcolor{preprocessor}{\ \ \ \ srsran::test\_rgen::set\_seed(seed);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00318\ \textcolor{preprocessor}{\ \ \ \ return\ dummy;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00319\ \textcolor{preprocessor}{\ \ \}();}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00326\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00327\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::moveonly\_test\_object>\ \{}
+\DoxyCodeLine{00328\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00329\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00330\ \ \ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00332\ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00334\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1moveonly__test__object}{srsran::moveonly\_test\_object}}\&\ obj,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00336\ \ \ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ obj.value());}
+\DoxyCodeLine{00338\ \ \ \}}
+\DoxyCodeLine{00339\ \};}
+\DoxyCodeLine{00340\ }
+\DoxyCodeLine{00341\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

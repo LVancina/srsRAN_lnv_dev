@@ -1,0 +1,77 @@
+\doxysection{rlc\+\_\+stress\+\_\+test\+\_\+traffic.\+h}
+\hypertarget{rlc__stress__test__traffic_8h_source}{}\label{rlc__stress__test__traffic_8h_source}\index{tests/integrationtests/rlc/rlc\_stress\_test\_traffic.h@{tests/integrationtests/rlc/rlc\_stress\_test\_traffic.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}lib/rlc/rlc\_bearer\_logger.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}rlc\_stress\_test\_args.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_rx.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_tx.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1stress__traffic__sink}{stress\_traffic\_sink}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdcp__rx__upper__data__notifier}{pdcp\_rx\_upper\_data\_notifier}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{rlc\_bearer\_logger}}\ logger;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1stress__traffic__sink}{stress\_traffic\_sink}}(uint32\_t\ ue\_id,\ \mbox{\hyperlink{classsrsran_1_1rb__id__t}{rb\_id\_t}}\ rb\_id)\ :\ logger(\textcolor{stringliteral}{"{}TRAFF"{}},\ \{0,\ ue\_id,\ rb\_id,\ \textcolor{stringliteral}{"{}UL"{}}\})\ \{\}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{//\ pdcp\_rx\_upper\_data\_notifier\ interface}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1stress__traffic__sink_a3e5a9c5acf284cad08fc582680e71cff}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu)\ \textcolor{keyword}{final};}
+\DoxyCodeLine{00043\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1stress__traffic__source}{stress\_traffic\_source}}}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1stress__test__args}{stress\_test\_args}}\&\ args;}
+\DoxyCodeLine{00048\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdu\_size\ =\ 0;}
+\DoxyCodeLine{00049\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ payload\ \ =\ 0x0;\ \textcolor{comment}{//\ increment\ for\ each\ SDU\ byte}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ std::mt19937\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rgen;}
+\DoxyCodeLine{00052\ \ \ std::uniform\_int\_distribution<>\ int\_dist;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcp__tx__upper__data__interface}{pdcp\_tx\_upper\_data\_interface}}*\ pdcp\_tx\_upper\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{rlc\_bearer\_logger}}\ logger;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1stress__traffic__source}{stress\_traffic\_source}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1stress__test__args}{stress\_test\_args}}\&\ args\_,\ uint32\_t\ ue\_id,\ \mbox{\hyperlink{classsrsran_1_1rb__id__t}{rb\_id\_t}}\ rb\_id)\ :}
+\DoxyCodeLine{00060\ \ \ \ \ args(args\_),}
+\DoxyCodeLine{00061\ \ \ \ \ rgen(args\_.seed),}
+\DoxyCodeLine{00062\ \ \ \ \ int\_dist(args\_.min\_sdu\_size,\ args\_.max\_sdu\_size),}
+\DoxyCodeLine{00063\ \ \ \ \ logger(\textcolor{stringliteral}{"{}TRAFF"{}},\ \{0,\ ue\_id,\ rb\_id,\ \textcolor{stringliteral}{"{}DL"{}}\})}
+\DoxyCodeLine{00064\ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ set\_pdcp\_tx\_upper(\mbox{\hyperlink{classsrsran_1_1pdcp__tx__upper__data__interface}{pdcp\_tx\_upper\_data\_interface}}*\ pdcp\_tx\_upper\_)\ \{\ this-\/>pdcp\_tx\_upper\ =\ pdcp\_tx\_upper\_;\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ send\_pdu();}
+\DoxyCodeLine{00070\ \};}
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,60 @@
+\doxysection{short\+\_\+block\+\_\+detector.\+h}
+\hypertarget{short__block__detector_8h_source}{}\label{short__block__detector_8h_source}\index{include/srsran/phy/upper/channel\_coding/short/short\_block\_detector.h@{include/srsran/phy/upper/channel\_coding/short/short\_block\_detector.h}}
+\mbox{\hyperlink{short__block__detector_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Detector\ interface\ for\ short\ blocks.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/modulation\_scheme.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Short-\/block\ detector\ interface.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1short__block__detector}{short\_block\_detector}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1short__block__detector_abd538cb64a8694e1191c09c8102676ec}{short\_block\_detector}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Detection,\ decoding\ and\ rate-\/dematching\ of\ short\ blocks.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Checks\ whether\ the\ provided\ signal\ contains\ a\ codeblock\ and,\ if\ so,\ decodes\ its\ content\ assuming\ the\ encoding}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ followed\ TS38.212\ Section\ 5.3.3\ and\ the\ rate-\/matching\ scheme\ of\ TS38.212\ Section\ 5.4.3.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Detected\ message\ (one\ bit\ per\ entry).}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ input\ \ Received\ codeblock\ (log-\/likelihood\ ratios).}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ mod\ \ \ \ Modulation\ scheme.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ \(\backslash\)c\ input\ passes\ a\ detection\ test.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ When\ the\ detection\ test\ fails,\ the\ function\ returns\ \(\backslash\)c\ false\ and\ the\ content\ of\ \(\backslash\)c\ output\ is\ unreliable.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1short__block__detector_a986df6551dee5d79213b723c6fa67ae8}{detect}}(span<uint8\_t>\ output,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ input,\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ mod)\ =\ 0;}
+\DoxyCodeLine{00053\ \};}
+\DoxyCodeLine{00054\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

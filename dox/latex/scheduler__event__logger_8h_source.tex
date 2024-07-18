@@ -1,0 +1,159 @@
+\doxysection{scheduler\+\_\+event\+\_\+logger.\+h}
+\hypertarget{scheduler__event__logger_8h_source}{}\label{scheduler__event__logger_8h_source}\index{lib/scheduler/logging/scheduler\_event\_logger.h@{lib/scheduler/logging/scheduler\_event\_logger.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/mac\_scheduler.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/format\_utils.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1prach__event}{prach\_event}}\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ slot\_rx;}
+\DoxyCodeLine{00036\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ preamble\_id;}
+\DoxyCodeLine{00038\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ ra\_rnti;}
+\DoxyCodeLine{00039\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ tc\_rnti;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ ta;}
+\DoxyCodeLine{00041\ \ \ \};}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1ue__creation__event}{ue\_creation\_event}}\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ ue\_index;}
+\DoxyCodeLine{00044\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ pcell\_index;}
+\DoxyCodeLine{00046\ \ \ \};}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1ue__reconf__event}{ue\_reconf\_event}}\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index;}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00050\ \ \ \};}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1crc__event}{crc\_event}}\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ ue\_index;}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index;}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ sl\_rx;}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5afde872b5d597c47d3674cc7f86b19b}{harq\_id\_t}}\ \ \ \ \ \ \ h\_id;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ crc;}
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<float>}}\ ul\_sinr\_db;}
+\DoxyCodeLine{00059\ \ \ \};}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1harq__ack__event}{harq\_ack\_event}}\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ cell\_index;}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sl\_ack\_rx;}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5afde872b5d597c47d3674cc7f86b19b}{harq\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ h\_id;}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ad15571815e2fd31523e75ed1b2b5012a}{mac\_harq\_ack\_report\_status}}\ ack;}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tbs;}
+\DoxyCodeLine{00068\ \ \ \};}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1sr__event}{sr\_event}}\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index;}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00072\ \ \ \};}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1csi__report__event}{csi\_report\_event}}\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ ue\_index;}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1csi__report__data}{csi\_report\_data}}\ csi;}
+\DoxyCodeLine{00077\ \ \ \};}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1bsr__event}{bsr\_event}}\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a6cf999d5340bd0ec2a53bd85a7fe1e59}{bsr\_format}}\ \ \ \ \ \ \ \ \ \ \ \ \ type;}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{ul\_bsr\_lcg\_report\_list}}\ reported\_lcgs;}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ \ \ \ \ \ \ \ \ \ \ tot\_ul\_pending\_bytes;}
+\DoxyCodeLine{00084\ \ \ \};}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1phr__event}{phr\_event}}\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00087\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00088\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ cell\_index;}
+\DoxyCodeLine{00089\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1interval}{ph\_db\_range}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ph;}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<p\_cmax\_dbm\_range>}}\ p\_cmax;}
+\DoxyCodeLine{00091\ \ \ \};}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1scheduler__event__logger_1_1error__indication__event}{error\_indication\_event}}\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sl\_tx;}
+\DoxyCodeLine{00094\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1scheduler__slot__handler_1_1error__outcome}{scheduler\_slot\_handler::error\_outcome}}\ outcome;}
+\DoxyCodeLine{00095\ \ \ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}}()\ :}
+\DoxyCodeLine{00098\ \ \ \ \ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SCHED"{}})),}
+\DoxyCodeLine{00099\ \ \ \ \ mode(logger.debug.enabled()\ ?\ mode\_t::debug\ :\ (logger.info.enabled()\ ?\ mode\_t::info\ :\ mode\_t::none))}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{void}\ log()}
+\DoxyCodeLine{00104\ \ \ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{if}\ (mode\ ==\ none\ or\ fmtbuf.size()\ ==\ 0)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ log\_impl();}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Event>}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{void}\ enqueue(Event\&\&\ ev)}
+\DoxyCodeLine{00113\ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{if}\ (mode\ ==\ none)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ enqueue\_impl(std::forward<Event>(ev));}
+\DoxyCodeLine{00118\ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{bool}\ enabled()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ mode\ !=\ none;\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{enum}\ mode\_t\ \{\ none,\ info,\ debug\ \};}
+\DoxyCodeLine{00124\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ mode\_t\ mode\ =\ none;}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ separator()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ log\_impl();}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ prach\_event\&\ rach\_ev);}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ rach\_indication\_message\&\ rach\_ind);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ ue\_creation\_event\&\ ue\_request);}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ ue\_reconf\_event\&\ ue\_request);}
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ sched\_ue\_delete\_message\&\ ue\_request);}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ error\_indication\_event\&\ err\_ind);}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ sr\_event\&\ sr);}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ bsr\_event\&\ bsr);}
+\DoxyCodeLine{00143\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ harq\_ack\_event\&\ harq\_ev);}
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ csi\_report\_event\&\ csi);}
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ crc\_event\&\ crc\_ev);}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ dl\_mac\_ce\_indication\&\ mac\_ce);}
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ dl\_buffer\_state\_indication\_message\&\ bs);}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{void}\ enqueue\_impl(\textcolor{keyword}{const}\ phr\_event\&\ phr\_ev);}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ fmt::memory\_buffer\ fmtbuf;}
+\DoxyCodeLine{00151\ \};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

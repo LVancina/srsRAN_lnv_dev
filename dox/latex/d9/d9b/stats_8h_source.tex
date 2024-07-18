@@ -1,0 +1,268 @@
+\doxysection{stats.\+h}
+\hypertarget{stats_8h_source}{}\label{stats_8h_source}\index{include/srsran/support/stats.h@{include/srsran/support/stats.h}}
+\mbox{\hyperlink{stats_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Simple\ utility\ to\ collect\ basic\ sample\ statistics.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{algorithm}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cmath}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{limits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)brief\ Keeps\ track\ of\ sample\ statistics.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ Type\ (must\ be\ arithmetic)\ of\ the\ sample\ values.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00039\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics}{sample\_statistics}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Estimator\ types\ depending\ on\ bias.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{///\ Denotes\ unbiased\ estimators.}}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455a2710b90066e0a98c178096c43fa521a4}{UNBIASED}},}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ Denotes\ biased\ estimators.}}
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455aed26ce46123c73c565ae3c78f3048b00}{BIASED}}}
+\DoxyCodeLine{00048\ \ \ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a32d88c2a199ba82757ec991c57af942c}{sample\_statistics}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ Clears\ the\ content\ of\ the\ internal\ registers.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a95635f7444a709c17ca3fb3029ba8e95}{reset}}()\ \{\ *\textcolor{keyword}{this}\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics}{sample\_statistics}}();\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Updates\ the\ statistics\ by\ adding\ an\ observation\ to\ the\ sample.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a0fdcd80ba293d316d0d871db50555efb}{update}}(T\ value)}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{float}\ delta\ =\ value\ -\/\ mean;}
+\DoxyCodeLine{00060\ \ \ \ \ ++nof\_observations;}
+\DoxyCodeLine{00061\ \ \ \ \ mean\ +=\ delta\ /\ nof\_observations;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ The\ following\ update\ formulas\ are\ inspired\ by}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ Philippe\ Pebay,\ "{}Formulas\ for\ Robust,\ One-\/Pass\ Parallel\ Computation\ of\ Covariances\ and\ Arbitrary-\/Order}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ Statistical\ Moments,"{}\ SANDIA\ REPORT\ SAND2008-\/6212\ (2008).}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ [Online].\ Available:\ https://www.osti.gov/servlets/purl/1028931}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ nof\_obs\_sqrd\ =\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{float}>(nof\_observations)\ *\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{float}>(nof\_observations);}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{float}\ delta\_sqrd\ \ \ =\ delta\ *\ delta;}
+\DoxyCodeLine{00069\ \ \ \ \ centered\_power\_sum\_ord4\ +=\ -\/4\ *\ centered\_power\_sum\_ord3\ /\ nof\_observations\ *\ delta\ +}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 6\ *\ centered\_power\_sum\_ord2\ /\ nof\_obs\_sqrd\ *\ delta\_sqrd\ +}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (nof\_observations\ -\/\ 1.0F)\ *\ (nof\_obs\_sqrd\ -\/\ 3.0F\ *\ nof\_observations\ +\ 3.0F)\ /}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (nof\_obs\_sqrd\ *\ nof\_observations)\ *\ delta\_sqrd\ *\ delta\_sqrd;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ centered\_power\_sum\_ord3\ +=\ -\/3\ *\ centered\_power\_sum\_ord2\ /\ nof\_observations\ *\ delta\ +}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (nof\_obs\_sqrd\ -\/\ 3.0F\ *\ nof\_observations\ +\ 2.0F)\ /\ nof\_obs\_sqrd\ *\ delta\_sqrd\ *\ delta;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ centered\_power\_sum\_ord2\ +=\ (nof\_observations\ -\/\ 1.0F)\ /\ nof\_observations\ *\ delta\_sqrd;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ max\ =\ std::max(max,\ value);}
+\DoxyCodeLine{00080\ \ \ \ \ min\ =\ std::min(min,\ value);}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ maximum\ sample\ value.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ std::numeric\_limits<T>::min()\ when\ the\ sample\ is\ empty.}}
+\DoxyCodeLine{00085\ \ \ T\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a4c1ca94270dfc8d9a2374cadf24d4187}{get\_max}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ max;\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ minimum\ sample\ value.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ std::numeric\_limits<T>::max()\ when\ the\ sample\ is\ empty.}}
+\DoxyCodeLine{00089\ \ \ T\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a1eb37e2a895b155c6ea99a232fed0561}{get\_min}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ min;\ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ Returns\ the\ sample\ size,\ i.e.\ the\ number\ of\ observations.}}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a18b873454212ced44f32c9a0596ccc35}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a18b873454212ced44f32c9a0596ccc35}{get\_nof\_observations}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_observations;\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ sample\ mean.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ This\ is\ simply\ the\ arithmetic\ mean\ of\ the\ \(\backslash\)f\$n\(\backslash\)f\$\ values\ in\ the\ sample.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)mu\ =\ \(\backslash\)frac\{1\}\{n\}\ \(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}\ x\_i.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ NAN\ when\ the\ sample\ is\ empty.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a1bed651e327d0d05e03caade775340e0}{get\_mean}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00102\ \ \ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 1)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ mean;}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ sample\ variance.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ The\ sample\ variance\ is\ given\ by}}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)sigma\string^2\ =\ \(\backslash\)frac\{1\}\{m\}\ \(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}\ (x\_i\ -\/\ \(\backslash\)mu)\string^2}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ where\ \(\backslash\)f\$\(\backslash\)mu\(\backslash\)f\$\ is\ the\ [sample\ mean](\#sample\_statistics::get\_mean)\ and\ where\ \(\backslash\)f\$m\ =\ n\(\backslash\)f\$\ or\ \(\backslash\)f\$m\ =\ n-\/1\(\backslash\)f\$\ for\ the}}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ biased\ and\ unbiased\ estimators,\ respectively,\ of\ the\ statistical\ variance}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$\(\backslash\)EV\(\backslash\)Bigl[\(\backslash\)bigl(X\ -\/\ \(\backslash\)EV[X]\(\backslash\)bigr)\string^2\(\backslash\)Bigr]\(\backslash\)f\$.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ NAN\ when\ the\ sample\ consists\ of\ less\ than\ two\ observations.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ae2a1e4edda05b8ce185b50b771faafb7}{get\_variance}}(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ biased\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00120\ \ \ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 2)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00123\ \ \ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{if}\ (biased\ ==\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ centered\_power\_sum\_ord2\ /\ (nof\_observations\ -\/\ 1);}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{return}\ centered\_power\_sum\_ord2\ /\ nof\_observations;}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ sample\ standard\ deviation.}}
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///\ This\ is\ simply\ the\ squared\ root\ of\ the\ [sample\ covariance](\#sample\_statistics::get\_variance).\ The\ \(\backslash\)c\ biased\ flag}}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ simply\ denotes\ how\ the\ sample\ covariance\ is\ computed.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ NAN\ when\ the\ sample\ consists\ of\ less\ than\ two\ observations.}}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a48a2002af28153a55f7226dc3e8bf526}{get\_std}}(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ biased\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00137\ \ \ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 2)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00140\ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordflow}{return}\ std::sqrt(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ae2a1e4edda05b8ce185b50b771faafb7}{get\_variance}}\mbox{\hyperlink{classsrsran_1_1sample__statistics_ae2a1e4edda05b8ce185b50b771faafb7}{(}}biased\mbox{\hyperlink{classsrsran_1_1sample__statistics_ae2a1e4edda05b8ce185b50b771faafb7}{)}});}
+\DoxyCodeLine{00142\ \ \ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ standard\ error\ of\ the\ sample\ mean.}}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ The\ standard\ error\ of\ the\ mean\ is\ an\ estimation\ of\ the\ standard\ deviation\ of\ the}}
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ [sample\ mean](\#sample\_statistics::get\_mean)\ (seen\ itself\ as\ a\ random\ quantity):}}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ \(\backslash\)sigma\_\{\(\backslash\)mu\}\ =\ \(\backslash\)frac\{\(\backslash\)sigma\}\{\(\backslash\)sqrt\{n\}\}}}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{///\ where\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ the\ sample\ size\ and\ \(\backslash\)f\$\(\backslash\)sigma\(\backslash\)f\$\ is\ the\ [sample\ covariance](\#sample\_statistics::get\_variance).}}
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ The\ \(\backslash\)c\ biased\ flag\ simply\ denotes\ how\ the\ sample\ covariance\ is\ computed.}}
+\DoxyCodeLine{00153\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ It\ is\ implicitly\ assumed\ that\ the\ observations\ are\ statistically\ independent.}}
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ NAN\ when\ the\ sample\ consists\ of\ less\ than\ two\ observations.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_abb658e4f58c2e9751733f6c7ce89dbde}{get\_sem}}(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ biased\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00156\ \ \ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 2)\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00159\ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_std(biased)\ /\ std::sqrt(nof\_observations);}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ sample\ skewness.}}
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00165\ \ \ \textcolor{comment}{///\ The\ skewness\ of\ a\ distribution\ with\ mean\ \(\backslash\)f\$\(\backslash\)mu\_*\(\backslash\)f\$\ and\ standard\ deviation\ \(\backslash\)f\$\(\backslash\)sigma\_*\(\backslash\)f\$\ is\ defined\ as}}
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ s\_*\ =\ \(\backslash\)frac\{\(\backslash\)EV\(\backslash\)bigl[(X-\/\(\backslash\)mu\_*)\string^3\(\backslash\)bigr]\}\{\(\backslash\)sigma\_*\string^3\}.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00169\ \ \ \textcolor{comment}{///\ For\ a\ sample\ of\ \(\backslash\)f\$n\(\backslash\)f\$\ observations\ with\ [sample\ mean](\#sample\_statistics::get\_mean)\ \(\backslash\)f\$\(\backslash\)mu\(\backslash\)f\$,\ the\ \(\backslash\)em\ biased}}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ sample\ skewness\ is\ given\ by\ the\ Fisher\&ndash;Pearson\ coefficient}}
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ g\_1\ =\ \(\backslash\)frac\{\(\backslash\)frac\{1\}\{n\}\(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}(x\_i\ -\/\ \(\backslash\)mu)\string^3\}\{\(\backslash\)Bigl[\(\backslash\)frac\{1\}\{n\}\(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}(x\_i\ -\/\ \(\backslash\)mu)\string^2\(\backslash\)Bigr]\string^\{3/2\}\}.}}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00174\ \ \ \textcolor{comment}{///\ The\ \(\backslash\)em\ unbiased\ sample\ skewness\ is\ obtained\ by\ applying\ the\ adjustment}}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///\ G\_1\ =\ \(\backslash\)frac\{\(\backslash\)sqrt\{n(n-\/1)\}\}\{n-\/2\}g\_1.}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ function\ returns\ NAN\ when\ the\ sample\ consists\ of\ less\ than\ three\ observations.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ skewness\ provides\ a\ rough\ indication\ of\ the\ symmetry\ of\ the\ distribution\ of\ the\ sample\ around\ its\ mean.}}
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ More\ specifically,\ for\ unimodal\ distributions,\ a\ negative-\/valued\ skewness\ means\ that\ the\ left\ tail\ of\ the}}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ distribution\ is\ longer\ than\ the\ right\ one\ and\ most\ of\ the\ mass\ is\ concentrated\ to\ the\ right\ of\ the\ mean.\ In\ other}}
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ words,\ the\ median\ is\ higher\ than\ the\ mean.\ A\ positive\ skewness\ means\ the\ opposite.\ Symmetric\ distributions\ have}}
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///\ null\ skewness.\ However,\ the\ opposite\ is\ not\ always\ true\ as,\ e.g.,\ a\ long\ left\ tail\ and\ a\ fat\ right\ tail\ may}}
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{///\ compensate\ each\ other\ and\ give\ skewness\ equal\ to\ zero.}}
+\DoxyCodeLine{00185\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_a192b48331b377b10f13f25addb5b55d4}{get\_skewness}}(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ biased\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00186\ \ \ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 3)\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00189\ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordtype}{float}\ num\ \ \ \ \ =\ centered\_power\_sum\_ord3\ /\ nof\_observations;}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordtype}{float}\ den\_tmp\ =\ std::sqrt(centered\_power\_sum\_ord2\ /\ nof\_observations);}
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordtype}{float}\ den\ \ \ \ \ =\ den\_tmp\ *\ den\_tmp\ *\ den\_tmp;}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordtype}{float}\ result\ =\ num\ /\ den;}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{keywordflow}{if}\ (biased\ ==\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ result\ *=\ std::sqrt(nof\_observations\ *\ (nof\_observations\ -\/\ 1.0F))\ /\ (nof\_observations\ -\/\ 2.0F);}
+\DoxyCodeLine{00198\ \ \ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00200\ \ \ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ sample\ kurtosis.}}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{///\ The\ kurtosis\ of\ a\ distribution\ with\ mean\ \(\backslash\)f\$\(\backslash\)mu\_*\(\backslash\)f\$\ and\ standard\ deviation\ \(\backslash\)f\$\(\backslash\)sigma\_*\(\backslash\)f\$\ is\ defined\ as}}
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ k\_*\ =\ \(\backslash\)frac\{\(\backslash\)EV\(\backslash\)bigl[(X-\/\(\backslash\)mu\_*)\string^4\(\backslash\)bigr]\}\{\(\backslash\)sigma\_*\string^4\}.}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ For\ a\ sample\ of\ \(\backslash\)f\$n\(\backslash\)f\$\ observations\ with\ [sample\ mean](\#sample\_statistics::get\_mean)\ \(\backslash\)f\$\(\backslash\)mu\(\backslash\)f\$,\ the\ \(\backslash\)em\ biased}}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ sample\ kurtosis\ is\ given\ by\ the\ expression}}
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{///\ g\_2\ =\ \(\backslash\)frac\{\(\backslash\)frac\{1\}\{n\}\(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}(x\_i\ -\/\ \(\backslash\)mu)\string^4\}\{\(\backslash\)Bigl[\(\backslash\)frac\{1\}\{n\}\(\backslash\)sum\_\{i=0\}\string^\{n-\/1\}(x\_i\ -\/\ \(\backslash\)mu)\string^2\(\backslash\)Bigr]\string^\{2\}\}.}}
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ The\ \(\backslash\)em\ unbiased\ sample\ kurtosis\ is\ obtained\ by\ applying\ the\ adjustment}}
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00215\ \ \ \textcolor{comment}{///\ G\_2\ =\ \(\backslash\)frac\{n-\/1\}\{(n-\/2)(n-\/3)\}\(\backslash\)bigl[(n+1)g\_1\ -\/\ 3(n-\/1)\(\backslash\)bigr]\ +\ 3.}}
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ returns\ NAN\ when\ the\ sample\ consists\ of\ less\ than\ four\ observations.}}
+\DoxyCodeLine{00218\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ normal\ distribution\ has\ kurtosis\ equal\ to\ 3\ (for\ this\ reason,\ sometimes\ the\ kurtosis\ is\ defined\ as}}
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$g\_2\ -\/\ 3\(\backslash\)f\$\ to\ get\ a\ value\ of\ zero\ with\ the\ normal\ distribution).}}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ Distributions\ with\ tails\ that\ decrease\ slower}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ (faster,\ respectively)\ than\ those\ of\ the\ Gaussian\ distribution\ have\ a\ kurtosis\ that\ is\ larger}}
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///\ (smaller,\ respectively)\ than\ 3.\ In\ other\ words,\ samples\ with\ a\ high\ kurtosis\ suggest\ that\ the\ underlying}}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ distribution\ has\ fat\ tails\ and/or\ that\ there\ is\ a\ significant\ number\ of\ outliers\ outside\ the\ interval\ \(\backslash\)f\$\(\backslash\)mu\ \(\backslash\)pm}}
+\DoxyCodeLine{00224\ \ \ \textcolor{comment}{///\ \(\backslash\)sigma\(\backslash\)f\$.}}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_aeca4165d11b2c4f7434c017fc7c0f2af}{get\_kurtosis}}(\mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}\ biased\ =\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_observations\ <\ 4)\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NAN;}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordtype}{float}\ num\ \ \ \ \ =\ centered\_power\_sum\_ord4\ /\ nof\_observations;}
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keywordtype}{float}\ den\_tmp\ =\ centered\_power\_sum\_ord2\ /\ nof\_observations;}
+\DoxyCodeLine{00232\ \ \ \ \ \textcolor{keywordtype}{float}\ den\ \ \ \ \ =\ den\_tmp\ *\ den\_tmp;}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordtype}{float}\ result\ =\ num\ /\ den;}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{if}\ (biased\ ==\ \mbox{\hyperlink{classsrsran_1_1sample__statistics_ac48fdd0a60ead4b24f1db7e634d72455}{bias}}::UNBIASED)\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ result\ =\ result\ *\ (nof\_observations\ +\ 1)\ -\/\ 3.0F\ *\ (nof\_observations\ -\/\ 1);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ result\ =\ result\ *\ (nof\_observations\ -\/\ 1)\ /\ ((nof\_observations\ -\/\ 2.0F)\ *\ (nof\_observations\ -\/\ 3.0F))\ +\ 3.0F;}
+\DoxyCodeLine{00239\ \ \ \ \ \}}
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00241\ \ \ \}}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{///\ Ensure\ the\ sample\ type\ is\ arithmetic.}}
+\DoxyCodeLine{00245\ \ \ \textcolor{keyword}{static\_assert}(std::is\_arithmetic<T>::value,\ \textcolor{stringliteral}{"{}Invalid\ type."{}});}
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{///\ Records\ the\ maximum\ observed\ value.}}
+\DoxyCodeLine{00247\ \ \ T\ max\ =\ std::numeric\_limits<T>::min();}
+\DoxyCodeLine{00248\ \ \ \textcolor{comment}{///\ Records\ the\ minimum\ observed\ value.}}
+\DoxyCodeLine{00249\ \ \ T\ min\ =\ std::numeric\_limits<T>::max();}
+\DoxyCodeLine{00250\ \ \ \textcolor{comment}{///\ Records\ the\ sample\ size.}}
+\DoxyCodeLine{00251\ \ \ size\_t\ nof\_observations\ =\ 0;}
+\DoxyCodeLine{00252\ \ \ \textcolor{comment}{///\ Records\ the\ mean\ of\ the\ sample.}}
+\DoxyCodeLine{00253\ \ \ \textcolor{keywordtype}{float}\ mean\ =\ 0;}
+\DoxyCodeLine{00254\ \ \ \textcolor{comment}{///\ Records\ the\ centered\ power\ sum\ of\ order\ 2\ of\ all\ observations,\ i.e.\ \(\backslash\)f\$\(\backslash\)sum\_n\ (X\_n\ -\/\ \(\backslash\)bar\{X\})\string^2\(\backslash\)f\$.}}
+\DoxyCodeLine{00255\ \ \ \textcolor{keywordtype}{float}\ centered\_power\_sum\_ord2\ =\ 0;}
+\DoxyCodeLine{00256\ \ \ \textcolor{comment}{///\ Records\ the\ centered\ power\ sum\ of\ order\ 3\ of\ all\ observations,\ i.e.\ \(\backslash\)f\$\(\backslash\)sum\_n\ (X\_n\ -\/\ \(\backslash\)bar\{X\})\string^3\(\backslash\)f\$.}}
+\DoxyCodeLine{00257\ \ \ \textcolor{keywordtype}{float}\ centered\_power\_sum\_ord3\ =\ 0;}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{///\ Records\ the\ centered\ power\ sum\ of\ order\ 4\ of\ all\ observations,\ i.e.\ \(\backslash\)f\$\(\backslash\)sum\_n\ (X\_n\ -\/\ \(\backslash\)bar\{X\})\string^4\(\backslash\)f\$.}}
+\DoxyCodeLine{00259\ \ \ \textcolor{keywordtype}{float}\ centered\_power\_sum\_ord4\ =\ 0;}
+\DoxyCodeLine{00260\ \};}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

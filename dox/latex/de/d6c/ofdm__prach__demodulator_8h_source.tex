@@ -1,0 +1,85 @@
+\doxysection{ofdm\+\_\+prach\+\_\+demodulator.\+h}
+\hypertarget{ofdm__prach__demodulator_8h_source}{}\label{ofdm__prach__demodulator_8h_source}\index{include/srsran/phy/lower/modulation/ofdm\_prach\_demodulator.h@{include/srsran/phy/lower/modulation/ofdm\_prach\_demodulator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/prach/prach\_format\_type.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ OFDM\ PRACH\ demodulator.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Performs\ OFDM\ demodulation\ for\ all\ the\ PRACH\ frequency-\/\ and\ time-\/domain\ occasions\ within\ a\ PRACH\ slot\ as\ per}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ TS38.211\ Section\ 5.3.2.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ ofdm\_prach\_demodulator}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Collects\ the\ necessary\ parameters\ to\ demodulate\ PRACH\ frequency-\/\ and\ time-\/domain\ occasions\ within\ a\ slot.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{struct}\ configuration\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{///\ PRACH\ preamble\ format.}}
+\DoxyCodeLine{00042\ \ \ \ \ prach\_format\_type\ format;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ time-\/domain\ occasions.}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_td\_occasions;}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ frequency-\/domain\ occasions.}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_fd\_occasions;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ Starting\ symbol\ index\ for\ the\ first\ PRACH\ TD\ occasion\ within\ the\ slot\ \{0,\ ...,\ 13\}\ at\ \(\backslash\)c\ pusch\_scs.}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ start\_symbol;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{///\ PRACH\ frequency\ location\ (see\ \(\backslash\)ref\ prach\_buffer\_context::rb\_offset).}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ rb\_offset;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{///\ Uplink\ resource\ grid\ size\ (see\ \(\backslash\)ref\ prach\_buffer\_context::nof\_prb\_ul\_grid).}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_prb\_ul\_grid;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{///\ Uplink\ resource\ grid\ subcarrier\ spacing.\ Expresses\ the\ numerology\ \(\backslash\)f\$\(\backslash\)mu\(\backslash\)f\$.}}
+\DoxyCodeLine{00054\ \ \ \ \ subcarrier\_spacing\ pusch\_scs;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ Destination\ port\ identifier.}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ port;}
+\DoxyCodeLine{00057\ \ \ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{virtual}\ \string~ofdm\_prach\_demodulator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Demodulates\ a\ PRACH\ occasion\ as\ described\ in\ TS38.211\ Section\ 5.3.2.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ For\ long\ preambles,\ the\ input\ shall\ contain\ the\ cyclic\ prefix\ of\ length\ \(\backslash\)f\$N\_\{CP,l\}\string^\{RA\}\(\backslash\)f\$)\ and\ a\ time-\/domain}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ sequence\ of\ length\ \(\backslash\)f\$N\_u\(\backslash\)f\$.\ Also,\ the\ number\ of\ time-\/domain\ occasions\ must\ be\ one.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ For\ short\ preamble\ formats,\ the\ input\ shall\ correspond\ to\ one\ slot\ at\ \(\backslash\)ref\ configuration::pusch\_scs.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ An\ assertion\ is\ triggered\ if:}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ -\/\ the\ input\ samples\ are\ not\ sufficient,}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ -\/\ the\ buffer\ dimensions\ cannot\ contain\ the\ demodulated\ sequences,\ or}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ -\/\ the\ port\ identifier\ exceeds\ the\ number\ of\ ports\ contained\ in\ the\ destination\ buffer.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ buffer\ \ \ \ Frequency-\/domain\ signal\ corresponding\ to\ one\ PRACH\ receive\ occasion.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ input\ \ \ \ \ \ PRACH\ receive\ window\ baseband\ samples.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ \ \ \ PRACH\ demodulator\ configuration\ parameters.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ demodulate(prach\_buffer\&\ buffer,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keyword}{const}\ configuration\&\ config)\ =\ 0;}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

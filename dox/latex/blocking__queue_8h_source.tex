@@ -1,0 +1,413 @@
+\doxysection{blocking\+\_\+queue.\+h}
+\hypertarget{blocking__queue_8h_source}{}\label{blocking__queue_8h_source}\index{include/srsran/adt/blocking\_queue.h@{include/srsran/adt/blocking\_queue.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}ring\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <condition\_variable>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <thread>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ RingBuffer,\ \textcolor{keyword}{typename}\ PushingFunc,\ \textcolor{keyword}{typename}\ PoppingFunc>}
+\DoxyCodeLine{00044\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}}
+\DoxyCodeLine{00045\ \{}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{using\ }T\ =\ \textcolor{keyword}{typename}\ RingBuffer::value\_type;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{using\ }blocking\_tag\ \ \ \ \ =\ std::true\_type;}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{using\ }non\_blocking\_tag\ =\ std::false\_type;}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{using\ }wait\_for\_tag\ \ \ \ \ =\ std::chrono::microseconds;}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{using\ }wait\_until\_tag\ \ \ =\ std::chrono::steady\_clock::time\_point;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a920951341bb550f1638186c6c82b14d1}{result}}\ \{\ failed,\ success,\ timeout\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a922bdf12d8cbfbf9982109cdb8f588ee}{base\_blocking\_queue}}(PushingFunc\ on\_push\_func,\ PoppingFunc\ on\_pop\_func,\ Args\&\&...\ args)\ :}
+\DoxyCodeLine{00062\ \ \ \ \ push\_func(on\_push\_func),\ pop\_func(on\_pop\_func),\ ring\_buf(std::forward<Args>(args)...)}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a922bdf12d8cbfbf9982109cdb8f588ee}{base\_blocking\_queue}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a922bdf12d8cbfbf9982109cdb8f588ee}{base\_blocking\_queue}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_blocking\_queue}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_af17e07f8afed660c15fcb87523c385e4}{stop}}()}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{if}\ (active)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ active\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_waiting\ >\ 0)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stop\ pending\ pushing/popping\ threads}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ lock.unlock();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ cvar\_empty.notify\_all();}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ cvar\_full.notify\_all();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ std::this\_thread::yield();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ lock.lock();}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (nof\_waiting\ >\ 0);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{comment}{//\ Empty\ queue}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ ring\_buf.clear();}
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_aa966281db2b3954bd99aff1e587734bd}{try\_push}}(\textcolor{keyword}{const}\ T\&\ t)\ \{\ \textcolor{keywordflow}{return}\ push\_(t,\ non\_blocking\_tag\{\});\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{classsrsran_1_1expected}{error\_type<T>}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a785d8d33a0eda1618bde8c1662a84dae}{try\_push}}(T\&\&\ t)\ \{\ \textcolor{keywordflow}{return}\ push\_(std::move(t),\ non\_blocking\_tag\{\});\ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_ab4d38c047d44c20ee681c37da6a771ca}{try\_push}}(It\ b,\ It\ e)}
+\DoxyCodeLine{00106\ \ \ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{return}\ push\_(b,\ e,\ non\_blocking\_tag\{\});}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_adc7b0f5c9331de320d9bef3958854130}{try\_push}}(\mbox{\hyperlink{classsrsran_1_1span}{span<T>}}\ t)\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_adc7b0f5c9331de320d9bef3958854130}{try\_push}}(t.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ t.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}());\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_aae5183bdd94e615104a768300ea08dde}{push\_blocking}}(\textcolor{keyword}{const}\ T\&\ t)\ \{\ \textcolor{keywordflow}{return}\ push\_(t,\ blocking\_tag\{\});\ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{classsrsran_1_1expected}{error\_type<T>}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a053b44bee890104e315eac947b61d781}{push\_blocking}}(T\&\&\ t)\ \{\ \textcolor{keywordflow}{return}\ push\_(std::move(t),\ blocking\_tag\{\});\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_aaaa696a9890690543f59f3547d343cbd}{push\_blocking}}(It\ b,\ It\ e)}
+\DoxyCodeLine{00130\ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{return}\ push\_(b,\ e,\ blocking\_tag\{\});}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a958ada6df59899d54584c047c42a88ec}{push\_blocking}}(\mbox{\hyperlink{classsrsran_1_1span}{span<T>}}\ t)\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a958ada6df59899d54584c047c42a88ec}{push\_blocking}}(t.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ t.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}());\ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_af1dcbeceaf0fa122c07152441f6fd988}{try\_pop}}(T\&\ obj)\ \{\ \textcolor{keywordflow}{return}\ pop\_(obj,\ non\_blocking\_tag\{\})\ ==\ result::success;\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_ae0d9537e9c330144a3e08a1c66500bd2}{try\_pop}}(It\ b,\ It\ e)}
+\DoxyCodeLine{00147\ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{return}\ pop\_(b,\ e,\ non\_blocking\_tag\{\});}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a909c6923abf21abcc9d401f1e1aef588}{try\_pop}}(\mbox{\hyperlink{classsrsran_1_1span}{span<T>}}\ t)\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a909c6923abf21abcc9d401f1e1aef588}{try\_pop}}(t.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ t.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}());\ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00158\ \ \ T\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_aeb5f0b7529a67726f27998a53eebac25}{pop\_blocking}}(\textcolor{keywordtype}{bool}*\ success\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{00159\ \ \ \{}
+\DoxyCodeLine{00160\ \ \ \ \ T\ \ \ \ \ \ obj\{\};}
+\DoxyCodeLine{00161\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a920951341bb550f1638186c6c82b14d1}{result}}\ ret\ =\ pop\_(obj,\ blocking\_tag\{\});}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{if}\ (success\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ *success\ =\ ret\ ==\ result::success;}
+\DoxyCodeLine{00164\ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordflow}{return}\ obj;}
+\DoxyCodeLine{00166\ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_ade46e2fcb56b0e2d229a426331669e95}{pop\_blocking}}(It\ b,\ It\ e)}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{return}\ pop\_(b,\ e,\ blocking\_tag\{\});}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a9629e8d8c25c557d0c60c36bd976cb96}{pop\_blocking}}(\mbox{\hyperlink{classsrsran_1_1span}{span<T>}}\ t)\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a9629e8d8c25c557d0c60c36bd976cb96}{pop\_blocking}}(t.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ t.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}(),\ blocking\_tag\{\});\ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00191\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a920951341bb550f1638186c6c82b14d1}{result}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a60be2483f5e33466add8cb72d4f2bf7c}{pop\_wait\_for}}(T\&\ obj,\ std::chrono::microseconds\ duration)\ \{\ \textcolor{keywordflow}{return}\ pop\_(obj,\ duration);\ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00198\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a920951341bb550f1638186c6c82b14d1}{result}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a05b6f6c8bf774466560f20cded038696}{pop\_wait\_until}}(T\&\ obj,\ std::chrono::steady\_clock::time\_point\ until)\ \{\ \textcolor{keywordflow}{return}\ pop\_(obj,\ until);\ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ StopCondition>}
+\DoxyCodeLine{00204\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<T>}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a38457312d2aaba0c8cb64e9823bec6f8}{pop\_and\_discard\_until}}(\textcolor{keyword}{const}\ StopCondition\&\ stop\_condition)}
+\DoxyCodeLine{00205\ \ \ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{return}\ pop\_and\_discard\_until\_(stop\_condition);}
+\DoxyCodeLine{00207\ \ \ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00210\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_ada6c7e90386f121c1c8610d2c9c14a6c}{clear}}()}
+\DoxyCodeLine{00211\ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{comment}{//\ TODO:\ optimize\ to\ a\ single\ lock.}}
+\DoxyCodeLine{00213\ \ \ \ \ T\ obj;}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{while}\ (pop\_(obj,\ non\_blocking\_tag\{\})\ ==\ result::success)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00219\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a131d9f4665c962a96394b9e880df37c2}{size}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00220\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00221\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00222\ \ \ \ \ \textcolor{keywordflow}{return}\ ring\_buf.size();}
+\DoxyCodeLine{00223\ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a7438f31aa04c67fe428f29c5e3bcb67e}{empty}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00227\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00228\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordflow}{return}\ ring\_buf.empty();}
+\DoxyCodeLine{00230\ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a3f97d9166af9453eced09467cbf0d9c4}{full}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00234\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00235\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{return}\ ring\_buf.full();}
+\DoxyCodeLine{00237\ \ \ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a0d5f7615a5d5557e124b8f6e38b59593}{max\_size}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00241\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00242\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordflow}{return}\ ring\_buf.max\_size();}
+\DoxyCodeLine{00244\ \ \ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a293611c055906d45d4c20296b4091524}{is\_stopped}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00248\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00249\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keywordflow}{return}\ not\ active;}
+\DoxyCodeLine{00251\ \ \ \}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00254\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ F>}
+\DoxyCodeLine{00255\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a9756f6fe38ef2b874fe00cad5f538fb7}{try\_call\_on\_front}}(\textcolor{keyword}{const}\ F\&\ f)}
+\DoxyCodeLine{00256\ \ \ \{}
+\DoxyCodeLine{00257\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ ring\_buf.empty())\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ f(ring\_buf.top());}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00261\ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00263\ \ \ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00266\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ F>}
+\DoxyCodeLine{00267\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a786db93436c9c1712dbb7f55b35fd9f9}{apply\_first}}(\textcolor{keyword}{const}\ F\&\ func)}
+\DoxyCodeLine{00268\ \ \ \{}
+\DoxyCodeLine{00269\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{keywordflow}{return}\ ring\_buf.apply\_first(func);}
+\DoxyCodeLine{00271\ \ \ \}}
+\DoxyCodeLine{00272\ }
+\DoxyCodeLine{00273\ \ \ PushingFunc\ push\_func;}
+\DoxyCodeLine{00274\ \ \ PoppingFunc\ pop\_func;}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00277\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ active\ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00278\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_waiting\ =\ 0;}
+\DoxyCodeLine{00279\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \ \ \ \ \ mutex;}
+\DoxyCodeLine{00280\ \ \ std::condition\_variable\ cvar\_empty,\ cvar\_full;}
+\DoxyCodeLine{00281\ \ \ RingBuffer\ \ \ \ \ \ \ \ \ \ \ \ \ \ ring\_buf;}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{\string~base\_blocking\_queue}}()\ \{\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_af17e07f8afed660c15fcb87523c385e4}{stop}}();\ \}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \textcolor{comment}{//\ Blocks\ producer\ while\ task\ queue\ is\ full.}}
+\DoxyCodeLine{00286\ \ \ \textcolor{keywordtype}{bool}\ wait\_push\_possible(std::unique\_lock<std::mutex>\&\ lock,\ blocking\_tag\ )}
+\DoxyCodeLine{00287\ \ \ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keywordflow}{if}\ (active\ and\ ring\_buf.full())\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ nof\_waiting++;}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (ring\_buf.full()\ and\ active)\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ cvar\_full.wait(lock);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ nof\_waiting-\/-\/;}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keywordflow}{return}\ active;}
+\DoxyCodeLine{00296\ \ \ \}}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \textcolor{comment}{//\ Returns\ true\ if\ there\ is\ space\ in\ the\ task\ queue.}}
+\DoxyCodeLine{00299\ \ \ \textcolor{keywordtype}{bool}\ wait\_push\_possible(std::unique\_lock<std::mutex>\&\ ,\ non\_blocking\_tag\ )}
+\DoxyCodeLine{00300\ \ \ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \textcolor{keywordflow}{return}\ active\ and\ not\ ring\_buf.full();}
+\DoxyCodeLine{00302\ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00305\ \ \ \textcolor{keywordtype}{bool}\ push\_(\textcolor{keyword}{const}\ T\&\ t,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00306\ \ \ \{}
+\DoxyCodeLine{00307\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordflow}{if}\ (wait\_push\_possible(lock,\ mode))\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ push\_func(t);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ ring\_buf.push(t);}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ cvar\_empty.notify\_one();}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00315\ \ \ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00318\ \ \ \mbox{\hyperlink{classsrsran_1_1expected}{srsran::error\_type<T>}}\ push\_(T\&\&\ t,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00319\ \ \ \{}
+\DoxyCodeLine{00320\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keywordflow}{if}\ (wait\_push\_possible(lock,\ mode))\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ push\_func(t);}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ ring\_buf.push(std::move(t));}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ cvar\_empty.notify\_one();}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00326\ \ \ \ \ \}}
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(t);}
+\DoxyCodeLine{00328\ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00331\ \ \ \textcolor{keywordtype}{unsigned}\ push\_(It\ b,\ It\ e,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00332\ \ \ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ =\ 0;}
+\DoxyCodeLine{00334\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ b;\ it\ !=\ e;)\ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ wait\_push\_possible(lock,\ mode))\ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\ =\ ring\_buf.try\_push(it,\ e);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\ ==\ 0)\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ n;\ ++i)\ \{}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ push\_func(*it);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ count\ +=\ n;}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ cvar\_empty.notify\_one();}
+\DoxyCodeLine{00349\ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00351\ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \textcolor{comment}{//\ Blocks\ until\ there\ is\ space\ in\ the\ queue.}}
+\DoxyCodeLine{00354\ \ \ \textcolor{keywordtype}{void}\ wait\_pop\_possible\_(std::unique\_lock<std::mutex>\&\ lock,\ \textcolor{keyword}{const}\ blocking\_tag\&\ )}
+\DoxyCodeLine{00355\ \ \ \{}
+\DoxyCodeLine{00356\ \ \ \ \ cvar\_empty.wait(lock,\ [\textcolor{keyword}{this}]()\ \{\ \textcolor{keywordflow}{return}\ not\ ring\_buf.empty()\ or\ not\ active;\ \});}
+\DoxyCodeLine{00357\ \ \ \}}
+\DoxyCodeLine{00358\ }
+\DoxyCodeLine{00359\ \ \ \textcolor{comment}{//\ Blocks\ until\ there\ is\ space\ or\ timeout.}}
+\DoxyCodeLine{00360\ \ \ \textcolor{keywordtype}{void}\ wait\_pop\_possible\_(std::unique\_lock<std::mutex>\&\ lock,\ \textcolor{keyword}{const}\ wait\_for\_tag\&\ duration)}
+\DoxyCodeLine{00361\ \ \ \{}
+\DoxyCodeLine{00362\ \ \ \ \ cvar\_empty.wait\_for(lock,\ duration,\ [\textcolor{keyword}{this}]()\ \{\ \textcolor{keywordflow}{return}\ not\ ring\_buf.empty()\ or\ not\ active;\ \});}
+\DoxyCodeLine{00363\ \ \ \}}
+\DoxyCodeLine{00364\ }
+\DoxyCodeLine{00365\ \ \ \textcolor{comment}{//\ Blocks\ until\ there\ is\ space\ or\ timeout.}}
+\DoxyCodeLine{00366\ \ \ \textcolor{keywordtype}{void}\ wait\_pop\_possible\_(std::unique\_lock<std::mutex>\&\ lock,\ \textcolor{keyword}{const}\ wait\_until\_tag\&\ until)}
+\DoxyCodeLine{00367\ \ \ \{}
+\DoxyCodeLine{00368\ \ \ \ \ cvar\_empty.wait\_until(lock,\ until,\ [\textcolor{keyword}{this}]()\ \{\ \textcolor{keywordflow}{return}\ not\ ring\_buf.empty()\ or\ not\ active;\ \});}
+\DoxyCodeLine{00369\ \ \ \}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \ \ \textcolor{comment}{//\ Blocks\ until\ there\ is\ space\ in\ the\ queue.}}
+\DoxyCodeLine{00372\ \ \ \textcolor{keywordtype}{bool}\ wait\_pop\_possible(std::unique\_lock<std::mutex>\&\ ,\ \textcolor{keyword}{const}\ non\_blocking\_tag\&\ )}
+\DoxyCodeLine{00373\ \ \ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keywordflow}{return}\ active\ and\ not\ ring\_buf.empty();}
+\DoxyCodeLine{00375\ \ \ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00378\ \ \ \textcolor{keywordtype}{bool}\ wait\_pop\_possible(std::unique\_lock<std::mutex>\&\ lock,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00379\ \ \ \{}
+\DoxyCodeLine{00380\ \ \ \ \ \textcolor{keywordflow}{if}\ (active\ and\ ring\_buf.empty())\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ nof\_waiting++;}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ wait\_pop\_possible\_(lock,\ mode);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ nof\_waiting-\/-\/;}
+\DoxyCodeLine{00384\ \ \ \ \ \}}
+\DoxyCodeLine{00385\ \ \ \ \ \textcolor{keywordflow}{return}\ active\ and\ not\ ring\_buf.empty();}
+\DoxyCodeLine{00386\ \ \ \}}
+\DoxyCodeLine{00387\ }
+\DoxyCodeLine{00388\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00389\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a920951341bb550f1638186c6c82b14d1}{result}}\ pop\_(T\&\ obj,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00390\ \ \ \{}
+\DoxyCodeLine{00391\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{keywordflow}{if}\ (wait\_pop\_possible(lock,\ mode))\ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ obj\ =\ std::move(ring\_buf.top());}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ pop\_func(obj);}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ ring\_buf.pop();}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ cvar\_full.notify\_one();}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result::success;}
+\DoxyCodeLine{00398\ \ \ \ \ \}}
+\DoxyCodeLine{00399\ \ \ \ \ \textcolor{keywordflow}{return}\ active\ ?\ result::timeout\ :\ result::failed;}
+\DoxyCodeLine{00400\ \ \ \}}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}\ BlockingMode>}
+\DoxyCodeLine{00403\ \ \ \textcolor{keywordtype}{unsigned}\ pop\_(It\ b,\ It\ e,\ \textcolor{keyword}{const}\ BlockingMode\&\ mode)}
+\DoxyCodeLine{00404\ \ \ \{}
+\DoxyCodeLine{00405\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ =\ 0;}
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ b;\ it\ !=\ e;)\ \{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ wait\_pop\_possible(lock,\ mode))\ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\ =\ ring\_buf.pop\_into(it,\ e);}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\ ==\ 0)\ \{}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ n;\ ++i)\ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ pop\_func(*it);}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ count\ +=\ n;}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ lock.unlock();}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \textcolor{comment}{//\ notify\ all\ waiting\ producers\ because\ we\ may\ have\ emptied\ more\ than\ one\ slot\ of\ the\ queue.}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ cvar\_full.notify\_all();}
+\DoxyCodeLine{00423\ \ \ \ \ \}}
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00425\ \ \ \}}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ StopCondition>}
+\DoxyCodeLine{00428\ \ \ optional<T>\ pop\_and\_discard\_until\_(\textcolor{keyword}{const}\ StopCondition\&\ cond)}
+\DoxyCodeLine{00429\ \ \ \{}
+\DoxyCodeLine{00430\ \ \ \ \ optional<T>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ret\{\};}
+\DoxyCodeLine{00431\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notify\_needed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00432\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00433\ \ \ \ \ \textcolor{keywordflow}{while}\ (wait\_pop\_possible(lock,\ non\_blocking\_tag\{\}))\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ pop\_func(ring\_buf.top());}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ notify\_needed\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cond(ring\_buf.top()))\ \{}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ ret\ =\ std::move(ring\_buf.top());}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ ring\_buf.pop();}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ ring\_buf.pop();}
+\DoxyCodeLine{00442\ \ \ \ \ \}}
+\DoxyCodeLine{00443\ \ \ \ \ \textcolor{keywordflow}{if}\ (notify\_needed)\ \{}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ cvar\_full.notify\_one();}
+\DoxyCodeLine{00445\ \ \ \ \ \}}
+\DoxyCodeLine{00446\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00447\ \ \ \}}
+\DoxyCodeLine{00448\ \};}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00451\ }
+\DoxyCodeLine{00460\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ PushingCallback\ =\ detail::noop\_operation,}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ PoppingCallback\ =\ detail::noop\_operation>}
+\DoxyCodeLine{00463\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1blocking__queue}{blocking\_queue}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{detail::base\_blocking\_queue}}<ring\_buffer<T,\ true>,\ PushingCallback,\ PoppingCallback>}
+\DoxyCodeLine{00464\ \{}
+\DoxyCodeLine{00465\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{super\_type}}\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{detail::base\_blocking\_queue<ring\_buffer<T,\ true>}},\ PushingCallback,\ PoppingCallback>;}
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00468\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1blocking__queue}{blocking\_queue}}(\textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a131d9f4665c962a96394b9e880df37c2}{size}},\ PushingCallback\ push\_callback\ =\ \{\},\ PoppingCallback\ pop\_callback\ =\ \{\})\ :}
+\DoxyCodeLine{00469\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{super\_type}}(push\_callback,\ pop\_callback,\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue_a131d9f4665c962a96394b9e880df37c2}{size}})}
+\DoxyCodeLine{00470\ \ \ \{}
+\DoxyCodeLine{00471\ \ \ \}}
+\DoxyCodeLine{00472\ \};}
+\DoxyCodeLine{00473\ }
+\DoxyCodeLine{00483\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ N,}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ PushingCallback\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1noop__operation}{detail::noop\_operation}},}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ PoppingCallback\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1noop__operation}{detail::noop\_operation}}>}
+\DoxyCodeLine{00487\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1static__blocking__queue}{static\_blocking\_queue}}}
+\DoxyCodeLine{00488\ \ \ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{detail::base\_blocking\_queue}}<static\_ring\_buffer<T,\ N>,\ PushingCallback,\ PoppingCallback>}
+\DoxyCodeLine{00489\ \{}
+\DoxyCodeLine{00490\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_t}}\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{detail::base\_blocking\_queue<static\_ring\_buffer<T,\ N>}},\ PushingCallback,\ PoppingCallback>;}
+\DoxyCodeLine{00491\ }
+\DoxyCodeLine{00492\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00493\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1static__blocking__queue}{static\_blocking\_queue}}(PushingCallback\ push\_callback\ =\ \{\},\ PoppingCallback\ pop\_callback\ =\ \{\})\ :}
+\DoxyCodeLine{00494\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1base__blocking__queue}{base\_t}}(push\_callback,\ pop\_callback)}
+\DoxyCodeLine{00495\ \ \ \{}
+\DoxyCodeLine{00496\ \ \ \}}
+\DoxyCodeLine{00497\ \};}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

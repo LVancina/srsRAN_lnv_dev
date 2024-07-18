@@ -1,0 +1,151 @@
+\doxysection{pdu\+\_\+rx\+\_\+handler.\+h}
+\hypertarget{pdu__rx__handler_8h_source}{}\label{pdu__rx__handler_8h_source}\index{lib/mac/mac\_ul/pdu\_rx\_handler.h@{lib/mac/mac\_ul/pdu\_rx\_handler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{mac__scheduler__ce__info__handler_8h}{"{}mac\_scheduler\_ce\_info\_handler.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{mac__ul__sch__pdu_8h}{"{}mac\_ul\_sch\_pdu.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{mac__ul__ue__manager_8h}{"{}mac\_ul\_ue\_manager.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ul__bsr_8h}{"{}ul\_bsr.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/du\_high/du\_high\_executor\_mapper.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/du\_high/rnti\_value\_table.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/mac.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pcap/mac\_pcap.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Stores\ MAC\ RX\ PDU,\ as\ well\ as\ any\ contextual\ or\ temporary\ information\ related\ to\ the\ PDU\ decoding.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\ \{}
+\DoxyCodeLine{00041\ \ \ decoded\_mac\_rx\_pdu()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ \ \ decoded\_mac\_rx\_pdu(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ slot\_rx\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_idx\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1mac__rx__pdu}{mac\_rx\_pdu}}\ \ \ \ \ \ pdu\_rx\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ ue\_index\_\ =\ MAX\_NOF\_DU\_UES)\ :}
+\DoxyCodeLine{00046\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a59f2176d4d0d6ac292d4970b678d06e7}{slot\_rx}}(slot\_rx\_),\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_ac2291fa324ef374eb10f8c6b2421cd3e}{cell\_index\_rx}}(cell\_idx\_),\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a6f4447d7b5915c8aca69e52315d2353a}{ue\_index}}(ue\_index\_),\ pdu\_rx(std::move(pdu\_rx\_))}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(\textcolor{keyword}{not}\ pdu\_rx.pdu.empty(),\ \textcolor{stringliteral}{"{}Received\ empty\ PDU"{}});}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Clear\ PDU\ context.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_aaa985349c115f8559156a6018cb8d1dc}{clear}}()}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a59f2176d4d0d6ac292d4970b678d06e7}{slot\_rx}}\ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{\{}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{\}}};}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_ac2291fa324ef374eb10f8c6b2421cd3e}{cell\_index\_rx}}\ =\ MAX\_NOF\_DU\_CELLS;}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a6f4447d7b5915c8aca69e52315d2353a}{ue\_index}}\ \ \ \ \ \ =\ MAX\_NOF\_DU\_UES;}
+\DoxyCodeLine{00057\ \ \ \ \ pdu\_rx.pdu.clear();}
+\DoxyCodeLine{00058\ \ \ \ \ decoded\_subpdus.clear();}
+\DoxyCodeLine{00059\ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Slot\ when\ PDU\ was\ received\ in\ the\ PHY.}}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a59f2176d4d0d6ac292d4970b678d06e7}{slot\_rx}};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ Cell\ where\ PDU\ was\ decoded\ by\ the\ PHY.}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_ac2291fa324ef374eb10f8c6b2421cd3e}{cell\_index\_rx}};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ UE\ index\ for\ which\ PDU\ is\ directed.\ ue\_index\ =\ MAX\_NOF\_UES\ if\ no\ UE\ with\ provided\ RNTI\ exists.}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a6f4447d7b5915c8aca69e52315d2353a}{ue\_index}};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Received\ MAC\ PDU\ content.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Note:\ C-\/RNTI\ may\ be\ later\ altered,\ depending\ on\ whether\ a\ CRNTI\ MAC\ CE\ is\ present.}}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{structsrsran_1_1mac__rx__pdu}{mac\_rx\_pdu}}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_a3ffbe25ca40fb6792b4d900f2d8e71ee}{pdu\_rx}};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ View\ of\ decoded\ subPDUs\ of\ the\ MAC\ PDU.}}
+\DoxyCodeLine{00075\ \ \ mac\_ul\_sch\_pdu\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu_aed54d6ed439d2d4d44437546102acd72}{decoded\_subpdus}};}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ Decodes\ MAC\ Rx\ PDUs\ and\ handles\ the\ respective\ CEs\ and\ SDUs\ by\ dispatching\ them\ to\ the\ Scheduler\ or\ UE\ UL\ bearers.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ This\ class\ is\ thread-\/safe,\ i.e.\ it\ can\ be\ concurrently\ called\ for\ multiple\ MAC\ UL\ PDUs,\ iff\ its\ methods\ are\ called}}
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ from\ within\ the\ respective\ MAC\ PDU\ RNTI\ executor.}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdu__rx__handler}{pdu\_rx\_handler}}}
+\DoxyCodeLine{00082\ \{}
+\DoxyCodeLine{00083\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00084\ \ \ pdu\_rx\_handler(\mbox{\hyperlink{classsrsran_1_1mac__ul__ccch__notifier}{mac\_ul\_ccch\_notifier}}\&\ \ \ \ \ \ \ \ \ \ ccch\_notifier\_,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}\&\ \ \ \ ue\_exec\_mapper\_,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1mac__scheduler__ce__info__handler}{mac\_scheduler\_ce\_info\_handler}}\&\ sched\_,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mac\_ul\_ue\_manager\&\ \ \ \ \ \ \ \ \ \ \ \ \ ue\_manager\_,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_rnti\_table\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti\_table\_,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1mac__pcap}{mac\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap\_);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ Decode\ MAC\ Rx\ PDU,\ log\ contents\ and\ handle\ subPDUs.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sl\_rx\ Slot\ when\ MAC\ UL\ PDU\ was\ received.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ cell\_index\ Cell\ index\ where\ MAC\ UL\ PDU\ was\ received.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ received.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ all\ subPDUs\ were\ correctly\ handled.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pdu__rx__handler_a8080a7fd93f466f75014f77460576109}{handle\_rx\_pdu}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_rx,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{structsrsran_1_1mac__rx__pdu}{mac\_rx\_pdu}}\ pdu);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Called\ to\ push\ stored\ UL\ CCCH\ to\ upper\ layers,\ once\ the\ UE\ has\ been\ created\ in\ the\ DU\ manager.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pdu__rx__handler_a2f3eccd38493cb9e6e22ca774f0f9803}{push\_ul\_ccch\_msg}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ ul\_ccch\_msg);}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ Handle\ subPDUs\ contained\ in\ a\ MAC\ UL\ PDU.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ being\ processed.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ all\ subPDUs\ were\ correctly\ handled.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{bool}\ handle\_rx\_subpdus(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\&\ pdu);}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ Handle\ UL\ SDU\ targetted\ at\ LCIDs\ >=\ 1.}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ being\ processed.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ subpdu\ subPDU\ of\ PDU\ where\ CRNTI\ CE\ was\ detected.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ ue\ MAC\ UL\ UE\ object\ for\ which\ the\ sdu\ is\ directed.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ correctly\ handled.}}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{bool}\ handle\_sdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\&\ ctx,\ \textcolor{keyword}{const}\ mac\_ul\_sch\_subpdu\&\ sdu,\ mac\_ul\_ue\_context*\ ue);}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Handle\ UL\ MAC\ CE.}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ being\ processed.}}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ subpdu\ subPDU\ of\ PDU\ where\ CRNTI\ CE\ was\ detected.}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ correctly\ handled.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{bool}\ handle\_mac\_ce(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\&\ pdu,\ \textcolor{keyword}{const}\ mac\_ul\_sch\_subpdu\&\ subpdu);}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ Handle\ UL\ CCCH\ Message}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ being\ processed.}}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ subpdu\ subPDU\ of\ PDU\ where\ CRNTI\ CE\ was\ detected.}}
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ correctly\ handled.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordtype}{bool}\ handle\_ccch\_msg(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\&\ pdu,\ \textcolor{keyword}{const}\ mac\_ul\_sch\_subpdu\&\ sdu);}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ Handle\ CRNTI\ MAC\ CE}}
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ see\ TS\ 38.321,\ 6.1.3.2\ -\/\ C-\/RNTI\ MAC\ CE}}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ MAC\ UL\ PDU\ being\ processed.}}
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ subpdu\ subPDU\ of\ PDU\ where\ CRNTI\ CE\ was\ detected.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ correctly\ handled.}}
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{bool}\ handle\_crnti\_ce(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1decoded__mac__rx__pdu}{decoded\_mac\_rx\_pdu}}\&\ pdu,\ \textcolor{keyword}{const}\ mac\_ul\_sch\_subpdu\&\ subpdu);}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///\ Handle\ PDU\ to\ PCAP\ file}}
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{void}\ write\_pcap\_rx\_pdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ sl\_rx,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__rx__pdu}{mac\_rx\_pdu}}\&\ pdu);}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{classsrsran_1_1mac__ul__ccch__notifier}{mac\_ul\_ccch\_notifier}}\&\ \ \ \ \ \ \ \ \ \ ccch\_notifier;}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}\&\ \ \ \ ue\_exec\_mapper;}
+\DoxyCodeLine{00138\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00139\ \ \ \mbox{\hyperlink{classsrsran_1_1mac__scheduler__ce__info__handler}{mac\_scheduler\_ce\_info\_handler}}\&\ sched;}
+\DoxyCodeLine{00140\ \ \ mac\_ul\_ue\_manager\&\ \ \ \ \ \ \ \ \ \ \ \ \ ue\_manager;}
+\DoxyCodeLine{00141\ \ \ du\_rnti\_table\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti\_table;}
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1mac__pcap}{mac\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap;}
+\DoxyCodeLine{00143\ \};}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

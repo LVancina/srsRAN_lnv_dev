@@ -1,0 +1,541 @@
+\doxysection{channel\+\_\+processor\+\_\+formatters.\+h}
+\hypertarget{channel__processor__formatters_8h_source}{}\label{channel__processor__formatters_8h_source}\index{include/srsran/phy/upper/channel\_processors/channel\_processor\_formatters.h@{include/srsran/phy/upper/channel\_processors/channel\_processor\_formatters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/precoding\_formatters.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/re\_pattern\_formatters.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdcch\_processor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdsch\_processor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/prach\_detector.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pucch\_processor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/ssb\_processor.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/pdcch\_context\_formatter.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdsch/pdsch\_context\_formatter.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pucch/pucch\_context\_formatter.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/format\_utils.h"{}}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pdcch\_processor::coreset\_description.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00042\ \textcolor{keyword}{struct}\ formatter<srsran::pdcch\_processor::coreset\_description>\ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00044\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00047\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdcch\_processor::coreset\_description\&\ coreset,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}bwp=[\{\},\ \{\})"{}},\ coreset.bwp\_start\_rb,\ coreset.bwp\_start\_rb\ +\ coreset.bwp\_size\_rb);}
+\DoxyCodeLine{00060\ \ \ \ \ helper.format\_always(}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}symb=[\{\},\ \{\})"{}},\ coreset.start\_symbol\_index,\ coreset.start\_symbol\_index\ +\ coreset.duration);}
+\DoxyCodeLine{00062\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}f\_re=\{\}"{}},\ coreset.frequency\_resources);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordflow}{switch}\ (coreset.cce\_to\_reg\_mapping)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::pdcch\_processor::cce\_to\_reg\_mapping\_type::CORESET0:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}mapping=coreset0"{}});}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::pdcch\_processor::cce\_to\_reg\_mapping\_type::INTERLEAVED:}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}mapping=interleaved"{}});}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}reg\_bundle\_size=\{\}"{}},\ coreset.reg\_bundle\_size);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}interleaver\_size=\{\}"{}},\ coreset.interleaver\_size);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::pdcch\_processor::cce\_to\_reg\_mapping\_type::NON\_INTERLEAVED:}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}mapping=non-\/interleaved"{}});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}shift\_idx=\{\}"{}},\ coreset.shift\_index);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pdcch\_processor::pdu\_t.}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00086\ \textcolor{keyword}{struct}\ formatter<srsran::pdcch\_processor::pdu\_t>\ \{}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00088\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00091\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00095\ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00100\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdcch\_processor::pdu\_t\&\ pdu,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00102\ \ \ \{}
+\DoxyCodeLine{00103\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}rnti=0x\{:04x\}"{}},\ pdu.dci.rnti);}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu.context.has\_value())\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ helper.format\_always(ctx,\ pdu.context.value());}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}slot=\{\}"{}},\ pdu.slot);}
+\DoxyCodeLine{00108\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}cp=\{\}"{}},\ pdu.cp.to\_string());}
+\DoxyCodeLine{00109\ \ \ \ \ helper.format\_if\_verbose(ctx,\ pdu.coreset);}
+\DoxyCodeLine{00110\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}cce=\{\}"{}},\ pdu.dci.cce\_index);}
+\DoxyCodeLine{00111\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}al=\{\}"{}},\ pdu.dci.aggregation\_level);}
+\DoxyCodeLine{00112\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}size=\{\}"{}},\ pdu.dci.payload.size());}
+\DoxyCodeLine{00113\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id\_dmrs=\{\}"{}},\ pdu.dci.n\_id\_pdcch\_dmrs);}
+\DoxyCodeLine{00114\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id\_data=\{\}"{}},\ pdu.dci.n\_id\_pdcch\_data);}
+\DoxyCodeLine{00115\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_rnti=\{\}"{}},\ pdu.dci.n\_rnti);}
+\DoxyCodeLine{00116\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}power\_dmrs=\{:+.1f\}dB"{}},\ pdu.dci.dmrs\_power\_offset\_dB);}
+\DoxyCodeLine{00117\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}power\_data=\{:+.1f\}dB"{}},\ pdu.dci.data\_power\_offset\_dB);}
+\DoxyCodeLine{00118\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}precoding=\{\}"{}},\ pdu.dci.precoding);}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00120\ \ \ \}}
+\DoxyCodeLine{00121\ \};}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pdsch\_processor::codeword\_description.}}
+\DoxyCodeLine{00124\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00125\ \textcolor{keyword}{struct}\ formatter<srsran::pdsch\_processor::codeword\_description>\ \{}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00127\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00130\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00134\ \ \ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdsch\_processor::codeword\_description\&\ codeword\_descr,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}mod=\{\}"{}},\ to\_string(codeword\_descr.modulation));}
+\DoxyCodeLine{00143\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}rv=\{\}"{}},\ codeword\_descr.rv);}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00146\ \ \ \}}
+\DoxyCodeLine{00147\ \};}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pdsch\_processor::pdu\_t.}}
+\DoxyCodeLine{00150\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00151\ \textcolor{keyword}{struct}\ formatter<srsran::pdsch\_processor::pdu\_t>\ \{}
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00153\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00156\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00160\ \ \ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdsch\_processor::pdu\_t\&\ pdu,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00167\ \ \ \{}
+\DoxyCodeLine{00168\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}rnti=0x\{:04x\}"{}},\ pdu.rnti);}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu.context.has\_value())\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ helper.format\_always(ctx,\ pdu.context.value());}
+\DoxyCodeLine{00171\ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}bwp=[\{\},\ \{\})"{}},\ pdu.bwp\_start\_rb,\ pdu.bwp\_start\_rb\ +\ pdu.bwp\_size\_rb);}
+\DoxyCodeLine{00173\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}prb=\{\}"{}},\ pdu.freq\_alloc);}
+\DoxyCodeLine{00174\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}symb=[\{\},\ \{\})"{}},\ pdu.start\_symbol\_index,\ pdu.start\_symbol\_index\ +\ pdu.nof\_symbols);}
+\DoxyCodeLine{00175\ \ \ \ \ helper.format\_always(ctx,\ srsran::span<\textcolor{keyword}{const}\ srsran::pdsch\_processor::codeword\_description>(pdu.codewords));}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id=\{\}"{}},\ pdu.n\_id);}
+\DoxyCodeLine{00178\ \ \ \ \ helper.format\_if\_verbose(}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}ref\_point=\{\}"{}},\ (pdu.ref\_point\ ==\ srsran::pdsch\_processor::pdu\_t::CRB0)\ ?\ \textcolor{stringliteral}{"{}CRB0"{}}\ :\ \textcolor{stringliteral}{"{}PRB0"{}});}
+\DoxyCodeLine{00180\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}dmrs\_type=\{\}"{}},\ (pdu.dmrs\ ==\ srsran::dmrs\_type::TYPE1)\ ?\ 1\ :\ 2);}
+\DoxyCodeLine{00181\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}dmrs\_mask=\{\}"{}},\ pdu.dmrs\_symbol\_mask);}
+\DoxyCodeLine{00182\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_scidid=\{\}"{}},\ pdu.scrambling\_id);}
+\DoxyCodeLine{00183\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_scid=\{\}"{}},\ pdu.n\_scid);}
+\DoxyCodeLine{00184\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}ncgwd=\{\}"{}},\ pdu.nof\_cdm\_groups\_without\_data);}
+\DoxyCodeLine{00185\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}bg=\{\}"{}},\ (pdu.ldpc\_base\_graph\ ==\ srsran::ldpc\_base\_graph\_type::BG1)\ ?\ \textcolor{stringliteral}{"{}BG1"{}}\ :\ \textcolor{stringliteral}{"{}BG2"{}});}
+\DoxyCodeLine{00186\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}lbrm=\{\}bytes"{}},\ pdu.tbs\_lbrm\_bytes);}
+\DoxyCodeLine{00187\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}power\_dmrs=\{:+.1f\}dB"{}},\ -\/pdu.ratio\_pdsch\_dmrs\_to\_sss\_dB);}
+\DoxyCodeLine{00188\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}power\_data=\{:+.1f\}dB"{}},\ pdu.ratio\_pdsch\_data\_to\_sss\_dB);}
+\DoxyCodeLine{00189\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}slot=\{\}"{}},\ pdu.slot);}
+\DoxyCodeLine{00190\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}cp=\{\}"{}},\ pdu.cp.to\_string());}
+\DoxyCodeLine{00191\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}precoding=\{\}"{}},\ pdu.precoding);}
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu.reserved.get\_nof\_entries()\ >\ 0)\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}reserved=[\{:,\}]"{}},\ pdu.reserved.get\_re\_patterns());}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00196\ \ \ \}}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ prach\_detector::configuration.}}
+\DoxyCodeLine{00200\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00201\ \textcolor{keyword}{struct}\ formatter<srsran::prach\_detector::configuration>\ \{}
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00203\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00206\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00209\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00210\ \ \ \{}
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00212\ \ \ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00215\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::prach\_detector::configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00217\ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}rsi=\{\}"{}},\ config.root\_sequence\_index);}
+\DoxyCodeLine{00219\ \ \ \ \ helper.format\_if\_verbose(ctx,}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}preambles=[\{\},\ \{\})"{}},}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ config.start\_preamble\_index,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ config.start\_preamble\_index\ +\ config.nof\_preamble\_indices);}
+\DoxyCodeLine{00223\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}format=\{\}"{}},\ to\_string(config.format));}
+\DoxyCodeLine{00224\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}set=\{\}"{}},\ to\_string(config.restricted\_set));}
+\DoxyCodeLine{00225\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}zcz=\{\}"{}},\ config.zero\_correlation\_zone);}
+\DoxyCodeLine{00226\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}scs=\{\}"{}},\ to\_string(config.ra\_scs));}
+\DoxyCodeLine{00227\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}nof\_rx\_ports=\{\}"{}},\ config.nof\_rx\_ports);}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00230\ \ \ \}}
+\DoxyCodeLine{00231\ \};}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ prach\_detection\_result::preamble\_indication.}}
+\DoxyCodeLine{00234\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00235\ \textcolor{keyword}{struct}\ formatter<srsran::prach\_detection\_result::preamble\_indication>\ \{}
+\DoxyCodeLine{00236\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00237\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00238\ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00240\ \ \ \}}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00243\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::prach\_detection\_result::preamble\_indication\&\ preamble,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00245\ \ \ \{}
+\DoxyCodeLine{00246\ \ \ \ \ format\_to(ctx.out(),}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{\{idx=\{\}\ ta=\{:.2f\}us\ detection\_metric=\{:.1f\}\}\}"{}},}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ preamble.preamble\_index,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ preamble.time\_advance.to\_seconds()\ *\ 1e6,}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ preamble.detection\_metric);}
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00252\ \ \ \}}
+\DoxyCodeLine{00253\ \};}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ prach\_detection\_result.}}
+\DoxyCodeLine{00256\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00257\ \textcolor{keyword}{struct}\ formatter<srsran::prach\_detection\_result>\ \{}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00259\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00262\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00265\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00266\ \ \ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00268\ \ \ \}}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00271\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::prach\_detection\_result\&\ result,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00273\ \ \ \{}
+\DoxyCodeLine{00274\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}rssi=\{:+.1f\}dB"{}},\ result.rssi\_dB);}
+\DoxyCodeLine{00275\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}res=\{:.1f\}us"{}},\ result.time\_resolution.to\_seconds()\ *\ 1e6);}
+\DoxyCodeLine{00276\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}max\_ta=\{:.2f\}us"{}},\ result.time\_advance\_max.to\_seconds()\ *\ 1e6);}
+\DoxyCodeLine{00277\ \ \ \ \ helper.format\_always(ctx,}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}detected\_preambles=[\{:,\}]"{}},}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srsran::span<\textcolor{keyword}{const}\ srsran::prach\_detection\_result::preamble\_indication>(result.preambles));}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00282\ \ \ \}}
+\DoxyCodeLine{00283\ \};}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor::format0\_configuration.}}
+\DoxyCodeLine{00286\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00287\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor::format0\_configuration>\ \{}
+\DoxyCodeLine{00288\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00289\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00290\ \ \ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00292\ \ \ \}}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00295\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor::format0\_configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00297\ \ \ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}format0\_configuration"{}});}
+\DoxyCodeLine{00299\ \ \ \}}
+\DoxyCodeLine{00300\ \};}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor::format1\_configuration.}}
+\DoxyCodeLine{00303\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00304\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor::format1\_configuration>\ \{}
+\DoxyCodeLine{00305\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00306\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00309\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00312\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00313\ \ \ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00315\ \ \ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00318\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor::format1\_configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00320\ \ \ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keywordflow}{if}\ (config.context.has\_value())\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ helper.format\_always(ctx,\ config.context.value());}
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}format=1"{}});}
+\DoxyCodeLine{00325\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}bwp=[\{\},\ \{\})"{}},\ config.bwp\_start\_rb,\ config.bwp\_start\_rb\ +\ config.bwp\_size\_rb);}
+\DoxyCodeLine{00326\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}prb1=\{\}"{}},\ config.starting\_prb);}
+\DoxyCodeLine{00327\ \ \ \ \ helper.format\_always(}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}prb2=\{\}"{}},\ config.second\_hop\_prb.has\_value()\ ?\ std::to\_string(config.second\_hop\_prb.value())\ :\ \textcolor{stringliteral}{"{}na"{}});}
+\DoxyCodeLine{00329\ \ \ \ \ helper.format\_always(}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}symb=[\{\},\ \{\})"{}},\ config.start\_symbol\_index,\ config.start\_symbol\_index\ +\ config.nof\_symbols);}
+\DoxyCodeLine{00331\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id=\{\}"{}},\ config.n\_id);}
+\DoxyCodeLine{00332\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}cs=\{\}"{}},\ config.initial\_cyclic\_shift);}
+\DoxyCodeLine{00333\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}occ=\{\}"{}},\ config.time\_domain\_occ);}
+\DoxyCodeLine{00334\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}slot=\{\}"{}},\ config.slot);}
+\DoxyCodeLine{00335\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}cp=\{\}"{}},\ config.cp.to\_string());}
+\DoxyCodeLine{00336\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}ports=\{\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(config.ports));}
+\DoxyCodeLine{00337\ }
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00339\ \ \ \}}
+\DoxyCodeLine{00340\ \};}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor::format2\_configuration.}}
+\DoxyCodeLine{00343\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00344\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor::format2\_configuration>\ \{}
+\DoxyCodeLine{00345\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00346\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00349\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00350\ }
+\DoxyCodeLine{00351\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00352\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00353\ \ \ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00355\ \ \ \}}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00358\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor::format2\_configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00360\ \ \ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keywordflow}{if}\ (config.context.has\_value())\ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ helper.format\_always(ctx,\ config.context.value());}
+\DoxyCodeLine{00363\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}rnti=0x\{:04x\}"{}},\ config.rnti);}
+\DoxyCodeLine{00365\ \ \ \ \ \}}
+\DoxyCodeLine{00366\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}format=2"{}});}
+\DoxyCodeLine{00367\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}bwp=[\{\},\ \{\})"{}},\ config.bwp\_start\_rb,\ config.bwp\_start\_rb\ +\ config.bwp\_size\_rb);}
+\DoxyCodeLine{00368\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}prb=[\{\},\ \{\})"{}},\ config.starting\_prb,\ config.starting\_prb\ +\ config.nof\_prb);}
+\DoxyCodeLine{00369\ \ \ \ \ helper.format\_always(}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}prb2=\{\}"{}},\ config.second\_hop\_prb.has\_value()\ ?\ std::to\_string(config.second\_hop\_prb.value())\ :\ \textcolor{stringliteral}{"{}na"{}});}
+\DoxyCodeLine{00371\ \ \ \ \ helper.format\_always(}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}symb=[\{\},\ \{\})"{}},\ config.start\_symbol\_index,\ config.start\_symbol\_index\ +\ config.nof\_symbols);}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id=\{\}"{}},\ config.n\_id);}
+\DoxyCodeLine{00375\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}n\_id0=\{\}"{}},\ config.n\_id\_0);}
+\DoxyCodeLine{00376\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}slot=\{\}"{}},\ config.slot);}
+\DoxyCodeLine{00377\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}cp=\{\}"{}},\ config.cp.to\_string());}
+\DoxyCodeLine{00378\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}ports=\{\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(config.ports));}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00381\ \ \ \}}
+\DoxyCodeLine{00382\ \};}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor::format3\_configuration.}}
+\DoxyCodeLine{00385\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00386\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor::format3\_configuration>\ \{}
+\DoxyCodeLine{00387\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00388\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00389\ \ \ \{}
+\DoxyCodeLine{00390\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00391\ \ \ \}}
+\DoxyCodeLine{00392\ }
+\DoxyCodeLine{00393\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00394\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor::format3\_configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00396\ \ \ \{}
+\DoxyCodeLine{00397\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}format3\_configuration"{}});}
+\DoxyCodeLine{00398\ \ \ \}}
+\DoxyCodeLine{00399\ \};}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor::format4\_configuration.}}
+\DoxyCodeLine{00402\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00403\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor::format4\_configuration>\ \{}
+\DoxyCodeLine{00404\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00405\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00406\ \ \ \{}
+\DoxyCodeLine{00407\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00408\ \ \ \}}
+\DoxyCodeLine{00409\ }
+\DoxyCodeLine{00410\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00411\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor::format4\_configuration\&\ config,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00413\ \ \ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}format4\_configuration"{}});}
+\DoxyCodeLine{00415\ \ \ \}}
+\DoxyCodeLine{00416\ \};}
+\DoxyCodeLine{00417\ }
+\DoxyCodeLine{00418\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ pucch\_processor\_result.}}
+\DoxyCodeLine{00419\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00420\ \textcolor{keyword}{struct}\ formatter<srsran::pucch\_processor\_result>\ \{}
+\DoxyCodeLine{00421\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00422\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00423\ }
+\DoxyCodeLine{00424\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00425\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00428\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00429\ \ \ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00431\ \ \ \}}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00434\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pucch\_processor\_result\&\ result,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00436\ \ \ \{}
+\DoxyCodeLine{00437\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_sr\ \ \ \ \ \ \ \ =\ result.message.get\_expected\_nof\_sr\_bits();}
+\DoxyCodeLine{00438\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_harq\_ack\ \ =\ result.message.get\_expected\_nof\_harq\_ack\_bits();}
+\DoxyCodeLine{00439\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_csi\_part1\ =\ result.message.get\_expected\_nof\_csi\_part1\_bits();}
+\DoxyCodeLine{00440\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_csi\_part2\ =\ result.message.get\_expected\_nof\_csi\_part2\_bits();}
+\DoxyCodeLine{00441\ }
+\DoxyCodeLine{00442\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}status=\{\}"{}},\ to\_string(result.message.get\_status()));}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00444\ \ \ \ \ \textcolor{comment}{//\ PUCCH\ can\ carry\ a\ scheduling\ request\ without\ HARQ-\/ACK.\ In\ that\ case,\ the\ UE\ only\ transmits\ for\ positive\ SR.}}
+\DoxyCodeLine{00445\ \ \ \ \ \textcolor{keywordflow}{if}\ ((nof\_sr\ ==\ 0)\ \&\&\ (nof\_harq\_ack\ ==\ 0)\ \&\&\ (nof\_csi\_part1\ ==\ 0)\ \&\&\ (nof\_csi\_part2\ ==\ 0))\ \{}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result.message.get\_status()\ ==\ srsran::uci\_status::valid)\ \{}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}sr=yes"{}});}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}sr=no"{}});}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00451\ \ \ \ \ \}}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \ \ \textcolor{keywordflow}{if}\ (result.message.get\_status()\ ==\ srsran::uci\_status::valid)\ \{}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \textcolor{comment}{//\ Valid\ UCI\ payload.}}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_harq\_ack)\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}ack=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(result.message.get\_harq\_ack\_bits()));}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_sr)\ \{}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}sr=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(result.message.get\_sr\_bits()));}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_csi\_part1)\ \{}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}csi1=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(result.message.get\_csi\_part1\_bits()));}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_csi\_part2)\ \{}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}csi2=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(result.message.get\_csi\_part2\_bits()));}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00467\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \textcolor{comment}{//\ Bad\ UCI\ payload.}}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ std::array<uint8\_t,\ srsran::uci\_constants::MAX\_NOF\_PAYLOAD\_BITS>\ bad\_payload;}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ std::fill(bad\_payload.begin(),\ bad\_payload.end(),\ 2U);}
+\DoxyCodeLine{00471\ }
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_harq\_ack)\ \{}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}ack=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(bad\_payload).first(nof\_harq\_ack));}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_sr)\ \{}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}sr=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(bad\_payload).first(nof\_sr));}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_csi\_part1)\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}csi1=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(bad\_payload).first(nof\_csi\_part1));}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_csi\_part2)\ \{}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}csi2=\{:\#\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(bad\_payload).first(nof\_csi\_part2));}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00484\ \ \ \ \ \}}
+\DoxyCodeLine{00485\ }
+\DoxyCodeLine{00486\ \ \ \ \ \textcolor{keywordflow}{if}\ (result.detection\_metric.has\_value())\ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}detection\_metric=\{:.1f\}"{}},\ result.detection\_metric.value());}
+\DoxyCodeLine{00488\ \ \ \ \ \}}
+\DoxyCodeLine{00489\ }
+\DoxyCodeLine{00490\ \ \ \ \ \textcolor{comment}{//\ Channel\ State\ Information.}}
+\DoxyCodeLine{00491\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}epre=\{:+.1f\}dB"{}},\ result.csi.get\_epre\_dB());}
+\DoxyCodeLine{00492\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}rsrp=\{:+.1f\}dB"{}},\ result.csi.get\_rsrp\_dB());}
+\DoxyCodeLine{00493\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}sinr=\{:+.1f\}dB"{}},\ result.csi.get\_sinr\_dB());}
+\DoxyCodeLine{00494\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}t\_align=\{:.1f\}us"{}},\ result.csi.get\_time\_alignment().to\_seconds()\ *\ 1e6);}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00497\ \ \ \}}
+\DoxyCodeLine{00498\ \};}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ ssb\_processor::pdu\_t.}}
+\DoxyCodeLine{00501\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00502\ \textcolor{keyword}{struct}\ formatter<srsran::ssb\_processor::pdu\_t>\ \{}
+\DoxyCodeLine{00503\ \ \ \textcolor{comment}{///\ Helper\ used\ to\ parse\ formatting\ options\ and\ format\ fields.}}
+\DoxyCodeLine{00504\ \ \ srsran::delimited\_formatter\ helper;}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00507\ \ \ formatter()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00508\ }
+\DoxyCodeLine{00509\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00510\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00511\ \ \ \{}
+\DoxyCodeLine{00512\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.parse(ctx);}
+\DoxyCodeLine{00513\ \ \ \}}
+\DoxyCodeLine{00514\ }
+\DoxyCodeLine{00515\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00516\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::ssb\_processor::pdu\_t\&\ pdu,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00518\ \ \ \{}
+\DoxyCodeLine{00519\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}pci=\{\}"{}},\ pdu.phys\_cell\_id);}
+\DoxyCodeLine{00520\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}ssb\_idx=\{\}"{}},\ pdu.ssb\_idx);}
+\DoxyCodeLine{00521\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}L\_max=\{\}"{}},\ pdu.L\_max);}
+\DoxyCodeLine{00522\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}common\_scs=\{\}"{}},\ scs\_to\_khz(pdu.common\_scs));}
+\DoxyCodeLine{00523\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}sc\_offset=\{\}"{}},\ pdu.subcarrier\_offset.value());}
+\DoxyCodeLine{00524\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}offset\_PointA=\{\}"{}},\ pdu.offset\_to\_pointA.value());}
+\DoxyCodeLine{00525\ \ \ \ \ helper.format\_always(ctx,\ \textcolor{stringliteral}{"{}pattern=\{\}"{}},\ to\_string(pdu.pattern\_case));}
+\DoxyCodeLine{00526\ }
+\DoxyCodeLine{00527\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}beta\_pss=\{:+.1f\}dB"{}},\ pdu.beta\_pss);}
+\DoxyCodeLine{00528\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}slot=\{\}"{}},\ pdu.slot);}
+\DoxyCodeLine{00529\ \ \ \ \ helper.format\_if\_verbose(ctx,\ \textcolor{stringliteral}{"{}ports=\{\}"{}},\ srsran::span<\textcolor{keyword}{const}\ uint8\_t>(pdu.ports));}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00532\ \ \ \}}
+\DoxyCodeLine{00533\ \};}
+\DoxyCodeLine{00534\ }
+\DoxyCodeLine{00535\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

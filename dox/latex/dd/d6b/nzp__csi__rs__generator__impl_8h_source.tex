@@ -1,0 +1,118 @@
+\doxysection{nzp\+\_\+csi\+\_\+rs\+\_\+generator\+\_\+impl.\+h}
+\hypertarget{nzp__csi__rs__generator__impl_8h_source}{}\label{nzp__csi__rs__generator__impl_8h_source}\index{lib/phy/upper/signal\_processors/nzp\_csi\_rs\_generator\_impl.h@{lib/phy/upper/signal\_processors/nzp\_csi\_rs\_generator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/re\_buffer.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/re\_pattern.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/signal\_processors/nzp\_csi\_rs\_generator.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Implements\ a\ parameter\ validator\ for\ \(\backslash\)ref\ nzp\_csi\_rs\_generator\_impl.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ nzp\_csi\_rs\_configuration\_validator\_impl\ :\ \textcolor{keyword}{public}\ nzp\_csi\_rs\_configuration\_validator}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{bool}\ is\_valid(\textcolor{keyword}{const}\ nzp\_csi\_rs\_generator::config\_t\&\ config)\ override;}
+\DoxyCodeLine{00039\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ Defines\ a\ NZP-\/CSI-\/RS\ signal\ generator.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{class}\ nzp\_csi\_rs\_generator\_impl\ :\ \textcolor{keyword}{public}\ nzp\_csi\_rs\_generator}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ PRB\ subcarriers\ that\ the\ CSI-\/RS\ can\ occupy,\ deduced\ from\ TS\ 38.211\ Table\ 7.4.1.5.3-\/1.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_SUBCS\_PRB\ =\ 4;}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Maximum\ currently\ supported\ ports\ for\ the\ CSI-\/RS\ generation.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ CSI\_RS\_MAX\_PORTS\ =\ 16;}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Maximum\ sequence\ length\ for\ one\ OFDM\ symbol.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_SEQ\_LEN\ =\ MAX\_SUBCS\_PRB\ *\ MAX\_RB;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ CDM\ sequence\ element\ struct.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ This\ struct\ is\ used\ to\ build\ the\ CDM\ sequence\ tables.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{struct}\ cdm\_sequence\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ Frequency\ code\ sequences\ \(\backslash\)f\$w\_f\(\backslash\)f\$.}}
+\DoxyCodeLine{00056\ \ \ \ \ static\_vector<\textcolor{keywordtype}{float},\ 2>\ w\_f;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{///\ Time\ code\ sequences\ \(\backslash\)f\$w\_t\(\backslash\)f\$.}}
+\DoxyCodeLine{00058\ \ \ \ \ static\_vector<\textcolor{keywordtype}{float},\ 4>\ w\_t;}
+\DoxyCodeLine{00059\ \ \ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Temporary\ RE\ storage.}}
+\DoxyCodeLine{00062\ \ \ static\_re\_buffer<CSI\_RS\_MAX\_PORTS,\ MAX\_SEQ\_LEN\ *\ MAX\_NSYMB\_PER\_SLOT>\ data;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ FD-\/CDM2\ sequence\ table,\ as\ defined\ in\ TS\ 38.211\ Table\ 7.4.1.5.3-\/3.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<\textcolor{keyword}{const}\ cdm\_sequence,\ 2>\ fd\_cdm2\_table;}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ CDM4-\/FD2-\/TD2\ sequence\ table,\ as\ defined\ in\ TS\ 38.211\ Table\ 7.4.1.5.3-\/4.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<\textcolor{keyword}{const}\ cdm\_sequence,\ 4>\ cdm4\_fd2\_td2\_table;}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ CDM8-\/FD2-\/TD4\ sequence\ table,\ as\ defined\ in\ TS\ 38.211\ Table\ 7.4.1.5.3-\/5.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<\textcolor{keyword}{const}\ cdm\_sequence,\ 8>\ cdm8\_fd2\_td4\_table;}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Pseudo-\/random\ sequece\ generator\ for\ the\ NZP-\/CSI-\/RS\ signal.}}
+\DoxyCodeLine{00072\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ prg;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ the\ NZP-\/CSI-\/RS\ sequence.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ This\ method\ implements\ the\ NZP-\/CSI-\/RS\ sequence\ generation,\ as\ described\ in\ TS\ 38.211\ Section\ 7.4.1.5.2.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ The\ generated\ sequence\ does\ not\ include\ the\ CDM\ processing.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ sequence\ The\ returned\ NZP-\/CSI-\/RS\ sequence.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ The\ symbol\ index\ within\ the\ slot.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Provides\ the\ higher\ layer\ parameters\ necessary\ to\ generate\ the\ sequence.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ generated\ sequence\ length\ is\ determined\ by\ the\ size\ of\ the\ provided\ \(\backslash\)c\ sequence.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ generate\_sequence(span<cf\_t>\ sequence,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keyword}{const}\ config\_t\&\ config)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Applies\ the\ CDM\ codes\ to\ the\ NZP-\/CSI-\/RS\ sequence.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ This\ helper\ method\ takes\ an\ NZP-\/CSI-\/RS\ sequence\ pertaining\ to\ a\ single\ OFDM\ symbol,\ and\ applies\ the\ corresponding}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ CDM\ code,\ as\ defined\ in\ TS\ 38.211\ Section\ 7.4.1.5.3.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ seq\_out\ The\ returned\ NZP-\/CSI-\/RS\ sequence\ with\ CDM.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ seq\_in\ The\ input\ sequence.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ cdm\ The\ CDM\ type.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ cdm\_idx\ The\ applied\ CDM\ sequence.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ l\_idx\ The\ \(\backslash\)f\$l'\(\backslash\)f\$\ symbol\ index\ within\ the\ \(\backslash\)f\$w\_t\(\backslash\)f\$\ TD-\/CDM\ sequence.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ apply\_cdm(span<cf\_t>\ \ \ \ \ \ \ \ \ \ \ \ seq\_out,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ \ \ \ \ \ seq\_in,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ csi\_rs\_cdm\_type\ cdm,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ cdm\_idx,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ l\_idx);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00103\ \ \ nzp\_csi\_rs\_generator\_impl(std::unique\_ptr<pseudo\_random\_generator>\ prg\_)\ :\ prg(std::move(prg\_))}
+\DoxyCodeLine{00104\ \ \ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(prg,\ \textcolor{stringliteral}{"{}Invalid\ pseudo\ random\ generator."{}});}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ map(resource\_grid\_mapper\&\ mapper,\ \textcolor{keyword}{const}\ config\_t\&\ config)\ override;}
+\DoxyCodeLine{00110\ \};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

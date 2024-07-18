@@ -1,0 +1,129 @@
+\doxysection{scheduler\+\_\+policy.\+h}
+\hypertarget{scheduler__policy_8h_source}{}\label{scheduler__policy_8h_source}\index{lib/scheduler/policy/scheduler\_policy.h@{lib/scheduler/policy/scheduler\_policy.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ue__allocator_8h}{"{}ue\_allocator.h"{}}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ This\ struct\ provides\ a\ view\ of\ the\ current\ resource\ grid\ state\ to\ the\ PDSCH\ and\ PUSCH\ allocators.}}
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ue__resource__grid__view}{ue\_resource\_grid\_view}}}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \textcolor{keywordtype}{void}\ add\_cell(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ cell\_grid)}
+\DoxyCodeLine{00034\ \ \ \{}
+\DoxyCodeLine{00035\ \ \ \ \ cell\_res\_grids.emplace(cell\_grid.cell\_index(),\ \&cell\_grid);}
+\DoxyCodeLine{00036\ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ get\_pdcch\_slot(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cell\_res\_grids[cell\_index]-\/>slot\_tx();\ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}\&\ get\_cell\_cfg\_common(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{return}\ cell\_res\_grids[cell\_index]-\/>cfg;}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__slot__resource__grid}{cell\_slot\_resource\_grid}}\&\ get\_pdcch\_grid(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ (*cell\_res\_grids[cell\_index])[0].dl\_res\_grid;}
+\DoxyCodeLine{00048\ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__slot__resource__grid}{cell\_slot\_resource\_grid}}\&\ get\_pdsch\_grid(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{unsigned}\ k0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ (*cell\_res\_grids[cell\_index])[k0].dl\_res\_grid;}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__slot__resource__grid}{cell\_slot\_resource\_grid}}\&\ get\_pusch\_grid(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{unsigned}\ k2)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{return}\ (*cell\_res\_grids[cell\_index])[k2].ul\_res\_grid;}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dl__msg__alloc}{dl\_msg\_alloc}}>\ get\_ue\_pdsch\_grants(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{unsigned}\ k0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{return}\ (*cell\_res\_grids[cell\_index])[k0].result.dl.ue\_grants;}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{bool}\ has\_ue\_dl\_pdcch(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00066\ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pdcchs\ =\ (*cell\_res\_grids[cell\_index])[0].result.dl.dl\_pdcchs;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_of(}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ pdcchs.begin(),\ pdcchs.end(),\ [rnti](\textcolor{keyword}{const}\ pdcch\_dl\_information\&\ pdcch)\ \{\ \textcolor{keywordflow}{return}\ pdcch.ctx.rnti\ ==\ rnti;\ \});}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{bool}\ has\_ue\_ul\_pdcch(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pdcchs\ =\ (*cell\_res\_grids[cell\_index])[0].result.dl.ul\_pdcchs;}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_of(}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ pdcchs.begin(),\ pdcchs.end(),\ [rnti](\textcolor{keyword}{const}\ pdcch\_ul\_information\&\ pdcch)\ \{\ \textcolor{keywordflow}{return}\ pdcch.ctx.rnti\ ==\ rnti;\ \});}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{bool}\ has\_ue\_dl\_grant(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti,\ \textcolor{keywordtype}{unsigned}\ k0)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00080\ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ grants\ =\ (*cell\_res\_grids[cell\_index])[k0].result.dl.ue\_grants;}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_of(}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ grants.begin(),\ grants.end(),\ [rnti](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ grant)\ \{\ \textcolor{keywordflow}{return}\ grant.pdsch\_cfg.rnti\ ==\ rnti;\ \});}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{bool}\ has\_ue\_ul\_grant(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti,\ \textcolor{keywordtype}{unsigned}\ k2)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00087\ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ puschs\ =\ (*cell\_res\_grids[cell\_index])[k2].result.ul.puschs;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{return}\ std::any\_of(}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ puschs.begin(),\ puschs.end(),\ [rnti](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pusch)\ \{\ \textcolor{keywordflow}{return}\ pusch.pusch\_cfg.rnti\ ==\ rnti;\ \});}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_cells()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ cell\_res\_grids.size();\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00096\ \ \ slotted\_array<\textcolor{keyword}{const}\ cell\_resource\_allocator*,\ MAX\_NOF\_DU\_CELLS>\ cell\_res\_grids;}
+\DoxyCodeLine{00097\ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{comment}{///\ Interface\ of\ data\ scheduler\ that\ is\ used\ to\ allocate\ UE\ DL\ and\ UL\ grants\ in\ a\ given\ slot}}
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ The\ data\_scheduler\ object\ will\ be\ common\ to\ all\ cells\ and\ slots.}}
+\DoxyCodeLine{00101\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1scheduler__policy}{scheduler\_policy}}}
+\DoxyCodeLine{00102\ \{}
+\DoxyCodeLine{00103\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{virtual}\ \string~scheduler\_policy()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ Schedule\ UE\ DL\ grants\ for\ a\ given\ slot\ and\ one\ or\ more\ cells.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ pdsch\_alloc\ PDSCH\ grant\ allocator.\ This\ object\ provides\ a\ handle\ to\ allocate\ PDSCH\ grants\ in\ the}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gNB\ resource\ grid.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ res\_grid\ view\ of\ the\ current\ resource\ grid\ occupancy\ state\ for\ all\ gnb\ cells.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ ues\ List\ of\ eligible\ UEs\ to\ be\ scheduled\ in\ the\ given\ slot.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00112\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__policy_a433f4e03eb5a40ebb0d468ce144ece4d}{dl\_sched}}(\mbox{\hyperlink{classsrsran_1_1ue__pdsch__allocator}{ue\_pdsch\_allocator}}\&\ pdsch\_alloc,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__resource__grid__view}{ue\_resource\_grid\_view}}\&\ res\_grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__repository}{ue\_repository}}\&\ ues)\ =\ 0;}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Schedule\ UE\ UL\ grants\ for\ a\ given\ \{slot,\ cell\}.}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ pusch\_alloc\ PUSCH\ grant\ allocator.\ This\ object\ provides\ a\ handle\ to\ allocate\ PUSCH\ grants\ in\ the}}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gNB\ resource\ grid.}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ res\_grid\ view\ of\ the\ current\ resource\ grid\ occupancy\ state\ for\ all\ gnb\ cells.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ ues\ List\ of\ eligible\ UEs\ to\ be\ scheduled\ in\ the\ given\ slot.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00120\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__policy_afc3f671bbc517e24c155573da49ce9a9}{ul\_sched}}(\mbox{\hyperlink{classsrsran_1_1ue__pusch__allocator}{ue\_pusch\_allocator}}\&\ pusch\_alloc,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__resource__grid__view}{ue\_resource\_grid\_view}}\&\ res\_grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__repository}{ue\_repository}}\&\ ues)\ =\ 0;}
+\DoxyCodeLine{00121\ \};}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

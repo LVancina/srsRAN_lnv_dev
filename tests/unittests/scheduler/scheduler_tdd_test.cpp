@@ -89,6 +89,14 @@ protected:
     (*ue_cfg.cfg.cells)[0].serv_cell_cfg.ul_config->init_ul_bwp.pucch_cfg->format_2_common_param->max_c_rate =
         srsran::max_pucch_code_rate::dot_35;
 
+    // find valid CSI report slot offset.
+    if ((*ue_cfg.cfg.cells)[0].serv_cell_cfg.csi_meas_cfg.has_value()) {
+      optional<unsigned> slot_offset = find_next_tdd_full_ul_slot(testparams.tdd_cfg);
+      variant_get<csi_report_config::periodic_or_semi_persistent_report_on_pucch>(
+          (*ue_cfg.cfg.cells)[0].serv_cell_cfg.csi_meas_cfg->csi_report_cfg_list[0].report_cfg_type)
+          .report_slot_offset = *slot_offset;
+    }
+
     this->add_ue(ue_cfg);
   }
 
@@ -125,8 +133,8 @@ TEST_P(scheduler_dl_tdd_tester, all_dl_slots_are_scheduled)
     // For every DL slot.
     if (cell_cfg_list[0].is_dl_enabled(this->last_result_slot())) {
       // Ensure UE PDSCH allocations are made.
-      ASSERT_FALSE(this->last_sched_res_list[to_du_cell_index(0)]->dl.ue_grants.empty()) << fmt::format(
-          "The UE configuration is leading to slot {} not having DL UE grant scheduled", this->last_result_slot());
+      ASSERT_FALSE(this->last_sched_res_list[to_du_cell_index(0)]->dl.ue_grants.empty())
+          << "The UE configuration is leading to some DL slots staying empty";
     }
 
     for (const pucch_info& pucch : this->last_sched_res_list[to_du_cell_index(0)]->ul.pucchs) {

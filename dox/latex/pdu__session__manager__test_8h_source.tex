@@ -1,0 +1,211 @@
+\doxysection{pdu\+\_\+session\+\_\+manager\+\_\+test.\+h}
+\hypertarget{pdu__session__manager__test_8h_source}{}\label{pdu__session__manager__test_8h_source}\index{tests/unittests/cu\_up/pdu\_session\_manager\_test.h@{tests/unittests/cu\_up/pdu\_session\_manager\_test.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}cu\_up\_test\_helpers.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}lib/cu\_up/pdu\_session\_manager\_impl.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/manual\_task\_worker.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <gtest/gtest.h>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{using\ namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}};}
+\DoxyCodeLine{00031\ \textcolor{keyword}{using\ namespace\ }srs\_cu\_up;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpdu__session__manager__test}{pdu\_session\_manager\_test}}\ :\ \textcolor{keyword}{public}\ ::testing::Test}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00039\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00040\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{//\ create\ required\ objects}}
+\DoxyCodeLine{00043\ \ \ \ \ security\_info\ \ \ \ =\ get\_dummy\_up\_security\_info();}
+\DoxyCodeLine{00044\ \ \ \ \ gtpu\_rx\_demux\ \ \ \ =\ std::make\_unique<dummy\_gtpu\_demux\_ctrl>();}
+\DoxyCodeLine{00045\ \ \ \ \ gtpu\_tx\_notifier\ =\ std::make\_unique<dummy\_gtpu\_network\_gateway\_adapter>();}
+\DoxyCodeLine{00046\ \ \ \ \ f1u\_gw\ \ \ \ \ \ \ \ \ \ \ =\ std::make\_unique<dummy\_f1u\_gateway>(\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1f1u__bearer}{f1u\_bearer}});}
+\DoxyCodeLine{00047\ \ \ \ \ f1u\_allocator\ \ \ \ =\ std::make\_unique<dummy\_gtpu\_teid\_pool>();}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ create\ DUT\ object}}
+\DoxyCodeLine{00050\ \ \ \ \ ue\_inactivity\_timer\ =\ timers\_factory.create\_timer();}
+\DoxyCodeLine{00051\ \ \ \ \ ue\_inactivity\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_a79c9d6ec6c5942aa869ea4ba273536c5}{set}}(std::chrono::milliseconds(10000),\ [](\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})\ \{\});}
+\DoxyCodeLine{00052\ \ \ \ \ std::map<five\_qi\_t,\ srs\_cu\_up::cu\_up\_qos\_config>\ qos;}
+\DoxyCodeLine{00053\ \ \ \ \ qos[\mbox{\hyperlink{namespacesrsran_aa51855bbb3afd2d1d6462b70f3466b45}{uint\_to\_five\_qi}}(9)]\ =\ \{\};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ pdu\_session\_mng\ =\ std::make\_unique<pdu\_session\_manager\_impl>(MIN\_UE\_INDEX,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ qos,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_info,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ net\_config,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n3\_config,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\_factory,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *f1u\_gw,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *f1u\_allocator,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *gtpu\_tx\_notifier,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *gtpu\_rx\_demux,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap);}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00071\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00073\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\_manager;}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker}{manual\_task\_worker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worker\{64\};}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\_factory\{timers\_manager,\ worker\};}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer;}
+\DoxyCodeLine{00080\ \ \ std::unique\_ptr<dummy\_gtpu\_demux\_ctrl>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_rx\_demux;}
+\DoxyCodeLine{00081\ \ \ std::unique\_ptr<gtpu\_tunnel\_tx\_upper\_layer\_notifier>\ gtpu\_tx\_notifier;}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1dummy__inner__f1u__bearer}{dummy\_inner\_f1u\_bearer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1f1u__bearer}{f1u\_bearer}};}
+\DoxyCodeLine{00083\ \ \ std::unique\_ptr<dummy\_f1u\_gateway>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_gw;}
+\DoxyCodeLine{00084\ \ \ std::unique\_ptr<dummy\_gtpu\_teid\_pool>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_allocator;}
+\DoxyCodeLine{00085\ \ \ std::unique\_ptr<pdu\_session\_manager\_ctrl>\ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_mng;}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{classsrsran_1_1null__dlt__pcap}{null\_dlt\_pcap}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{security::sec\_as\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_info;}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1network__interface__config}{network\_interface\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ net\_config;}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1n3__interface__config}{n3\_interface\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n3\_config\ =\ \{\};}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{cu\_up\_ue\_logger}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\{\textcolor{stringliteral}{"{}CU-\/UP"{}},\ \{MIN\_UE\_INDEX\}\};}
+\DoxyCodeLine{00091\ \};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__setup__item}{e1ap\_pdu\_session\_res\_to\_setup\_item}}}
+\DoxyCodeLine{00094\ generate\_pdu\_session\_res\_to\_setup\_item(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ psi,\ drb\_id\_t\ drb\_id,\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qfi,\ \mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}\ five\_qi)}
+\DoxyCodeLine{00095\ \{}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ prepare\ request}}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__setup__item}{e1ap\_pdu\_session\_res\_to\_setup\_item}}\ pdu\_session\_setup\_item;}
+\DoxyCodeLine{00098\ \ \ pdu\_session\_setup\_item.pdu\_session\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ psi;}
+\DoxyCodeLine{00099\ \ \ pdu\_session\_setup\_item.pdu\_session\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{stringliteral}{"{}ipv4"{}};}
+\DoxyCodeLine{00100\ \ \ pdu\_session\_setup\_item.snssai.sst\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00101\ \ \ pdu\_session\_setup\_item.snssai.sd\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 10203;}
+\DoxyCodeLine{00102\ \ \ pdu\_session\_setup\_item.security\_ind.integrity\_protection\_ind\ =\ integrity\_protection\_indication\_t::not\_needed;}
+\DoxyCodeLine{00103\ \ \ pdu\_session\_setup\_item.security\_ind.confidentiality\_protection\_ind\ =}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ confidentiality\_protection\_indication\_t::not\_needed;}
+\DoxyCodeLine{00105\ \ \ pdu\_session\_setup\_item.pdu\_session\_res\_dl\_ambr\ =\ 330000000;}
+\DoxyCodeLine{00106\ \ \ pdu\_session\_setup\_item.ng\_ul\_up\_tnl\_info.tp\_address.\mbox{\hyperlink{classsrsran_1_1transport__layer__address_a20b2d551989632c0c44ab37d61211750}{from\_bitstring}}(\textcolor{stringliteral}{"{}01111111000000000000000000000001"{}});}
+\DoxyCodeLine{00107\ \ \ pdu\_session\_setup\_item.ng\_ul\_up\_tnl\_info.gtp\_teid\ =\ \mbox{\hyperlink{namespacesrsran_a5275852c5dfe9b8b517ac9f4989cff7d}{int\_to\_gtpu\_teid}}(0x12345678);}
+\DoxyCodeLine{00108\ \ \ pdu\_session\_setup\_item.ng\_ul\_up\_tnl\_info\ \ \ \ \ \ \ \ \ \ =\ \{\mbox{\hyperlink{classsrsran_1_1transport__layer__address}{transport\_layer\_address}}\{\textcolor{stringliteral}{"{}0.0.0.0"{}}\},\ \mbox{\hyperlink{namespacesrsran_a5275852c5dfe9b8b517ac9f4989cff7d}{int\_to\_gtpu\_teid}}(0)\};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__setup__item__ng__ran}{e1ap\_drb\_to\_setup\_item\_ng\_ran}}\ drb\_to\_setup\_item;}
+\DoxyCodeLine{00111\ \ \ drb\_to\_setup\_item.drb\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ drb\_id;}
+\DoxyCodeLine{00112\ \ \ drb\_to\_setup\_item.sdap\_cfg.default\_drb\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00113\ \ \ drb\_to\_setup\_item.sdap\_cfg.sdap\_hdr\_ul\ \ \ \ \ \ \ \ =\ sdap\_hdr\_ul\_cfg::present;}
+\DoxyCodeLine{00114\ \ \ drb\_to\_setup\_item.sdap\_cfg.sdap\_hdr\_dl\ \ \ \ \ \ \ \ =\ sdap\_hdr\_dl\_cfg::present;}
+\DoxyCodeLine{00115\ \ \ drb\_to\_setup\_item.pdcp\_cfg.pdcp\_sn\_size\_ul\ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00116\ \ \ drb\_to\_setup\_item.pdcp\_cfg.pdcp\_sn\_size\_dl\ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00117\ \ \ drb\_to\_setup\_item.pdcp\_cfg.rlc\_mod\ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rlc\_mode::am;}
+\DoxyCodeLine{00118\ \ \ drb\_to\_setup\_item.pdcp\_cfg.t\_reordering\_timer\ =\ pdcp\_t\_reordering::ms100;}
+\DoxyCodeLine{00119\ \ \ drb\_to\_setup\_item.pdcp\_cfg.discard\_timer\ \ \ \ \ \ =\ pdcp\_discard\_timer::infinity;}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__cell__group__info__item}{e1ap\_cell\_group\_info\_item}}\ cell\_group\_info\_item;}
+\DoxyCodeLine{00122\ \ \ cell\_group\_info\_item.cell\_group\_id\ =\ 0;}
+\DoxyCodeLine{00123\ \ \ drb\_to\_setup\_item.cell\_group\_info.push\_back(cell\_group\_info\_item);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__qos__param__item}{e1ap\_qos\_flow\_qos\_param\_item}}\ qos\_flow\_info;}
+\DoxyCodeLine{00126\ \ \ qos\_flow\_info.qos\_flow\_id\ =\ qfi;}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{structsrsran_1_1non__dyn__5qi__descriptor__t}{non\_dyn\_5qi\_descriptor\_t}}\ non\_dyn\_5qi;}
+\DoxyCodeLine{00128\ \ \ non\_dyn\_5qi.five\_qi\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ five\_qi;}
+\DoxyCodeLine{00129\ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn\_5qi\ \ \ \ \ \ \ \ \ \ \ \ \ =\ non\_dyn\_5qi;}
+\DoxyCodeLine{00130\ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.prio\_level\ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00131\ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.pre\_emption\_cap\ =\ \textcolor{stringliteral}{"{}shall-\/not-\/trigger-\/pre-\/emption"{}};}
+\DoxyCodeLine{00132\ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.pre\_emption\_vulnerability\ =\ \textcolor{stringliteral}{"{}not-\/pre-\/emptable"{}};}
+\DoxyCodeLine{00133\ \ \ drb\_to\_setup\_item.qos\_flow\_info\_to\_be\_setup.emplace(qos\_flow\_info.qos\_flow\_id,\ qos\_flow\_info);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ pdu\_session\_setup\_item.drb\_to\_setup\_list\_ng\_ran.emplace(drb\_to\_setup\_item.drb\_id,\ drb\_to\_setup\_item);}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordflow}{return}\ pdu\_session\_setup\_item;}
+\DoxyCodeLine{00138\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ generate\_pdu\_session\_res\_to\_modify\_item\_to\_remove\_drb(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ psi,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ drb\_id)}
+\DoxyCodeLine{00142\ \{}
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{//\ prepare\ modification\ request\ (to\ remove\ bearers)}}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00145\ \ \ pdu\_session\_modify\_item.pdu\_session\_id\ =\ psi;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ pdu\_session\_modify\_item.drb\_to\_rem\_list\_ng\_ran.push\_back(drb\_id);}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordflow}{return}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00150\ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ generate\_pdu\_session\_res\_to\_modify\_item\_to\_modify\_drb(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ psi,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ drb\_id)}
+\DoxyCodeLine{00154\ \{}
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{//\ prepare\ modification\ request\ (to\ remove\ bearers)}}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00157\ \ \ pdu\_session\_modify\_item.pdu\_session\_id\ =\ psi;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__modify__item__ng__ran}{e1ap\_drb\_to\_modify\_item\_ng\_ran}}\ drb\_to\_mod\ =\ \{\};}
+\DoxyCodeLine{00160\ \ \ drb\_to\_mod.drb\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ drb\_id;}
+\DoxyCodeLine{00161\ \ \ pdu\_session\_modify\_item.drb\_to\_modify\_list\_ng\_ran.insert(drb\_to\_mod.drb\_id,\ drb\_to\_mod);}
+\DoxyCodeLine{00162\ \ \ \textcolor{keywordflow}{return}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00163\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}}
+\DoxyCodeLine{00166\ generate\_pdu\_session\_res\_to\_modify\_item\_to\_setup\_drb(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ psi,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<qos\_flow\_id\_t>\ qfi\_list,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ five\_qi)}
+\DoxyCodeLine{00170\ \{}
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{//\ prepare\ modification\ request\ (to\ add\ further\ bearers)}}
+\DoxyCodeLine{00172\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00173\ \ \ pdu\_session\_modify\_item.pdu\_session\_id\ =\ psi;}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__setup__item__ng__ran}{e1ap\_drb\_to\_setup\_item\_ng\_ran}}\ drb\_to\_setup\_item;}
+\DoxyCodeLine{00176\ \ \ drb\_to\_setup\_item.drb\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ drb\_id;}
+\DoxyCodeLine{00177\ \ \ drb\_to\_setup\_item.sdap\_cfg.default\_drb\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00178\ \ \ drb\_to\_setup\_item.sdap\_cfg.sdap\_hdr\_ul\ \ \ \ \ \ \ \ =\ sdap\_hdr\_ul\_cfg::present;}
+\DoxyCodeLine{00179\ \ \ drb\_to\_setup\_item.sdap\_cfg.sdap\_hdr\_dl\ \ \ \ \ \ \ \ =\ sdap\_hdr\_dl\_cfg::present;}
+\DoxyCodeLine{00180\ \ \ drb\_to\_setup\_item.pdcp\_cfg.pdcp\_sn\_size\_ul\ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00181\ \ \ drb\_to\_setup\_item.pdcp\_cfg.pdcp\_sn\_size\_dl\ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00182\ \ \ drb\_to\_setup\_item.pdcp\_cfg.rlc\_mod\ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rlc\_mode::am;}
+\DoxyCodeLine{00183\ \ \ drb\_to\_setup\_item.pdcp\_cfg.t\_reordering\_timer\ =\ pdcp\_t\_reordering::ms100;}
+\DoxyCodeLine{00184\ \ \ drb\_to\_setup\_item.pdcp\_cfg.discard\_timer\ \ \ \ \ \ =\ pdcp\_discard\_timer::infinity;}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__cell__group__info__item}{e1ap\_cell\_group\_info\_item}}\ cell\_group\_info\_item;}
+\DoxyCodeLine{00187\ \ \ cell\_group\_info\_item.cell\_group\_id\ =\ 0;}
+\DoxyCodeLine{00188\ \ \ drb\_to\_setup\_item.cell\_group\_info.push\_back(cell\_group\_info\_item);}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ qfi\ :\ qfi\_list)\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__qos__param__item}{e1ap\_qos\_flow\_qos\_param\_item}}\ qos\_flow\_info;}
+\DoxyCodeLine{00192\ \ \ \ \ qos\_flow\_info.qos\_flow\_id\ =\ qfi;}
+\DoxyCodeLine{00193\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1non__dyn__5qi__descriptor__t}{non\_dyn\_5qi\_descriptor\_t}}\ non\_dyn\_5qi;}
+\DoxyCodeLine{00194\ \ \ \ \ non\_dyn\_5qi.five\_qi\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ five\_qi;}
+\DoxyCodeLine{00195\ \ \ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn\_5qi\ \ \ \ \ \ \ \ =\ non\_dyn\_5qi;}
+\DoxyCodeLine{00196\ \ \ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.prio\_level\ =\ 1;}
+\DoxyCodeLine{00197\ \ \ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.pre\_emption\_cap\ =}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}shall-\/not-\/trigger-\/pre-\/emption"{}};}
+\DoxyCodeLine{00199\ \ \ \ \ qos\_flow\_info.qos\_flow\_level\_qos\_params.ng\_ran\_alloc\_retention\_prio.pre\_emption\_vulnerability\ =\ \textcolor{stringliteral}{"{}not-\/pre-\/emptable"{}};}
+\DoxyCodeLine{00200\ \ \ \ \ drb\_to\_setup\_item.qos\_flow\_info\_to\_be\_setup.emplace(qos\_flow\_info.qos\_flow\_id,\ qos\_flow\_info);}
+\DoxyCodeLine{00201\ \ \ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ pdu\_session\_modify\_item.drb\_to\_setup\_list\_ng\_ran.emplace(drb\_to\_setup\_item.drb\_id,\ drb\_to\_setup\_item);}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{keywordflow}{return}\ pdu\_session\_modify\_item;}
+\DoxyCodeLine{00206\ \}}
+
+\end{DoxyCode}

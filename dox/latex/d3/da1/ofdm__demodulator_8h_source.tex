@@ -1,0 +1,111 @@
+\doxysection{ofdm\+\_\+demodulator.\+h}
+\hypertarget{ofdm__demodulator_8h_source}{}\label{ofdm__demodulator_8h_source}\index{include/srsran/phy/lower/modulation/ofdm\_demodulator.h@{include/srsran/phy/lower/modulation/ofdm\_demodulator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ resource\_grid\_writer;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Setup\ configuration\ parameters.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct}\ ofdm\_demodulator\_configuration\ \{}
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ Indicates\ the\ numerology\ of\ the\ OFDM\ demodulator.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{keywordtype}{unsigned}\ numerology;}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ Indicates\ the\ resource\ grid\ bandwidth\ in\ resource\ blocks.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{unsigned}\ bw\_rb;}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Indicates\ the\ DFT\ size.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{unsigned}\ dft\_size;}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Cyclic\ prefix.}}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ cp;}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Number\ of\ samples\ to\ advance\ the\ DFT\ window.\ The\ demodulator\ compensates\ for\ the\ phase\ shift\ internally.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_samples\_window\_offset;}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Scaling\ factor\ at\ the\ DFT\ output.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{float}\ scale;}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Indicates\ the\ center\ frequency\ of\ the\ carrier\ in\ Hz.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{double}\ center\_freq\_hz;}
+\DoxyCodeLine{00049\ \};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ an\ OFDM\ demodulator\ that\ demodulates\ at\ symbol\ granularity.}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ \(\backslash\)remark\ Performs\ OFDM\ demodulation\ as\ per\ TS\ 38.211\ section\ 5.3.1\ OFDM\ baseband\ signal\ generation\ for\ all\ channels}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ except\ PRACH.}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ \(\backslash\)remark\ In\ addition\ to\ demodulation,\ it\ applies\ phase\ compensation\ as\ per\ TS\ 38.211\ section\ 5.4\ Modulation\ and}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ upconversion}}
+\DoxyCodeLine{00056\ \textcolor{keyword}{class}\ ofdm\_symbol\_demodulator}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{virtual}\ \string~ofdm\_symbol\_demodulator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ symbol\ size\ including\ cyclic\ prefix.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_index\ Indicates\ the\ symbol\ index\ within\ the\ subframe.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ samples\ for\ the\ given\ symbol\ index.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_symbol\_size(\textcolor{keywordtype}{unsigned}\ symbol\_index)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Demodulates\ an\ OFDM\ signal\ with\ symbol\ granularity.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ Provides\ the\ output\ as\ frequency-\/domain\ signal\ corresponding\ to\ one\ slot.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ input\ Provides\ the\ time\ domain\ modulated\ signal.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ port\_index\ Indicates\ the\ port\ index\ to\ demodulate.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_index\ Symbol\ index\ within\ the\ subframe\ to\ demodulate.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ input\ size\ must\ be\ equal\ to\ the\ the\ symbol\ size\ including\ the\ cyclic\ prefix.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ output\ size\ must\ be\ consistent\ with\ the\ configured\ bandwidth.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00075\ \ \ demodulate(resource\_grid\_writer\&\ grid,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ symbol\_index)\ =\ 0;}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ an\ OFDM\ demodulator\ with\ slot\ granularity.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ \(\backslash\)remark\ Performs\ OFDM\ demodulation\ as\ per\ TS\ 38.211\ section\ 5.3.1\ OFDM\ baseband\ signal\ generation\ for\ all\ channels}}
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ except\ PRACH.}}
+\DoxyCodeLine{00081\ \textcolor{comment}{///\ \(\backslash\)remark\ In\ addition\ to\ demodulation,\ it\ applies\ phase\ compensation\ as\ per\ TS\ 38.211\ section\ 5.4\ Modulation\ and}}
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ upconversion.}}
+\DoxyCodeLine{00083\ \textcolor{keyword}{class}\ ofdm\_slot\_demodulator}
+\DoxyCodeLine{00084\ \{}
+\DoxyCodeLine{00085\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{virtual}\ \string~ofdm\_slot\_demodulator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ slot\ size.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_index\ Indicates\ the\ slot\ index\ within\ the\ subframe.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ samples\ for\ the\ given\ slot\ index.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_slot\_size(\textcolor{keywordtype}{unsigned}\ slot\_index)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Demodulates\ an\ OFDM\ signal\ with\ slot\ granularity.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ Provides\ the\ output\ as\ frequency-\/domain\ signal\ corresponding\ to\ one\ slot.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ input\ Provides\ the\ time\ domain\ modulated\ signal\ source.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ port\_index\ Indicates\ the\ port\ index\ to\ demodulate.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_index\ Slot\ index\ within\ the\ subframe\ to\ demodulate.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ input\ size\ must\ be\ must\ be\ equal\ to\ the\ slot\ size\ including\ the\ cyclic\ prefixes.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ output\ size\ consistent\ with\ the\ configured\ bandwidth.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00102\ \ \ demodulate(resource\_grid\_writer\&\ grid,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ slot\_index)\ =\ 0;}
+\DoxyCodeLine{00103\ \};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

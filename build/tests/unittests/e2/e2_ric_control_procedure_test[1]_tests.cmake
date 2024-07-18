@@ -1,0 +1,7 @@
+add_test([=[e2_test_setup.ric_control_procedure_setup]=]  /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2/e2_ric_control_procedure_test [==[--gtest_filter=e2_test_setup.ric_control_procedure_setup]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[e2_test_setup.ric_control_procedure_setup]=]  PROPERTIES WORKING_DIRECTORY /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2 SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[e2_test_setup.ric_control_procedure_setup2]=]  /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2/e2_ric_control_procedure_test [==[--gtest_filter=e2_test_setup.ric_control_procedure_setup2]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[e2_test_setup.ric_control_procedure_setup2]=]  PROPERTIES WORKING_DIRECTORY /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2 SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[e2_test_setup.ric_control_procedure_fail]=]  /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2/e2_ric_control_procedure_test [==[--gtest_filter=e2_test_setup.ric_control_procedure_fail]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[e2_test_setup.ric_control_procedure_fail]=]  PROPERTIES WORKING_DIRECTORY /home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/e2 SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set(  e2_ric_control_procedure_test_TESTS e2_test_setup.ric_control_procedure_setup e2_test_setup.ric_control_procedure_setup2 e2_test_setup.ric_control_procedure_fail)

@@ -79,7 +79,7 @@ inline bool is_cell_id_required(const e2sm_kpm_metric_t& metric)
 }
 
 /// Number of E2SM-KPM metrics defined in 3GPP TS 28.552.
-const size_t NOF_3GPP_TS_28_552_METRICS = 278;
+const size_t NOF_3GPP_TS_28_552_METRICS = 279;    // lnv - originally 278
 
 /// Number of E2SM-KPM metrics defined in O-RAN.WG3.E2SM-KPM-R003-v3.00
 const size_t NOF_ORAN_E2SM_KPM_METRICS = 9;
@@ -238,6 +238,7 @@ inline span<const e2sm_kpm_metric_t> get_e2sm_kpm_28_552_metrics()
   // Description: This measurement provides the average UE throughput in uplink.
   // Note: seems that DRB.UEThpDl.BWP, where BWP identifies the Active BWP is not supported in KPM
   {"DRB.UEThpUl", NRCellDU, DER, REAL, "kbps", FIVE_QI_LABEL | SLICE_ID_LABEL | PLMN_ID_LABEL | NO_LABEL, ALL_LEVELS},
+  {"DRB.UEThpUl_lnv_test", NRCellDU, DER, REAL, "kbps", FIVE_QI_LABEL | SLICE_ID_LABEL | PLMN_ID_LABEL | NO_LABEL, ALL_LEVELS},
 
   // 5.1.1.3.4 Distribution of UL UE throughput in gNB
   // Description: This measurement provides the distribution of the UE throughput in uplink.

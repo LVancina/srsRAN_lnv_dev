@@ -1,0 +1,99 @@
+\doxysection{ofdm\+\_\+demodulator\+\_\+impl.\+h}
+\hypertarget{ofdm__demodulator__impl_8h_source}{}\label{ofdm__demodulator__impl_8h_source}\index{lib/phy/lower/modulation/ofdm\_demodulator\_impl.h@{lib/phy/lower/modulation/ofdm\_demodulator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}phase\_compensation\_lut.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/generic\_functions/dft\_processor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/modulation/ofdm\_demodulator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/aligned\_vec.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__common__configuration}{ofdm\_demodulator\_common\_configuration}}\ \{}
+\DoxyCodeLine{00036\ \ \ std::unique\_ptr<dft\_processor>\ \mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__common__configuration_acaebccfa725fff0ed749066e436dcc08}{dft}};}
+\DoxyCodeLine{00037\ \};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl}{ofdm\_symbol\_demodulator\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator}{ofdm\_symbol\_demodulator}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{unsigned}\ dft\_size;}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{unsigned}\ rg\_size;}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ cp;}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_samples\_window\_offset;}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs;}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{unsigned}\ sampling\_rate\_Hz;}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{float}\ scale;}
+\DoxyCodeLine{00058\ \ \ std::unique\_ptr<dft\_processor>\ dft;}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1phase__compensation__lut}{phase\_compensation\_lut}}\ phase\_compensation\_table;}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<cf\_t>}}\ compensated\_output;}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<cf\_t>}}\ window\_phase\_compensation;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl_a3620ce9f8c0ad94a74c891a2e1e7db1c}{ofdm\_symbol\_demodulator\_impl}}(\mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__common__configuration}{ofdm\_demodulator\_common\_configuration}}\&\ common\_config,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__configuration}{ofdm\_demodulator\_configuration}}\&\ \ ofdm\_config);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl_ad6959b0794e48ffca9679b0cccde25f4}{get\_rg\_size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rg\_size;\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl_a568ae22931f2fc32f8262ff9c4158f58}{get\_cp\_offset}}(\textcolor{keywordtype}{unsigned}\ symbol\_index,\ \textcolor{keywordtype}{unsigned}\ slot\_index)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl_a9e96f5604d26a5d83d3c219b34304a2a}{get\_symbol\_size}}(\textcolor{keywordtype}{unsigned}\ symbol\_index)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{return}\ cp.\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_ac71cef705198bb0f9b4a83f5ee3f158b}{get\_length}}(symbol\_index,\ scs).\mbox{\hyperlink{classsrsran_1_1phy__time__unit_a942e82e30afbcebbc43f1943738f9d19}{to\_samples}}(sampling\_rate\_Hz)\ +\ dft\_size;}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl_acfc1edc79e5e564998fec17482f4aa46}{demodulate}}(\mbox{\hyperlink{classsrsran_1_1resource__grid__writer}{resource\_grid\_writer}}\&\ grid,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ input,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ symbol\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00092\ \};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ofdm__slot__demodulator__impl}{ofdm\_slot\_demodulator\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofdm__slot__demodulator}{ofdm\_slot\_demodulator}}}
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ cp;}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsrsran_1_1ofdm__symbol__demodulator__impl}{ofdm\_symbol\_demodulator\_impl}}\ symbol\_demodulator;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{classsrsran_1_1ofdm__slot__demodulator__impl_a1bbf30d60f7cdee3d69d12c5bab3f33e}{ofdm\_slot\_demodulator\_impl}}(\mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__common__configuration}{ofdm\_demodulator\_common\_configuration}}\&\ common\_config,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofdm__demodulator__configuration}{ofdm\_demodulator\_configuration}}\&\ \ ofdm\_config)\ :}
+\DoxyCodeLine{00109\ \ \ \ \ cp(ofdm\_config.cp),\ symbol\_demodulator(common\_config,\ ofdm\_config)}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation;}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ofdm__slot__demodulator__impl_aa45ccdf34b77ff04a77460b601e4e494}{get\_slot\_size}}(\textcolor{keywordtype}{unsigned}\ slot\_index)\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation;}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{classsrsran_1_1ofdm__slot__demodulator__impl_a074b6bd669a83a0d65ed79b4ff753e0f}{demodulate}}(\mbox{\hyperlink{classsrsran_1_1resource__grid__writer}{resource\_grid\_writer}}\&\ grid,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ input,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ slot\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

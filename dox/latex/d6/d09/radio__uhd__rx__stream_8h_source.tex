@@ -1,0 +1,121 @@
+\doxysection{radio\+\_\+uhd\+\_\+rx\+\_\+stream.\+h}
+\hypertarget{radio__uhd__rx__stream_8h_source}{}\label{radio__uhd__rx__stream_8h_source}\index{lib/radio/uhd/radio\_uhd\_rx\_stream.h@{lib/radio/uhd/radio\_uhd\_rx\_stream.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__uhd__exception__handler_8h}{"{}radio\_uhd\_exception\_handler.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__uhd__multi__usrp_8h}{"{}radio\_uhd\_multi\_usrp.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/baseband/baseband\_gateway\_receiver.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_writer.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/radio/radio\_configuration.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/radio/radio\_notification\_handler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{mutex}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Implements\ a\ gateway\ receiver\ based\ on\ UHD\ receive\ stream.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ radio\_uhd\_rx\_stream\ :\ \textcolor{keyword}{public}\ uhd\_exception\_handler,\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__receiver}{baseband\_gateway\_receiver}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Receive\ timeout\ in\ seconds.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{double}\ RECEIVE\_TIMEOUT\_S\ =\ 0.2f;}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Set\ to\ true\ for\ receiving\ data\ in\ a\ single\ packet.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ ONE\_PACKET\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Defines\ the\ Rx\ stream\ internal\ states.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ states\ \{\ UNINITIALIZED,\ SUCCESSFUL\_INIT,\ STREAMING,\ STOP\ \};}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Indicates\ the\ current\ stream\ state.}}
+\DoxyCodeLine{00047\ \ \ std::atomic<states>\ state\ =\ \{states::UNINITIALIZED\};}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Indicates\ the\ stream\ identification\ for\ notifications.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ id;}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Sampling\ rate\ in\ hertz.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{double}\ srate\_Hz;}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Radio\ notification\ interface.}}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notifier;}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Owns\ the\ UHD\ Tx\ stream.}}
+\DoxyCodeLine{00055\ \ \ uhd::rx\_streamer::sptr\ stream;}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ samples\ in\ a\ single\ packet.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{unsigned}\ max\_packet\_size;}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Indicates\ the\ number\ of\ channels.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_channels;}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Protects\ stream\ from\ concurrent\ receive\ and\ stop.}}
+\DoxyCodeLine{00061\ \ \ std::mutex\ stream\_mutex;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Receives\ a\ single\ block\ of\ baseband\ samples.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ nof\_rxd\_samples\ Indicate\ the\ number\ of\ samples\ received\ in\ the\ block.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in,out]\ buffs\ Provides\ the\ reception\ buffers.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ buffer\_offset\ Indicates\ the\ data\ offset\ in\ the\ reception\ buffers.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ metadata\ Provides\ the\ reception\ metadata.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ no\ exception\ is\ caught.\ Otherwise\ false.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{bool}\ receive\_block(\textcolor{keywordtype}{unsigned}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rxd\_samples,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ buffs,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer\_offset,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uhd::rx\_metadata\_t\&\ \ \ \ \ \ \ \ \ \ \ \ \ metadata);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ Describes\ the\ necessary\ parameters\ to\ create\ an\ UHD\ transmit\ stream.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{struct}\ stream\_description\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{///\ Identifies\ the\ stream.}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ id;}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{///\ Sampling\ rate\ in\ hertz.}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{double}\ srate\_Hz;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{///\ Over-\/the-\/wire\ format.}}
+\DoxyCodeLine{00082\ \ \ \ \ radio\_configuration::over\_the\_wire\_format\ otw\_format;}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{///\ Stream\ arguments.}}
+\DoxyCodeLine{00084\ \ \ \ \ std::string\ args;}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ port\ indexes\ for\ the\ stream.}}
+\DoxyCodeLine{00086\ \ \ \ \ std::vector<size\_t>\ ports;}
+\DoxyCodeLine{00087\ \ \ \};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ receive\ UHD\ stream.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ usrp\ Provides\ the\ USRP\ context.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ description\ Provides\ the\ stream\ configuration\ parameters.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ notifier\_\ Provides\ the\ radio\ event\ notification\ handler.}}
+\DoxyCodeLine{00093\ \ \ radio\_uhd\_rx\_stream(uhd::usrp::multi\_usrp::sptr\&\ usrp,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ stream\_description\&\ \ \ \ description,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ \ notifier\_);}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Starts\ the\ stream\ reception.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ time\_spec\ Indicates\ the\ start\ time\ of\ the\ stream.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ no\ exception\ is\ caught.\ Otherwise\ false.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{bool}\ start(\textcolor{keyword}{const}\ uhd::time\_spec\_t\&\ time\_spec);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ Gets\ the\ optimal\ transmitter\ buffer\ size.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{unsigned}\ get\_buffer\_size()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__receiver_1_1metadata}{metadata}}\ receive(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Stops\ the\ reception\ stream.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ no\ exception\ is\ caught.\ Otherwise\ false.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{bool}\ stop();}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Wait\ until\ radio\ is\ notify\_stop.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{void}\ wait\_stop();}
+\DoxyCodeLine{00114\ \};}
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

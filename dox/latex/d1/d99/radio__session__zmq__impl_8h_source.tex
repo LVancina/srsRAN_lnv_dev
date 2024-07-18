@@ -1,0 +1,105 @@
+\doxysection{radio\+\_\+session\+\_\+zmq\+\_\+impl.\+h}
+\hypertarget{radio__session__zmq__impl_8h_source}{}\label{radio__session__zmq__impl_8h_source}\index{lib/radio/zmq/radio\_session\_zmq\_impl.h@{lib/radio/zmq/radio\_session\_zmq\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__zmq__baseband__gateway_8h}{"{}radio\_zmq\_baseband\_gateway.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__zmq__rx__stream_8h}{"{}radio\_zmq\_rx\_stream.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__zmq__tx__stream_8h}{"{}radio\_zmq\_tx\_stream.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/radio/radio\_session.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{zmq}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Describes\ a\ ZeroMQ\ radio\ based\ session.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl}{radio\_session\_zmq\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1radio__session}{radio\_session}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1radio__management__plane}{radio\_management\_plane}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Default\ sockets\ send\ and\ receive\ timeout\ in\ milliseconds.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ DEFAULT\_TRX\_TIMEOUT\_MS\ =\ 10;}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ linger\ timeout\ in\ milliseconds.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ DEFAULT\_LINGER\_TIMEOUT\_MS\ =\ 0;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Default\ stream\ buffer\ size\ in\ samples.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ DEFAULT\_STREAM\_BUFFER\_SIZE\ =\ 614400;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Radio\ session\ logger.}}
+\DoxyCodeLine{00046\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ ZMQ\ context.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}*\ zmq\_context;}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Stores\ transmit\ streams.}}
+\DoxyCodeLine{00050\ \ \ std::vector<std::unique\_ptr<radio\_zmq\_baseband\_gateway>>\ bb\_gateways;}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Indicates\ the\ session\ has\ been\ created\ succesfully.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{bool}\ successful\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Default\ constructor.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Provides\ the\ required\ parameters\ to\ start\ a\ ZMQ\ radio\ based\ session.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ async\_task\_executor\ Provides\ a\ task\ executor\ to\ perform\ asynchronous\ tasks.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ notification\_handler\ Provides\ a\ radio\ event\ notification\ handler.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ Use\ is\_successful()\ to\ check\ that\ the\ instance\ was\ successfully\ initialized.}}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a84a38e4a7352a27f5b04534dd30a9775}{radio\_session\_zmq\_impl}}(\textcolor{keyword}{const}\ radio\_configuration::\mbox{\hyperlink{structsrsran_1_1radio__configuration_1_1radio}{radio}}\&\ config,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_task\_executor,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ \ \ \ \ \ \ notification\_handler);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00065\ \ \ \string~\mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a7419b683d32c847c39fc4d42a1154d63}{radio\_session\_zmq\_impl}}();}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ Indicates\ if\ the\ instance\ was\ successfully\ initialized.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_abf69318dd3b1fa6f9242b6c53efa0967}{is\_successful}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ successful;\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__management__plane}{radio\_management\_plane}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a1b574388cbb56e1419b4dca71ab9cff8}{get\_management\_plane}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway}{baseband\_gateway}}\&\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a085aa4b29363078be9251fa678f67ff5}{get\_baseband\_gateway}}(\textcolor{keywordtype}{unsigned}\ stream\_id)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(stream\_id\ <\ bb\_gateways.size(),}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Stream\ identifier\ (i.e.,\ \{\})\ exceeds\ the\ number\ of\ baseband\ gateways\ (i.e.,\ \{\})"{}},}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stream\_id,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bb\_gateways.size());}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{return}\ *bb\_gateways[stream\_id];}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ See\ interface\ documentation.}}
+\DoxyCodeLine{00084\ \ \ baseband\_gateway\_timestamp\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_ad5652ec80a1894bf436089b3a552696e}{read\_current\_time}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_aa6dc17d963348f977908e94d91744131}{start}}(baseband\_gateway\_timestamp\ init\_time)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a712a51bf9c23dd1f212747593e074930}{stop}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a5a3071ec7d3d11c7bb070542467257e5}{set\_tx\_gain}}(\textcolor{keywordtype}{unsigned}\ port\_id,\ \textcolor{keywordtype}{double}\ gain\_dB)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__session__zmq__impl_a3d5b7a088e6e51879164afd52e8a97da}{set\_rx\_gain}}(\textcolor{keywordtype}{unsigned}\ port\_id,\ \textcolor{keywordtype}{double}\ gain\_dB)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00097\ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

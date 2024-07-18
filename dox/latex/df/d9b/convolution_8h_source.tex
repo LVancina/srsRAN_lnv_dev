@@ -1,0 +1,130 @@
+\doxysection{convolution.\+h}
+\hypertarget{convolution_8h_source}{}\label{convolution_8h_source}\index{include/srsran/srsvec/convolution.h@{include/srsran/srsvec/convolution.h}}
+\mbox{\hyperlink{convolution_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Convolution\ declarations.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{zero_8h}{"{}zero.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/detail/traits.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/types.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{numeric}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ srsvec\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Check\ if\ two\ span-\/compatibles\ are\ the\ different:\ always\ true\ if\ they\ are\ of\ different\ type.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00040\ \textcolor{keywordtype}{bool}\ check\_different(\textcolor{keyword}{const}\ T\&\ \textcolor{comment}{/*\ na\ */},\ \textcolor{keyword}{const}\ U\&\ \textcolor{comment}{/*\ na\ */})}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00043\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ Check\ if\ two\ span-\/compatibles\ are\ the\ different:\ if\ they\ are\ of\ the\ same\ type,\ check\ the\ data\ pointers.}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00047\ \textcolor{keywordtype}{bool}\ check\_different(\textcolor{keyword}{const}\ T\&\ in1,\ \textcolor{keyword}{const}\ T\&\ in2)}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordflow}{return}\ (in1.data()\ !=\ in2.data());}
+\DoxyCodeLine{00050\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keywordtype}{void}\ multiply\_and\_accumulate(span<\textcolor{keywordtype}{float}>\ out,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ x,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ y);}
+\DoxyCodeLine{00053\ \textcolor{keywordtype}{void}\ multiply\_and\_accumulate(span<cf\_t>\ out,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ x,\ span<\textcolor{keyword}{const}\ cf\_t>\ y);}
+\DoxyCodeLine{00054\ \textcolor{keywordtype}{void}\ multiply\_and\_accumulate(span<cf\_t>\ out,\ span<\textcolor{keyword}{const}\ cf\_t>\ x,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ y);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \(\backslash\)brief\ Convolution\ between\ two\ sequences.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ Computes\ the\ convolution\ between\ two\ sequences\ \(\backslash\)f\$x\(\backslash\)f\$\ and\ \(\backslash\)f\$y\(\backslash\)f\$,\ namely\ \(\backslash\)f\$z[n]\ =\ \(\backslash\)sum\_\{i\}\ x[i]\ y[n-\/i]\(\backslash\)f\$\ and}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ returns\ its\ central\ part,\ of\ the\ \(\backslash\)e\ same\ size\ as\ the\ first\ input\ sequence.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)tparam\ V\ \ \ Output\ type\ (must\ be\ compatible\ with\ a\ span\ of\ arithmetic/complex\ values).}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ \ \ Type\ of\ the\ first\ input\ sequence\ (must\ be\ compatible\ with\ a\ span\ of\ arithmetic/complex\ values).}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ \ \ Type\ of\ the\ second\ input\ sequence\ (must\ be\ compatible\ with\ a\ span\ of\ arithmetic/complex\ values).}}
+\DoxyCodeLine{00065\ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ \ Output\ sequence\ -\/\ convolution\ between\ the\ input\ sequences.}}
+\DoxyCodeLine{00066\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ x\_v\ \ First\ input\ sequence.}}
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ y\_v\ \ Second\ input\ sequence.}}
+\DoxyCodeLine{00068\ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ raised\ if\ the\ length\ of\ the\ second\ sequence\ is\ larger\ than\ the\ length\ of\ the\ first\ one.}}
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ \(\backslash\)remark\ This\ implementation\ of\ the\ convolution\ is\ not\ based\ on\ FFT\ and\ should\ only\ be\ used\ when\ the\ second\ input}}
+\DoxyCodeLine{00070\ \textcolor{comment}{///\ sequence\ is\ "{}very"{}\ short.}}
+\DoxyCodeLine{00071\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ V,\ \textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00072\ \textcolor{keywordtype}{void}\ convolution\_same(V\&\&\ out,\ \textcolor{keyword}{const}\ T\&\ x\_v,\ \textcolor{keyword}{const}\ U\&\ y\_v)}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{static\_assert}((detail::is\_arithmetic\_span\_compatible<T>::value\ ||\ detail::is\_complex\_span\_compatible<T>::value),}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics\ or\ complex\ floats."{}});}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{static\_assert}((detail::is\_arithmetic\_span\_compatible<U>::value\ ||\ detail::is\_complex\_span\_compatible<U>::value),}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics\ or\ complex\ floats."{}});}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{static\_assert}((detail::is\_arithmetic\_span\_compatible<V>::value\ ||\ detail::is\_complex\_span\_compatible<V>::value),}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics\ or\ complex\ floats."{}});}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{types_8h_acdb1ab36b8a44f874dbabf478a19c64d}{srsran\_srsvec\_assert\_size}}(out,\ x\_v);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{unsigned}\ x\_size\ =\ x\_v.size();}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{unsigned}\ y\_size\ =\ y\_v.size();}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((y\_size\ <=\ x\_size),}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ current\ implementation\ of\ the\ convolution\ is\ only\ defined\ when\ the\ second\ input\ is\ not\ longer\ "{}}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}than\ the\ first\ one."{}});}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{using}\ Type\_y\ \ \ =\ \textcolor{keyword}{typename}\ U::value\_type;}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{using}\ Type\_x\ \ \ =\ \textcolor{keyword}{typename}\ T::value\_type;}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{using}\ Type\_out\ =\ \textcolor{keyword}{typename}\ std::remove\_reference<V>::type::value\_type;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(detail::check\_different(out,\ x\_v),\ \textcolor{stringliteral}{"{}Cannot\ override\ input\ with\ output."{}});}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ srsvec::zero(out);}
+\DoxyCodeLine{00095\ \ \ span<\textcolor{keyword}{const}\ Type\_x>\ x(x\_v);}
+\DoxyCodeLine{00096\ \ \ span<\textcolor{keyword}{const}\ Type\_y>\ y(y\_v);}
+\DoxyCodeLine{00097\ \ \ Type\_out\ \ \ \ \ \ \ \ \ \ \ init\ =\ 0;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{//\ At\ the\ beginning,\ x\ and\ y\ do\ not\ fully\ overlap.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{unsigned}\ y\_mid\ \ \ =\ y\_size\ /\ 2;}
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{unsigned}\ i\_out\ \ \ =\ 0;}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{unsigned}\ out\_end\ =\ x.size()\ -\/\ y\_mid;}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ n\_els\ =\ y\_mid\ +\ 1;\ n\_els\ !=\ y\_size;\ ++n\_els)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ span<\textcolor{keyword}{const}\ Type\_y>\ y\_local\ =\ y.first(n\_els);}
+\DoxyCodeLine{00105\ \ \ \ \ span<\textcolor{keyword}{const}\ Type\_x>\ x\_local\ =\ x.first(n\_els);}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ Note\ that\ y\_local\ is\ reversed.}}
+\DoxyCodeLine{00107\ \ \ \ \ out[i\_out++]\ =\ std::inner\_product(x\_local.begin(),\ x\_local.end(),\ y\_local.rbegin(),\ init);}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{//\ In\ the\ central\ part,\ y\ fully\ overlaps\ with\ x.}}
+\DoxyCodeLine{00111\ \ \ detail::multiply\_and\_accumulate(out,\ x,\ y);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{//\ For\ the\ final\ part,\ we\ again\ take\ into\ account\ the\ partial\ overlap.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{unsigned}\ start\ =\ i\_out;}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ n\_els\ =\ x\_size\ -\/\ out\_end\ +\ start;\ n\_els\ !=\ start;\ -\/-\/n\_els)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ span<\textcolor{keyword}{const}\ Type\_y>\ y\_local\ =\ y.last(n\_els);}
+\DoxyCodeLine{00117\ \ \ \ \ span<\textcolor{keyword}{const}\ Type\_x>\ x\_local\ =\ x.last(n\_els);}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Note\ that\ y\_local\ is\ reversed.}}
+\DoxyCodeLine{00119\ \ \ \ \ out[out\_end++]\ =\ std::inner\_product(x\_local.begin(),\ x\_local.end(),\ y\_local.rbegin(),\ init);}
+\DoxyCodeLine{00120\ \ \ \}}
+\DoxyCodeLine{00121\ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \}\ \textcolor{comment}{//\ namespace\ srsvec}}
+\DoxyCodeLine{00124\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,205 @@
+\doxysection{interval.\+h}
+\hypertarget{interval_8h_source}{}\label{interval_8h_source}\index{include/srsran/adt/interval.h@{include/srsran/adt/interval.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cassert}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Representation\ of\ an\ interval\ between\ two\ numeric-\/types\ with\ the\ math\ representation\ [start,\ stop).}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keywordtype}{bool}\ RightClosed\ =\ \textcolor{keyword}{false}>}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{static\_assert}(std::is\_trivially\_copyable<T>::value,\ \textcolor{stringliteral}{"{}Expected\ to\ be\ trivially\ copyable"{}});}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Whether\ the\ interval\ is\ of\ real\ numbers.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{using}\ is\_real\ =\ std::is\_floating\_point<T>;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Type\ used\ to\ represent\ the\ interval\ length.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1interval}{length\_type}}\ =}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1interval}{std}}::\mbox{\hyperlink{classsrsran_1_1interval}{conditional\_t}}<\mbox{\hyperlink{classsrsran_1_1interval}{is\_real}}::\mbox{\hyperlink{classsrsran_1_1interval}{value}},\ \mbox{\hyperlink{classsrsran_1_1interval}{T}},\ \mbox{\hyperlink{classsrsran_1_1interval}{std}}::\mbox{\hyperlink{classsrsran_1_1interval}{conditional\_t}}<(\textcolor{keyword}{sizeof}(\mbox{\hyperlink{classsrsran_1_1interval}{T}})\ >\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{classsrsran_1_1interval}{uint32\_t}})),\ \mbox{\hyperlink{classsrsran_1_1interval}{uint64\_t}},\ \mbox{\hyperlink{classsrsran_1_1interval}{uint32\_t}}>>;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{constexpr}\ interval()\ :\ start\_(T\{\}),\ stop\_(T\{\})\ \{\}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ V>}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{constexpr}\ interval(U\ start\_point,\ V\ stop\_point)\ :\ start\_(start\_point),\ stop\_(stop\_point)}
+\DoxyCodeLine{00050\ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<U,\ T>::value,\ \textcolor{stringliteral}{"{}Invalid\ interval\ start\ point\ type"{}});}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<V,\ T>::value,\ \textcolor{stringliteral}{"{}Invalid\ interval\ stop\ point\ type"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(start\_\ <=\ stop\_,\ \textcolor{stringliteral}{"{}Invalid\ interval\ [\{\},\ \{\})"{}},\ start\_,\ stop\_);}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ T\ start()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ start\_;\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ T\ stop()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ stop\_;\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}\ RightClosed\ \textcolor{keyword}{and}\ stop\_\ ==\ start\_;\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Interval\ length.\ e.g.\ [0,\ 1),\ [0,\ 1],\ [0\ ..\ 1)\ have\ length\ 1.\ [0\ ..\ 1]\ has\ length\ 2.}}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1interval_ac47a815285449ead553a43a0b5f85f63}{length\_type}}\ \mbox{\hyperlink{classsrsran_1_1interval_ac47a815285449ead553a43a0b5f85f63}{length}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00064\ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<length\_type>(stop\_\ -\/\ start\_\ +\ ((RightClosed\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ is\_real::value)\ ?\ 1\ :\ 0));}
+\DoxyCodeLine{00066\ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ set(T\ start\_point,\ T\ stop\_point)}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(stop\_point\ >=\ start\_point,\ \textcolor{stringliteral}{"{}interval::set\ called\ for\ invalid\ range\ points"{}});}
+\DoxyCodeLine{00071\ \ \ \ \ start\_\ =\ start\_point;}
+\DoxyCodeLine{00072\ \ \ \ \ stop\_\ \ =\ stop\_point;}
+\DoxyCodeLine{00073\ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ Increase\ the\ interval\ length,\ maintaining\ the\ same\ starting\ point.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ length\_increment\ Length\ increment/decrement\ to\ apply\ to\ current\ interval\ size.\ In\ case}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ length\_increment\ <\ 0,\ the\ condition\ -\/length\_increment\ <=\ length()\ must\ be\ met.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1interval_a8da2e26e475fcc5d43d1379c015fc295}{extend}}(T\ length\_increment)}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{//\ Detect\ length\ overflows}}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(std::is\_unsigned<T>::value\ \textcolor{keyword}{or}\ (length\_increment\ >=\ 0\ \textcolor{keyword}{or}\ length()\ >=\ -\/length\_increment),}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Resulting\ interval\ would\ be\ invalid"{}});}
+\DoxyCodeLine{00083\ \ \ \ \ stop\_\ +=\ length\_increment;}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Set\ the\ interval\ length,\ maintaining\ the\ same\ starting\ point.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1interval_ae51f1255408ae03f9ac2cb5db5bfe957}{resize}}(length\_type\ new\_length)\ \{\ stop\_\ =\ start\_\ +\ new\_length;\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ Move\ interval\ by\ an\ offset.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1interval_ac796ee20177cc9233ed5e8a9120ae3d5}{displace\_by}}(\textcolor{keywordtype}{int}\ offset)}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ std::is\_signed<T>::value\ \textcolor{keyword}{or}\ \textcolor{keyword}{static\_cast}<int64\_t>(start\_)\ >=\ -\/offset,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ have\ negative\ starting\_points\ in\ case\ interval<T>\ underlying\ type\ is\ unsigned.\ Start=\{\}\ <\ offset=\{\}"{}},}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ start\_,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ -\/offset);}
+\DoxyCodeLine{00097\ \ \ \ \ start\_\ +=\ offset;}
+\DoxyCodeLine{00098\ \ \ \ \ stop\_\ +=\ offset;}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Move\ interval\ start\ to\ provided\ starting\ point.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1interval_a888eed72d6d2a090d4b5cfac6d50690a}{displace\_to}}(T\ start\_point)}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ stop\_\ \ =\ start\_point\ +\ length();}
+\DoxyCodeLine{00105\ \ \ \ \ start\_\ =\ start\_point;}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ If\ this\ and\ other\ intervals\ overlap.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1interval_a0817f2c47ea5fb7a5f526f69488d24fc}{overlaps}}(\mbox{\hyperlink{classsrsran_1_1interval}{interval}}\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ Note:\ if\ one\ or\ both\ intervals\ are\ empty,\ this\ will\ always\ return\ false}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{return}\ RightClosed\ ?\ start\_\ <=\ other.stop\_\ \textcolor{keyword}{and}\ other.start\_\ <=\ stop\_}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ start\_\ <\ other.stop\_\ \textcolor{keyword}{and}\ other.start\_\ <\ stop\_;}
+\DoxyCodeLine{00114\ \ \ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ If\ interval\ contains\ provided\ point.}}
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1interval_aa63d54ce9b20aa714abccbb10a006a6b}{contains}}(T\ point)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ start\_\ <=\ point\ \textcolor{keyword}{and}\ (point\ <\ stop\_\ \textcolor{keyword}{or}\ (RightClosed\ \textcolor{keyword}{and}\ point\ ==\ stop\_));\ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ If\ interval\ contains\ provided\ interval.}}
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1interval_ac2086849f19857c1410565264f82a77f}{contains}}(\mbox{\hyperlink{classsrsran_1_1interval}{interval}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ start\_\ <=\ other.start\_\ \textcolor{keyword}{and}\ other.stop\_\ <=\ stop\_;\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ Assign\ to\ this\ interval\ the\ intersection\ between\ this\ and\ the\ provided\ interval.}}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{interval}}<\mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{T}}>\&\ \mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{intersect}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{interval}}<\mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{T}}>\&\ \mbox{\hyperlink{classsrsran_1_1interval_a80d49ef191dac98155c91d55f022f926}{other}})}
+\DoxyCodeLine{00124\ \ \ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ overlaps(other))\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ *\textcolor{keyword}{this}\ =\ interval<T>\{\};}
+\DoxyCodeLine{00127\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ start\_\ =\ std::max(start(),\ other.start());}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ stop\_\ \ =\ std::min(stop(),\ other.stop());}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00135\ \ \ T\ start\_;}
+\DoxyCodeLine{00136\ \ \ T\ stop\_;}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00140\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ interval<T>\&\ lhs,\ \textcolor{keyword}{const}\ interval<T>\&\ rhs)}
+\DoxyCodeLine{00141\ \{}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordflow}{return}\ lhs.start()\ ==\ rhs.start()\ \textcolor{keyword}{and}\ lhs.stop()\ ==\ rhs.stop();}
+\DoxyCodeLine{00143\ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00146\ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ interval<T>\&\ lhs,\ \textcolor{keyword}{const}\ interval<T>\&\ rhs)}
+\DoxyCodeLine{00147\ \{}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(lhs\ ==\ rhs);}
+\DoxyCodeLine{00149\ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \textcolor{comment}{///\ Compares\ interval\ starting\ points.\ In\ case\ the\ starting\ point\ is\ the\ same,\ the\ interval\ with\ shorter\ length}}
+\DoxyCodeLine{00152\ \textcolor{comment}{///\ is\ the\ lowest.}}
+\DoxyCodeLine{00153\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00154\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a61ae9e5cec54f199c3fef7bba70a3ebb}{operator}}<(\textcolor{keyword}{const}\ interval<T>\&\ lhs,\ \textcolor{keyword}{const}\ interval<T>\&\ rhs)}
+\DoxyCodeLine{00155\ \{}
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordflow}{return}\ lhs.start()\ <\ rhs.start()\ \textcolor{keyword}{or}\ (lhs.start()\ ==\ rhs.start()\ \textcolor{keyword}{and}\ lhs.stop()\ <\ rhs.stop());}
+\DoxyCodeLine{00157\ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{comment}{///\ Make\ union\ of\ intervals.\ If\ intervals\ do\ not\ overlap,\ the\ empty\ interval\ is\ returned}}
+\DoxyCodeLine{00160\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00161\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{interval}}<\mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{T}}>\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{operator}}|(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{interval}}<\mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{T}}>\&\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{lhs}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{interval}}<\mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{T}}>\&\ \mbox{\hyperlink{namespacesrsran_acaa8f2a9098da1a8304833615e840b95}{rhs}})}
+\DoxyCodeLine{00162\ \{}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ lhs.overlaps(rhs))\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordflow}{return}\ interval<T>\{\};}
+\DoxyCodeLine{00165\ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordflow}{return}\ \{std::min(lhs.start(),\ rhs.start()),\ std::max(lhs.stop(),\ rhs.stop())\};}
+\DoxyCodeLine{00167\ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{comment}{///\ Make\ intersection\ of\ intervals}}
+\DoxyCodeLine{00170\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00171\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{interval}}<\mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{T}}>\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{operator}}\&(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{interval}}<\mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{T}}>\&\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{lhs}},\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{interval}}<\mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{T}}>\&\ \mbox{\hyperlink{namespacesrsran_a348e9b742f8e14ff98be02552f976b04}{rhs}})}
+\DoxyCodeLine{00172\ \{}
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ lhs.overlaps(rhs))\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{return}\ interval<T>\{\};}
+\DoxyCodeLine{00175\ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordflow}{return}\ interval<T>\{std::max(lhs.start(),\ rhs.start()),\ std::min(lhs.stop(),\ rhs.stop())\};}
+\DoxyCodeLine{00177\ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \textcolor{comment}{///\ Format\ intervals\ with\ the\ notation\ [start,\ stop)}}
+\DoxyCodeLine{00184\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keywordtype}{bool}\ RightClosed>}
+\DoxyCodeLine{00185\ \textcolor{keyword}{struct}\ formatter<srsran::interval<T,\ RightClosed>>\ :\ \textcolor{keyword}{public}\ formatter<T>\ \{}
+\DoxyCodeLine{00186\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00187\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::interval<T,\ RightClosed>\&\ interv,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00189\ \ \ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}[\{\}\{\}\{\}\{\}"{}},}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interv.start(),}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srsran::interval<T,\ RightClosed>::is\_real::value\ ?\ \textcolor{stringliteral}{"{},\ "{}}\ :\ \textcolor{stringliteral}{"{}.."{}},}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interv.stop(),}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RightClosed\ ?\ \textcolor{stringliteral}{']'}\ :\ \textcolor{stringliteral}{')'});}
+\DoxyCodeLine{00196\ \ \ \}}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

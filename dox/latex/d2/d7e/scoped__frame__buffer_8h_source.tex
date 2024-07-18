@@ -1,0 +1,81 @@
+\doxysection{scoped\+\_\+frame\+\_\+buffer.\+h}
+\hypertarget{scoped__frame__buffer_8h_source}{}\label{scoped__frame__buffer_8h_source}\index{lib/ofh/transmitter/scoped\_frame\_buffer.h@{lib/ofh/transmitter/scoped\_frame\_buffer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ethernet/ethernet\_frame\_pool.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Scoped\ helper\ class\ that\ retrieves\ an\ Ethernet\ frame\ buffer\ from\ a\ buffer\ pool\ and\ marks\ it\ as\ ready\ to\ send\ upon}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ destruction.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer}{scoped\_frame\_buffer}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \ \ ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}\&\ \ \ \ \ \ \ \ \ \ frame\_pool;}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{const}\ ether::\mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\ context;}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{const}\ span<ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}>\ frames;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ On\ construction,\ acquire\ Ethernet\ frame\ buffers\ for\ the\ given\ slot,\ symbol\ and\ Open\ Fronthaul\ type.}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a57f74ac0dd747c7b30f40d7c2da835f6}{scoped\_frame\_buffer}}(ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}\&\ frame\_pool\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{slot\_symbol\_point}}\ \ \ \ \ \ symbol\_point,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ message\_type\ \ \ \ \ \ \ \ \ \ \ type,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data\_direction\ \ \ \ \ \ \ \ \ direction)\ :}
+\DoxyCodeLine{00045\ \ \ \ \ frame\_pool(frame\_pool\_),\ context(\{\{type,\ direction\},\ symbol\_point\}),\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a57f74ac0dd747c7b30f40d7c2da835f6}{frames}}(\mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a57f74ac0dd747c7b30f40d7c2da835f6}{frame\_pool}}.\mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a57f74ac0dd747c7b30f40d7c2da835f6}{get\_frame\_buffers}}(\mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a57f74ac0dd747c7b30f40d7c2da835f6}{context}}))}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Returns\ the\ frame\ retrieved\ from\ the\ pool.}}
+\DoxyCodeLine{00050\ \ \ ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a4d573d5741719dbb23980cf21dddd561}{get\_next\_frame}}()}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ frame\ :\ frames)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (frame.empty())\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ frame;}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}No\ empty\ Ethernet\ frame\ available\ in\ slot\ '\{\}'\ symbol\ '\{\}'\(\backslash\)n"{}},}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.symbol\_point\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{.}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{(}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{)}},}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.symbol\_point\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{.}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{(}}\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{)}});}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ frames.empty();\ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ Destructor\ marks\ the\ acquired\ buffers\ as\ ready\ to\ be\ sent.}}
+\DoxyCodeLine{00066\ \ \ \string~\mbox{\hyperlink{classsrsran_1_1ofh_1_1scoped__frame__buffer_a2d6895f6b29ecca886348972395ef7e8}{scoped\_frame\_buffer}}()}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (!frames.empty())\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ frame\_pool.push\_frame\_buffers(context,\ frames);}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00075\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

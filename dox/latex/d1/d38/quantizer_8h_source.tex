@@ -1,0 +1,111 @@
+\doxysection{quantizer.\+h}
+\hypertarget{quantizer_8h_source}{}\label{quantizer_8h_source}\index{lib/ofh/compression/quantizer.h@{lib/ofh/compression/quantizer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/conversion.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cmath}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Describes\ quantization\ of\ floating\ point\ number\ in\ the\ range\ [-\/1;\ +1]\ to\ a\ fixed\ point\ number\ of\ a\ given\ bit\ width.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ quantizer}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Constructor\ receives\ width\ in\ bits\ of\ a\ resulting\ fixed\ point\ number.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{explicit}\ quantizer(\textcolor{keywordtype}{unsigned}\ bit\_width\_)\ :}
+\DoxyCodeLine{00038\ \ \ \ \ bit\_width(bit\_width\_),\ nbits\_shift\_sign(16U\ -\/\ bit\_width),\ gain((1\ <<\ (bit\_width\ -\/\ 1))\ -\/\ 1.0f)}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Quantizes\ a\ floating\ point\ value\ into\ 16bit\ integer.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ A\ floating\ point\ value.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Resultant\ quantized\ value.}}
+\DoxyCodeLine{00046\ \ \ int16\_t\ to\_fixed\_point(\textcolor{keywordtype}{float}\ value)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{float}\ clipped\ =\ value;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::abs(value)\ >\ 1.0)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ clipped\ =\ std::copysign(1.0,\ value);}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<int16\_t>(std::round(clipped\ *\ gain));}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Quantizes\ a\ sequence\ of\ floating\ point\ values\ into\ 16bit\ integers.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ z\ \ \ \ \ \ \ Resultant\ quantized\ values.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ \ \ \ \ \ \ Sequence\ of\ floating\ point\ values.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ in\_scale\ Scaling\ factor\ applied\ to\ the\ input\ prior\ conversion.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ \(\backslash\)c\ z\ and\ \(\backslash\)c\ x\ must\ have\ the\ same\ size.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{void}\ to\_fixed\_point(span<int16\_t>\ z,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ x,\ \textcolor{keywordtype}{float}\ in\_scale)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{float}\ scale\ =\ gain\ *\ in\_scale;}
+\DoxyCodeLine{00065\ \ \ \ \ srsvec::convert\_round(x,\ scale,\ z);}
+\DoxyCodeLine{00066\ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ fixed\ point\ value\ to\ floating\ point.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ p\ 16bit\ integer\ value.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Resultant\ floating\ point\ value.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{float}\ to\_float(\textcolor{keywordtype}{int}\ p)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (p\ /\ gain);\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ a\ sequence\ of\ fixed\ point\ values\ to\ complex\ floating\ point\ values.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ z\ \ \ \ \ \ \ Resultant\ complex\ floating\ point\ values.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ \ \ \ \ \ \ Sequence\ of\ 16bit\ integer\ values.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ in\_scale\ Scaling\ factor\ (expected\ to\ be\ bigger\ or\ equal\ to\ 1)\ applied\ to\ the\ input\ prior\ conversion.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ size\ of\ \(\backslash\)c\ x\ must\ be\ twice\ the\ size\ of\ \(\backslash\)c\ z\ as\ \(\backslash\)x\ is\ comprised\ by\ the\ quantized\ pairs\ of\ real\ and}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ imaginary\ parts\ of\ complex\ values.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ to\_float(span<cf\_t>\ z,\ span<\textcolor{keyword}{const}\ int16\_t>\ x,\ int16\_t\ in\_scale)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{float}\ scale\ =\ gain\ /\ in\_scale;}
+\DoxyCodeLine{00085\ \ \ \ \ srsvec::convert(x,\ scale,\ z);}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ Sign\ extends\ the\ input\ value.}}
+\DoxyCodeLine{00089\ \ \ int16\_t\ sign\_extend(int16\_t\ value)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00090\ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ int16\_t\ shifted\ =\ value\ <<\ nbits\_shift\_sign;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{return}\ shifted\ >>\ nbits\_shift\_sign;}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Width\ of\ fixed\ point\ number\ in\ bits.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ bit\_width;}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Shift\ for\ sign\ extention.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ nbits\_shift\_sign;}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ Quantization\ gain.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ gain;}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00105\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

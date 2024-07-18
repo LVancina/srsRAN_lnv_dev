@@ -495,15 +495,9 @@ TEST_P(EthFramePoolFixture, clearing_full_pool_should_allow_adding_more_data)
         }
         pool.push_frame_buffers(ctx, frame_buffers);
       }
-      // Increase slot by pool size, clear stale buffers in the pool.
+      // Increase slot by pool size, clear stale buffers in the pool and try to get buffers again.
       auto wrapped_slot = slot + pool_size_slots;
       pool.clear_downlink_slot(wrapped_slot, logger);
-
-      // Verify the pool is empty in the given slot.
-      auto rd_buffers = pool.read_frame_buffers(ctx);
-      ASSERT_TRUE(rd_buffers.empty()) << "No buffers are expected to be read from the pool after clearing it";
-
-      // Try to get buffers again and make sure they are available.
       for (unsigned i = 0; i != nof_requested_buffers; ++i) {
         span<frame_buffer> frame_buffers = pool.get_frame_buffers(ctx);
         ASSERT_TRUE(!frame_buffers.empty()) << "Non-empty span of buffers expected";
@@ -529,14 +523,8 @@ TEST_P(EthFramePoolFixture, clearing_full_pool_should_allow_adding_more_data)
         }
         pool.push_frame_buffers(ctx, frame_buffers);
       }
-      // Clear full slot in the pool.
+      // Clear full slot in the pool and try to get buffers again.
       pool.clear_uplink_slot(wrapped_slot, logger);
-
-      // Verify the pool is empty in the given slot.
-      rd_buffers = pool.read_frame_buffers(ctx);
-      ASSERT_TRUE(rd_buffers.empty()) << "No buffers are expected to be read from the pool after clearing it";
-
-      // Try to get buffers again and make sure they are available.
       for (unsigned i = 0; i != nof_requested_buffers; ++i) {
         span<frame_buffer> frame_buffers = pool.get_frame_buffers(ctx);
         ASSERT_TRUE(!frame_buffers.empty()) << "Non-empty span of buffers expected";

@@ -1,0 +1,179 @@
+\doxysection{units.\+h}
+\hypertarget{units_8h_source}{}\label{units_8h_source}\index{include/srsran/support/units.h@{include/srsran/support/units.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/strong\_type.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{climits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ units\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Tag\ struct\ used\ to\ uniquely\ identify\ the\ bit\ units\ type.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1bit__tag}{bit\_tag}}\ \{}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Text\ representation\ for\ the\ units.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1bit__tag_a70043c572b597b28bc5ebe1bf16cbc42}{str}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}bits"{}};\ \}}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Tag\ struct\ used\ to\ uniquely\ identify\ the\ byte\ units\ type.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1byte__tag}{byte\_tag}}\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Text\ representation\ for\ the\ units.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1byte__tag_a4cb33ed11952c7545b0393c6bd78ec94}{str}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}bytes"{}};\ \}}
+\DoxyCodeLine{00044\ \};}
+\DoxyCodeLine{00045\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)brief\ Abstraction\ of\ bit\ as\ a\ unit\ of\ digital\ information.}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ An\ object\ of\ this\ type\ will\ represent\ an\ amount\ of\ digital\ information\ expressed\ in\ bits.}}
+\DoxyCodeLine{00052\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{strong\_type}}<\textcolor{keywordtype}{unsigned},}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{detail}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bit\_tag}},}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{strong\_arithmetic}},}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{strong\_increment\_decrement}},}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{strong\_multiplication\_with}}<\textcolor{keywordtype}{unsigned}>>}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Type\ alias\ for\ the\ base\ class\ of\ the\ bits\ units\ class.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using}\ bits\_base\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type}{strong\_type}}<\textcolor{keywordtype}{unsigned},}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detail::\mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1bit__tag}{bit\_tag}},}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__arithmetic}{strong\_arithmetic}},}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__increment__decrement}{strong\_increment\_decrement}},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__multiplication__with}{strong\_multiplication\_with}}<\textcolor{keywordtype}{unsigned}>>;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits\_base}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits\_base}};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{constexpr}\ bits(\textcolor{keyword}{const}\ bits\_base\&\ other)\ :\ bits\_base(other)\ \{\}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Returns\ true\ if\ the\ amount\ of\ digital\ information\ expressed\ as\ bits\ is\ a\ multiple\ of\ a\ byte.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits_a69a35e887e040c6c937b6f70d3df8084}{is\_byte\_exact}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ((value()\ \%\ CHAR\_BIT)\ ==\ 0);\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Returns\ the\ amount\ of\ digital\ information\ expressed\ as\ an\ integer\ number\ of\ bytes,\ rounded\ down.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits_a240778dc7ade6085090b094fafd45aa5}{truncate\_to\_bytes}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Returns\ the\ amount\ of\ digital\ information\ expressed\ as\ an\ integer\ number\ of\ bytes,\ rounded\ up.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits_ab63d19548056cc00f0aa32c10391202e}{round\_up\_to\_bytes}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ \(\backslash\)brief\ Abstraction\ of\ byte\ as\ a\ unit\ of\ digital\ information.}}
+\DoxyCodeLine{00081\ \textcolor{comment}{///}}
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ An\ object\ of\ this\ class\ will\ represent\ an\ amount\ of\ digital\ information\ expressed\ in\ bytes.\ The\ class\ also\ provides}}
+\DoxyCodeLine{00083\ \textcolor{comment}{///\ a\ method\ to\ convert\ such\ amount\ into\ a\ number\ of\ information\ bits.}}
+\DoxyCodeLine{00084\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{strong\_type}}<\textcolor{keywordtype}{unsigned},}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{detail}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{byte\_tag}},}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{strong\_arithmetic}},}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{strong\_increment\_decrement}},}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{strong\_multiplication\_with}}<\textcolor{keywordtype}{unsigned}>>}
+\DoxyCodeLine{00089\ \{}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ Type\ alias\ for\ the\ base\ class\ of\ the\ byte\ units\ class.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{using}\ bytes\_base\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type}{strong\_type}}<\textcolor{keywordtype}{unsigned},}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detail::\mbox{\hyperlink{structsrsran_1_1units_1_1detail_1_1byte__tag}{byte\_tag}},}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__arithmetic}{strong\_arithmetic}},}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__increment__decrement}{strong\_increment\_decrement}},}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__multiplication__with}{strong\_multiplication\_with}}<\textcolor{keywordtype}{unsigned}>>;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes\_base}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes\_base}};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keyword}{constexpr}\ bytes(\textcolor{keyword}{const}\ bytes\_base\&\ other)\ :\ bytes\_base(other)\ \{\}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ operator\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes_a3633d6a80fc41a40f08be27a32e04acf}{to\_bits}}\mbox{\hyperlink{classsrsran_1_1units_1_1bytes_a3633d6a80fc41a40f08be27a32e04acf}{(}}\mbox{\hyperlink{classsrsran_1_1units_1_1bytes_a3633d6a80fc41a40f08be27a32e04acf}{)}};\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Returns\ the\ amount\ of\ digital\ information\ as\ a\ number\ of\ bits.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes_a3633d6a80fc41a40f08be27a32e04acf}{to\_bits}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ bits(value()\ *\ CHAR\_BIT);\ \}}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bits_a240778dc7ade6085090b094fafd45aa5}{truncate\_to\_bytes}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00109\ \{}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordflow}{return}\ bytes(value()\ /\ CHAR\_BIT);}
+\DoxyCodeLine{00111\ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}::\mbox{\hyperlink{classsrsran_1_1units_1_1bits_ab63d19548056cc00f0aa32c10391202e}{round\_up\_to\_bytes}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00114\ \{}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordflow}{return}\ bytes((value()\ +\ CHAR\_BIT\ -\/\ 1)\ /\ CHAR\_BIT);}
+\DoxyCodeLine{00116\ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \textcolor{keyword}{namespace}\ literals\ \{}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \textcolor{comment}{///\ User\ defined\ literal\ for\ byte\ units.}}
+\DoxyCodeLine{00121\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ operator\textcolor{stringliteral}{"{}"{}}\ \_bytes(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ n)}
+\DoxyCodeLine{00122\ \{}
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordflow}{return}\ bytes(n);}
+\DoxyCodeLine{00124\ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \textcolor{comment}{///\ User\ defined\ literal\ for\ bit\ units.}}
+\DoxyCodeLine{00127\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ operator\textcolor{stringliteral}{"{}"{}}\ \_bits(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{long}\ n)}
+\DoxyCodeLine{00128\ \{}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordflow}{return}\ bits(n);}
+\DoxyCodeLine{00130\ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \}\ \textcolor{comment}{//\ namespace\ literals}}
+\DoxyCodeLine{00133\ \}\ \textcolor{comment}{//\ namespace\ units}}
+\DoxyCodeLine{00134\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{comment}{///\ Formatter\ for\ bit\ units.}}
+\DoxyCodeLine{00139\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00140\ \textcolor{keyword}{struct}\ formatter<srsran::units::bits>\ :\ \textcolor{keyword}{public}\ formatter<srsran::units::bits::value\_type>\ \{}
+\DoxyCodeLine{00141\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00142\ \ \ \textcolor{keyword}{auto}\ format(srsran::units::bits\ s,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{return}\ fmt::format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}\{\}"{}},\ s.value(),\ srsran::units::bits::tag\_type::str());}
+\DoxyCodeLine{00145\ \ \ \}}
+\DoxyCodeLine{00146\ \};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{comment}{///\ Formatter\ for\ byte\ units.}}
+\DoxyCodeLine{00149\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00150\ \textcolor{keyword}{struct}\ formatter<srsran::units::bytes>\ :\ \textcolor{keyword}{public}\ formatter<srsran::units::bytes::value\_type>\ \{}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{bool}\ print\_units\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00154\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00155\ \ \ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ctx.begin();}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{while}\ (it\ !=\ ctx.end()\ \textcolor{keyword}{and}\ *it\ !=\ \textcolor{stringliteral}{'\}'})\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (*it\ ==\ \textcolor{stringliteral}{'B'})\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ print\_units\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00162\ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keywordflow}{return}\ it;}
+\DoxyCodeLine{00164\ \ \ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00167\ \ \ \textcolor{keyword}{auto}\ format(srsran::units::bytes\ s,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00168\ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordflow}{return}\ fmt::format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}\{\}"{}},\ s.value(),\ print\_units\ ?\ srsran::units::bytes::tag\_type::str()\ :\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

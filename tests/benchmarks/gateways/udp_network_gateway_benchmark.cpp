@@ -88,7 +88,6 @@ int main(int argc, char** argv)
   srslog::init();
 
   // init GW logger
-  srslog::fetch_basic_logger("IO-EPOLL", true).set_level(srslog::basic_levels::warning);
   srslog::fetch_basic_logger("UDP-GW", true).set_level(srslog::basic_levels::warning);
   srslog::fetch_basic_logger("UDP-GW", true).set_hex_dump_max_size(100);
 
@@ -124,10 +123,12 @@ int main(int argc, char** argv)
 
   epoll_broker = create_io_broker(io_broker_type::epoll);
 
-  if (not gw1->subscribe_to(*epoll_broker)) {
+  bool success = epoll_broker->register_fd(gw1->get_socket_fd(), [&gw1](int fd) { gw1->receive(); });
+  if (!success) {
     report_fatal_error("Failed to register UDP network gateway 1 at IO broker. socket_fd={}", gw1->get_socket_fd());
   }
-  if (not gw2->subscribe_to(*epoll_broker)) {
+  success = epoll_broker->register_fd(gw2->get_socket_fd(), [&gw2](int fd) { gw2->receive(); });
+  if (!success) {
     report_fatal_error("Failed to register UDP network gateway 2 at IO broker. socket_fd={}", gw2->get_socket_fd());
   }
 

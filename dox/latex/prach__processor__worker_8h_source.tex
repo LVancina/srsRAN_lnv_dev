@@ -1,0 +1,100 @@
+\doxysection{prach\+\_\+processor\+\_\+worker.\+h}
+\hypertarget{prach__processor__worker_8h_source}{}\label{prach__processor__worker_8h_source}\index{lib/phy/lower/processors/uplink/prach/prach\_processor\_worker.h@{lib/phy/lower/processors/uplink/prach/prach\_processor\_worker.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_dynamic.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_reader.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/modulation/ofdm\_prach\_demodulator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/prach/prach\_processor\_baseband.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/prach/prach\_processor\_notifier.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/sampling\_rate.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/prach\_buffer\_context.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/phy\_time\_unit.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/prach/prach\_constants.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/aligned\_vec.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1prach__processor__worker}{prach\_processor\_worker}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{enum\ class}\ states\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ idle,}
+\DoxyCodeLine{00060\ \ \ \ \ wait,}
+\DoxyCodeLine{00063\ \ \ \ \ collecting,}
+\DoxyCodeLine{00066\ \ \ \ \ processing}
+\DoxyCodeLine{00067\ \ \ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00070\ \ \ std::unique\_ptr<ofdm\_prach\_demodulator>\ demodulator;}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ async\_task\_executor;}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{unsigned}\ sampling\_rate\_Hz\ =\ 0;}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__dynamic}{baseband\_gateway\_buffer\_dynamic}}\ temp\_baseband;}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__processor__notifier}{prach\_processor\_notifier}}*\ notifier\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00080\ \ \ std::atomic<states>\ state\ =\ \{states::idle\};}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\ \mbox{\hyperlink{structsrsran_1_1prach__context}{prach\_context}};}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}*\ buffer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{unsigned}\ window\_length\ =\ 0;}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_samples\ =\ 0;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordtype}{void}\ run\_state\_wait(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ \ \ \ \ \ \ \ \ \ \ samples,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__processor__baseband_1_1symbol__context}{prach\_processor\_baseband::symbol\_context}}\&\ context);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{void}\ run\_state\_collecting(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ \ \ \ \ \ \ \ \ \ \ samples,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__processor__baseband_1_1symbol__context}{prach\_processor\_baseband::symbol\_context}}\&\ context);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ accumulate\_samples(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ samples);}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a375677994380bd87c11053a4a243faee}{prach\_processor\_worker}}(std::unique\_ptr<ofdm\_prach\_demodulator>\ demodulator\_,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_task\_executor\_,}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1sampling__rate}{sampling\_rate}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srate,}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nof\_ports)\ :}
+\DoxyCodeLine{00107\ \ \ \ \ demodulator(std::move(demodulator\_)),}
+\DoxyCodeLine{00108\ \ \ \ \ async\_task\_executor(async\_task\_executor\_),}
+\DoxyCodeLine{00109\ \ \ \ \ sampling\_rate\_Hz(srate.to\_Hz()),}
+\DoxyCodeLine{00110\ \ \ \ \ temp\_baseband(max\_nof\_ports,\ prach\_constants::MAX\_WINDOW\_LENGTH.to\_samples(sampling\_rate\_Hz))}
+\DoxyCodeLine{00111\ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ srsran\_assert(sampling\_rate\_Hz\ \&\&\ prach\_constants::MAX\_WINDOW\_LENGTH.is\_sample\_accurate(sampling\_rate\_Hz),}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ sampling\ rate\ of\ \{\}\ Hz."{}},}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sampling\_rate\_Hz);}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a85b63bea37bf93d9a862da732eaa4e2e}{connect}}(\mbox{\hyperlink{classsrsran_1_1prach__processor__notifier}{prach\_processor\_notifier}}\&\ notifier\_)\ \{\ notifier\ =\ \&notifier\_;\ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_ac99ed39908cafc0087e913bc81452ff2}{handle\_request}}(\mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}\&\ buffer,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ context);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a1d86927449b096ef17ae2b9221909b22}{process\_symbol}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ \ \ \ \ \ \ \ \ \ \ samples,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__processor__baseband_1_1symbol__context}{prach\_processor\_baseband::symbol\_context}}\&\ context);}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a1e7e8d43717654370a434217c225dffe}{is\_available}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ state\ ==\ states::idle;\ \}}
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

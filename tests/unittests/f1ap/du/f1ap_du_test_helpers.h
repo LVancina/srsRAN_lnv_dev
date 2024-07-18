@@ -74,7 +74,6 @@ public:
   optional<f1ap_ue_context_update_request>   last_ue_context_update_req;
   f1ap_ue_context_update_response            next_ue_context_update_response;
   optional<f1ap_ue_delete_request>           last_ue_delete_req;
-  optional<du_ue_index_t>                    last_ue_cfg_applied;
 
   explicit dummy_f1ap_du_configurator(timer_factory& timers_) : timers(timers_), task_loop(128), ue_sched(this) {}
 
@@ -83,8 +82,6 @@ public:
   timer_factory& get_timer_factory() override { return timers; }
 
   void schedule_async_task(async_task<void>&& task) override { task_loop.schedule(std::move(task)); }
-
-  void on_f1c_disconnection() override {}
 
   du_ue_index_t find_free_ue_index() override { return next_ue_creation_req.ue_index; }
 
@@ -119,10 +116,6 @@ public:
     });
   }
 
-  void on_ue_config_applied(du_ue_index_t ue_index) override { last_ue_cfg_applied = ue_index; }
-
-  async_task<void> request_ue_drb_deactivation(du_ue_index_t ue_index) override { return launch_no_op_task(); }
-
   void notify_reestablishment_of_old_ue(du_ue_index_t new_ue_index, du_ue_index_t old_ue_index) override {}
 
   /// \brief Retrieve task scheduler specific to a given UE.
@@ -154,17 +147,10 @@ f1ap_message generate_ue_context_setup_request(const std::initializer_list<drb_i
 asn1::f1ap::drbs_to_be_setup_mod_item_s generate_drb_am_mod_item(drb_id_t drbid);
 
 /// \brief Generate an F1AP UE Context Modification Request message with specified list of DRBs.
-f1ap_message generate_ue_context_modification_request(const std::initializer_list<drb_id_t>& drbs_to_add,
-                                                      const std::initializer_list<drb_id_t>& drbs_to_rem = {});
+f1ap_message generate_ue_context_modification_request(const std::initializer_list<drb_id_t>& drbs_to_add);
 
 /// \brief Generate an F1AP UE Context Release Command message.
 f1ap_message generate_ue_context_release_command();
-
-/// \brief Generate an F1AP DL RRC Message Transfer message.
-f1ap_message generate_dl_rrc_message_transfer(gnb_du_ue_f1ap_id_t du_ue_id,
-                                              gnb_cu_ue_f1ap_id_t cu_ue_id,
-                                              srb_id_t            srb_id,
-                                              byte_buffer         rrc_container);
 
 class dummy_f1c_connection_client : public srs_du::f1c_connection_client
 {
@@ -241,8 +227,6 @@ protected:
 
   /// \brief Run F1 Setup Procedure to completion.
   void run_f1_setup_procedure();
-
-  void run_f1_removal_procedure();
 
   /// \brief Create new UE in F1AP.
   ue_test_context* run_f1ap_ue_create(du_ue_index_t ue_index);

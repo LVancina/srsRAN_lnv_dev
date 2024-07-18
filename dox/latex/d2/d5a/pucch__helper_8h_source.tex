@@ -1,0 +1,117 @@
+\doxysection{pucch\+\_\+helper.\+h}
+\hypertarget{pucch__helper_8h_source}{}\label{pucch__helper_8h_source}\index{lib/phy/upper/signal\_processors/pucch/pucch\_helper.h@{lib/phy/upper/signal\_processors/pucch/pucch\_helper.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_collection.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/frame\_types.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pucch/pucch\_mapping.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ pucch\_helper}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{//\ Pseudo-\/random\ sequence\ generator\ instance}}
+\DoxyCodeLine{00040\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ prg;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ pucch\_helper(std::unique\_ptr<pseudo\_random\_generator>\ prg\_)\ :\ prg(std::move(prg\_))}
+\DoxyCodeLine{00044\ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(prg,\ \textcolor{stringliteral}{"{}Invalid\ PRG."{}});}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Computes\ the\ NR-\/PUCCH\ group\ sequence\ (TS\ 38.211\ clause\ 6.3.2.2.1\ Group\ and\ sequence\ hopping).}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ compute\_group\_sequence(pucch\_group\_hopping\ group\_hopping,\ \textcolor{keywordtype}{unsigned}\ n\_id,\ \textcolor{keywordtype}{unsigned}\&\ u,\ \textcolor{keywordtype}{unsigned}\&\ v)}
+\DoxyCodeLine{00050\ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ f\_gh\ =\ 0;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ f\_ss\ =\ 0;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{switch}\ (group\_hopping)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ pucch\_group\_hopping::NEITHER:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ f\_ss\ =\ n\_id\ \%\ low\_papr\_sequence\_collection::NOF\_GROUPS;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ pucch\_group\_hopping::ENABLE:}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Group\ hopping\ is\ not\ implemented"{}});}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ pucch\_group\_hopping::DISABLE:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Hopping\ is\ not\ implemented"{}});}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ u\ =\ (f\_gh\ +\ f\_ss)\ \%\ low\_papr\_sequence\_collection::NOF\_GROUPS;}
+\DoxyCodeLine{00067\ \ \ \ \ v\ =\ 0;}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ NR\ alpha\ index\ (1-\/NRE)\ (TS\ 38.211\ clause\ 6.3.2.2.2\ Cyclic\ shift\ hopping)}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ slot[in]\ \ \ \ Current\ slot}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ cp[in]\ \ \ \ \ \ Cyclic\ prefix\ type}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ n\_id[in]\ \ \ \ Higher\ layer\ parameter\ hoppingID\ if\ configured,\ physical\ cell\ id\ otherwise}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ symbol[in]\ \ OFDM\ symbol\ index\ in\ the\ slot}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ m0[in]\ \ \ \ \ \ Initial\ cyclic\ shift}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ m\_cs[in]\ \ \ \ Cyclic\ shift}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ NR\ alpha\ index}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{unsigned}\ get\_alpha\_index(\textcolor{keyword}{const}\ slot\_point\&\ \ \ \ slot,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ cyclic\_prefix\&\ cp,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ n\_id,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ symbol,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ m0,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ m\_cs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00085\ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ Initialize\ pseudo-\/random\ sequence\ with\ the\ seed\ set\ to\ nid}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ cinit\ =\ n\_id;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{//\ Pseudo-\/random\ sequence\ length\ for\ max\ numerology\ (i.e.\ 4)}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{const}\ size\_t\ max\_seq\_length\ \ =\ 8U\ *\ MAX\_NSYMB\_PER\_SLOT\ *\ NOF\_SUBFRAMES\_PER\_FRAME\ *\ (1U\ <<\ 4U);}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ sequence\_length\ =\ 8U\ *\ get\_nsymb\_per\_slot(cp)\ *\ slot.nof\_slots\_per\_frame();}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ Create\ a\ zero\ array}}
+\DoxyCodeLine{00094\ \ \ \ \ static\_bit\_buffer<max\_seq\_length>\ cs(sequence\_length);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ prg-\/>init(cinit);}
+\DoxyCodeLine{00097\ \ \ \ \ prg-\/>generate(cs);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ Slot\ number}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\_slot\ =\ slot.slot\_index();}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{comment}{//\ Create\ n\_cs\ parameter}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ base\_idx\ =\ get\_nsymb\_per\_slot(cp)\ *\ n\_slot\ +\ symbol;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\_cs\ \ \ \ \ =\ reverse\_byte(cs.get\_byte(base\_idx));}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ alpha\_idx\ =\ (m0\ +\ m\_cs\ +\ n\_cs)\ \%\ NRE;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{return}\ alpha\_idx;}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

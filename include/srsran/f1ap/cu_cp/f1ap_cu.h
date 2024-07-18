@@ -54,7 +54,7 @@ public:
 
 struct f1ap_ue_context_release_command {
   ue_index_t         ue_index = ue_index_t::invalid;
-  f1ap_cause_t       cause;
+  cause_t            cause;
   byte_buffer        rrc_release_pdu;
   optional<srb_id_t> srb_id;
 };
@@ -129,11 +129,6 @@ struct ue_rrc_context_creation_response {
   f1ap_rrc_message_notifier* f1ap_rrc_notifier = nullptr;
 };
 
-/// Notification from the F1AP that the loss of transaction reference information for some UEs has been lost.
-struct f1_ue_transaction_info_loss_event {
-  std::vector<ue_index_t> ues_lost;
-};
-
 struct ue_update_message {
   ue_index_t          ue_index = ue_index_t::invalid;
   nr_cell_global_id_t cgi;
@@ -148,18 +143,8 @@ struct ue_update_complete_message {
   f1ap_rrc_message_notifier* f1ap_rrc_notifier = nullptr;
 };
 
-/// Scheduler of F1AP async tasks using common signalling.
-class f1ap_common_du_task_notifier
-{
-public:
-  virtual ~f1ap_common_du_task_notifier() = default;
-
-  /// Schedule common F1 task.
-  virtual bool schedule_async_task(async_task<void> task) = 0;
-};
-
 /// Methods used by F1AP to notify the DU processor.
-class f1ap_du_processor_notifier : public du_setup_notifier, public f1ap_common_du_task_notifier
+class f1ap_du_processor_notifier : public du_setup_notifier
 {
 public:
   virtual ~f1ap_du_processor_notifier() = default;
@@ -175,9 +160,6 @@ public:
   /// section 8.3.2.
   virtual void on_du_initiated_ue_context_release_request(const f1ap_ue_context_release_request& req) = 0;
 
-  /// Called when an F1 removal or F1 Reset is received, or when the DU disconnects.
-  virtual async_task<void> on_transaction_info_loss(const f1_ue_transaction_info_loss_event& ev) = 0;
-
   /// \brief Get the DU index.
   /// \return The DU index.
   virtual du_index_t get_du_index() = 0;
@@ -192,7 +174,7 @@ public:
   /// \brief Notifies about a successful F1 Removal procedure.
   /// The corresponding DU processor will be removed now.
   /// \param[in] du_index The index of the DU processor to delete.
-  virtual void on_du_remove_request_received(du_index_t du_index) = 0;
+  virtual void on_du_remove_request_received(const du_index_t du_index) = 0;
 };
 
 /// Methods to get statistics of the F1AP.
@@ -217,6 +199,17 @@ public:
   virtual void remove_ue_context(ue_index_t ue_index) = 0;
 };
 
+/// Interface to notify about necessary UE removals.
+class f1ap_ue_removal_notifier
+{
+public:
+  virtual ~f1ap_ue_removal_notifier() = default;
+
+  /// \brief Notify the CU-CP to completly remove a UE from the CU-CP.
+  /// \param[in] ue_index The index of the UE to remove.
+  virtual void on_ue_removal_required(ue_index_t ue_index) = 0;
+};
+
 /// Combined entry point for F1AP handling.
 class f1ap_cu : public f1ap_message_handler,
                 public f1ap_event_handler,
@@ -229,10 +222,8 @@ class f1ap_cu : public f1ap_message_handler,
 public:
   virtual ~f1ap_cu() = default;
 
-  virtual async_task<void> stop() = 0;
-
   virtual f1ap_message_handler&            get_f1ap_message_handler()            = 0;
-  virtual f1ap_event_handler&              get_event_handler()                   = 0;
+  virtual f1ap_event_handler&              get_f1ap_event_handler()              = 0;
   virtual f1ap_rrc_message_handler&        get_f1ap_rrc_message_handler()        = 0;
   virtual f1ap_ue_context_manager&         get_f1ap_ue_context_manager()         = 0;
   virtual f1ap_statistics_handler&         get_f1ap_statistics_handler()         = 0;

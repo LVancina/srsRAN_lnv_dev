@@ -1,0 +1,282 @@
+\doxysection{dmrs\+\_\+helpers.\+h}
+\hypertarget{dmrs__helpers_8h_source}{}\label{dmrs__helpers_8h_source}\index{lib/scheduler/support/dmrs\_helpers.h@{lib/scheduler/support/dmrs\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../config/cell\_configuration.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}pdsch/pdsch\_dmrs\_symbol\_mask.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/dmrs.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdsch/pdsch\_antenna\_ports\_mapping.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/dmrs.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_slot\_handler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Calculates\ the\ number\ of\ RE\ used\ for\ DMRS\ per\ RB\ in\ PDSCH\ and\ PUSCH\ transmissions.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_ac5e3b371735e947bc78d6d8af579ef0d}{calculate\_nof\_dmrs\_per\_rb}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\&\ dmrs)}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{//\ Calculate\ number\ of\ RE\ for\ DMRS\ per\ RB,\ symbol\ and\ CDM\ group.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_dmrs\_re\ =\ get\_nof\_re\_per\_prb(dmrs.config\_type);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{//\ Calculate\ the\ maximum\ number\ of\ CDM\ groups\ without\ data\ and\ make\ sure\ the\ number\ does\ not\ exceed\ the\ maximum.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ max\_nof\_cdm\_groups\_without\_data\ =\ get\_max\_nof\_cdm\_groups\_without\_data(dmrs.config\_type);}
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dmrs.num\_dmrs\_cdm\_grps\_no\_data\ >=\ 1\ \&\&}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs.num\_dmrs\_cdm\_grps\_no\_data\ <=\ max\_nof\_cdm\_groups\_without\_data,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ number\ of\ CDM\ groups\ without\ data\ \{\}."{}},}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs.num\_dmrs\_cdm\_grps\_no\_data);}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ Determines\ the\ number\ of\ RE\ for\ DMRS\ per\ RB.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordflow}{return}\ nof\_dmrs\_re\ *\ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{num\_dmrs\_cdm\_grps\_no\_data}}\ *\ dmrs.dmrs\_symb\_pos.count();}
+\DoxyCodeLine{00050\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ Helper\ factory\ of\ a\ default\ DM-\/RS\ Information\ object\ for\ DCI\ f1\_0\ or\ for\ when\ higher\ layer\ configuration\ parameters}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ are\ not\ yet\ available.}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ TODO:\ generalize\ to\ other\ cases\ (e.g.\ mapping\ type\ B).}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.214,\ 5.1.6.2\ -\/\ DM-\/RS\ reception\ procedure.}}
+\DoxyCodeLine{00056\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ \mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{make\_dmrs\_info\_common}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__time__domain__resource__allocation}{pdsch\_time\_domain\_resource\_allocation}}\&\ pdsch\_td\_cfg,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_typeA\_pos)}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ dmrs\{\};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordflow}{if}\ (pdsch\_td\_cfg.map\_type\ ==\ \mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75}{sch\_mapping\_type}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{::}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{typeA}})\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ Get\ DM-\/RS\ symbols.}}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration}{pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_configuration}}\ dmrscfg\{\};}
+\DoxyCodeLine{00065\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{typeA\_pos}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_typeA\_pos;}
+\DoxyCodeLine{00066\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{additional\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ad9c9fa2cdfe70ae55c36e20d9d2e63bb}{dmrs\_additional\_positions}}::pos2;}
+\DoxyCodeLine{00067\ \ \ \ \ dmrscfg.last\_symbol\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_td\_cfg.symbols.stop();}
+\DoxyCodeLine{00068\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{lte\_crs\_match\_around}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00069\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{ue\_capable\_additional\_dmrs\_dl\_alt}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00070\ \ \ \ \ dmrs.dmrs\_symb\_pos\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_get(dmrscfg);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Mapping\ type\ B\ not\ supported"{}});}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ dmrs.config\_type\ =\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type1;}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ TODO:\ See\ TS\ 38.211,\ 7.4.1.1.1.}}
+\DoxyCodeLine{00078\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{dmrs\_scrambling\_id}}\ =\ pci;}
+\DoxyCodeLine{00079\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{low\_papr\_dmrs}}\ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00080\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{n\_scid}}\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ See\ TS\ 38.214,\ 5.1.6.2.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\ When\ receiving\ PDSCH\ scheduled\ by\ DCI\ format\ 1\_0,\ the\ UE\ shall\ assume\ the\ number\ of\ DM-\/RS\ CDM\ groups\ without\ data}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ is\ 1\ which\ corresponds\ to\ CDM\ group\ 0\ for\ the\ case\ of\ PDSCH\ with\ allocation\ duration\ of\ 2\ symbols,}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{//\ and\ the\ UE\ shall\ assume\ that\ the\ number\ of\ DM-\/RS\ CDM\ groups\ without\ data\ is\ 2\ which\ corresponds\ to\ CDM\ group\ \{0,1\}}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ for\ all\ other\ cases.}}
+\DoxyCodeLine{00086\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{num\_dmrs\_cdm\_grps\_no\_data}}\ =\ pdsch\_td\_cfg.symbols.length()\ ==\ 2\ ?\ 1\ :\ 2;}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{//\ Port\ 1000.}}
+\DoxyCodeLine{00088\ \ \ dmrs.dmrs\_ports.resize(12);}
+\DoxyCodeLine{00089\ \ \ dmrs.dmrs\_ports.set(0);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordflow}{return}\ dmrs;}
+\DoxyCodeLine{00092\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ make\_dmrs\_info\_dedicated(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__time__domain__resource__allocation}{pdsch\_time\_domain\_resource\_allocation}}\&\ pdsch\_td\_cfg,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_typeA\_pos,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config}{dmrs\_downlink\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_dl\_cfg\_ded,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_layers,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_dl\_antenna\_ports,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ are\_both\_cws\_enabled)}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ dmrs\{\};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{//\ See\ TS\ 38.211,\ 7.4.1.1.2.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordflow}{if}\ (dmrs\_dl\_cfg\_ded\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a2165f6c282fb5f55326468d8bf7d2864}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a2165f6c282fb5f55326468d8bf7d2864}{additional\_positions}}\ ==\ \mbox{\hyperlink{namespacesrsran_ad9c9fa2cdfe70ae55c36e20d9d2e63bb}{dmrs\_additional\_positions}}::pos3\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ dmrs\_typeA\_pos\ !=\ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}::pos2)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Invalid\ PDSCH\ DMRS\ configuration.\ Cause:\ DMRS\ Additional\ Position\ of\ pos3\ is\ only\ "{}}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}supported\ when\ DMRS\ TypeA\ position\ is\ equal\ to\ pos2."{}});}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordflow}{if}\ (pdsch\_td\_cfg.map\_type\ ==\ \mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75}{sch\_mapping\_type}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{::}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{typeA}})\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ Get\ DM-\/RS\ symbols.}}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration}{pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_configuration}}\ dmrscfg\{\};}
+\DoxyCodeLine{00114\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{typeA\_pos}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_typeA\_pos;}
+\DoxyCodeLine{00115\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{additional\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_dl\_cfg\_ded\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a2165f6c282fb5f55326468d8bf7d2864}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a2165f6c282fb5f55326468d8bf7d2864}{additional\_positions}};}
+\DoxyCodeLine{00116\ \ \ \ \ dmrscfg.last\_symbol\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_td\_cfg.symbols.stop();}
+\DoxyCodeLine{00117\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{lte\_crs\_match\_around}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00118\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{ue\_capable\_additional\_dmrs\_dl\_alt}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00119\ \ \ \ \ dmrs.dmrs\_symb\_pos\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_get(dmrscfg);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Mapping\ type\ B\ not\ supported"{}});}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ dmrs.config\_type\ =\ dmrs\_dl\_cfg\_ded\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a19b55632f7203ad464915380a0dcf428}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a19b55632f7203ad464915380a0dcf428}{is\_dmrs\_type2}}\ ?\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type2\ :\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type1;}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{//\ TODO:\ See\ TS\ 38.211,\ 7.4.1.1.1.}}
+\DoxyCodeLine{00127\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{dmrs\_scrambling\_id}}\ =\ pci;}
+\DoxyCodeLine{00128\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{low\_papr\_dmrs}}\ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00129\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{n\_scid}}\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__antenna__ports__mapping}{pdsch\_antenna\_ports\_mapping}}\ ant\_mapping\ =}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{get\_pdsch\_antenna\_port\_mapping}}\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{(}}nof\_layers\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{,}}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_dl\_antenna\_ports\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{,}}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs.config\_type\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{,}}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_dl\_cfg\_ded\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a44fba4fcf1caeeca1026a5303eea3be5}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__downlink__config_a44fba4fcf1caeeca1026a5303eea3be5}{is\_max\_length\_len2}}\ ?\ \mbox{\hyperlink{namespacesrsran_a0f037a42ee2500f03c8b561cc7dddac7}{dmrs\_max\_length}}::len2\ :\ \mbox{\hyperlink{namespacesrsran_a0f037a42ee2500f03c8b561cc7dddac7}{dmrs\_max\_length}}::len1\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{,}}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ are\_both\_cws\_enabled\mbox{\hyperlink{namespacesrsran_a713822bd629e6591d0494352210641cd}{)}};}
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{//\ Number\ of\ DMRS\ CDM\ groups\ without\ data\ indicates\ whether\ PDSCH\ is\ multiplexed\ with\ DMRS\ or\ not.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{//\ For\ DMRS\ configuration\ type\ 1:}}
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{//\ \ \ \ num\_dmrs\_cdm\_grps\_no\_data\ =\ 1\ (multiplexing\ of\ DMRS\ and\ PDSCH).}}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{//\ \ \ \ num\_dmrs\_cdm\_grps\_no\_data\ =\ 2\ (no\ multiplexing\ of\ DMRS\ and\ PDSCH).}}
+\DoxyCodeLine{00140\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{num\_dmrs\_cdm\_grps\_no\_data}}\ =\ ant\_mapping\mbox{\hyperlink{structsrsran_1_1pdsch__antenna__ports__mapping_a85c0a7cc97f628427df54a5fcddbd908}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__antenna__ports__mapping_a85c0a7cc97f628427df54a5fcddbd908}{nof\_dmrs\_cdm\_groups\_without\_data}};}
+\DoxyCodeLine{00141\ \ \ dmrs.dmrs\_ports.resize(12);}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ port\ :\ ant\_mapping.dmrs\_ports)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ dmrs.dmrs\_ports.set(port);}
+\DoxyCodeLine{00144\ \ \ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordflow}{return}\ dmrs;}
+\DoxyCodeLine{00147\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \textcolor{comment}{///\ Helper\ factory\ of\ a\ default\ DM-\/RS\ Information\ object\ for\ DCI\ f1\_0\ or\ for\ when\ higher\ layer\ configuration\ parameters}}
+\DoxyCodeLine{00150\ \textcolor{comment}{///\ are\ not\ yet\ available.}}
+\DoxyCodeLine{00151\ \textcolor{comment}{///\ TODO:\ generalize\ to\ other\ cases\ (e.g.\ mapping\ type\ B).}}
+\DoxyCodeLine{00152\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.214,\ 5.1.6.2\ -\/\ DM-\/RS\ reception\ procedure.}}
+\DoxyCodeLine{00153\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ \mbox{\hyperlink{namespacesrsran_a5ff9475b9607a1d1fb16bedf9243fbe7}{make\_dmrs\_info\_common}}(span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__time__domain__resource__allocation}{pdsch\_time\_domain\_resource\_allocation}}>\ pdsch\_td\_list,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_resource,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_typeA\_pos)}
+\DoxyCodeLine{00157\ \{}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pdsch\_td\_list.size()\ >\ time\_resource,\ \textcolor{stringliteral}{"{}Invalid\ time\ resource"{}});}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__time__domain__resource__allocation}{pdsch\_time\_domain\_resource\_allocation}}\&\ pdsch\_time\_res\ =\ pdsch\_td\_list[time\_resource];}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{make\_dmrs\_info\_common}}\mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{(}}pdsch\_time\_res\mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{,}}\ pci\mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{,}}\ dmrs\_typeA\_pos\mbox{\hyperlink{namespacesrsran_ab85609a55b83d3e4ce8e4315675f3756}{)}};}
+\DoxyCodeLine{00162\ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{comment}{///\ Helper\ factory\ of\ a\ default\ DM-\/RS\ Information\ object\ for\ DCI\ f0\_0\ or\ for\ when\ higher\ layer\ configuration\ parameters}}
+\DoxyCodeLine{00165\ \textcolor{comment}{///\ are\ not\ yet\ available.}}
+\DoxyCodeLine{00166\ \textcolor{comment}{///\ TODO:\ generalize\ to\ other\ cases\ (e.g.\ mapping\ type\ B).}}
+\DoxyCodeLine{00167\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.214\ Section\ 6.2.2.}}
+\DoxyCodeLine{00168\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ \mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{make\_dmrs\_info\_common}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation}{pusch\_time\_domain\_resource\_allocation}}\&\ pusch\_td\_cfg,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_typeA\_pos)}
+\DoxyCodeLine{00171\ \{}
+\DoxyCodeLine{00172\ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ dmrs\{\};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordflow}{if}\ (pusch\_td\_cfg.map\_type\ ==\ \mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75}{sch\_mapping\_type}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{::}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{typeA}})\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{comment}{//\ Get\ DM-\/RS\ symbols.}}
+\DoxyCodeLine{00176\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration}{pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_configuration}}\ dmrscfg\{\};}
+\DoxyCodeLine{00177\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{typeA\_pos}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_typeA\_pos;}
+\DoxyCodeLine{00178\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{additional\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_ad9c9fa2cdfe70ae55c36e20d9d2e63bb}{dmrs\_additional\_positions}}::pos2;}
+\DoxyCodeLine{00179\ \ \ \ \ dmrscfg.last\_symbol\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pusch\_td\_cfg\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{.}}\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{symbols}}.stop();}
+\DoxyCodeLine{00180\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{lte\_crs\_match\_around}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00181\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{ue\_capable\_additional\_dmrs\_dl\_alt}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00182\ \ \ \ \ dmrs.dmrs\_symb\_pos\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_get(dmrscfg);}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Mapping\ type\ B\ not\ supported"{}});}
+\DoxyCodeLine{00186\ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ dmrs.config\_type\ =\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type1;}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{//\ TODO:\ See\ TS\ 38.211,\ 7.4.1.1.1.}}
+\DoxyCodeLine{00190\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{dmrs\_scrambling\_id}}\ =\ pci;}
+\DoxyCodeLine{00191\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{low\_papr\_dmrs}}\ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00192\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{n\_scid}}\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{//\ See\ TS\ 38.214,\ 6.2.2.}}
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{//\ For\ PUSCH\ scheduled\ by\ DCI\ format\ 0\_0\ or\ by\ activation\ DCI\ format\ 0\_0\ with\ CRC\ scrambled\ by\ CS-\/RNTI,\ the\ UE}}
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{//\ shall\ assume\ the\ number\ of\ DM-\/RS\ CDM\ groups\ without\ data\ is\ 1\ which\ corresponds\ to\ CDM\ group\ 0\ for\ the\ case\ of}}
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{//\ PUSCH\ with\ allocation\ duration\ of\ 2\ or\ less\ OFDM\ symbols\ with\ transform\ precoding\ disabled,\ the\ UE\ shall\ assume}}
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{//\ that\ the\ number\ of\ DM-\/RS\ CDM\ groups\ without\ data\ is\ 3\ which\ corresponds\ to\ CDM\ group\ \{0,1,2\}\ for\ the\ case\ of}}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{//\ PUSCH\ scheduled\ by\ activation\ DCI\ format\ 0\_0\ and\ the\ dmrs-\/Type\ in\ cg-\/DMRS-\/Configuration\ equal\ to\ 'type2'\ and\ the}}
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{//\ PUSCH\ allocation\ duration\ being\ more\ than\ 2\ OFDM\ symbols,\ and\ the\ UE\ shall\ assume\ that\ the\ number\ of\ DM-\/RS}}
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{//\ CDM\ groups\ without\ data\ is\ 2\ which\ corresponds\ to\ CDM\ group\ \{0,1\}\ for\ all\ other\ cases.}}
+\DoxyCodeLine{00201\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{num\_dmrs\_cdm\_grps\_no\_data}}\ =\ pusch\_td\_cfg\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{.}}\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{symbols}}.length()\ <=\ 2\ ?\ 1\ :\ 2;}
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{//\ Port\ 1000.}}
+\DoxyCodeLine{00203\ \ \ dmrs.dmrs\_ports.resize(12);}
+\DoxyCodeLine{00204\ \ \ dmrs.dmrs\_ports.set(0);}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \textcolor{keywordflow}{return}\ dmrs;}
+\DoxyCodeLine{00207\ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ make\_dmrs\_info\_dedicated(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation}{pusch\_time\_domain\_resource\_allocation}}\&\ pusch\_td\_cfg,}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_typeA\_pos,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config}{dmrs\_uplink\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dmrs\_ul\_cfg,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_layers,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_ul\_antenna\_ports,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ are\_both\_cws\_enabled)}
+\DoxyCodeLine{00216\ \{}
+\DoxyCodeLine{00217\ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ dmrs\{\};}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{//\ See\ TS\ 38.211,\ 6.4.1.1.3.}}
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordflow}{if}\ (dmrs\_ul\_cfg\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a90273d49ac47d97d953a566125a98cfd}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a90273d49ac47d97d953a566125a98cfd}{additional\_positions}}\ ==\ \mbox{\hyperlink{namespacesrsran_ad9c9fa2cdfe70ae55c36e20d9d2e63bb}{dmrs\_additional\_positions}}::pos3\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ dmrs\_typeA\_pos\ !=\ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}::pos2)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Invalid\ PUSCH\ DMRS\ configuration.\ Cause:\ DMRS\ Additional\ Position\ of\ pos3\ is\ only\ "{}}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}supported\ when\ DMRS\ TypeA\ position\ is\ equal\ to\ pos2."{}});}
+\DoxyCodeLine{00224\ \ \ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{keywordflow}{if}\ (pusch\_td\_cfg.map\_type\ ==\ \mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75}{sch\_mapping\_type}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{::}}\mbox{\hyperlink{namespacesrsran_ac9e22372a85bd65ca0c7744a04107f75a05b5a15c8e7491d69e7850a3a2316466}{typeA}})\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{comment}{//\ Get\ DM-\/RS\ symbols.}}
+\DoxyCodeLine{00228\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration}{pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_configuration}}\ dmrscfg\{\};}
+\DoxyCodeLine{00229\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_a5b1b8647a5a4ce3fd17e13f94fb88aba}{typeA\_pos}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_typeA\_pos;}
+\DoxyCodeLine{00230\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_af3accd64d7d0af204667fcbf4218bb3c}{additional\_position}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ dmrs\_ul\_cfg\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a90273d49ac47d97d953a566125a98cfd}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a90273d49ac47d97d953a566125a98cfd}{additional\_positions}};}
+\DoxyCodeLine{00231\ \ \ \ \ dmrscfg.last\_symbol\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pusch\_td\_cfg\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{.}}\mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation_af7f270a0f161c4ac1850e197cd27ed1f}{symbols}}.stop();}
+\DoxyCodeLine{00232\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ab3be38698aea06ba4eec7741d9e5585f}{lte\_crs\_match\_around}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00233\ \ \ \ \ dmrscfg\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{.}}\mbox{\hyperlink{structsrsran_1_1pdsch__dmrs__symbol__mask__mapping__type__A__single__configuration_ad033ff99586c4ee8a506fad24f24e349}{ue\_capable\_additional\_dmrs\_dl\_alt}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00234\ \ \ \ \ dmrs.dmrs\_symb\_pos\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdsch\_dmrs\_symbol\_mask\_mapping\_type\_A\_single\_get(dmrscfg);}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ srsran\_terminate(\textcolor{stringliteral}{"{}Mapping\ type\ B\ not\ supported"{}});}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ dmrs.config\_type\ =\ dmrs\_ul\_cfg\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a11ed3decbc8bf1bdaa3b110857c34f02}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__uplink__config_a11ed3decbc8bf1bdaa3b110857c34f02}{is\_dmrs\_type2}}\ ?\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type2\ :\ \mbox{\hyperlink{namespacesrsran_acd5207e7922e77d3e4b9eb0985b25e26}{dmrs\_config\_type}}::type1;}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{//\ TODO:\ See\ TS\ 38.211,\ 7.4.1.1.1.}}
+\DoxyCodeLine{00242\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a8b33c7dcd5f8c4b49cfe6bbae66b1f1d}{dmrs\_scrambling\_id}}\ =\ pci;}
+\DoxyCodeLine{00243\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6de2251af313df99eca05a204d457ba5}{low\_papr\_dmrs}}\ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00244\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a6abc3ffe96bfe12caf0ec280bb93dfec}{n\_scid}}\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00245\ \ \ \textcolor{comment}{//\ TODO:\ Derive\ antenna\ port\ mapping\ based\ on\ PUSCH-\/Config\ and\ other\ DMRS\ configuration\ parameters.}}
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{//\ Since\ in\ our\ configuration\ transformPrecoder=disabled,\ dmrs-\/Type=1,\ maxLength=1,\ rank\ =\ 1,\ we\ refer\ to}}
+\DoxyCodeLine{00247\ \ \ \textcolor{comment}{//\ Table\ 7.3.1.1.2-\/8\ in\ TS\ 38.212.}}
+\DoxyCodeLine{00248\ \ \ \textcolor{comment}{//\ Number\ of\ DMRS\ CDM\ groups\ without\ data\ indicates\ whether\ PUSCH\ is\ multiplexed\ with\ DMRS\ or\ not.}}
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{//\ For\ DMRS\ configuration\ type\ 1:}}
+\DoxyCodeLine{00250\ \ \ \textcolor{comment}{//\ \ \ \ num\_dmrs\_cdm\_grps\_no\_data\ =\ 1\ (multiplexing\ of\ DMRS\ and\ PUSCH).}}
+\DoxyCodeLine{00251\ \ \ \textcolor{comment}{//\ \ \ \ num\_dmrs\_cdm\_grps\_no\_data\ =\ 2\ (no\ multiplexing\ of\ DMRS\ and\ PUSCH).}}
+\DoxyCodeLine{00252\ \ \ dmrs\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{.}}\mbox{\hyperlink{structsrsran_1_1dmrs__information_a56a9b06ff2ad69285da87d33ebd3372c}{num\_dmrs\_cdm\_grps\_no\_data}}\ =\ 2;}
+\DoxyCodeLine{00253\ \ \ \textcolor{comment}{//\ Port\ 1000.}}
+\DoxyCodeLine{00254\ \ \ \textcolor{comment}{//\ Since\ we\ are\ setting\ num\_dmrs\_cdm\_grps\_no\_data\ =\ 2\ it\ corresponds\ to\ row\ 3\ in\ Table\ 7.3.1.1.2-\/8\ in\ TS\ 38.212.}}
+\DoxyCodeLine{00255\ \ \ dmrs.dmrs\_ports.resize(12);}
+\DoxyCodeLine{00256\ \ \ dmrs.dmrs\_ports.set(0);}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \textcolor{keywordflow}{return}\ dmrs;}
+\DoxyCodeLine{00259\ \}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \textcolor{comment}{///\ Helper\ factory\ of\ a\ default\ DM-\/RS\ Information\ object\ for\ DCI\ f0\_0\ or\ for\ when\ higher\ layer\ configuration\ parameters}}
+\DoxyCodeLine{00262\ \textcolor{comment}{///\ are\ not\ yet\ available.}}
+\DoxyCodeLine{00263\ \textcolor{comment}{///\ TODO:\ generalize\ to\ other\ cases\ (e.g.\ mapping\ type\ B).}}
+\DoxyCodeLine{00264\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.214\ Section\ 6.2.2.}}
+\DoxyCodeLine{00265\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\ \mbox{\hyperlink{namespacesrsran_a09aa5b2b56ba23dde9b223d3c8d89f87}{make\_dmrs\_info\_common}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__config__common}{pusch\_config\_common}}\&\ pusch\_cfg,}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_resource,}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci,}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ \ \ \ \ \ dmrs\_typeA\_pos)}
+\DoxyCodeLine{00269\ \{}
+\DoxyCodeLine{00270\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pusch\_cfg.pusch\_td\_alloc\_list.size()\ >\ time\_resource,\ \textcolor{stringliteral}{"{}Invalid\ time\ resource"{}});}
+\DoxyCodeLine{00271\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__time__domain__resource__allocation}{pusch\_time\_domain\_resource\_allocation}}\&\ pusch\_time\_res\ =\ pusch\_cfg.pusch\_td\_alloc\_list[time\_resource];}
+\DoxyCodeLine{00272\ }
+\DoxyCodeLine{00273\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{make\_dmrs\_info\_common}}\mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{(}}pusch\_time\_res\mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{,}}\ pci\mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{,}}\ dmrs\_typeA\_pos\mbox{\hyperlink{namespacesrsran_afd30c1f53fcea28d81d815f8d2c954e8}{)}};}
+\DoxyCodeLine{00274\ \}}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

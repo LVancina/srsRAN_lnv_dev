@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/ofh/transmitter/sequence_identifier_generator_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/ofh/transmitter/sequence_identifier_generator_test[1]_tests.cmake")
+else()
+  add_test(sequence_identifier_generator_test_NOT_BUILT sequence_identifier_generator_test_NOT_BUILT)
+endif()

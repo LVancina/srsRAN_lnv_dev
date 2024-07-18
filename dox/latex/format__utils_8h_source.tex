@@ -1,0 +1,197 @@
+\doxysection{format\+\_\+utils.\+h}
+\hypertarget{format__utils_8h_source}{}\label{format__utils_8h_source}\index{include/srsran/support/format\_utils.h@{include/srsran/support/format\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}fmt/format.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ N>}
+\DoxyCodeLine{00031\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{namespacesrsran_a13da72a4801a4409b00db614aadd511c}{to\_c\_str}}(fmt::basic\_memory\_buffer<char,\ N>\&\ mem\_buffer)}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ mem\_buffer.push\_back(\textcolor{charliteral}{'\(\backslash\)0'});}
+\DoxyCodeLine{00034\ \ \ \textcolor{keywordflow}{return}\ mem\_buffer.data();}
+\DoxyCodeLine{00035\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1delimited__formatter}{delimited\_formatter}}}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_afe09c65685a24487b89a829c8287f32c}{delimited\_formatter}}()}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ DEFAULT\_FORMAT\ \ \ \ =\ \textcolor{stringliteral}{"{}\{\}"{}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ DEFAULT\_DELIMITER\ =\ \textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{00054\ \ \ \ \ format\_buffer.append(DEFAULT\_FORMAT.begin(),\ DEFAULT\_FORMAT.end());}
+\DoxyCodeLine{00055\ \ \ \ \ delimiter\_buffer.append(DEFAULT\_DELIMITER.begin(),\ DEFAULT\_DELIMITER.end());}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a39dab5b4f0861f9fbb200bb7725ce472}{delimited\_formatter}}(\textcolor{keyword}{const}\ std::string\&\ default\_delimiter)}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ DEFAULT\_FORMAT\ \ \ \ =\ \textcolor{stringliteral}{"{}\{\}"{}};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ DEFAULT\_DELIMITER\ =\ default\_delimiter;}
+\DoxyCodeLine{00063\ \ \ \ \ format\_buffer.append(DEFAULT\_FORMAT.begin(),\ DEFAULT\_FORMAT.end());}
+\DoxyCodeLine{00064\ \ \ \ \ delimiter\_buffer.append(DEFAULT\_DELIMITER.begin(),\ DEFAULT\_DELIMITER.end());}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a912882cff013608c84c80510c4a75a79}{parse}}(ParseContext\&\ context)}
+\DoxyCodeLine{00078\ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{//\ Set\ the\ first\ field\ indicator.}}
+\DoxyCodeLine{00080\ \ \ \ \ first\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ PREAMBLE\_FORMAT\ \ \ =\ \textcolor{stringliteral}{"{}\{:"{}};}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ fmt::string\_view\ NEWLINE\_DELIMITER\ =\ \textcolor{stringliteral}{"{}\(\backslash\)n\ \ "{}};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Skip\ if\ context\ is\ empty\ and\ use\ default\ format.}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{if}\ (context.begin()\ ==\ context.end())\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ context.end();}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ format\_buffer.clear();}
+\DoxyCodeLine{00091\ \ \ \ \ format\_buffer.append(PREAMBLE\_FORMAT.begin(),\ PREAMBLE\_FORMAT.end());}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ it\ :\ context)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (it)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'n'}:}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ New\ line\ delimiter.}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ delimiter\_buffer.clear();}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ delimiter\_buffer.append(NEWLINE\_DELIMITER.begin(),\ NEWLINE\_DELIMITER.end());}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'s'}:}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Short\ representation.}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ verbose\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'\}'}:}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ format\_buffer.push\_back(it);}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&it;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{comment}{//\ Propagate\ formatting\ to\ underlying\ structures.}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ format\_buffer.push\_back(it);}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ No\ end\ of\ context\ was\ found.}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{return}\ context.end();}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a51c730285b37ddaaf185b855f392dc02}{format\_always}}(FormatContext\&\ context,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ format,\ Args\&\&...\ args)}
+\DoxyCodeLine{00130\ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ this-\/>format\_to(context,\ format,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a5586efa801c3d97a2d56a9c6aaa84a4b}{format\_always}}(FormatContext\&\ context,\ Args\&\&...\ args)}
+\DoxyCodeLine{00149\ \ \ \{}
+\DoxyCodeLine{00150\ \ \ \ \ this-\/>format\_to(context,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00151\ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_ac2dcbfe73883ada2117e7b3437d000e6}{format\_if\_verbose}}(FormatContext\&\ context,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ format,\ Args\&\&...\ args)}
+\DoxyCodeLine{00167\ \ \ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{if}\ (verbose)\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ this-\/>format\_to(context,\ format,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00170\ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \}}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00185\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a16af7210194bcd5c1f6e1f78a239b9de}{format\_if\_verbose}}(FormatContext\&\ context,\ Args\&\&...\ args)}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{if}\ (verbose)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ this-\/>format\_to(context,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1delimited__formatter_a6ae4c54e7866439389a5560d79b02f32}{is\_verbose}}()\ \{\ \textcolor{keywordflow}{return}\ verbose;\ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordtype}{void}\ format\_to(FormatContext\&\ context,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ format,\ Args\&\&...\ args)}
+\DoxyCodeLine{00200\ \ \ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{if}\ (!first)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \textcolor{comment}{//\ Buffer\ to\ hold\ the\ formatted\ string.}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ fmt::memory\_buffer\ temp\_buffer;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ fmt::format\_to(temp\_buffer,\ format,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (temp\_buffer.size()\ >\ 0)\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prepend\ delimiter\ to\ the\ formatted\ output.}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ fmt::format\_to(context.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ fmt::string\_view(delimiter\_buffer.data(),\ delimiter\_buffer.size()));}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \textcolor{comment}{//\ Append\ the\ formatted\ string\ to\ the\ context\ iterator.}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ fmt::format\_to(context.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ fmt::string\_view(temp\_buffer.data(),\ temp\_buffer.size()));}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{comment}{//\ Format\ without\ prepending\ delimiter.}}
+\DoxyCodeLine{00217\ \ \ \ \ fmt::format\_to(context.out(),\ format,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00218\ \ \ \ \ first\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00219\ \ \ \}}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00222\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordtype}{void}\ format\_to(FormatContext\&\ context,\ Args\&\&...\ args)}
+\DoxyCodeLine{00224\ \ \ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \textcolor{keywordflow}{if}\ (!first)\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \textcolor{comment}{//\ Buffer\ to\ hold\ the\ formatted\ string.}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ fmt::memory\_buffer\ temp\_buffer;}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ fmt::format\_to(}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ temp\_buffer,\ fmt::string\_view(format\_buffer.data(),\ format\_buffer.size()),\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (temp\_buffer.size()\ >\ 0)\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prepend\ delimiter\ to\ the\ formatted\ output.}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ fmt::format\_to(context.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ fmt::string\_view(delimiter\_buffer.data(),\ delimiter\_buffer.size()));}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \textcolor{comment}{//\ Append\ the\ formatted\ string\ to\ the\ context\ iterator.}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ fmt::format\_to(context.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ fmt::string\_view(temp\_buffer.data(),\ temp\_buffer.size()));}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ \textcolor{comment}{//\ Format\ without\ prepending\ delimiter.}}
+\DoxyCodeLine{00242\ \ \ \ \ fmt::format\_to(}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ context.out(),\ fmt::string\_view(format\_buffer.data(),\ format\_buffer.size()),\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00244\ \ \ \ \ first\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00245\ \ \ \}}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00248\ \ \ \textcolor{keywordtype}{bool}\ first\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00250\ \ \ \textcolor{keywordtype}{bool}\ verbose\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00253\ \ \ fmt::memory\_buffer\ delimiter\_buffer;}
+\DoxyCodeLine{00255\ \ \ fmt::memory\_buffer\ format\_buffer;}
+\DoxyCodeLine{00256\ \};}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structfmt_1_1basic__fmt__parser}{basic\_fmt\_parser}}\ \{}
+\DoxyCodeLine{00263\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00264\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00265\ \ \ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00267\ \ \ \}}
+\DoxyCodeLine{00268\ \};}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

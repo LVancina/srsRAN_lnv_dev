@@ -1,0 +1,1297 @@
+\doxysection{rrc\+\_\+measurement\+\_\+types\+\_\+asn1\+\_\+converters.\+h}
+\hypertarget{rrc__measurement__types__asn1__converters_8h_source}{}\label{rrc__measurement__types__asn1__converters_8h_source}\index{lib/rrc/ue/rrc\_measurement\_types\_asn1\_converters.h@{lib/rrc/ue/rrc\_measurement\_types\_asn1\_converters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/asn1\_utils.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/rrc\_nr/common.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/rrc\_nr/dl\_dcch\_msg.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/rrc\_nr/rrc\_nr.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/rrc\_nr/ul\_dcch\_msg.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/rrc/meas\_types.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{namespace}\ srs\_cu\_cp\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc}{rrc\_ssb\_mtc}}\ asn1\_to\_ssb\_mtc(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}\&\ asn1\_ssb\_mtc)}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc}{rrc\_ssb\_mtc}}\ ssb\_mtc;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ periodicity\ and\ offset}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordflow}{switch}\ (asn1\_ssb\_mtc.periodicity\_and\_offset.type())\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf5:}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf5\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf5();}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf10:}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf10\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf10();}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf20:}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf20\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf20();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf40:}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf40\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf40();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf80:}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf80\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf80();}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c__}{periodicity\_and\_offset\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s_1_1periodicity__and__offset__c___1_1types__opts}{types\_opts}}::options::sf160:}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ ssb\_mtc.periodicity\_and\_offset.sf160\ =\ asn1\_ssb\_mtc.periodicity\_and\_offset.sf160();}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RRC"{}}).error(\textcolor{stringliteral}{"{}Invalid\ SSB\ MTC\ configuration."{}});}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ dur}}
+\DoxyCodeLine{00070\ \ \ ssb\_mtc.dur\ =\ asn1\_ssb\_mtc.dur.to\_number();}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordflow}{return}\ ssb\_mtc;}
+\DoxyCodeLine{00073\ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ type\ \(\backslash\)c\ subcarrier\_spacing\ to\ an\ RRC\ NR\ ASN.1\ type.}}
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ \(\backslash\)param\ sc\_spacing\ subcarrier\ spacing\ object.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)return\ The\ RRC\ NR\ ASN.1\ object\ where\ the\ result\ of\ the\ conversion\ is\ stored.}}
+\DoxyCodeLine{00078\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ rrc\_asn1\_to\_subcarrier\_spacing(\textcolor{keyword}{const}\ asn1::rrc\_nr::subcarrier\_spacing\_e\ asn1\_sc\_spacing)}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ sc\_spacing;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordflow}{switch}\ (asn1\_sc\_spacing)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz15:}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::kHz15;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz30:}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::kHz30;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz60:}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::kHz60;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz120:}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::kHz120;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz240:}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::kHz240;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ sc\_spacing\ =\ srsran::subcarrier\_spacing::invalid;}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordflow}{return}\ sc\_spacing;}
+\DoxyCodeLine{00103\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing}{rrc\_meas\_timing}}\ asn1\_to\_meas\_timing(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__timing__s}{meas\_timing\_s}}\&\ asn1\_meas\_timing)}
+\DoxyCodeLine{00106\ \{}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing}{rrc\_meas\_timing}}\ meas\_timing;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{//\ freq\ and\ timing}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_timing.freq\_and\_timing\_present)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing}{rrc\_meas\_timing}}::\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__timing_1_1rrc__freq__and__timing__}{rrc\_freq\_and\_timing\_}}\ freq\_and\_timing;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{comment}{//\ carrier\ freq}}
+\DoxyCodeLine{00114\ \ \ \ \ freq\_and\_timing.carrier\_freq\ =\ asn1\_meas\_timing.freq\_and\_timing.carrier\_freq;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ subcarrier\ spacing}}
+\DoxyCodeLine{00117\ \ \ \ \ freq\_and\_timing.ssb\_subcarrier\_spacing\ =}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ rrc\_asn1\_to\_subcarrier\_spacing(asn1\_meas\_timing.freq\_and\_timing.ssb\_subcarrier\_spacing);}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{comment}{//\ ssb\ mtc}}
+\DoxyCodeLine{00121\ \ \ \ \ freq\_and\_timing.ssb\_meas\_timing\_cfg\ =\ asn1\_to\_ssb\_mtc(asn1\_meas\_timing.freq\_and\_timing.ssb\_meas\_timing\_cfg);}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ ss\ rssi\ meas}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_timing.freq\_and\_timing.ss\_rssi\_meas\_present)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ss__rssi__meas}{rrc\_ss\_rssi\_meas}}\ ss\_rssi\_meas;}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \textcolor{comment}{//\ meas\ slots}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ ss\_rssi\_meas.meas\_slots\ =\ asn1\_meas\_timing.freq\_and\_timing.ss\_rssi\_meas.meas\_slots.to\_number();}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{comment}{//\ end\ symbol}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ ss\_rssi\_meas.end\_symbol\ =\ asn1\_meas\_timing.freq\_and\_timing.ss\_rssi\_meas.end\_symbol;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ freq\_and\_timing.ss\_rssi\_meas\ =\ ss\_rssi\_meas;}
+\DoxyCodeLine{00133\ \ \ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ meas\_timing.freq\_and\_timing\ =\ freq\_and\_timing;}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordflow}{return}\ meas\_timing;}
+\DoxyCodeLine{00139\ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ type\ \(\backslash\)c\ subcarrier\_spacing\ to\ an\ RRC\ NR\ ASN.1\ type.}}
+\DoxyCodeLine{00142\ \textcolor{comment}{///\ \(\backslash\)param\ sc\_spacing\ subcarrier\ spacing\ object.}}
+\DoxyCodeLine{00143\ \textcolor{comment}{///\ \(\backslash\)return\ The\ RRC\ NR\ ASN.1\ object\ where\ the\ result\ of\ the\ conversion\ is\ stored.}}
+\DoxyCodeLine{00144\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::subcarrier\_spacing\_e\ subcarrier\_spacing\_to\_rrc\_asn1(subcarrier\_spacing\ sc\_spacing)}
+\DoxyCodeLine{00145\ \{}
+\DoxyCodeLine{00146\ \ \ asn1::rrc\_nr::subcarrier\_spacing\_e\ asn1\_sc\_spacing;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordflow}{switch}\ (sc\_spacing)\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::subcarrier\_spacing::kHz15:}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz15;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::subcarrier\_spacing::kHz30:}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz30;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::subcarrier\_spacing::kHz60:}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz60;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::subcarrier\_spacing::kHz120:}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz120;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::subcarrier\_spacing::kHz240:}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::khz240;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ asn1\_sc\_spacing\ =\ asn1::rrc\_nr::subcarrier\_spacing\_opts::options::nulltype;}
+\DoxyCodeLine{00166\ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordflow}{return}\ asn1\_sc\_spacing;}
+\DoxyCodeLine{00169\ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ type\ \(\backslash\)c\ ssb\_mtc\ to\ an\ RRC\ NR\ ASN.1\ type.}}
+\DoxyCodeLine{00172\ \textcolor{comment}{///\ \(\backslash\)param\ ssb\_mtc\ ssb\ mtc\ object.}}
+\DoxyCodeLine{00173\ \textcolor{comment}{///\ \(\backslash\)return\ The\ RRC\ NR\ ASN.1\ object\ where\ the\ result\ of\ the\ conversion\ is\ stored.}}
+\DoxyCodeLine{00174\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}\ ssb\_mtc\_to\_rrc\_asn1(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__mtc}{rrc\_ssb\_mtc}}\ ssb\_mtc)}
+\DoxyCodeLine{00175\ \{}
+\DoxyCodeLine{00176\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__mtc__s}{ssb\_mtc\_s}}\ asn1\_ssb\_mtc;}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf5.has\_value())\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf5();}
+\DoxyCodeLine{00180\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf5()\ =\ ssb\_mtc.periodicity\_and\_offset.sf5.value();}
+\DoxyCodeLine{00181\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf10.has\_value())\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf10();}
+\DoxyCodeLine{00183\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf10()\ =\ ssb\_mtc.periodicity\_and\_offset.sf10.value();}
+\DoxyCodeLine{00184\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf20.has\_value())\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf20();}
+\DoxyCodeLine{00186\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf20()\ =\ ssb\_mtc.periodicity\_and\_offset.sf20.value();}
+\DoxyCodeLine{00187\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf40.has\_value())\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf40();}
+\DoxyCodeLine{00189\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf40()\ =\ ssb\_mtc.periodicity\_and\_offset.sf40.value();}
+\DoxyCodeLine{00190\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf80.has\_value())\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf10();}
+\DoxyCodeLine{00192\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf80()\ =\ ssb\_mtc.periodicity\_and\_offset.sf80.value();}
+\DoxyCodeLine{00193\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_mtc.periodicity\_and\_offset.sf160.has\_value())\ \{}
+\DoxyCodeLine{00194\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.set\_sf160();}
+\DoxyCodeLine{00195\ \ \ \ \ asn1\_ssb\_mtc.periodicity\_and\_offset.sf160()\ =\ ssb\_mtc.periodicity\_and\_offset.sf160.value();}
+\DoxyCodeLine{00196\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ SSB\ MTC\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ asn1::number\_to\_enum(asn1\_ssb\_mtc.dur,\ ssb\_mtc.dur);}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \textcolor{keywordflow}{return}\ asn1\_ssb\_mtc;}
+\DoxyCodeLine{00203\ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__cfg__mob__s}{ssb\_cfg\_mob\_s}}\ ssb\_cfg\_mob\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ssb__cfg__mob}{rrc\_ssb\_cfg\_mob}}\&\ ssb\_cfg\_mob)}
+\DoxyCodeLine{00206\ \{}
+\DoxyCodeLine{00207\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ssb__cfg__mob__s}{ssb\_cfg\_mob\_s}}\ asn1\_ssb\_cfg\_mob;}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{//\ ssb\ to\ measure}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keywordflow}{if}\ (ssb\_cfg\_mob.ssb\_to\_measure.has\_value())\ \{}
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ ssb\_to\_measure\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ ssb\_cfg\_mob.ssb\_to\_measure.value();}
+\DoxyCodeLine{00212\ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{comment}{//\ release}}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{if}\ (ssb\_to\_measure.is\_release)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.set\_release();}
+\DoxyCodeLine{00216\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_to\_measure.setup.has\_value())\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \textcolor{comment}{//\ setup}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.set\_setup();}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \textcolor{comment}{//\ short\ bitmap}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ssb\_to\_measure.setup.value().short\_bitmap.has\_value())\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().set\_short\_bitmap();}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().short\_bitmap().from\_number(}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_to\_measure.setup.value().short\_bitmap.value());}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_to\_measure.setup.value().medium\_bitmap.has\_value())\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ medium\ bitmap}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().set\_medium\_bitmap();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().medium\_bitmap().from\_number(}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_to\_measure.setup.value().medium\_bitmap.value());}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ssb\_to\_measure.setup.value().long\_bitmap.has\_value())\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ long\ bitmap}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().set\_long\_bitmap();}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ asn1\_ssb\_cfg\_mob.ssb\_to\_measure.setup().long\_bitmap().from\_number(}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ ssb\_to\_measure.setup.value().long\_bitmap.value());}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ SSB\ to\ measure\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00237\ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{//\ derive\ ssb\ idx\ from\ cell}}
+\DoxyCodeLine{00241\ \ \ asn1\_ssb\_cfg\_mob.derive\_ssb\_idx\_from\_cell\ =\ ssb\_cfg\_mob.derive\_ssb\_idx\_from\_cell;}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \textcolor{comment}{//\ ss\ rssi\ meas}}
+\DoxyCodeLine{00244\ \ \ \textcolor{keywordflow}{if}\ (ssb\_cfg\_mob.ss\_rssi\_meas.has\_value())\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ ss\_rssi\_meas\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ ssb\_cfg\_mob.ss\_rssi\_meas.value();}
+\DoxyCodeLine{00246\ \ \ \ \ asn1\_ssb\_cfg\_mob.ss\_rssi\_meas\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00247\ \ \ \ \ asn1\_ssb\_cfg\_mob.ss\_rssi\_meas.meas\_slots.from\_number(ss\_rssi\_meas.meas\_slots);}
+\DoxyCodeLine{00248\ \ \ \ \ asn1\_ssb\_cfg\_mob.ss\_rssi\_meas.end\_symbol\ =\ ss\_rssi\_meas.end\_symbol;}
+\DoxyCodeLine{00249\ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \textcolor{keywordflow}{return}\ asn1\_ssb\_cfg\_mob;}
+\DoxyCodeLine{00252\ \}}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \textcolor{keyword}{inline}\ asn1::\mbox{\hyperlink{structasn1_1_1setup__release__c}{setup\_release\_c}}<asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1csi__rs__res__cfg__mob__s}{csi\_rs\_res\_cfg\_mob\_s}}>}
+\DoxyCodeLine{00255\ csi\_res\_cfg\_mob\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__csi__rs__res__cfg__mob__setup__release}{rrc\_csi\_rs\_res\_cfg\_mob\_setup\_release}}\&\ csi\_rs\_res\_cfg\_mob)}
+\DoxyCodeLine{00256\ \{}
+\DoxyCodeLine{00257\ \ \ asn1::\mbox{\hyperlink{structasn1_1_1setup__release__c}{setup\_release\_c}}<asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1csi__rs__res__cfg__mob__s}{csi\_rs\_res\_cfg\_mob\_s}}>\ asn1\_csi\_rs\_res\_cfg\_mob;}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_cfg\_mob.is\_release)\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ asn1\_csi\_rs\_res\_cfg\_mob.set\_release();}
+\DoxyCodeLine{00261\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_cfg\_mob.setup.has\_value())\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ asn1\_csi\_rs\_res\_cfg\_mob.set\_setup();}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{comment}{//\ subcarrier\ spacing}}
+\DoxyCodeLine{00264\ \ \ \ \ asn1\_csi\_rs\_res\_cfg\_mob.setup().subcarrier\_spacing\ =}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ subcarrier\_spacing\_to\_rrc\_asn1(csi\_rs\_res\_cfg\_mob.setup.value().sc\_spacing);}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{comment}{//\ csi\ rs\ cell\ list\ mob}}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ csi\_rs\_cell\_mob\ :\ csi\_rs\_res\_cfg\_mob.setup.value().csi\_rs\_cell\_list\_mob)\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ asn1::rrc\_nr::csi\_rs\_cell\_mob\_s\ asn1\_csi\_rs\_cell\_mob;}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \textcolor{comment}{//\ cell\ id}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ asn1\_csi\_rs\_cell\_mob.cell\_id\ =\ csi\_rs\_cell\_mob.cell\_id;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \textcolor{comment}{//\ csi\ rs\ meas\ bw}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_csi\_rs\_cell\_mob.csi\_rs\_meas\_bw.nrof\_prbs,\ csi\_rs\_cell\_mob.csi\_rs\_meas\_bw.nrof\_prbs);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ asn1\_csi\_rs\_cell\_mob.csi\_rs\_meas\_bw.start\_prb\ =\ csi\_rs\_cell\_mob.csi\_rs\_meas\_bw.start\_prb;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \textcolor{comment}{//\ density}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (csi\_rs\_cell\_mob.density.has\_value())\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_cell\_mob.density\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_csi\_rs\_cell\_mob.density,\ csi\_rs\_cell\_mob.density.value());}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \textcolor{comment}{//\ csi\ rs\ res\ list\ mob}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ csi\_rs\_res\_mob\ :\ csi\_rs\_cell\_mob.csi\_rs\_res\_list\_mob)\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ asn1::rrc\_nr::csi\_rs\_res\_mob\_s\ asn1\_csi\_rs\_res\_mob;}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ csi\ rs\ idx}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.csi\_rs\_idx\ =\ csi\_rs\_res\_mob.csi\_rs\_idx;}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ slot\ cfg}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.slot\_cfg.ms4.has\_value())\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.set\_ms4();}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.ms4()\ =\ csi\_rs\_res\_mob.slot\_cfg.ms4.value();}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.slot\_cfg.ms5.has\_value())\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.set\_ms5();}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.ms5()\ =\ csi\_rs\_res\_mob.slot\_cfg.ms5.value();}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.slot\_cfg.ms10.has\_value())\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.set\_ms10();}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.ms10()\ =\ csi\_rs\_res\_mob.slot\_cfg.ms10.value();}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.slot\_cfg.ms20.has\_value())\ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.set\_ms20();}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.ms20()\ =\ csi\_rs\_res\_mob.slot\_cfg.ms20.value();}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.slot\_cfg.ms40.has\_value())\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.set\_ms40();}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.slot\_cfg.ms40()\ =\ csi\_rs\_res\_mob.slot\_cfg.ms40.value();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ slot\ cfg\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ associated\ ssb}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.associated\_ssb.has\_value())\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.associated\_ssb\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.associated\_ssb.ssb\_idx\ =\ csi\_rs\_res\_mob.associated\_ssb.value().ssb\_idx;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.associated\_ssb.is\_quasi\_colocated\ =}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ csi\_rs\_res\_mob.associated\_ssb.value().is\_quasi\_colocated;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ freq\ domain\ alloc}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.freq\_domain\_alloc.row1.has\_value())\ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.freq\_domain\_alloc.set\_row1();}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.freq\_domain\_alloc.row1().from\_number(csi\_rs\_res\_mob.freq\_domain\_alloc.row1.value());}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (csi\_rs\_res\_mob.freq\_domain\_alloc.row2.has\_value())\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.freq\_domain\_alloc.set\_row2();}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.freq\_domain\_alloc.row2().from\_number(csi\_rs\_res\_mob.freq\_domain\_alloc.row2.value());}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ freq\ domain\ alloc\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ ofdm\ symbol\ in\ time\ domain}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.first\_ofdm\_symbol\_in\_time\_domain\ =\ csi\_rs\_res\_mob.first\_ofdm\_symbol\_in\_time\_domain;}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ seq\ generation\ cfg}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_res\_mob.seq\_generation\_cfg\ =\ csi\_rs\_res\_mob.seq\_generation\_cfg;}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ asn1\_csi\_rs\_cell\_mob.csi\_rs\_res\_list\_mob.push\_back(asn1\_csi\_rs\_res\_mob);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ asn1\_csi\_rs\_res\_cfg\_mob.setup().csi\_rs\_cell\_list\_mob.push\_back(asn1\_csi\_rs\_cell\_mob);}
+\DoxyCodeLine{00333\ \ \ \ \ \}}
+\DoxyCodeLine{00334\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00336\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ CSI\ RS\ res\ cfg\ mob\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00337\ \ \ \}}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ \ \ \textcolor{keywordflow}{return}\ asn1\_csi\_rs\_res\_cfg\_mob;}
+\DoxyCodeLine{00340\ \}}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1thres__nr__s}{thres\_nr\_s}}\ thres\_nr\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__thres__nr}{rrc\_thres\_nr}}\&\ thres\_nr)}
+\DoxyCodeLine{00343\ \{}
+\DoxyCodeLine{00344\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1thres__nr__s}{thres\_nr\_s}}\ asn1\_thres\_nr;}
+\DoxyCodeLine{00345\ }
+\DoxyCodeLine{00346\ \ \ \textcolor{comment}{//\ thres\ rsrp}}
+\DoxyCodeLine{00347\ \ \ \textcolor{keywordflow}{if}\ (thres\_nr.thres\_rsrp.has\_value())\ \{}
+\DoxyCodeLine{00348\ \ \ \ \ asn1\_thres\_nr.thres\_rsrp\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00349\ \ \ \ \ asn1\_thres\_nr.thres\_rsrp\ \ \ \ \ \ \ \ \ =\ thres\_nr.thres\_rsrp.value();}
+\DoxyCodeLine{00350\ \ \ \}}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \ \ \textcolor{comment}{//\ thres\ rsrq}}
+\DoxyCodeLine{00353\ \ \ \textcolor{keywordflow}{if}\ (thres\_nr.thres\_rsrq.has\_value())\ \{}
+\DoxyCodeLine{00354\ \ \ \ \ asn1\_thres\_nr.thres\_rsrq\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00355\ \ \ \ \ asn1\_thres\_nr.thres\_rsrq\ \ \ \ \ \ \ \ \ =\ thres\_nr.thres\_rsrq.value();}
+\DoxyCodeLine{00356\ \ \ \}}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00358\ \ \ \textcolor{comment}{//\ thres\ sinr}}
+\DoxyCodeLine{00359\ \ \ \textcolor{keywordflow}{if}\ (thres\_nr.thres\_sinr.has\_value())\ \{}
+\DoxyCodeLine{00360\ \ \ \ \ asn1\_thres\_nr.thres\_sinr\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00361\ \ \ \ \ asn1\_thres\_nr.thres\_sinr\ \ \ \ \ \ \ \ \ =\ thres\_nr.thres\_sinr.value();}
+\DoxyCodeLine{00362\ \ \ \}}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keywordflow}{return}\ asn1\_thres\_nr;}
+\DoxyCodeLine{00365\ \}}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1q__offset__range__list__s}{q\_offset\_range\_list\_s}}}
+\DoxyCodeLine{00368\ q\_offset\_range\_list\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__q__offset__range__list}{rrc\_q\_offset\_range\_list}}\&\ q\_offset\_range\_list)}
+\DoxyCodeLine{00369\ \{}
+\DoxyCodeLine{00370\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1q__offset__range__list__s}{q\_offset\_range\_list\_s}}\ asn1\_q\_offset\_range\_list;}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \textcolor{comment}{//\ rsrp\ offset\ ssb}}
+\DoxyCodeLine{00373\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.rsrp\_offset\_ssb.has\_value())\ \{}
+\DoxyCodeLine{00374\ \ \ \ \ asn1\_q\_offset\_range\_list.rsrp\_offset\_ssb\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00375\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.rsrp\_offset\_ssb,\ q\_offset\_range\_list.rsrp\_offset\_ssb.value());}
+\DoxyCodeLine{00376\ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \textcolor{comment}{//\ rsrq\ offset\ ssb}}
+\DoxyCodeLine{00378\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.rsrq\_offset\_ssb.has\_value())\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ asn1\_q\_offset\_range\_list.rsrq\_offset\_ssb\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00380\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.rsrq\_offset\_ssb,\ q\_offset\_range\_list.rsrq\_offset\_ssb.value());}
+\DoxyCodeLine{00381\ \ \ \}}
+\DoxyCodeLine{00382\ \ \ \textcolor{comment}{//\ sinr\ offset\ ssb}}
+\DoxyCodeLine{00383\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.sinr\_offset\_ssb.has\_value())\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ asn1\_q\_offset\_range\_list.sinr\_offset\_ssb\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00385\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.sinr\_offset\_ssb,\ q\_offset\_range\_list.sinr\_offset\_ssb.value());}
+\DoxyCodeLine{00386\ \ \ \}}
+\DoxyCodeLine{00387\ \ \ \textcolor{comment}{//\ rsrp\ offset\ csi\_rs}}
+\DoxyCodeLine{00388\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.rsrp\_offset\_csi\_rs.has\_value())\ \{}
+\DoxyCodeLine{00389\ \ \ \ \ asn1\_q\_offset\_range\_list.rsrp\_offset\_csi\_rs\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00390\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.rsrp\_offset\_csi\_rs,\ q\_offset\_range\_list.rsrp\_offset\_csi\_rs.value());}
+\DoxyCodeLine{00391\ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \textcolor{comment}{//\ rsrq\ offset\ csi\_rs}}
+\DoxyCodeLine{00393\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.rsrq\_offset\_csi\_rs.has\_value())\ \{}
+\DoxyCodeLine{00394\ \ \ \ \ asn1\_q\_offset\_range\_list.rsrq\_offset\_csi\_rs\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00395\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.rsrq\_offset\_csi\_rs,\ q\_offset\_range\_list.rsrq\_offset\_csi\_rs.value());}
+\DoxyCodeLine{00396\ \ \ \}}
+\DoxyCodeLine{00397\ \ \ \textcolor{comment}{//\ sinr\ offset\ csi\_rs}}
+\DoxyCodeLine{00398\ \ \ \textcolor{keywordflow}{if}\ (q\_offset\_range\_list.sinr\_offset\_csi\_rs.has\_value())\ \{}
+\DoxyCodeLine{00399\ \ \ \ \ asn1\_q\_offset\_range\_list.sinr\_offset\_csi\_rs\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00400\ \ \ \ \ asn1::number\_to\_enum(asn1\_q\_offset\_range\_list.sinr\_offset\_csi\_rs,\ q\_offset\_range\_list.sinr\_offset\_csi\_rs.value());}
+\DoxyCodeLine{00401\ \ \ \}}
+\DoxyCodeLine{00402\ }
+\DoxyCodeLine{00403\ \ \ \textcolor{keywordflow}{return}\ asn1\_q\_offset\_range\_list;}
+\DoxyCodeLine{00404\ \}}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__obj__nr__s}{meas\_obj\_nr\_s}}\ meas\_obj\_nr\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__obj__nr}{rrc\_meas\_obj\_nr}}\&\ meas\_obj\_nr)}
+\DoxyCodeLine{00407\ \{}
+\DoxyCodeLine{00408\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__obj__nr__s}{meas\_obj\_nr\_s}}\ asn1\_meas\_obj\_nr;}
+\DoxyCodeLine{00409\ }
+\DoxyCodeLine{00410\ \ \ \textcolor{comment}{//\ ssb\ freq}}
+\DoxyCodeLine{00411\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.ssb\_freq.has\_value())\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ asn1\_meas\_obj\_nr.ssb\_freq\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00413\ \ \ \ \ asn1\_meas\_obj\_nr.ssb\_freq\ \ \ \ \ \ \ \ \ =\ meas\_obj\_nr.ssb\_freq.value();}
+\DoxyCodeLine{00414\ \ \ \}}
+\DoxyCodeLine{00415\ }
+\DoxyCodeLine{00416\ \ \ \textcolor{comment}{//\ ssb\ subcarrier\ spacing}}
+\DoxyCodeLine{00417\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.ssb\_subcarrier\_spacing.has\_value())\ \{}
+\DoxyCodeLine{00418\ \ \ \ \ asn1\_meas\_obj\_nr.ssb\_subcarrier\_spacing\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00419\ \ \ \ \ asn1\_meas\_obj\_nr.ssb\_subcarrier\_spacing\ =}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ subcarrier\_spacing\_to\_rrc\_asn1(meas\_obj\_nr.ssb\_subcarrier\_spacing.value());}
+\DoxyCodeLine{00421\ \ \ \}}
+\DoxyCodeLine{00422\ }
+\DoxyCodeLine{00423\ \ \ \textcolor{comment}{//\ smtc1}}
+\DoxyCodeLine{00424\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.smtc1.has\_value())\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ asn1\_meas\_obj\_nr.smtc1\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00426\ \ \ \ \ asn1\_meas\_obj\_nr.smtc1\ \ \ \ \ \ \ \ \ =\ ssb\_mtc\_to\_rrc\_asn1(meas\_obj\_nr.smtc1.value());}
+\DoxyCodeLine{00427\ \ \ \}}
+\DoxyCodeLine{00428\ }
+\DoxyCodeLine{00429\ \ \ \textcolor{comment}{//\ smtc2}}
+\DoxyCodeLine{00430\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.smtc2.has\_value())\ \{}
+\DoxyCodeLine{00431\ \ \ \ \ asn1\_meas\_obj\_nr.smtc2\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00432\ \ \ \ \ \textcolor{comment}{//\ pci\ list}}
+\DoxyCodeLine{00433\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pci\ :\ meas\_obj\_nr.smtc2.value().pci\_list)\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ asn1\_meas\_obj\_nr.smtc2.pci\_list.push\_back(pci);}
+\DoxyCodeLine{00435\ \ \ \ \ \}}
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{comment}{//\ periodicity}}
+\DoxyCodeLine{00437\ \ \ \ \ asn1::number\_to\_enum(asn1\_meas\_obj\_nr.smtc2.periodicity,\ meas\_obj\_nr.smtc2.value().periodicity);}
+\DoxyCodeLine{00438\ \ \ \}}
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \ \ \textcolor{comment}{//\ ref\ freq\ csi\ rs}}
+\DoxyCodeLine{00441\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.ref\_freq\_csi\_rs.has\_value())\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_freq\_csi\_rs\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00443\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_freq\_csi\_rs\ \ \ \ \ \ \ \ \ =\ meas\_obj\_nr.ref\_freq\_csi\_rs.value();}
+\DoxyCodeLine{00444\ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \ \ \textcolor{comment}{//\ ref\ sig\ cfg}}
+\DoxyCodeLine{00447\ \ \ \textcolor{comment}{//\ ssb\ cfg\ mob}}
+\DoxyCodeLine{00448\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.ref\_sig\_cfg.ssb\_cfg\_mob.has\_value())\ \{}
+\DoxyCodeLine{00449\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_sig\_cfg.ssb\_cfg\_mob\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00450\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_sig\_cfg.ssb\_cfg\_mob\ =\ ssb\_cfg\_mob\_to\_rrc\_asn1(meas\_obj\_nr.ref\_sig\_cfg.ssb\_cfg\_mob.value());}
+\DoxyCodeLine{00451\ \ \ \}}
+\DoxyCodeLine{00452\ \ \ \textcolor{comment}{//\ csi\ rs\ res\ cfg\ mob}}
+\DoxyCodeLine{00453\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.ref\_sig\_cfg.csi\_rs\_res\_cfg\_mob.has\_value())\ \{}
+\DoxyCodeLine{00454\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_sig\_cfg.csi\_rs\_res\_cfg\_mob\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00455\ \ \ \ \ asn1\_meas\_obj\_nr.ref\_sig\_cfg.csi\_rs\_res\_cfg\_mob\ =}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ csi\_res\_cfg\_mob\_to\_rrc\_asn1(meas\_obj\_nr.ref\_sig\_cfg.csi\_rs\_res\_cfg\_mob.value());}
+\DoxyCodeLine{00457\ \ \ \}}
+\DoxyCodeLine{00458\ }
+\DoxyCodeLine{00459\ \ \ \textcolor{comment}{//\ abs\ thresh\ ss\ blocks\ consolidation}}
+\DoxyCodeLine{00460\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.abs\_thresh\_ss\_blocks\_consolidation.has\_value())\ \{}
+\DoxyCodeLine{00461\ \ \ \ \ asn1\_meas\_obj\_nr.abs\_thresh\_ss\_blocks\_consolidation\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00462\ \ \ \ \ asn1\_meas\_obj\_nr.abs\_thresh\_ss\_blocks\_consolidation\ =}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ thres\_nr\_to\_rrc\_asn1(meas\_obj\_nr.abs\_thresh\_ss\_blocks\_consolidation.value());}
+\DoxyCodeLine{00464\ \ \ \}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \textcolor{comment}{//\ abs\ thresh\ csi\ rs\ consolidation}}
+\DoxyCodeLine{00467\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.abs\_thresh\_csi\_rs\_consolidation.has\_value())\ \{}
+\DoxyCodeLine{00468\ \ \ \ \ asn1\_meas\_obj\_nr.abs\_thresh\_csi\_rs\_consolidation\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00469\ \ \ \ \ asn1\_meas\_obj\_nr.abs\_thresh\_csi\_rs\_consolidation\ =}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ thres\_nr\_to\_rrc\_asn1(meas\_obj\_nr.abs\_thresh\_csi\_rs\_consolidation.value());}
+\DoxyCodeLine{00471\ \ \ \}}
+\DoxyCodeLine{00472\ }
+\DoxyCodeLine{00473\ \ \ \textcolor{comment}{//\ nrof\ ss\ blocks\ to\ average}}
+\DoxyCodeLine{00474\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.nrof\_ss\_blocks\_to\_average.has\_value())\ \{}
+\DoxyCodeLine{00475\ \ \ \ \ asn1\_meas\_obj\_nr.nrof\_ss\_blocks\_to\_average\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00476\ \ \ \ \ asn1\_meas\_obj\_nr.nrof\_ss\_blocks\_to\_average\ \ \ \ \ \ \ \ \ =\ meas\_obj\_nr.nrof\_ss\_blocks\_to\_average.value();}
+\DoxyCodeLine{00477\ \ \ \}}
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \textcolor{comment}{//\ nrof\ csi\ rs\ res\ to\ average}}
+\DoxyCodeLine{00480\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.nrof\_csi\_rs\_res\_to\_average.has\_value())\ \{}
+\DoxyCodeLine{00481\ \ \ \ \ asn1\_meas\_obj\_nr.nrof\_csi\_rs\_res\_to\_average\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00482\ \ \ \ \ asn1\_meas\_obj\_nr.nrof\_csi\_rs\_res\_to\_average\ \ \ \ \ \ \ \ \ =\ meas\_obj\_nr.nrof\_csi\_rs\_res\_to\_average.value();}
+\DoxyCodeLine{00483\ \ \ \}}
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \ \ \textcolor{comment}{//\ quant\ cfg\ idx}}
+\DoxyCodeLine{00486\ \ \ asn1\_meas\_obj\_nr.quant\_cfg\_idx\ =\ meas\_obj\_nr.quant\_cfg\_idx;}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00488\ \ \ \textcolor{comment}{//\ offset\ mo}}
+\DoxyCodeLine{00489\ \ \ asn1\_meas\_obj\_nr.offset\_mo\ =\ q\_offset\_range\_list\_to\_rrc\_asn1(meas\_obj\_nr.offset\_mo);}
+\DoxyCodeLine{00490\ }
+\DoxyCodeLine{00491\ \ \ \textcolor{comment}{//\ cells\ to\ rem\ list}}
+\DoxyCodeLine{00492\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(meas\_obj\_nr.cells\_to\_rem\_list.size()\ <=\ 32,}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Too\ many\ cells\ to\ remove\ (\{\}>\{\})."{}},}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_obj\_nr.cells\_to\_rem\_list.size(),}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 32);}
+\DoxyCodeLine{00496\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cell\_to\_rem\ :\ meas\_obj\_nr.cells\_to\_rem\_list)\ \{}
+\DoxyCodeLine{00497\ \ \ \ \ asn1\_meas\_obj\_nr.cells\_to\_rem\_list.push\_back(cell\_to\_rem);}
+\DoxyCodeLine{00498\ \ \ \}}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \ \ \textcolor{comment}{//\ cells\ to\ add\ mod\ list}}
+\DoxyCodeLine{00501\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cell\_to\_add\_mod\ :\ meas\_obj\_nr.cells\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{00502\ \ \ \ \ asn1::rrc\_nr::cells\_to\_add\_mod\_s\ asn1\_cells\_to\_add\_mod;}
+\DoxyCodeLine{00503\ }
+\DoxyCodeLine{00504\ \ \ \ \ asn1\_cells\_to\_add\_mod.pci\ =\ cell\_to\_add\_mod.pci;}
+\DoxyCodeLine{00505\ \ \ \ \ asn1\_cells\_to\_add\_mod.cell\_individual\_offset\ =}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ q\_offset\_range\_list\_to\_rrc\_asn1(cell\_to\_add\_mod.cell\_individual\_offset);}
+\DoxyCodeLine{00507\ }
+\DoxyCodeLine{00508\ \ \ \ \ asn1\_meas\_obj\_nr.cells\_to\_add\_mod\_list.push\_back(asn1\_cells\_to\_add\_mod);}
+\DoxyCodeLine{00509\ \ \ \}}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \textcolor{comment}{//\ excluded\ cells\ to\ rem\ list}}
+\DoxyCodeLine{00512\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(meas\_obj\_nr.excluded\_cells\_to\_rem\_list.size()\ <=\ 8,}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Too\ many\ excluded\ cells\ to\ remove\ (\{\}>\{\})."{}},}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_obj\_nr.excluded\_cells\_to\_rem\_list.size(),}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 8);}
+\DoxyCodeLine{00516\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ excluded\_cell\ :\ meas\_obj\_nr.excluded\_cells\_to\_rem\_list)\ \{}
+\DoxyCodeLine{00517\ \ \ \ \ asn1\_meas\_obj\_nr.excluded\_cells\_to\_rem\_list.push\_back(excluded\_cell);}
+\DoxyCodeLine{00518\ \ \ \}}
+\DoxyCodeLine{00519\ }
+\DoxyCodeLine{00520\ \ \ \textcolor{comment}{//\ excluded\ cells\ to\ add\ mod\ list}}
+\DoxyCodeLine{00521\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ excluded\_cell\ :\ meas\_obj\_nr.excluded\_cells\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{00522\ \ \ \ \ asn1::rrc\_nr::pci\_range\_elem\_s\ asn1\_pci\_range\_elem;}
+\DoxyCodeLine{00523\ \ \ \ \ asn1\_pci\_range\_elem.pci\_range\_idx\ =\ excluded\_cell.pci\_range\_idx;}
+\DoxyCodeLine{00524\ }
+\DoxyCodeLine{00525\ \ \ \ \ asn1\_pci\_range\_elem.pci\_range.start\ =\ excluded\_cell.pci\_range.start;}
+\DoxyCodeLine{00526\ \ \ \ \ \textcolor{keywordflow}{if}\ (excluded\_cell.pci\_range.range.has\_value())\ \{}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ asn1\_pci\_range\_elem.pci\_range.range\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_pci\_range\_elem.pci\_range.range,\ excluded\_cell.pci\_range.range.value());}
+\DoxyCodeLine{00529\ \ \ \ \ \}}
+\DoxyCodeLine{00530\ \ \ \ \ asn1\_meas\_obj\_nr.excluded\_cells\_to\_add\_mod\_list.push\_back(asn1\_pci\_range\_elem);}
+\DoxyCodeLine{00531\ \ \ \}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \textcolor{comment}{//\ allowed\ cells\ to\ rem\ list}}
+\DoxyCodeLine{00534\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(meas\_obj\_nr.allowed\_cells\_to\_rem\_list.size()\ <=\ 8,}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Too\ many\ allowed\ cells\ to\ remove\ (\{\}>\{\})."{}},}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_obj\_nr.allowed\_cells\_to\_rem\_list.size(),}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 8);}
+\DoxyCodeLine{00538\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ allowed\_cell\ :\ meas\_obj\_nr.allowed\_cells\_to\_rem\_list)\ \{}
+\DoxyCodeLine{00539\ \ \ \ \ asn1\_meas\_obj\_nr.allowed\_cells\_to\_rem\_list.push\_back(allowed\_cell);}
+\DoxyCodeLine{00540\ \ \ \}}
+\DoxyCodeLine{00541\ }
+\DoxyCodeLine{00542\ \ \ \textcolor{comment}{//\ allowed\ cells\ to\ add\ mod\ list}}
+\DoxyCodeLine{00543\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ allowed\_cell\ :\ meas\_obj\_nr.allowed\_cells\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{00544\ \ \ \ \ asn1::rrc\_nr::pci\_range\_elem\_s\ asn1\_pci\_range\_elem;}
+\DoxyCodeLine{00545\ \ \ \ \ asn1\_pci\_range\_elem.pci\_range\_idx\ =\ allowed\_cell.pci\_range\_idx;}
+\DoxyCodeLine{00546\ }
+\DoxyCodeLine{00547\ \ \ \ \ asn1\_pci\_range\_elem.pci\_range.start\ =\ allowed\_cell.pci\_range.start;}
+\DoxyCodeLine{00548\ \ \ \ \ \textcolor{keywordflow}{if}\ (allowed\_cell.pci\_range.range.has\_value())\ \{}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ asn1\_pci\_range\_elem.pci\_range.range\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_pci\_range\_elem.pci\_range.range,\ allowed\_cell.pci\_range.range.value());}
+\DoxyCodeLine{00551\ \ \ \ \ \}}
+\DoxyCodeLine{00552\ \ \ \ \ asn1\_meas\_obj\_nr.allowed\_cells\_to\_add\_mod\_list.push\_back(asn1\_pci\_range\_elem);}
+\DoxyCodeLine{00553\ \ \ \}}
+\DoxyCodeLine{00554\ }
+\DoxyCodeLine{00555\ \ \ \textcolor{comment}{//\ group\ 0}}
+\DoxyCodeLine{00556\ \ \ \textcolor{comment}{//\ freq\ band\ ind\ nr}}
+\DoxyCodeLine{00557\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.freq\_band\_ind\_nr.has\_value())\ \{}
+\DoxyCodeLine{00558\ \ \ \ \ asn1\_meas\_obj\_nr.ext\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00559\ \ \ \ \ asn1\_meas\_obj\_nr.freq\_band\_ind\_nr\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00560\ \ \ \ \ asn1\_meas\_obj\_nr.freq\_band\_ind\_nr\ \ \ \ \ \ \ \ \ =\ meas\_obj\_nr.freq\_band\_ind\_nr.value();}
+\DoxyCodeLine{00561\ \ \ \}}
+\DoxyCodeLine{00562\ \ \ \textcolor{comment}{//\ meas\ cycle\ scell}}
+\DoxyCodeLine{00563\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_nr.meas\_cycle\_scell.has\_value())\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ asn1\_meas\_obj\_nr.ext\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00565\ \ \ \ \ asn1\_meas\_obj\_nr.meas\_cycle\_scell\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00566\ \ \ \ \ asn1::number\_to\_enum(asn1\_meas\_obj\_nr.meas\_cycle\_scell,\ meas\_obj\_nr.meas\_cycle\_scell.value());}
+\DoxyCodeLine{00567\ \ \ \}}
+\DoxyCodeLine{00568\ }
+\DoxyCodeLine{00569\ \ \ \textcolor{keywordflow}{return}\ asn1\_meas\_obj\_nr;}
+\DoxyCodeLine{00570\ \}}
+\DoxyCodeLine{00571\ }
+\DoxyCodeLine{00572\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ asn1\_srs\_periodicity\_and\_offset>}
+\DoxyCodeLine{00573\ \textcolor{keywordtype}{void}\ srs\_periodicity\_and\_offset\_to\_rrc\_asn1(asn1\_srs\_periodicity\_and\_offset\&\ \ \ \ \ \ asn1\_srs\_period\_and\_offset,}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__periodicity__and__offset}{rrc\_srs\_periodicity\_and\_offset}}\&\ srs\_period\_and\_offset)}
+\DoxyCodeLine{00575\ \{}
+\DoxyCodeLine{00576\ \ \ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.is\_sl1)\ \{}
+\DoxyCodeLine{00577\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl1();}
+\DoxyCodeLine{00578\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl2.has\_value())\ \{}
+\DoxyCodeLine{00579\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl2();}
+\DoxyCodeLine{00580\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl2()\ =\ srs\_period\_and\_offset.sl2.value();}
+\DoxyCodeLine{00581\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl4.has\_value())\ \{}
+\DoxyCodeLine{00582\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl4();}
+\DoxyCodeLine{00583\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl4()\ =\ srs\_period\_and\_offset.sl4.value();}
+\DoxyCodeLine{00584\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl5.has\_value())\ \{}
+\DoxyCodeLine{00585\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl5();}
+\DoxyCodeLine{00586\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl5()\ =\ srs\_period\_and\_offset.sl5.value();}
+\DoxyCodeLine{00587\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl8.has\_value())\ \{}
+\DoxyCodeLine{00588\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl8();}
+\DoxyCodeLine{00589\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl8()\ =\ srs\_period\_and\_offset.sl8.value();}
+\DoxyCodeLine{00590\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl10.has\_value())\ \{}
+\DoxyCodeLine{00591\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl10();}
+\DoxyCodeLine{00592\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl10()\ =\ srs\_period\_and\_offset.sl10.value();}
+\DoxyCodeLine{00593\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl16.has\_value())\ \{}
+\DoxyCodeLine{00594\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl16();}
+\DoxyCodeLine{00595\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl16()\ =\ srs\_period\_and\_offset.sl16.value();}
+\DoxyCodeLine{00596\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl20.has\_value())\ \{}
+\DoxyCodeLine{00597\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl20();}
+\DoxyCodeLine{00598\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl20()\ =\ srs\_period\_and\_offset.sl20.value();}
+\DoxyCodeLine{00599\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl32.has\_value())\ \{}
+\DoxyCodeLine{00600\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl32();}
+\DoxyCodeLine{00601\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl32()\ =\ srs\_period\_and\_offset.sl32.value();}
+\DoxyCodeLine{00602\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl40.has\_value())\ \{}
+\DoxyCodeLine{00603\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl40();}
+\DoxyCodeLine{00604\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl40()\ =\ srs\_period\_and\_offset.sl40.value();}
+\DoxyCodeLine{00605\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl64.has\_value())\ \{}
+\DoxyCodeLine{00606\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl64();}
+\DoxyCodeLine{00607\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl64()\ =\ srs\_period\_and\_offset.sl64.value();}
+\DoxyCodeLine{00608\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl80.has\_value())\ \{}
+\DoxyCodeLine{00609\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl80();}
+\DoxyCodeLine{00610\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl80()\ =\ srs\_period\_and\_offset.sl80.value();}
+\DoxyCodeLine{00611\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl160.has\_value())\ \{}
+\DoxyCodeLine{00612\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl160();}
+\DoxyCodeLine{00613\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl160()\ =\ srs\_period\_and\_offset.sl160.value();}
+\DoxyCodeLine{00614\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl320.has\_value())\ \{}
+\DoxyCodeLine{00615\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl320();}
+\DoxyCodeLine{00616\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl320()\ =\ srs\_period\_and\_offset.sl320.value();}
+\DoxyCodeLine{00617\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl640.has\_value())\ \{}
+\DoxyCodeLine{00618\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl640();}
+\DoxyCodeLine{00619\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl640()\ =\ srs\_period\_and\_offset.sl640.value();}
+\DoxyCodeLine{00620\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl1280.has\_value())\ \{}
+\DoxyCodeLine{00621\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl1280();}
+\DoxyCodeLine{00622\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl1280()\ =\ srs\_period\_and\_offset.sl1280.value();}
+\DoxyCodeLine{00623\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_period\_and\_offset.sl2560.has\_value())\ \{}
+\DoxyCodeLine{00624\ \ \ \ \ asn1\_srs\_period\_and\_offset.set\_sl2560();}
+\DoxyCodeLine{00625\ \ \ \ \ asn1\_srs\_period\_and\_offset.sl2560()\ =\ srs\_period\_and\_offset.sl2560.value();}
+\DoxyCodeLine{00626\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00627\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00628\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ SRS\ periodicity\ and\ offset\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00629\ \ \ \}}
+\DoxyCodeLine{00630\ \};}
+\DoxyCodeLine{00631\ }
+\DoxyCodeLine{00632\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1srs__res__s}{srs\_res\_s}}\ srs\_res\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__srs__res}{rrc\_srs\_res}}\&\ srs\_res)}
+\DoxyCodeLine{00633\ \{}
+\DoxyCodeLine{00634\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1srs__res__s}{srs\_res\_s}}\ asn1\_srs\_res;}
+\DoxyCodeLine{00635\ }
+\DoxyCodeLine{00636\ \ \ \textcolor{comment}{//\ srs\ res\ id}}
+\DoxyCodeLine{00637\ \ \ asn1\_srs\_res.srs\_res\_id\ =\ srs\_res.srs\_res\_id;}
+\DoxyCodeLine{00638\ }
+\DoxyCodeLine{00639\ \ \ \textcolor{comment}{//\ nrof\ srs\ ports}}
+\DoxyCodeLine{00640\ \ \ asn1::number\_to\_enum(asn1\_srs\_res.nrof\_srs\_ports,\ srs\_res.nrof\_srs\_ports);}
+\DoxyCodeLine{00641\ }
+\DoxyCodeLine{00642\ \ \ \textcolor{comment}{//\ ptrs\ port\ idx}}
+\DoxyCodeLine{00643\ \ \ \textcolor{keywordflow}{if}\ (srs\_res.ptrs\_port\_idx.has\_value())\ \{}
+\DoxyCodeLine{00644\ \ \ \ \ asn1\_srs\_res.ptrs\_port\_idx\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00645\ \ \ \ \ asn1::number\_to\_enum(asn1\_srs\_res.ptrs\_port\_idx,\ srs\_res.ptrs\_port\_idx.value());}
+\DoxyCodeLine{00646\ \ \ \}}
+\DoxyCodeLine{00647\ }
+\DoxyCodeLine{00648\ \ \ \textcolor{comment}{//\ tx\ comb}}
+\DoxyCodeLine{00649\ \ \ \textcolor{keywordflow}{if}\ (srs\_res.tx\_comb.n2.has\_value())\ \{}
+\DoxyCodeLine{00650\ \ \ \ \ asn1\_srs\_res.tx\_comb.set\_n2();}
+\DoxyCodeLine{00651\ \ \ \ \ asn1\_srs\_res.tx\_comb.n2().comb\_offset\_n2\ \ =\ srs\_res.tx\_comb.n2.value().comb\_offset\_n2;}
+\DoxyCodeLine{00652\ \ \ \ \ asn1\_srs\_res.tx\_comb.n2().cyclic\_shift\_n2\ =\ srs\_res.tx\_comb.n2.value().cyclic\_shift\_n2;}
+\DoxyCodeLine{00653\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_res.tx\_comb.n4.has\_value())\ \{}
+\DoxyCodeLine{00654\ \ \ \ \ asn1\_srs\_res.tx\_comb.set\_n4();}
+\DoxyCodeLine{00655\ \ \ \ \ asn1\_srs\_res.tx\_comb.n4().comb\_offset\_n4\ \ =\ srs\_res.tx\_comb.n4.value().comb\_offset\_n4;}
+\DoxyCodeLine{00656\ \ \ \ \ asn1\_srs\_res.tx\_comb.n4().cyclic\_shift\_n4\ =\ srs\_res.tx\_comb.n4.value().cyclic\_shift\_n4;}
+\DoxyCodeLine{00657\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00658\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00659\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ tx\ comb\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00660\ \ \ \}}
+\DoxyCodeLine{00661\ }
+\DoxyCodeLine{00662\ \ \ \textcolor{comment}{//\ res\ map}}
+\DoxyCodeLine{00663\ \ \ asn1\_srs\_res.res\_map.start\_position\ =\ srs\_res.res\_map.start\_position;}
+\DoxyCodeLine{00664\ \ \ asn1::number\_to\_enum(asn1\_srs\_res.res\_map.nrof\_symbols,\ srs\_res.res\_map.nrof\_symbols);}
+\DoxyCodeLine{00665\ \ \ asn1::number\_to\_enum(asn1\_srs\_res.res\_map.repeat\_factor,\ srs\_res.res\_map.repeat\_factor);}
+\DoxyCodeLine{00666\ }
+\DoxyCodeLine{00667\ \ \ \textcolor{comment}{//\ freq\ domain\ position}}
+\DoxyCodeLine{00668\ \ \ asn1\_srs\_res.freq\_domain\_position\ =\ srs\_res.freq\_domain\_position;}
+\DoxyCodeLine{00669\ }
+\DoxyCodeLine{00670\ \ \ \textcolor{comment}{//\ freq\ domain\ shift}}
+\DoxyCodeLine{00671\ \ \ asn1\_srs\_res.freq\_domain\_shift\ =\ srs\_res.freq\_domain\_shift;}
+\DoxyCodeLine{00672\ }
+\DoxyCodeLine{00673\ \ \ \textcolor{comment}{//\ freq\ hop}}
+\DoxyCodeLine{00674\ \ \ asn1\_srs\_res.freq\_hop.c\_srs\ =\ srs\_res.freq\_hop.c\_srs;}
+\DoxyCodeLine{00675\ \ \ asn1\_srs\_res.freq\_hop.b\_srs\ =\ srs\_res.freq\_hop.b\_srs;}
+\DoxyCodeLine{00676\ \ \ asn1\_srs\_res.freq\_hop.b\_hop\ =\ srs\_res.freq\_hop.b\_hop;}
+\DoxyCodeLine{00677\ }
+\DoxyCodeLine{00678\ \ \ \textcolor{comment}{//\ group\ or\ seq\ hop}}
+\DoxyCodeLine{00679\ \ \ asn1::string\_to\_enum(asn1\_srs\_res.group\_or\_seq\_hop,\ srs\_res.group\_or\_seq\_hop);}
+\DoxyCodeLine{00680\ }
+\DoxyCodeLine{00681\ \ \ \textcolor{comment}{//\ res\ type}}
+\DoxyCodeLine{00682\ \ \ \textcolor{keywordflow}{if}\ (srs\_res.res\_type.is\_aperiodic)\ \{}
+\DoxyCodeLine{00683\ \ \ \ \ asn1\_srs\_res.res\_type.set\_aperiodic();}
+\DoxyCodeLine{00684\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_res.res\_type.semi\_persistent.has\_value())\ \{}
+\DoxyCodeLine{00685\ \ \ \ \ asn1\_srs\_res.res\_type.set\_semi\_persistent();}
+\DoxyCodeLine{00686\ \ \ \ \ srs\_periodicity\_and\_offset\_to\_rrc\_asn1(asn1\_srs\_res.res\_type.semi\_persistent().periodicity\_and\_offset\_sp,}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_res.res\_type.semi\_persistent.value().periodicity\_and\_offset\_sp\_p);}
+\DoxyCodeLine{00688\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_res.res\_type.periodic.has\_value())\ \{}
+\DoxyCodeLine{00689\ \ \ \ \ asn1\_srs\_res.res\_type.set\_periodic();}
+\DoxyCodeLine{00690\ \ \ \ \ srs\_periodicity\_and\_offset\_to\_rrc\_asn1(asn1\_srs\_res.res\_type.periodic().periodicity\_and\_offset\_p,}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_res.res\_type.periodic.value().periodicity\_and\_offset\_sp\_p);}
+\DoxyCodeLine{00692\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00693\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00694\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ res\ type\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00695\ \ \ \}}
+\DoxyCodeLine{00696\ }
+\DoxyCodeLine{00697\ \ \ \textcolor{comment}{//\ seq\ id}}
+\DoxyCodeLine{00698\ \ \ asn1\_srs\_res.seq\_id\ =\ srs\_res.seq\_id;}
+\DoxyCodeLine{00699\ }
+\DoxyCodeLine{00700\ \ \ \textcolor{comment}{//\ spatial\ relation\ info}}
+\DoxyCodeLine{00701\ \ \ \textcolor{keywordflow}{if}\ (srs\_res.spatial\_relation\_info.has\_value())\ \{}
+\DoxyCodeLine{00702\ \ \ \ \ \textcolor{comment}{//\ serving\ cell\ id}}
+\DoxyCodeLine{00703\ \ \ \ \ \textcolor{keywordflow}{if}\ (srs\_res.spatial\_relation\_info.value().serving\_cell\_id.has\_value())\ \{}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.serving\_cell\_id\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.serving\_cell\_id\ =}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \ \ srs\_res.spatial\_relation\_info.value().serving\_cell\_id.value();}
+\DoxyCodeLine{00707\ \ \ \ \ \}}
+\DoxyCodeLine{00708\ \ \ \ \ \textcolor{comment}{//\ ref\ sig}}
+\DoxyCodeLine{00709\ \ \ \ \ \textcolor{keywordflow}{if}\ (srs\_res.spatial\_relation\_info.value().ref\_sig.ssb\_idx.has\_value())\ \{}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.ref\_sig.set\_ssb\_idx()\ =}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ srs\_res.spatial\_relation\_info.value().ref\_sig.ssb\_idx.value();}
+\DoxyCodeLine{00712\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_res.spatial\_relation\_info.value().ref\_sig.csi\_rs\_idx.has\_value())\ \{}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.ref\_sig.set\_csi\_rs\_idx()\ =}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ srs\_res.spatial\_relation\_info.value().ref\_sig.csi\_rs\_idx.value();}
+\DoxyCodeLine{00715\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (srs\_res.spatial\_relation\_info.value().ref\_sig.srs.has\_value())\ \{}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.ref\_sig.set\_srs();}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.ref\_sig.srs().res\_id\ =}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ srs\_res.spatial\_relation\_info.value().ref\_sig.srs.value().res\_id;}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ asn1\_srs\_res.spatial\_relation\_info.ref\_sig.srs().ul\_bwp\ =}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \ \ srs\_res.spatial\_relation\_info.value().ref\_sig.srs.value().ul\_bwp;}
+\DoxyCodeLine{00721\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ ref\ sig\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00724\ \ \ \ \ \}}
+\DoxyCodeLine{00725\ \ \ \}}
+\DoxyCodeLine{00726\ }
+\DoxyCodeLine{00727\ \ \ \textcolor{keywordflow}{return}\ asn1\_srs\_res;}
+\DoxyCodeLine{00728\ \}}
+\DoxyCodeLine{00729\ }
+\DoxyCodeLine{00730\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__obj__to__add__mod__s}{meas\_obj\_to\_add\_mod\_s}}}
+\DoxyCodeLine{00731\ meas\_obj\_to\_add\_mod\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__obj__to__add__mod}{rrc\_meas\_obj\_to\_add\_mod}}\&\ meas\_obj\_to\_add\_mod)}
+\DoxyCodeLine{00732\ \{}
+\DoxyCodeLine{00733\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__obj__to__add__mod__s}{meas\_obj\_to\_add\_mod\_s}}\ asn1\_meas\_obj\_to\_add\_mod;}
+\DoxyCodeLine{00734\ }
+\DoxyCodeLine{00735\ \ \ \textcolor{comment}{//\ meas\ obj\ id}}
+\DoxyCodeLine{00736\ \ \ asn1\_meas\_obj\_to\_add\_mod.meas\_obj\_id\ =\ meas\_obj\_id\_to\_uint(meas\_obj\_to\_add\_mod.meas\_obj\_id);}
+\DoxyCodeLine{00737\ }
+\DoxyCodeLine{00738\ \ \ \textcolor{comment}{//\ meas\ obj}}
+\DoxyCodeLine{00739\ \ \ \textcolor{keywordflow}{if}\ (meas\_obj\_to\_add\_mod.meas\_obj\_nr.has\_value())\ \{}
+\DoxyCodeLine{00740\ \ \ \ \ \textcolor{comment}{//\ meas\ obj\ nr}}
+\DoxyCodeLine{00741\ \ \ \ \ asn1\_meas\_obj\_to\_add\_mod.meas\_obj.set\_meas\_obj\_nr();}
+\DoxyCodeLine{00742\ \ \ \ \ asn1\_meas\_obj\_to\_add\_mod.meas\_obj.meas\_obj\_nr()\ =\ meas\_obj\_nr\_to\_rrc\_asn1(meas\_obj\_to\_add\_mod.meas\_obj\_nr.value());}
+\DoxyCodeLine{00743\ \ \ \}}
+\DoxyCodeLine{00744\ }
+\DoxyCodeLine{00745\ \ \ \textcolor{keywordflow}{return}\ asn1\_meas\_obj\_to\_add\_mod;}
+\DoxyCodeLine{00746\ \}}
+\DoxyCodeLine{00747\ }
+\DoxyCodeLine{00748\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__report__quant__s}{meas\_report\_quant\_s}}\ meas\_report\_quant\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__report__quant}{rrc\_meas\_report\_quant}}\&\ meas\_report\_quant)}
+\DoxyCodeLine{00749\ \{}
+\DoxyCodeLine{00750\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__report__quant__s}{meas\_report\_quant\_s}}\ asn1\_meas\_report\_quant;}
+\DoxyCodeLine{00751\ }
+\DoxyCodeLine{00752\ \ \ asn1\_meas\_report\_quant.rsrp\ =\ meas\_report\_quant.rsrp;}
+\DoxyCodeLine{00753\ \ \ asn1\_meas\_report\_quant.rsrq\ =\ meas\_report\_quant.rsrq;}
+\DoxyCodeLine{00754\ \ \ asn1\_meas\_report\_quant.sinr\ =\ meas\_report\_quant.sinr;}
+\DoxyCodeLine{00755\ }
+\DoxyCodeLine{00756\ \ \ \textcolor{keywordflow}{return}\ asn1\_meas\_report\_quant;}
+\DoxyCodeLine{00757\ \}}
+\DoxyCodeLine{00758\ }
+\DoxyCodeLine{00759\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::nr\_rs\_type\_e\ rrc\_nr\_rs\_type\_to\_asn1(\textcolor{keyword}{const}\ rrc\_nr\_rs\_type\&\ rs\_type)}
+\DoxyCodeLine{00760\ \{}
+\DoxyCodeLine{00761\ \ \ asn1::rrc\_nr::nr\_rs\_type\_e\ asn1\_rs\_type;}
+\DoxyCodeLine{00762\ }
+\DoxyCodeLine{00763\ \ \ \textcolor{keywordflow}{switch}\ (rs\_type)\ \{}
+\DoxyCodeLine{00764\ \ \ \ \ \textcolor{keywordflow}{case}\ rrc\_nr\_rs\_type::ssb:}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ asn1\_rs\_type\ =\ asn1::rrc\_nr::nr\_rs\_type\_opts::options::ssb;}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00767\ \ \ \ \ \textcolor{keywordflow}{case}\ rrc\_nr\_rs\_type::csi\_rs:}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ asn1\_rs\_type\ =\ asn1::rrc\_nr::nr\_rs\_type\_opts::options::csi\_rs;}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00770\ \ \ \}}
+\DoxyCodeLine{00771\ }
+\DoxyCodeLine{00772\ \ \ \textcolor{keywordflow}{return}\ asn1\_rs\_type;}
+\DoxyCodeLine{00773\ \}}
+\DoxyCodeLine{00774\ }
+\DoxyCodeLine{00775\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1periodical__report__cfg__s}{periodical\_report\_cfg\_s}}}
+\DoxyCodeLine{00776\ periodical\_report\_cfg\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__periodical__report__cfg}{rrc\_periodical\_report\_cfg}}\&\ periodical\_report\_cfg)}
+\DoxyCodeLine{00777\ \{}
+\DoxyCodeLine{00778\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1periodical__report__cfg__s}{periodical\_report\_cfg\_s}}\ asn1\_periodical\_report\_cfg;}
+\DoxyCodeLine{00779\ }
+\DoxyCodeLine{00780\ \ \ \textcolor{comment}{//\ rs\ type}}
+\DoxyCodeLine{00781\ \ \ asn1\_periodical\_report\_cfg.rs\_type\ =\ rrc\_nr\_rs\_type\_to\_asn1(periodical\_report\_cfg.rs\_type);}
+\DoxyCodeLine{00782\ \ \ \textcolor{comment}{//\ report\ interv}}
+\DoxyCodeLine{00783\ \ \ asn1::number\_to\_enum(asn1\_periodical\_report\_cfg.report\_interv,\ periodical\_report\_cfg.report\_interv);}
+\DoxyCodeLine{00784\ \ \ \textcolor{comment}{//\ report\ amount}}
+\DoxyCodeLine{00785\ \ \ asn1::number\_to\_enum(asn1\_periodical\_report\_cfg.report\_amount,\ periodical\_report\_cfg.report\_amount);}
+\DoxyCodeLine{00786\ \ \ \textcolor{comment}{//\ report\ quant\ cell}}
+\DoxyCodeLine{00787\ \ \ asn1\_periodical\_report\_cfg.report\_quant\_cell\ =\ meas\_report\_quant\_to\_rrc\_asn1(periodical\_report\_cfg.report\_quant\_cell);}
+\DoxyCodeLine{00788\ \ \ \textcolor{comment}{//\ max\ report\ cells}}
+\DoxyCodeLine{00789\ \ \ asn1\_periodical\_report\_cfg.max\_report\_cells\ =\ periodical\_report\_cfg.max\_report\_cells;}
+\DoxyCodeLine{00790\ \ \ \textcolor{comment}{//\ report\ quant\ rx\ idxes}}
+\DoxyCodeLine{00791\ \ \ \textcolor{keywordflow}{if}\ (periodical\_report\_cfg.report\_quant\_rs\_idxes.has\_value())\ \{}
+\DoxyCodeLine{00792\ \ \ \ \ asn1\_periodical\_report\_cfg.report\_quant\_rs\_idxes\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00793\ \ \ \ \ asn1\_periodical\_report\_cfg.report\_quant\_rs\_idxes\ =}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ meas\_report\_quant\_to\_rrc\_asn1(periodical\_report\_cfg.report\_quant\_rs\_idxes.value());}
+\DoxyCodeLine{00795\ \ \ \}}
+\DoxyCodeLine{00796\ \ \ \textcolor{comment}{//\ max\ nrof\ rs\ idxes\ to\ report}}
+\DoxyCodeLine{00797\ \ \ \textcolor{keywordflow}{if}\ (periodical\_report\_cfg.max\_nrof\_rs\_idxes\_to\_report.has\_value())\ \{}
+\DoxyCodeLine{00798\ \ \ \ \ asn1\_periodical\_report\_cfg.max\_nrof\_rs\_idxes\_to\_report\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00799\ \ \ \ \ asn1\_periodical\_report\_cfg.max\_nrof\_rs\_idxes\_to\_report\ =\ periodical\_report\_cfg.max\_nrof\_rs\_idxes\_to\_report.value();}
+\DoxyCodeLine{00800\ \ \ \}}
+\DoxyCodeLine{00801\ \ \ \textcolor{comment}{//\ include\ beam\ meass}}
+\DoxyCodeLine{00802\ \ \ asn1\_periodical\_report\_cfg.include\_beam\_meass\ =\ periodical\_report\_cfg.include\_beam\_meass;}
+\DoxyCodeLine{00803\ \ \ \textcolor{comment}{//\ use\ allowed\ cell\ list}}
+\DoxyCodeLine{00804\ \ \ asn1\_periodical\_report\_cfg.use\_allowed\_cell\_list\ =\ periodical\_report\_cfg.use\_allowed\_cell\_list;}
+\DoxyCodeLine{00805\ }
+\DoxyCodeLine{00806\ \ \ \textcolor{keywordflow}{return}\ asn1\_periodical\_report\_cfg;}
+\DoxyCodeLine{00807\ \}}
+\DoxyCodeLine{00808\ }
+\DoxyCodeLine{00809\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ asn1\_meas\_trigger\_quant\_quant\_offset>}
+\DoxyCodeLine{00810\ \textcolor{keywordtype}{void}\ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_meas\_trigger\_quant\_quant\_offset\&\ asn1\_meas\_trigger\_quant\_offset,}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__trigger__quant}{rrc\_meas\_trigger\_quant}}\&\ \ \ \ \ \ \ \ \ meas\_trigger\_quant)}
+\DoxyCodeLine{00812\ \{}
+\DoxyCodeLine{00813\ \ \ \textcolor{keywordflow}{if}\ (meas\_trigger\_quant.rsrp.has\_value())\ \{}
+\DoxyCodeLine{00814\ \ \ \ \ asn1\_meas\_trigger\_quant\_offset.set\_rsrp()\ =\ meas\_trigger\_quant.rsrp.value();}
+\DoxyCodeLine{00815\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (meas\_trigger\_quant.rsrq.has\_value())\ \{}
+\DoxyCodeLine{00816\ \ \ \ \ asn1\_meas\_trigger\_quant\_offset.set\_rsrq()\ =\ meas\_trigger\_quant.rsrq.value();}
+\DoxyCodeLine{00817\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (meas\_trigger\_quant.sinr.has\_value())\ \{}
+\DoxyCodeLine{00818\ \ \ \ \ asn1\_meas\_trigger\_quant\_offset.set\_sinr()\ =\ meas\_trigger\_quant.sinr.value();}
+\DoxyCodeLine{00819\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00820\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00821\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ meas\ trigger\ quant\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00822\ \ \ \}}
+\DoxyCodeLine{00823\ \}}
+\DoxyCodeLine{00824\ }
+\DoxyCodeLine{00825\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1event__trigger__cfg__s}{event\_trigger\_cfg\_s}}}
+\DoxyCodeLine{00826\ event\_triggered\_report\_cfg\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__event__trigger__cfg}{rrc\_event\_trigger\_cfg}}\&\ event\_triggered\_cfg)}
+\DoxyCodeLine{00827\ \{}
+\DoxyCodeLine{00828\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1event__trigger__cfg__s}{event\_trigger\_cfg\_s}}\ asn1\_event\_triggered\_cfg;}
+\DoxyCodeLine{00829\ }
+\DoxyCodeLine{00830\ \ \ \textcolor{comment}{//\ report\ add\ neigh\ meas\ present}}
+\DoxyCodeLine{00831\ \ \ asn1\_event\_triggered\_cfg.report\_add\_neigh\_meas\_present\ =\ event\_triggered\_cfg.report\_add\_neigh\_meas\_present;}
+\DoxyCodeLine{00832\ }
+\DoxyCodeLine{00833\ \ \ \textcolor{comment}{//\ event\ id}}
+\DoxyCodeLine{00834\ \ \ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a1.has\_value())\ \{}
+\DoxyCodeLine{00835\ \ \ \ \ \textcolor{comment}{//\ event\ a1}}
+\DoxyCodeLine{00836\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a1\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a1();}
+\DoxyCodeLine{00837\ \ \ \ \ \textcolor{comment}{//\ a1\ thres}}
+\DoxyCodeLine{00838\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a1.a1\_thres,\ event\_triggered\_cfg.event\_id.event\_a1.value().a1\_thres);}
+\DoxyCodeLine{00839\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00840\ \ \ \ \ asn1\_event\_a1.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a1.value().report\_on\_leave;}
+\DoxyCodeLine{00841\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00842\ \ \ \ \ asn1\_event\_a1.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a1.value().hysteresis;}
+\DoxyCodeLine{00843\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00844\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a1.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a1.value().time\_to\_trigger);}
+\DoxyCodeLine{00845\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a2.has\_value())\ \{}
+\DoxyCodeLine{00846\ \ \ \ \ \textcolor{comment}{//\ event\ a2}}
+\DoxyCodeLine{00847\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a2\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a2();}
+\DoxyCodeLine{00848\ \ \ \ \ \textcolor{comment}{//\ a2\ thres}}
+\DoxyCodeLine{00849\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a2.a2\_thres,\ event\_triggered\_cfg.event\_id.event\_a2.value().a2\_thres);}
+\DoxyCodeLine{00850\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00851\ \ \ \ \ asn1\_event\_a2.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a2.value().report\_on\_leave;}
+\DoxyCodeLine{00852\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00853\ \ \ \ \ asn1\_event\_a2.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a2.value().hysteresis;}
+\DoxyCodeLine{00854\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00855\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a2.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a2.value().time\_to\_trigger);}
+\DoxyCodeLine{00856\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a3.has\_value())\ \{}
+\DoxyCodeLine{00857\ \ \ \ \ \textcolor{comment}{//\ event\ a3}}
+\DoxyCodeLine{00858\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a3\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a3();}
+\DoxyCodeLine{00859\ \ \ \ \ \textcolor{comment}{//\ a3\ offset}}
+\DoxyCodeLine{00860\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a3.a3\_offset,\ event\_triggered\_cfg.event\_id.event\_a3.value().a3\_offset);}
+\DoxyCodeLine{00861\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00862\ \ \ \ \ asn1\_event\_a3.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a3.value().report\_on\_leave;}
+\DoxyCodeLine{00863\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00864\ \ \ \ \ asn1\_event\_a3.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a3.value().hysteresis;}
+\DoxyCodeLine{00865\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00866\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a3.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a3.value().time\_to\_trigger);}
+\DoxyCodeLine{00867\ \ \ \ \ \textcolor{comment}{//\ use\ allowed\ cell\ list}}
+\DoxyCodeLine{00868\ \ \ \ \ asn1\_event\_a3.use\_allowed\_cell\_list\ =\ event\_triggered\_cfg.event\_id.event\_a3.value().use\_allowed\_cell\_list;}
+\DoxyCodeLine{00869\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a4.has\_value())\ \{}
+\DoxyCodeLine{00870\ \ \ \ \ \textcolor{comment}{//\ event\ a4}}
+\DoxyCodeLine{00871\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a4\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a4();}
+\DoxyCodeLine{00872\ \ \ \ \ \textcolor{comment}{//\ a4\ thres}}
+\DoxyCodeLine{00873\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a4.a4\_thres,\ event\_triggered\_cfg.event\_id.event\_a4.value().a4\_thres);}
+\DoxyCodeLine{00874\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00875\ \ \ \ \ asn1\_event\_a4.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a4.value().report\_on\_leave;}
+\DoxyCodeLine{00876\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00877\ \ \ \ \ asn1\_event\_a4.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a4.value().hysteresis;}
+\DoxyCodeLine{00878\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00879\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a4.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a4.value().time\_to\_trigger);}
+\DoxyCodeLine{00880\ \ \ \ \ \textcolor{comment}{//\ use\ allowed\ cell\ list}}
+\DoxyCodeLine{00881\ \ \ \ \ asn1\_event\_a4.use\_allowed\_cell\_list\ =\ event\_triggered\_cfg.event\_id.event\_a4.value().use\_allowed\_cell\_list;}
+\DoxyCodeLine{00882\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a5.has\_value())\ \{}
+\DoxyCodeLine{00883\ \ \ \ \ \textcolor{comment}{//\ event\ a5}}
+\DoxyCodeLine{00884\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a5\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a5();}
+\DoxyCodeLine{00885\ \ \ \ \ \textcolor{comment}{//\ a5\ thres\ 1}}
+\DoxyCodeLine{00886\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a5.a5\_thres1,\ event\_triggered\_cfg.event\_id.event\_a5.value().a5\_thres\_1);}
+\DoxyCodeLine{00887\ \ \ \ \ \textcolor{comment}{//\ a5\ thres\ 2}}
+\DoxyCodeLine{00888\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a5.a5\_thres2,\ event\_triggered\_cfg.event\_id.event\_a5.value().a5\_thres\_2);}
+\DoxyCodeLine{00889\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00890\ \ \ \ \ asn1\_event\_a5.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a5.value().report\_on\_leave;}
+\DoxyCodeLine{00891\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00892\ \ \ \ \ asn1\_event\_a5.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a5.value().hysteresis;}
+\DoxyCodeLine{00893\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00894\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a5.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a5.value().time\_to\_trigger);}
+\DoxyCodeLine{00895\ \ \ \ \ \textcolor{comment}{//\ use\ allowed\ cell\ list}}
+\DoxyCodeLine{00896\ \ \ \ \ asn1\_event\_a5.use\_allowed\_cell\_list\ =\ event\_triggered\_cfg.event\_id.event\_a5.value().use\_allowed\_cell\_list;}
+\DoxyCodeLine{00897\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.event\_id.event\_a6.has\_value())\ \{}
+\DoxyCodeLine{00898\ \ \ \ \ \textcolor{comment}{//\ event\ a6}}
+\DoxyCodeLine{00899\ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_event\_a6\ =\ asn1\_event\_triggered\_cfg.event\_id.set\_event\_a6();}
+\DoxyCodeLine{00900\ \ \ \ \ \textcolor{comment}{//\ a6\ offset}}
+\DoxyCodeLine{00901\ \ \ \ \ meas\_trigger\_quant\_to\_rrc\_asn1(asn1\_event\_a6.a6\_offset,\ event\_triggered\_cfg.event\_id.event\_a6.value().a6\_offset);}
+\DoxyCodeLine{00902\ \ \ \ \ \textcolor{comment}{//\ report\ on\ leave}}
+\DoxyCodeLine{00903\ \ \ \ \ asn1\_event\_a6.report\_on\_leave\ =\ event\_triggered\_cfg.event\_id.event\_a6.value().report\_on\_leave;}
+\DoxyCodeLine{00904\ \ \ \ \ \textcolor{comment}{//\ hysteresis}}
+\DoxyCodeLine{00905\ \ \ \ \ asn1\_event\_a6.hysteresis\ =\ event\_triggered\_cfg.event\_id.event\_a6.value().hysteresis;}
+\DoxyCodeLine{00906\ \ \ \ \ \textcolor{comment}{//\ time\ to\ trigger}}
+\DoxyCodeLine{00907\ \ \ \ \ asn1::number\_to\_enum(asn1\_event\_a6.time\_to\_trigger,\ event\_triggered\_cfg.event\_id.event\_a6.value().time\_to\_trigger);}
+\DoxyCodeLine{00908\ \ \ \ \ \textcolor{comment}{//\ use\ allowed\ cell\ list}}
+\DoxyCodeLine{00909\ \ \ \ \ asn1\_event\_a6.use\_allowed\_cell\_list\ =\ event\_triggered\_cfg.event\_id.event\_a6.value().use\_allowed\_cell\_list;}
+\DoxyCodeLine{00910\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00911\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00912\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ event\ id\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00913\ \ \ \}}
+\DoxyCodeLine{00914\ }
+\DoxyCodeLine{00915\ \ \ \textcolor{comment}{//\ rs\ type}}
+\DoxyCodeLine{00916\ \ \ asn1\_event\_triggered\_cfg.rs\_type\ =\ rrc\_nr\_rs\_type\_to\_asn1(event\_triggered\_cfg.rs\_type);}
+\DoxyCodeLine{00917\ }
+\DoxyCodeLine{00918\ \ \ \textcolor{comment}{//\ report\ interv}}
+\DoxyCodeLine{00919\ \ \ asn1::number\_to\_enum(asn1\_event\_triggered\_cfg.report\_interv,\ event\_triggered\_cfg.report\_interv);}
+\DoxyCodeLine{00920\ }
+\DoxyCodeLine{00921\ \ \ \textcolor{comment}{//\ report\ amount}}
+\DoxyCodeLine{00922\ \ \ asn1::number\_to\_enum(asn1\_event\_triggered\_cfg.report\_amount,\ event\_triggered\_cfg.report\_amount);}
+\DoxyCodeLine{00923\ }
+\DoxyCodeLine{00924\ \ \ \textcolor{comment}{//\ report\ quant\ cell}}
+\DoxyCodeLine{00925\ \ \ asn1\_event\_triggered\_cfg.report\_quant\_cell\ =\ meas\_report\_quant\_to\_rrc\_asn1(event\_triggered\_cfg.report\_quant\_cell);}
+\DoxyCodeLine{00926\ }
+\DoxyCodeLine{00927\ \ \ \textcolor{comment}{//\ max\ report\ cells}}
+\DoxyCodeLine{00928\ \ \ asn1\_event\_triggered\_cfg.max\_report\_cells\ =\ event\_triggered\_cfg.max\_report\_cells;}
+\DoxyCodeLine{00929\ }
+\DoxyCodeLine{00930\ \ \ \textcolor{comment}{//\ report\ quant\ rx\ idxes}}
+\DoxyCodeLine{00931\ \ \ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.report\_quant\_rs\_idxes.has\_value())\ \{}
+\DoxyCodeLine{00932\ \ \ \ \ asn1\_event\_triggered\_cfg.report\_quant\_rs\_idxes\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00933\ \ \ \ \ asn1\_event\_triggered\_cfg.report\_quant\_rs\_idxes\ =}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ meas\_report\_quant\_to\_rrc\_asn1(event\_triggered\_cfg.report\_quant\_rs\_idxes.value());}
+\DoxyCodeLine{00935\ \ \ \}}
+\DoxyCodeLine{00936\ }
+\DoxyCodeLine{00937\ \ \ \textcolor{comment}{//\ max\ nrof\ rs\ idxes\ to\ report}}
+\DoxyCodeLine{00938\ \ \ \textcolor{keywordflow}{if}\ (event\_triggered\_cfg.max\_nrof\_rs\_idxes\_to\_report.has\_value())\ \{}
+\DoxyCodeLine{00939\ \ \ \ \ asn1\_event\_triggered\_cfg.max\_nrof\_rs\_idxes\_to\_report\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00940\ \ \ \ \ asn1\_event\_triggered\_cfg.max\_nrof\_rs\_idxes\_to\_report\ =\ event\_triggered\_cfg.max\_nrof\_rs\_idxes\_to\_report.value();}
+\DoxyCodeLine{00941\ \ \ \}}
+\DoxyCodeLine{00942\ }
+\DoxyCodeLine{00943\ \ \ \textcolor{comment}{//\ include\ beam\ meass}}
+\DoxyCodeLine{00944\ \ \ asn1\_event\_triggered\_cfg.include\_beam\_meass\ =\ event\_triggered\_cfg.include\_beam\_meass;}
+\DoxyCodeLine{00945\ }
+\DoxyCodeLine{00946\ \ \ \textcolor{keywordflow}{return}\ asn1\_event\_triggered\_cfg;}
+\DoxyCodeLine{00947\ \}}
+\DoxyCodeLine{00948\ }
+\DoxyCodeLine{00949\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1report__cfg__nr__s}{report\_cfg\_nr\_s}}\ report\_cfg\_nr\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cfg__nr}{rrc\_report\_cfg\_nr}}\&\ report\_cfg\_nr)}
+\DoxyCodeLine{00950\ \{}
+\DoxyCodeLine{00951\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1report__cfg__nr__s}{report\_cfg\_nr\_s}}\ asn1\_report\_cfg\_nr;}
+\DoxyCodeLine{00952\ }
+\DoxyCodeLine{00953\ \ \ \textcolor{keywordflow}{if}\ (report\_cfg\_nr.periodical.has\_value())\ \{}
+\DoxyCodeLine{00954\ \ \ \ \ \textcolor{comment}{//\ periodical}}
+\DoxyCodeLine{00955\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.set\_periodical()\ =}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ periodical\_report\_cfg\_to\_rrc\_asn1(report\_cfg\_nr.periodical.value());}
+\DoxyCodeLine{00957\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (report\_cfg\_nr.event\_triggered.has\_value())\ \{}
+\DoxyCodeLine{00958\ \ \ \ \ \textcolor{comment}{//\ event\ triggered}}
+\DoxyCodeLine{00959\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.set\_event\_triggered()\ =}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ event\_triggered\_report\_cfg\_to\_rrc\_asn1(report\_cfg\_nr.event\_triggered.value());}
+\DoxyCodeLine{00961\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (report\_cfg\_nr.report\_cgi.has\_value())\ \{}
+\DoxyCodeLine{00962\ \ \ \ \ \textcolor{comment}{//\ report\ cgi}}
+\DoxyCodeLine{00963\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.set\_report\_cgi();}
+\DoxyCodeLine{00964\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.report\_cgi().cell\_for\_which\_to\_report\_cgi\ =}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ report\_cfg\_nr.report\_cgi.value().cell\_for\_which\_to\_report\_cgi;}
+\DoxyCodeLine{00966\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (report\_cfg\_nr.report\_sftd.has\_value())\ \{}
+\DoxyCodeLine{00967\ \ \ \ \ \textcolor{comment}{//\ report\ sftd}}
+\DoxyCodeLine{00968\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.set\_report\_sftd();}
+\DoxyCodeLine{00969\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.report\_sftd().report\_sftd\_meas\ =\ report\_cfg\_nr.report\_sftd.value().report\_sftd\_meas;}
+\DoxyCodeLine{00970\ \ \ \ \ asn1\_report\_cfg\_nr.report\_type.report\_sftd().report\_rsrp\ \ \ \ \ \ =\ report\_cfg\_nr.report\_sftd.value().report\_rsrp;}
+\DoxyCodeLine{00971\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00972\ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00973\ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ report\ cfg\ nr\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{00974\ \ \ \}}
+\DoxyCodeLine{00975\ }
+\DoxyCodeLine{00976\ \ \ \textcolor{keywordflow}{return}\ asn1\_report\_cfg\_nr;}
+\DoxyCodeLine{00977\ \}}
+\DoxyCodeLine{00978\ }
+\DoxyCodeLine{00979\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1report__cfg__to__add__mod__s}{report\_cfg\_to\_add\_mod\_s}}}
+\DoxyCodeLine{00980\ report\_cfg\_to\_add\_mod\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__report__cfg__to__add__mod}{rrc\_report\_cfg\_to\_add\_mod}}\&\ report\_cfg\_to\_add\_mod)}
+\DoxyCodeLine{00981\ \{}
+\DoxyCodeLine{00982\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1report__cfg__to__add__mod__s}{report\_cfg\_to\_add\_mod\_s}}\ asn1\_report\_cfg\_to\_add\_mod;}
+\DoxyCodeLine{00983\ }
+\DoxyCodeLine{00984\ \ \ \textcolor{comment}{//\ report\ cfg\ id}}
+\DoxyCodeLine{00985\ \ \ asn1\_report\_cfg\_to\_add\_mod.report\_cfg\_id\ =\ report\_cfg\_id\_to\_uint(report\_cfg\_to\_add\_mod.report\_cfg\_id);}
+\DoxyCodeLine{00986\ }
+\DoxyCodeLine{00987\ \ \ \textcolor{comment}{//\ report\ cfg}}
+\DoxyCodeLine{00988\ \ \ asn1\_report\_cfg\_to\_add\_mod.report\_cfg.set\_report\_cfg\_nr()\ =}
+\DoxyCodeLine{00989\ \ \ \ \ \ \ report\_cfg\_nr\_to\_rrc\_asn1(report\_cfg\_to\_add\_mod.report\_cfg);}
+\DoxyCodeLine{00990\ }
+\DoxyCodeLine{00991\ \ \ \textcolor{keywordflow}{return}\ asn1\_report\_cfg\_to\_add\_mod;}
+\DoxyCodeLine{00992\ \}}
+\DoxyCodeLine{00993\ }
+\DoxyCodeLine{00994\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__id__to__add__mod__s}{meas\_id\_to\_add\_mod\_s}}}
+\DoxyCodeLine{00995\ meas\_id\_to\_add\_mod\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__id__to__add__mod}{rrc\_meas\_id\_to\_add\_mod}}\&\ meas\_id\_to\_add\_mod)}
+\DoxyCodeLine{00996\ \{}
+\DoxyCodeLine{00997\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__id__to__add__mod__s}{meas\_id\_to\_add\_mod\_s}}\ asn1\_meas\_id\_to\_add\_mod;}
+\DoxyCodeLine{00998\ }
+\DoxyCodeLine{00999\ \ \ \textcolor{comment}{//\ meas\ id}}
+\DoxyCodeLine{01000\ \ \ asn1\_meas\_id\_to\_add\_mod.meas\_id\ =\ meas\_id\_to\_uint(meas\_id\_to\_add\_mod.meas\_id);}
+\DoxyCodeLine{01001\ \ \ \textcolor{comment}{//\ meas\ obj\ id}}
+\DoxyCodeLine{01002\ \ \ asn1\_meas\_id\_to\_add\_mod.meas\_obj\_id\ =\ meas\_obj\_id\_to\_uint(meas\_id\_to\_add\_mod.meas\_obj\_id);}
+\DoxyCodeLine{01003\ \ \ \textcolor{comment}{//\ report\ cfg\ ind}}
+\DoxyCodeLine{01004\ \ \ asn1\_meas\_id\_to\_add\_mod.report\_cfg\_id\ =\ report\_cfg\_id\_to\_uint(meas\_id\_to\_add\_mod.report\_cfg\_id);}
+\DoxyCodeLine{01005\ }
+\DoxyCodeLine{01006\ \ \ \textcolor{keywordflow}{return}\ asn1\_meas\_id\_to\_add\_mod;}
+\DoxyCodeLine{01007\ \}}
+\DoxyCodeLine{01008\ }
+\DoxyCodeLine{01009\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1filt__cfg__s}{filt\_cfg\_s}}\ filt\_cfg\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__filt__cfg}{rrc\_filt\_cfg}}\&\ filt\_cfg)}
+\DoxyCodeLine{01010\ \{}
+\DoxyCodeLine{01011\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1filt__cfg__s}{filt\_cfg\_s}}\ asn1\_filt\_cfg;}
+\DoxyCodeLine{01012\ }
+\DoxyCodeLine{01013\ \ \ \textcolor{comment}{//\ filt\ coef\ rsrp}}
+\DoxyCodeLine{01014\ \ \ \textcolor{keywordflow}{if}\ (filt\_cfg.filt\_coef\_rsrp.has\_value())\ \{}
+\DoxyCodeLine{01015\ \ \ \ \ asn1\_filt\_cfg.filt\_coef\_rsrp\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01016\ \ \ \ \ asn1::number\_to\_enum(asn1\_filt\_cfg.filt\_coef\_rsrp,\ filt\_cfg.filt\_coef\_rsrp.value());}
+\DoxyCodeLine{01017\ \ \ \}}
+\DoxyCodeLine{01018\ }
+\DoxyCodeLine{01019\ \ \ \textcolor{comment}{//\ filt\ coef\ rsrq}}
+\DoxyCodeLine{01020\ \ \ \textcolor{keywordflow}{if}\ (filt\_cfg.filt\_coef\_rsrq.has\_value())\ \{}
+\DoxyCodeLine{01021\ \ \ \ \ asn1\_filt\_cfg.filt\_coef\_rsrq\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01022\ \ \ \ \ asn1::number\_to\_enum(asn1\_filt\_cfg.filt\_coef\_rsrq,\ filt\_cfg.filt\_coef\_rsrq.value());}
+\DoxyCodeLine{01023\ \ \ \}}
+\DoxyCodeLine{01024\ }
+\DoxyCodeLine{01025\ \ \ \textcolor{comment}{//\ filt\ coef\ rs\ sinr}}
+\DoxyCodeLine{01026\ \ \ \textcolor{keywordflow}{if}\ (filt\_cfg.filt\_coef\_rs\_sinr.has\_value())\ \{}
+\DoxyCodeLine{01027\ \ \ \ \ asn1\_filt\_cfg.filt\_coef\_rs\_sinr\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01028\ \ \ \ \ asn1::number\_to\_enum(asn1\_filt\_cfg.filt\_coef\_rs\_sinr,\ filt\_cfg.filt\_coef\_rs\_sinr.value());}
+\DoxyCodeLine{01029\ \ \ \}}
+\DoxyCodeLine{01030\ }
+\DoxyCodeLine{01031\ \ \ \textcolor{keywordflow}{return}\ asn1\_filt\_cfg;}
+\DoxyCodeLine{01032\ \}}
+\DoxyCodeLine{01033\ }
+\DoxyCodeLine{01034\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1quant__cfg__rs__s}{quant\_cfg\_rs\_s}}\ quant\_cfg\_rs\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__quant__cfg__rs}{rrc\_quant\_cfg\_rs}}\&\ quant\_cfg\_rs)}
+\DoxyCodeLine{01035\ \{}
+\DoxyCodeLine{01036\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1quant__cfg__rs__s}{quant\_cfg\_rs\_s}}\ asn1\_quant\_cfg\_rs;}
+\DoxyCodeLine{01037\ }
+\DoxyCodeLine{01038\ \ \ \textcolor{comment}{//\ ssb\ filt\ cfg}}
+\DoxyCodeLine{01039\ \ \ asn1\_quant\_cfg\_rs.ssb\_filt\_cfg\ =\ filt\_cfg\_to\_rrc\_asn1(quant\_cfg\_rs.ssb\_filt\_cfg);}
+\DoxyCodeLine{01040\ \ \ \textcolor{comment}{//\ csi\ rs\ filt\ cfg}}
+\DoxyCodeLine{01041\ \ \ asn1\_quant\_cfg\_rs.csi\_rs\_filt\_cfg\ =\ filt\_cfg\_to\_rrc\_asn1(quant\_cfg\_rs.csi\_rs\_filt\_cfg);}
+\DoxyCodeLine{01042\ }
+\DoxyCodeLine{01043\ \ \ \textcolor{keywordflow}{return}\ asn1\_quant\_cfg\_rs;}
+\DoxyCodeLine{01044\ \}}
+\DoxyCodeLine{01045\ }
+\DoxyCodeLine{01046\ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ type\ \(\backslash\)c\ cu\_cp\_meas\_cfg\ to\ an\ RRC\ NR\ ASN.1\ type.}}
+\DoxyCodeLine{01047\ \textcolor{comment}{///\ \(\backslash\)param\ meas\_cfg\ Meas\ config\ object.}}
+\DoxyCodeLine{01048\ \textcolor{comment}{///\ \(\backslash\)return\ The\ RRC\ NR\ ASN.1\ object\ where\ the\ result\ of\ the\ conversion\ is\ stored.}}
+\DoxyCodeLine{01049\ \textcolor{keyword}{inline}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__cfg__s}{meas\_cfg\_s}}\ meas\_config\_to\_rrc\_asn1(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__cfg}{rrc\_meas\_cfg}}\&\ meas\_cfg)}
+\DoxyCodeLine{01050\ \{}
+\DoxyCodeLine{01051\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__cfg__s}{meas\_cfg\_s}}\ asn1\_meas\_cfg;}
+\DoxyCodeLine{01052\ }
+\DoxyCodeLine{01053\ \ \ \textcolor{comment}{//\ meas\ obj\ to\ rem\ list}}
+\DoxyCodeLine{01054\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ meas\_obj\_to\_rem\ :\ meas\_cfg.meas\_obj\_to\_rem\_list)\ \{}
+\DoxyCodeLine{01055\ \ \ \ \ asn1\_meas\_cfg.meas\_obj\_to\_rem\_list.push\_back(meas\_obj\_id\_to\_uint(meas\_obj\_to\_rem));}
+\DoxyCodeLine{01056\ \ \ \}}
+\DoxyCodeLine{01057\ }
+\DoxyCodeLine{01058\ \ \ \textcolor{comment}{//\ meas\ obj\ to\ add\ mod\ list}}
+\DoxyCodeLine{01059\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ meas\_obj\_to\_add\_mod\ :\ meas\_cfg.meas\_obj\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{01060\ \ \ \ \ asn1::rrc\_nr::meas\_obj\_to\_add\_mod\_s\ asn1\_meas\_obj\_to\_add\_mod\ =\ meas\_obj\_to\_add\_mod\_to\_rrc\_asn1(meas\_obj\_to\_add\_mod);}
+\DoxyCodeLine{01061\ \ \ \ \ asn1\_meas\_cfg.meas\_obj\_to\_add\_mod\_list.push\_back(asn1\_meas\_obj\_to\_add\_mod);}
+\DoxyCodeLine{01062\ \ \ \}}
+\DoxyCodeLine{01063\ }
+\DoxyCodeLine{01064\ \ \ \textcolor{comment}{//\ report\ cfg\ to\ rem\ list}}
+\DoxyCodeLine{01065\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ report\_cfg\_to\_rem\ :\ meas\_cfg.report\_cfg\_to\_rem\_list)\ \{}
+\DoxyCodeLine{01066\ \ \ \ \ asn1\_meas\_cfg.report\_cfg\_to\_rem\_list.push\_back(report\_cfg\_id\_to\_uint(report\_cfg\_to\_rem));}
+\DoxyCodeLine{01067\ \ \ \}}
+\DoxyCodeLine{01068\ }
+\DoxyCodeLine{01069\ \ \ \textcolor{comment}{//\ report\ cfg\ to\ add\ mod\ list}}
+\DoxyCodeLine{01070\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ report\_cfg\_to\_add\_mod\ :\ meas\_cfg.report\_cfg\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{01071\ \ \ \ \ asn1::rrc\_nr::report\_cfg\_to\_add\_mod\_s\ asn1\_report\_cfg\_to\_add\_mod\ =}
+\DoxyCodeLine{01072\ \ \ \ \ \ \ \ \ report\_cfg\_to\_add\_mod\_to\_rrc\_asn1(report\_cfg\_to\_add\_mod);}
+\DoxyCodeLine{01073\ \ \ \ \ asn1\_meas\_cfg.report\_cfg\_to\_add\_mod\_list.push\_back(asn1\_report\_cfg\_to\_add\_mod);}
+\DoxyCodeLine{01074\ \ \ \}}
+\DoxyCodeLine{01075\ }
+\DoxyCodeLine{01076\ \ \ \textcolor{comment}{//\ meas\ id\ to\ rem\ list}}
+\DoxyCodeLine{01077\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ meas\_id\_to\_rem\ :\ meas\_cfg.meas\_id\_to\_rem\_list)\ \{}
+\DoxyCodeLine{01078\ \ \ \ \ asn1\_meas\_cfg.meas\_id\_to\_rem\_list.push\_back(meas\_id\_to\_uint(meas\_id\_to\_rem));}
+\DoxyCodeLine{01079\ \ \ \}}
+\DoxyCodeLine{01080\ }
+\DoxyCodeLine{01081\ \ \ \textcolor{comment}{//\ meas\ id\ to\ add\ mod\ list}}
+\DoxyCodeLine{01082\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ meas\_id\_to\_add\_mod\ :\ meas\_cfg.meas\_id\_to\_add\_mod\_list)\ \{}
+\DoxyCodeLine{01083\ \ \ \ \ asn1::rrc\_nr::meas\_id\_to\_add\_mod\_s\ asn1\_meas\_id\_to\_add\_mod\ =\ meas\_id\_to\_add\_mod\_to\_rrc\_asn1(meas\_id\_to\_add\_mod);}
+\DoxyCodeLine{01084\ \ \ \ \ asn1\_meas\_cfg.meas\_id\_to\_add\_mod\_list.push\_back(asn1\_meas\_id\_to\_add\_mod);}
+\DoxyCodeLine{01085\ \ \ \}}
+\DoxyCodeLine{01086\ }
+\DoxyCodeLine{01087\ \ \ \textcolor{comment}{//\ s\ measure\ cfg}}
+\DoxyCodeLine{01088\ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.s\_measure\_cfg.has\_value())\ \{}
+\DoxyCodeLine{01089\ \ \ \ \ asn1\_meas\_cfg.s\_measure\_cfg\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01090\ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.s\_measure\_cfg.value().ssb\_rsrp.has\_value())\ \{}
+\DoxyCodeLine{01091\ \ \ \ \ \ \ asn1\_meas\_cfg.s\_measure\_cfg.set\_ssb\_rsrp()\ =\ meas\_cfg.s\_measure\_cfg.value().ssb\_rsrp.value();}
+\DoxyCodeLine{01092\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (meas\_cfg.s\_measure\_cfg.value().csi\_rsrp.has\_value())\ \{}
+\DoxyCodeLine{01093\ \ \ \ \ \ \ asn1\_meas\_cfg.s\_measure\_cfg.set\_csi\_rsrp()\ =\ meas\_cfg.s\_measure\_cfg.value().csi\_rsrp.value();}
+\DoxyCodeLine{01094\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01095\ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{01096\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ s\ measure\ cfg\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{01097\ \ \ \ \ \}}
+\DoxyCodeLine{01098\ \ \ \}}
+\DoxyCodeLine{01099\ }
+\DoxyCodeLine{01100\ \ \ \textcolor{comment}{//\ quant\ cfg}}
+\DoxyCodeLine{01101\ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.quant\_cfg.has\_value())\ \{}
+\DoxyCodeLine{01102\ \ \ \ \ asn1\_meas\_cfg.quant\_cfg\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01103\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ quant\_cfg\_nr\ :\ meas\_cfg.quant\_cfg.value().quant\_cfg\_nr\_list)\ \{}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ asn1::rrc\_nr::quant\_cfg\_nr\_s\ asn1\_quant\_cfg\_nr;}
+\DoxyCodeLine{01105\ }
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \textcolor{comment}{//\ quant\ cfg\ cell}}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ asn1\_quant\_cfg\_nr.quant\_cfg\_cell\ =\ quant\_cfg\_rs\_to\_rrc\_asn1(quant\_cfg\_nr.quant\_cfg\_cell);}
+\DoxyCodeLine{01108\ }
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \textcolor{comment}{//\ quant\ cfg\ rs\ idx}}
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (quant\_cfg\_nr.quant\_cfg\_rs\_idx.has\_value())\ \{}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ asn1\_quant\_cfg\_nr.quant\_cfg\_rs\_idx\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ asn1\_quant\_cfg\_nr.quant\_cfg\_rs\_idx\ \ \ \ \ \ \ \ \ =\ quant\_cfg\_rs\_to\_rrc\_asn1(quant\_cfg\_nr.quant\_cfg\_rs\_idx.value());}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01114\ }
+\DoxyCodeLine{01115\ \ \ \ \ \ \ asn1\_meas\_cfg.quant\_cfg.quant\_cfg\_nr\_list.push\_back(asn1\_quant\_cfg\_nr);}
+\DoxyCodeLine{01116\ \ \ \ \ \}}
+\DoxyCodeLine{01117\ \ \ \}}
+\DoxyCodeLine{01118\ }
+\DoxyCodeLine{01119\ \ \ \textcolor{comment}{//\ meas\ gap\ cfg}}
+\DoxyCodeLine{01120\ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_cfg.has\_value())\ \{}
+\DoxyCodeLine{01121\ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_cfg\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01122\ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.has\_value())\ \{}
+\DoxyCodeLine{01123\ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01124\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().is\_release)\ \{}
+\DoxyCodeLine{01125\ \ \ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.set\_release();}
+\DoxyCodeLine{01126\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().setup.has\_value())\ \{}
+\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.set\_setup();}
+\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ gap\ offset}}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.setup().gap\_offset\ =}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \ \ \ \ meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().setup.value().gap\_offset;}
+\DoxyCodeLine{01131\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mgl}}
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.setup().mgl,}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().setup.value().mgl);}
+\DoxyCodeLine{01134\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mgrp}}
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.setup().mgrp,}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().setup.value().mgrp);}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mgta}}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ asn1::number\_to\_enum(asn1\_meas\_cfg.meas\_gap\_cfg.gap\_fr2.setup().mgta,}
+\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_cfg.meas\_gap\_cfg.value().gap\_fr2.value().setup.value().mgta);}
+\DoxyCodeLine{01140\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ gap\ fr2\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{01143\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01144\ \ \ \ \ \}}
+\DoxyCodeLine{01145\ \ \ \}}
+\DoxyCodeLine{01146\ }
+\DoxyCodeLine{01147\ \ \ \textcolor{comment}{//\ meas\ gap\ sharing\ cfg}}
+\DoxyCodeLine{01148\ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_sharing\_cfg.has\_value())\ \{}
+\DoxyCodeLine{01149\ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_sharing\_cfg\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01150\ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_sharing\_cfg.value().gap\_sharing\_fr2.has\_value())\ \{}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_sharing\_cfg.gap\_sharing\_fr2\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (meas\_cfg.meas\_gap\_sharing\_cfg.value().gap\_sharing\_fr2.value().is\_release)\ \{}
+\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_sharing\_cfg.gap\_sharing\_fr2.set\_release();}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (!meas\_cfg.meas\_gap\_sharing\_cfg.value().gap\_sharing\_fr2.value().setup.value().empty())\ \{}
+\DoxyCodeLine{01155\ \ \ \ \ \ \ \ \ asn1\_meas\_cfg.meas\_gap\_sharing\_cfg.gap\_sharing\_fr2.set\_setup();}
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ asn1::string\_to\_enum(asn1\_meas\_cfg.meas\_gap\_sharing\_cfg.gap\_sharing\_fr2.setup(),}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ meas\_cfg.meas\_gap\_sharing\_cfg.value().gap\_sharing\_fr2.value().setup.value());}
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{01160\ \ \ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Cannot\ convert\ gap\ sharing\ fr2\ to\ ASN.1\ type"{}});}
+\DoxyCodeLine{01161\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01162\ \ \ \ \ \}}
+\DoxyCodeLine{01163\ \ \ \}}
+\DoxyCodeLine{01164\ }
+\DoxyCodeLine{01165\ \ \ \textcolor{keywordflow}{return}\ asn1\_meas\_cfg;}
+\DoxyCodeLine{01166\ \}}
+\DoxyCodeLine{01167\ }
+\DoxyCodeLine{01168\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__quant__results}{rrc\_meas\_quant\_results}}}
+\DoxyCodeLine{01169\ asn1\_to\_meas\_quant\_results(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__quant__results__s}{meas\_quant\_results\_s}}\&\ asn1\_meas\_quant\_results)}
+\DoxyCodeLine{01170\ \{}
+\DoxyCodeLine{01171\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__quant__results}{rrc\_meas\_quant\_results}}\ meas\_quant\_results;}
+\DoxyCodeLine{01172\ }
+\DoxyCodeLine{01173\ \ \ \textcolor{comment}{//\ rsrp}}
+\DoxyCodeLine{01174\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_quant\_results.rsrp\_present)\ \{}
+\DoxyCodeLine{01175\ \ \ \ \ meas\_quant\_results.rsrp\ =\ asn1\_meas\_quant\_results.rsrp;}
+\DoxyCodeLine{01176\ \ \ \}}
+\DoxyCodeLine{01177\ }
+\DoxyCodeLine{01178\ \ \ \textcolor{comment}{//\ rsrq}}
+\DoxyCodeLine{01179\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_quant\_results.rsrq\_present)\ \{}
+\DoxyCodeLine{01180\ \ \ \ \ meas\_quant\_results.rsrq\ =\ asn1\_meas\_quant\_results.rsrq;}
+\DoxyCodeLine{01181\ \ \ \}}
+\DoxyCodeLine{01182\ }
+\DoxyCodeLine{01183\ \ \ \textcolor{comment}{//\ sinr}}
+\DoxyCodeLine{01184\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_quant\_results.sinr\_present)\ \{}
+\DoxyCodeLine{01185\ \ \ \ \ meas\_quant\_results.sinr\ =\ asn1\_meas\_quant\_results.sinr;}
+\DoxyCodeLine{01186\ \ \ \}}
+\DoxyCodeLine{01187\ }
+\DoxyCodeLine{01188\ \ \ \textcolor{keywordflow}{return}\ meas\_quant\_results;}
+\DoxyCodeLine{01189\ \};}
+\DoxyCodeLine{01190\ }
+\DoxyCodeLine{01191\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr}{rrc\_meas\_result\_nr}}\ asn1\_to\_meas\_result\_nr(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__result__nr__s}{meas\_result\_nr\_s}}\&\ asn1\_meas\_result\_nr)}
+\DoxyCodeLine{01192\ \{}
+\DoxyCodeLine{01193\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr}{rrc\_meas\_result\_nr}}\ meas\_result\_nr;}
+\DoxyCodeLine{01194\ }
+\DoxyCodeLine{01195\ \ \ \textcolor{comment}{//\ pci}}
+\DoxyCodeLine{01196\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_result\_nr.pci\_present)\ \{}
+\DoxyCodeLine{01197\ \ \ \ \ meas\_result\_nr.pci\ =\ asn1\_meas\_result\_nr.pci;}
+\DoxyCodeLine{01198\ \ \ \}}
+\DoxyCodeLine{01199\ }
+\DoxyCodeLine{01200\ \ \ \textcolor{comment}{//\ cell\ results}}
+\DoxyCodeLine{01201\ \ \ \textcolor{comment}{//\ results\ ssb\ cell}}
+\DoxyCodeLine{01202\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_result\_nr.meas\_result.cell\_results.results\_ssb\_cell\_present)\ \{}
+\DoxyCodeLine{01203\ \ \ \ \ meas\_result\_nr.cell\_results.results\_ssb\_cell\ =}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ asn1\_to\_meas\_quant\_results(asn1\_meas\_result\_nr.meas\_result.cell\_results.results\_ssb\_cell);}
+\DoxyCodeLine{01205\ \ \ \}}
+\DoxyCodeLine{01206\ \ \ \textcolor{comment}{//\ results\ csi\ rs\ cell}}
+\DoxyCodeLine{01207\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_result\_nr.meas\_result.cell\_results.results\_csi\_rs\_cell\_present)\ \{}
+\DoxyCodeLine{01208\ \ \ \ \ meas\_result\_nr.cell\_results.results\_csi\_rs\_cell\ =}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ asn1\_to\_meas\_quant\_results(asn1\_meas\_result\_nr.meas\_result.cell\_results.results\_csi\_rs\_cell);}
+\DoxyCodeLine{01210\ \ \ \}}
+\DoxyCodeLine{01211\ }
+\DoxyCodeLine{01212\ \ \ \textcolor{comment}{//\ rs\ idx\ results}}
+\DoxyCodeLine{01213\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_result\_nr.meas\_result.rs\_idx\_results\_present)\ \{}
+\DoxyCodeLine{01214\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr}{rrc\_meas\_result\_nr}}::\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__nr_1_1rs__idx__results__}{rs\_idx\_results\_}}\ rs\_idx\_result;}
+\DoxyCodeLine{01215\ }
+\DoxyCodeLine{01216\ \ \ \ \ \textcolor{comment}{//\ results\ ssb\ idxes}}
+\DoxyCodeLine{01217\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_ssb\_result\ :\ asn1\_meas\_result\_nr.meas\_result.rs\_idx\_results.results\_ssb\_idxes)\ \{}
+\DoxyCodeLine{01218\ \ \ \ \ \ \ rrc\_results\_per\_ssb\_idx\ ssb\_result;}
+\DoxyCodeLine{01219\ }
+\DoxyCodeLine{01220\ \ \ \ \ \ \ ssb\_result.ssb\_idx\ =\ asn1\_ssb\_result.ssb\_idx;}
+\DoxyCodeLine{01221\ }
+\DoxyCodeLine{01222\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_ssb\_result.ssb\_results\_present)\ \{}
+\DoxyCodeLine{01223\ \ \ \ \ \ \ \ \ ssb\_result.ssb\_results\ =\ asn1\_to\_meas\_quant\_results(asn1\_ssb\_result.ssb\_results);}
+\DoxyCodeLine{01224\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01225\ \ \ \ \ \ \ rs\_idx\_result.results\_ssb\_idxes.emplace(asn1\_ssb\_result.ssb\_idx,\ ssb\_result);}
+\DoxyCodeLine{01226\ \ \ \ \ \}}
+\DoxyCodeLine{01227\ }
+\DoxyCodeLine{01228\ \ \ \ \ \textcolor{comment}{//\ results\ csi\_rs\ idxes}}
+\DoxyCodeLine{01229\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_csi\_rs\_result\ :\ asn1\_meas\_result\_nr.meas\_result.rs\_idx\_results.results\_csi\_rs\_idxes)\ \{}
+\DoxyCodeLine{01230\ \ \ \ \ \ \ rrc\_results\_per\_csi\_rs\_idx\ csi\_rs\_result;}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_csi\_rs\_result.csi\_rs\_results\_present)\ \{}
+\DoxyCodeLine{01232\ \ \ \ \ \ \ \ \ csi\_rs\_result.csi\_rs\_results\ =\ asn1\_to\_meas\_quant\_results(asn1\_csi\_rs\_result.csi\_rs\_results);}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ rs\_idx\_result.results\_csi\_rs\_idxes.emplace(asn1\_csi\_rs\_result.csi\_rs\_idx,\ csi\_rs\_result);}
+\DoxyCodeLine{01235\ \ \ \ \ \}}
+\DoxyCodeLine{01236\ }
+\DoxyCodeLine{01237\ \ \ \ \ meas\_result\_nr.rs\_idx\_results\ =\ rs\_idx\_result;}
+\DoxyCodeLine{01238\ \ \ \}}
+\DoxyCodeLine{01239\ }
+\DoxyCodeLine{01240\ \ \ \textcolor{keywordflow}{return}\ meas\_result\_nr;}
+\DoxyCodeLine{01241\ \};}
+\DoxyCodeLine{01242\ }
+\DoxyCodeLine{01243\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__results}{rrc\_meas\_results}}\ asn1\_to\_measurement\_results(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__results__s}{meas\_results\_s}}\&\ asn1\_meas\_results)}
+\DoxyCodeLine{01244\ \{}
+\DoxyCodeLine{01245\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__results}{rrc\_meas\_results}}\ meas\_results;}
+\DoxyCodeLine{01246\ }
+\DoxyCodeLine{01247\ \ \ \textcolor{comment}{//\ meas\ id}}
+\DoxyCodeLine{01248\ \ \ meas\_results.meas\_id\ =\ uint\_to\_meas\_id(asn1\_meas\_results.meas\_id);}
+\DoxyCodeLine{01249\ }
+\DoxyCodeLine{01250\ \ \ \textcolor{comment}{//\ meas\ result\ serving\ mo\ list}}
+\DoxyCodeLine{01251\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_meas\_result\_serv\_mo\ :\ asn1\_meas\_results.meas\_result\_serving\_mo\_list)\ \{}
+\DoxyCodeLine{01252\ \ \ \ \ rrc\_meas\_result\_serv\_mo\ meas\_result\_serv\_mo;}
+\DoxyCodeLine{01253\ }
+\DoxyCodeLine{01254\ \ \ \ \ \textcolor{comment}{//\ serv\ cell\ id}}
+\DoxyCodeLine{01255\ \ \ \ \ meas\_result\_serv\_mo.serv\_cell\_id\ =\ asn1\_meas\_result\_serv\_mo.serv\_cell\_id;}
+\DoxyCodeLine{01256\ \ \ \ \ \textcolor{comment}{//\ meas\ result\ serving\ cell}}
+\DoxyCodeLine{01257\ \ \ \ \ meas\_result\_serv\_mo.meas\_result\_serving\_cell\ =}
+\DoxyCodeLine{01258\ \ \ \ \ \ \ \ \ asn1\_to\_meas\_result\_nr(asn1\_meas\_result\_serv\_mo.meas\_result\_serving\_cell);}
+\DoxyCodeLine{01259\ \ \ \ \ \textcolor{comment}{//\ meas\ result\ best\ neigh\ cell}}
+\DoxyCodeLine{01260\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_result\_serv\_mo.meas\_result\_best\_neigh\_cell\_present)\ \{}
+\DoxyCodeLine{01261\ \ \ \ \ \ \ meas\_result\_serv\_mo.meas\_result\_best\_neigh\_cell\ =}
+\DoxyCodeLine{01262\ \ \ \ \ \ \ \ \ \ \ asn1\_to\_meas\_result\_nr(asn1\_meas\_result\_serv\_mo.meas\_result\_best\_neigh\_cell);}
+\DoxyCodeLine{01263\ \ \ \ \ \}}
+\DoxyCodeLine{01264\ }
+\DoxyCodeLine{01265\ \ \ \ \ meas\_results.meas\_result\_serving\_mo\_list.emplace(asn1\_meas\_result\_serv\_mo.serv\_cell\_id,\ meas\_result\_serv\_mo);}
+\DoxyCodeLine{01266\ \ \ \}}
+\DoxyCodeLine{01267\ }
+\DoxyCodeLine{01268\ \ \ \textcolor{comment}{//\ meas\ result\ neigh\ cells}}
+\DoxyCodeLine{01269\ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_results.meas\_result\_neigh\_cells\_present)\ \{}
+\DoxyCodeLine{01270\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__meas__result__neigh__cells}{rrc\_meas\_result\_neigh\_cells}}\ meas\_result\_neigh\_cell;}
+\DoxyCodeLine{01271\ }
+\DoxyCodeLine{01272\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_meas\_results.meas\_result\_neigh\_cells.type()\ ==}
+\DoxyCodeLine{01273\ \ \ \ \ \ \ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__results__s}{meas\_results\_s}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__results__s_1_1meas__result__neigh__cells__c__}{meas\_result\_neigh\_cells\_c\_}}::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1meas__results__s_1_1meas__result__neigh__cells__c___1_1types__opts}{types\_opts}}::options::meas\_result\_list\_nr)\ \{}
+\DoxyCodeLine{01274\ \ \ \ \ \ \ \textcolor{comment}{//\ meas\ result\ list\ nr}}
+\DoxyCodeLine{01275\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_meas\_result\_nr\ :\ asn1\_meas\_results.meas\_result\_neigh\_cells.meas\_result\_list\_nr())\ \{}
+\DoxyCodeLine{01276\ \ \ \ \ \ \ \ \ meas\_result\_neigh\_cell.meas\_result\_list\_nr.push\_back(asn1\_to\_meas\_result\_nr(asn1\_meas\_result\_nr));}
+\DoxyCodeLine{01277\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01278\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01279\ \ \ \ \ \ \ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{01280\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ meas\ result\ neigh\ cells\ type\ =\ \{\}."{}},}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_meas\_results.meas\_result\_neigh\_cells.type());}
+\DoxyCodeLine{01282\ \ \ \ \ \}}
+\DoxyCodeLine{01283\ }
+\DoxyCodeLine{01284\ \ \ \ \ meas\_results.meas\_result\_neigh\_cells\ =\ meas\_result\_neigh\_cell;}
+\DoxyCodeLine{01285\ \ \ \}}
+\DoxyCodeLine{01286\ }
+\DoxyCodeLine{01287\ \ \ \textcolor{keywordflow}{return}\ meas\_results;}
+\DoxyCodeLine{01288\ \}}
+\DoxyCodeLine{01289\ }
+\DoxyCodeLine{01290\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{01291\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

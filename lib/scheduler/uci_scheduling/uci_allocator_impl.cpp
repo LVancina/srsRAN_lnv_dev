@@ -290,6 +290,8 @@ void uci_allocator_impl::multiplex_uci_on_pusch(ul_sched_info&                pu
     update_uci_on_pusch_harq_offsets(
         uci.harq.value(), ue_cell_cfg.cfg_dedicated().ul_config.value().init_ul_bwp.pusch_cfg.value().uci_cfg.value());
   }
+
+  logger.debug("rnti={}: UCI mltplxd on PUSCH for slot={}", crnti, slot_alloc.slot);
 }
 
 void uci_allocator_impl::uci_allocate_sr_opportunity(cell_slot_resource_allocator& slot_alloc,
@@ -335,6 +337,12 @@ void uci_allocator_impl::uci_allocate_csi_opportunity(cell_slot_resource_allocat
         ue_cell_cfg.cfg_dedicated().ul_config.value().init_ul_bwp.pusch_cfg.value().uci_cfg.value().scaling;
 
     add_csi_to_uci_on_pusch(existing_pusch->uci.value().csi.emplace(), ue_cell_cfg);
+
+    logger.debug("rnti={} UCI with 0 H-ACK, {} CSI-p1 and {} CSI-p2 bits for slot={} allocated on PUSCH",
+                 crnti,
+                 existing_pusch->uci.value().csi.value().csi_part1_nof_bits,
+                 existing_pusch->uci.value().csi.value().beta_offset_csi_2.has_value() ? "up to 11" : "0",
+                 slot_alloc.slot);
     return;
   }
 
@@ -352,9 +360,4 @@ uint8_t uci_allocator_impl::get_scheduled_pdsch_counter_in_ue_uci(cell_slot_reso
     return 0;
   }
   return uci->scheduled_dl_pdcch_counter;
-}
-
-bool uci_allocator_impl::has_uci_harq_on_common_pucch_res(rnti_t rnti, slot_point sl_tx)
-{
-  return pucch_alloc.has_common_pucch_f1_grant(rnti, sl_tx);
 }

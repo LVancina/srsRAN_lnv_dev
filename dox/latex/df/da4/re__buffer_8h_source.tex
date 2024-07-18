@@ -1,0 +1,280 @@
+\doxysection{re\+\_\+buffer.\+h}
+\hypertarget{re__buffer_8h_source}{}\label{re__buffer_8h_source}\index{include/srsran/phy/support/re\_buffer.h@{include/srsran/phy/support/re\_buffer.h}}
+\mbox{\hyperlink{re__buffer_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/tensor.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00028\ \textcolor{comment}{///\ \(\backslash\)brief\ Interfaces\ and\ implementations\ of\ a\ Resource\ Element\ buffer.}}
+\DoxyCodeLine{00029\ \textcolor{comment}{///}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ The\ RE\ buffer\ stores\ a\ number\ of\ resource\ elements\ for\ a\ given\ amount\ of\ slices.\ A\ slice\ can\ either\ be\ a\ transmit}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ layer\ or\ an\ antenna\ port,\ depending\ on\ the\ context.}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Interface\ for\ accessing\ the\ dimension\ sizes\ of\ a\ Resource\ Element\ buffer.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ re\_buffer\_dimensions}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{virtual}\ \string~re\_buffer\_dimensions()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Gets\ the\ current\ number\ of\ slices.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_nof\_slices()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Gets\ the\ current\ number\ of\ Resource\ Elements.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_nof\_re()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00049\ \};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ Resource\ Element\ buffer\ read-\/only\ interface.}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{class}\ re\_buffer\_reader\ :\ \textcolor{keyword}{public}\ detail::re\_buffer\_dimensions}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/only\ view\ of\ a\ specific\ slice.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_slice\ \ \ \ \ Slice\ identifier.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ slice\ identifier\ is\ greater\ than\ or\ equal\ to\ get\_nof\_slices().}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/only\ view\ of\ the\ specified\ slice.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{virtual}\ span<\textcolor{keyword}{const}\ cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ Resource\ Element\ buffer\ read-\/write\ interface.}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{class}\ re\_buffer\_writer\ :\ \textcolor{keyword}{public}\ detail::re\_buffer\_dimensions}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/write\ view\ of\ a\ specific\ slice.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_slice\ \ \ \ \ Slice\ identifier.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ slice\ identifier\ is\ greater\ than\ or\ equal\ to\ get\_nof\_slices().}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/write\ view\ of\ the\ specified\ slice.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{virtual}\ span<cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ =\ 0;}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ Implements\ a\ resource\ element\ buffer\ reader\ view,\ with\ read-\/only\ access\ methods.}}
+\DoxyCodeLine{00076\ \textcolor{keyword}{class}\ re\_buffer\_reader\_view\ :\ \textcolor{keyword}{public}\ re\_buffer\_reader}
+\DoxyCodeLine{00077\ \{}
+\DoxyCodeLine{00078\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ resource\ element\ buffer\ view\ that\ gives\ access\ to\ a\ subspan\ of\ the\ REs\ for\ all\ slices.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ buffer\ RE\ buffer\ accessed\ by\ the\ view.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ offset\ Offset\ in\ number\ of\ RE.\ It\ determines\ the\ start\ of\ the\ RE\ view\ across\ each\ slice.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ count\ Count\ in\ number\ of\ RE.\ It\ determines\ the\ number\ of\ RE\ spanned\ by\ the\ view\ across\ each\ slice.}}
+\DoxyCodeLine{00084\ \ \ re\_buffer\_reader\_view(\textcolor{keyword}{const}\ re\_buffer\_reader\&\ buffer,\ \textcolor{keywordtype}{unsigned}\ offset,\ \textcolor{keywordtype}{unsigned}\ count)\ :}
+\DoxyCodeLine{00085\ \ \ \ \ view\_offset(offset),\ view\_count(count),\ data(buffer)}
+\DoxyCodeLine{00086\ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((buffer.get\_nof\_re()\ >=\ offset\ +\ count),}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}A\ view\ over\ REs\ [\{\},\ \{\})\ exceeds\ the\ RE\ dimension\ size,\ i.e.,\ \{\}."{}},}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset\ +\ count,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer.get\_nof\_re());}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_slices()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_nof\_slices();\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_re()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ view\_count;\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/only\ view\ of\ a\ specific\ slice.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ The\ view\ spans\ the\ buffer\ REs\ in\ the\ range\ [\(\backslash\)ref\ view\_offset,\ \(\backslash\)ref\ view\_count).\ An\ assertion\ is\ triggered\ if\ the}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ slice\ identifier\ is\ greater\ than\ or\ equal\ to\ get\_nof\_slices().}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_slice\ \ \ \ \ Slice\ identifier.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/only\ view\ of\ the\ specified\ slice.}}
+\DoxyCodeLine{00107\ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00108\ \ \ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ data.get\_slice(i\_slice).subspan(view\_offset,\ view\_count);}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ Offset\ of\ the\ view\ across\ the\ Resource\ Elements.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{unsigned}\ view\_offset;}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Number\ of\ Resource\ Elements\ per\ slice\ included\ in\ the\ view.}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{unsigned}\ view\_count;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ Internal\ data\ storage.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{const}\ re\_buffer\_reader\&\ data;}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{comment}{///\ Implements\ a\ resource\ element\ buffer\ writer\ view,\ with\ read-\/write\ access\ methods.}}
+\DoxyCodeLine{00123\ \textcolor{keyword}{class}\ re\_buffer\_writer\_view\ :\ \textcolor{keyword}{public}\ re\_buffer\_writer}
+\DoxyCodeLine{00124\ \{}
+\DoxyCodeLine{00125\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ resource\ element\ buffer\ view\ that\ gives\ access\ to\ a\ subspan\ of\ the\ REs\ for\ all\ slices.}}
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ buffer\ RE\ buffer\ accessed\ by\ the\ view.}}
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ offset\ Offset\ in\ number\ of\ RE.\ It\ determines\ the\ start\ of\ the\ RE\ view\ across\ each\ slice.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ count\ Count\ in\ number\ of\ RE.\ It\ determines\ the\ number\ of\ RE\ spanned\ by\ the\ view\ across\ each\ slice.}}
+\DoxyCodeLine{00131\ \ \ re\_buffer\_writer\_view(re\_buffer\_writer\&\ buffer,\ \textcolor{keywordtype}{unsigned}\ offset,\ \textcolor{keywordtype}{unsigned}\ count)\ :}
+\DoxyCodeLine{00132\ \ \ \ \ view\_offset(offset),\ view\_count(count),\ data(buffer)}
+\DoxyCodeLine{00133\ \ \ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((buffer.get\_nof\_re()\ >=\ offset\ +\ count),}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}A\ view\ over\ REs\ [\{\},\ \{\})\ exceeds\ the\ RE\ dimension\ size,\ i.e.,\ \{\}."{}},}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset\ +\ count,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer.get\_nof\_re());}
+\DoxyCodeLine{00139\ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ read-\/write\ view\ of\ a\ specific\ slice.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ The\ view\ spans\ the\ buffer\ REs\ in\ the\ range\ [\(\backslash\)ref\ view\_offset,\ \(\backslash\)ref\ view\_count).\ An\ assertion\ is\ triggered\ if\ the}}
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ slice\ identifier\ is\ greater\ than\ or\ equal\ to\ get\_nof\_slices().}}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_slice\ \ \ \ \ Slice\ identifier.}}
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/write\ view\ of\ the\ specified\ slice.}}
+\DoxyCodeLine{00148\ \ \ span<cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_slice(i\_slice).subspan(view\_offset,\ view\_count);\ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_slices()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_nof\_slices();\ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00154\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_re()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ view\_count;\ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ Offset\ of\ the\ view\ across\ the\ Resource\ Elements.}}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordtype}{unsigned}\ view\_offset;}
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{///\ Number\ of\ Resource\ Elements\ per\ slice\ included\ in\ the\ view.}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordtype}{unsigned}\ view\_count;}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{///\ Internal\ data\ storage.}}
+\DoxyCodeLine{00163\ \ \ re\_buffer\_writer\&\ data;}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{comment}{///\ Implements\ a\ dynamic\ resource\ element\ buffer.}}
+\DoxyCodeLine{00167\ \textcolor{keyword}{class}\ dynamic\_re\_buffer\ :\ \textcolor{keyword}{public}\ re\_buffer\_reader,\ \textcolor{keyword}{public}\ re\_buffer\_writer}
+\DoxyCodeLine{00168\ \{}
+\DoxyCodeLine{00169\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ resource\ element\ buffer\ for\ a\ given\ maximum\ number\ of\ slices\ and\ resource\ elements.}}
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_slices\_\ Maximum\ number\ of\ slices.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_re\_\ \ \ \ \ Maximum\ number\ of\ Resource\ Elements.}}
+\DoxyCodeLine{00173\ \ \ dynamic\_re\_buffer(\textcolor{keywordtype}{unsigned}\ max\_nof\_slices\_,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_re\_)\ :}
+\DoxyCodeLine{00174\ \ \ \ \ max\_nof\_slices(max\_nof\_slices\_),\ max\_nof\_re(max\_nof\_re\_),\ data(\{max\_nof\_re,\ max\_nof\_slices\})}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Resizes\ the\ buffer\ to\ a\ desired\ number\ of\ RE\ and\ slices.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_slices\ Number\ of\ slices.}}
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_re\ \ \ \ \ Number\ of\ resource\ elements.}}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ slices\ exceeds\ \(\backslash\)ref\ max\_nof\_slices.}}
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ resource\ elements\ exceeds\ \(\backslash\)ref\ max\_nof\_re.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{void}\ resize(\textcolor{keywordtype}{unsigned}\ nof\_slices,\ \textcolor{keywordtype}{unsigned}\ nof\_re)}
+\DoxyCodeLine{00184\ \ \ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_slices\ <=\ max\_nof\_slices,}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ slices\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_slices,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nof\_slices);}
+\DoxyCodeLine{00189\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_re\ <=\ max\_nof\_re,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ resource\ elements\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_re,}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nof\_re);}
+\DoxyCodeLine{00193\ \ \ \ \ data.resize(\{nof\_re,\ nof\_slices\});}
+\DoxyCodeLine{00194\ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00197\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_slices()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::slice);\ \}}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_re()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::re);\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00203\ \ \ span<cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_view<1>(\{i\_slice\});\ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00206\ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_view<1>(\{i\_slice\});\ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ Internal\ tensor\ dimensions.}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ dims\ :\ \textcolor{keywordtype}{unsigned}\ \{\ re\ =\ 0,\ slice\ =\ 1,\ all\ =\ 2\ \};}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ slices.}}
+\DoxyCodeLine{00213\ \ \ \textcolor{keywordtype}{unsigned}\ max\_nof\_slices;}
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ resource\ elements.}}
+\DoxyCodeLine{00215\ \ \ \textcolor{keywordtype}{unsigned}\ max\_nof\_re;}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///\ Internal\ data\ storage.}}
+\DoxyCodeLine{00218\ \ \ dynamic\_tensor<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all),\ cf\_t,\ dims>\ data;}
+\DoxyCodeLine{00219\ \};}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00221\ \textcolor{comment}{///\ Implements\ a\ static\ resource\ element\ buffer.}}
+\DoxyCodeLine{00222\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ MaxNofSlices,\ \textcolor{keywordtype}{unsigned}\ MaxNofRe>}
+\DoxyCodeLine{00223\ \textcolor{keyword}{class}\ static\_re\_buffer\ :\ \textcolor{keyword}{public}\ re\_buffer\_reader,\ \textcolor{keyword}{public}\ re\_buffer\_writer}
+\DoxyCodeLine{00224\ \{}
+\DoxyCodeLine{00225\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00226\ \ \ \textcolor{comment}{///\ Default\ constructor\ -\/\ creates\ an\ empty\ resource\ element\ buffer.}}
+\DoxyCodeLine{00227\ \ \ static\_re\_buffer()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ resource\ element\ buffer\ for\ a\ number\ of\ slices\ and\ resource\ elements.}}
+\DoxyCodeLine{00230\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_slices\ Number\ of\ slices.}}
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_re\ \ \ \ \ Number\ of\ resource\ elements.}}
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ slices\ exceeds\ \(\backslash\)c\ MaxNofSlices.}}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ resource\ elements\ exceeds\ \(\backslash\)c\ MaxNofRe.}}
+\DoxyCodeLine{00234\ \ \ static\_re\_buffer(\textcolor{keywordtype}{unsigned}\ nof\_slices,\ \textcolor{keywordtype}{unsigned}\ nof\_re)\ :\ data(\{nof\_re,\ nof\_slices\})\ \{\}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Resizes\ the\ number\ of\ coefficients\ to\ a\ desired\ number\ of\ slices\ and\ ports.}}
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_slices\ Number\ of\ slices.}}
+\DoxyCodeLine{00238\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_re\ \ \ \ \ Number\ of\ resource\ elements.}}
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ slices\ exceeds\ \(\backslash\)c\ MaxNofSlices.}}
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ resource\ elements\ exceeds\ \(\backslash\)c\ MaxNofRe.}}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{void}\ resize(\textcolor{keywordtype}{unsigned}\ nof\_slices,\ \textcolor{keywordtype}{unsigned}\ nof\_re)}
+\DoxyCodeLine{00242\ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_slices\ <=\ MaxNofSlices,}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ slices\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_slices,}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MaxNofSlices);}
+\DoxyCodeLine{00247\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_re\ <=\ MaxNofRe,}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ resource\ elements\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_re,}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MaxNofRe);}
+\DoxyCodeLine{00251\ \ \ \ \ data.resize(\{nof\_re,\ nof\_slices\});}
+\DoxyCodeLine{00252\ \ \ \}}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00255\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_slices()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::slice);\ \}}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00258\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_re()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::re);\ \}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00261\ \ \ span<cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_view(\{i\_slice\});\ \}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00264\ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ get\_slice(\textcolor{keywordtype}{unsigned}\ i\_slice)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ data.get\_view(\{i\_slice\});\ \}}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00267\ \ \ \textcolor{comment}{///\ Internal\ tensor\ dimensions.}}
+\DoxyCodeLine{00268\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ dims\ :\ \textcolor{keywordtype}{unsigned}\ \{\ re\ =\ 0,\ slice\ =\ 1,\ all\ =\ 2\ \};}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \textcolor{comment}{///\ Internal\ data\ storage.}}
+\DoxyCodeLine{00271\ \ \ static\_tensor<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all),\ cf\_t,\ MaxNofSlices\ *\ MaxNofRe,\ dims>\ data;}
+\DoxyCodeLine{00272\ \};}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

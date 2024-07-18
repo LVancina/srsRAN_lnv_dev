@@ -1,0 +1,145 @@
+\doxysection{simd\+\_\+support.\+h}
+\hypertarget{simd__support_8h_source}{}\label{simd__support_8h_source}\index{lib/phy/upper/channel\_coding/ldpc/simd\_support.h@{lib/phy/upper/channel\_coding/ldpc/simd\_support.h}}
+\mbox{\hyperlink{simd__support_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{simd__types_8h}{simd\_types.h}}"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a5a6c185f39ac11d3232a328579946463}{AVX2\_SIZE\_BYTE}}\ =\ 32;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_ac29e91580de4bba80836eac19dda61bf}{AVX512\_SIZE\_BYTE}}\ =\ 64;}
+\DoxyCodeLine{00041\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a3726ff0525df496bfaee335c3fe5e993}{NEON\_SIZE\_BYTE}}\ =\ 16;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ simdWrapper,\ \textcolor{keyword}{typename}\ storageType>}
+\DoxyCodeLine{00049\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{static\_assert}(std::is\_same<typename\ std::remove\_cv<storageType>::type,\ int8\_t>::value,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}simd\_span\ can\ only\ have\ (const)\ int8\_t\ as\ underlying\ storage\ type."{}});}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{using\ }pointer\ =\ storageType*;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ HelpType>}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{struct\ }help\_type\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ Intentionally\ empty.}}
+\DoxyCodeLine{00060\ \ \ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{using\ }simdType\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{typename}\ simdWrapper::simdType;}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ SIMD\_SIZE\_BYTE\ =\ \textcolor{keyword}{sizeof}(simdType);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a66ea466e4f8de3e1a3319876212c1014}{simd\_span}}()\ :\ array\_ptr(nullptr),\ view\_length(0)\ \{\}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ IntType,\ \textcolor{keywordtype}{size\_t}\ N>}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a263444d779faec7ab940ba8bbc5c65d7}{simd\_span}}(std::array<IntType,\ N>\&\ arr,\ \textcolor{keywordtype}{size\_t}\ offset,\ \textcolor{keywordtype}{size\_t}\ length)\ :}
+\DoxyCodeLine{00078\ \ \ \ \ array\_ptr(reinterpret\_cast<pointer>(arr.data())\ +\ offset\ *\ SIMD\_SIZE\_BYTE),\ view\_length(length)}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{sizeof}(IntType)\ ==\ \textcolor{keyword}{sizeof}(storageType),}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}simd\_span\ can\ only\ be\ created\ from\ arrays\ of\ 1-\/byte\ integer\ types."{}});}
+\DoxyCodeLine{00082\ \ \ \ \ srsran\_assert((offset\ +\ view\_length)\ *\ SIMD\_SIZE\_BYTE\ <=\ N,\ \textcolor{stringliteral}{"{}Cannot\ take\ a\ span\ longer\ than\ the\ array."{}});}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ IntType,\ \textcolor{keywordtype}{size\_t}\ N>}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a64f348681bb5583c55a1067c8b478182}{simd\_span}}(std::array<IntType,\ N>\&\ arr,\ \textcolor{keywordtype}{size\_t}\ length)\ :\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}(arr,\ 0,\ length)}
+\DoxyCodeLine{00093\ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ IntType>}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_acfb8eff66be5aa79b083a0231b9afef6}{simd\_span}}(\mbox{\hyperlink{classsrsran_1_1span}{span<IntType>}}\ sp,\ \textcolor{keywordtype}{size\_t}\ length)\ :\ array\_ptr(reinterpret\_cast<pointer>(sp.data())),\ view\_length(length)}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{sizeof}(IntType)\ ==\ \textcolor{keyword}{sizeof}(storageType),}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}simd\_span\ can\ only\ be\ created\ from\ arrays\ of\ 1-\/byte\ integer\ types."{}});}
+\DoxyCodeLine{00106\ \ \ \ \ srsran\_assert(view\_length\ *\ SIMD\_SIZE\_BYTE\ <=\ sp.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ create\ an\ simd\_span\ longer\ than\ the\ original\ span."{}});}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00111\ \ \ simdType*\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a7285778c46cbc228772c5044bfcaae89}{data\_at}}(\textcolor{keywordtype}{unsigned}\ pos)}
+\DoxyCodeLine{00112\ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ srsran\_assert(pos\ <\ view\_length,\ \textcolor{stringliteral}{"{}Index\ \{\}\ out\ of\ bound."{}},\ pos);}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}simdType*\textcolor{keyword}{>}(array\_ptr)\ +\ pos;}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{const}\ simdType*\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_af69a95136b8b9c127f356ebba6903d58}{data\_at}}(\textcolor{keywordtype}{unsigned}\ pos)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00119\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00120\ \ \ \ \ srsran\_assert(pos\ <\ view\_length,\ \textcolor{stringliteral}{"{}Index\ \{\}\ out\ of\ bound."{}},\ pos);}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }simdType*\textcolor{keyword}{>}(array\_ptr)\ +\ pos;}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00125\ \ \ pointer\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_aa24305a2cb49ba47ec72546d9c59a3e0}{data\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{byte})}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ index\ =\ pos\ *\ SIMD\_SIZE\_BYTE\ +\ byte;}
+\DoxyCodeLine{00128\ \ \ \ \ srsran\_assert(index\ <\ view\_length\ *\ SIMD\_SIZE\_BYTE,\ \textcolor{stringliteral}{"{}Index\ (\{\},\ \{\})\ out\ of\ bound."{}},\ pos,\ \textcolor{keywordtype}{byte});}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{return}\ (array\_ptr\ +\ index);}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{const}\ pointer\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_ac33d089e5574ecd3052f6fa465bfe87f}{data\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{byte})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00134\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ index\ =\ pos\ *\ SIMD\_SIZE\_BYTE\ +\ byte;}
+\DoxyCodeLine{00136\ \ \ \ \ srsran\_assert(index\ <\ view\_length\ *\ SIMD\_SIZE\_BYTE,\ \textcolor{stringliteral}{"{}Index\ (\{\},\ \{\})\ out\ of\ bound."{}},\ pos,\ \textcolor{keywordtype}{byte});}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{return}\ (array\_ptr\ +\ index);}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{//\ Unfortunately,\ we\ can't\ work\ with\ the\ array\ subscript\ operator\ []\ since\ there\ seems\ to\ be\ no\ easy\ way\ to\ access\ a}}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{//\ simdType\ object\ by\ reference.}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a552e621763fe226ef28a535fd94362c7}{set\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ simd256\_type\ val);}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a552e621763fe226ef28a535fd94362c7}{set\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ simd512\_type\ val);}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a552e621763fe226ef28a535fd94362c7}{set\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ simd128\_type\ val);}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_add809f5993e21734d5cc53a85d8bbb46}{get\_at}}(\textcolor{keywordtype}{unsigned}\ pos)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_add809f5993e21734d5cc53a85d8bbb46}{get\_at}}(help\_type<simdWrapper>(),\ pos);\ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a97d79c6f810c7bb8ec0f2f514265b8f2}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ view\_length;\ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00162\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<storageType>}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_af119f50339522b51788e1b85389ae53c}{plain\_span}}(\textcolor{keywordtype}{size\_t}\ offset,\ \textcolor{keywordtype}{size\_t}\ length)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00163\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ offset\_byte\ =\ offset\ *\ SIMD\_SIZE\_BYTE;}
+\DoxyCodeLine{00165\ \ \ \ \ srsran\_assert(offset\_byte\ +\ length\ <=\ view\_length\ *\ SIMD\_SIZE\_BYTE,\ \textcolor{stringliteral}{"{}Size\ out\ of\ bound."{}});}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<storageType>}}(array\_ptr\ +\ offset\_byte,\ length);}
+\DoxyCodeLine{00167\ \ \ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00171\ \ \ pointer\ array\_ptr;}
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordtype}{size\_t}\ view\_length;}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00176\ \ \ simd256\_type\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_add809f5993e21734d5cc53a85d8bbb46}{get\_at}}(help\_type<simd256\_wrapper>\ ,\ \textcolor{keywordtype}{unsigned}\ pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00179\ \ \ simd512\_type\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_add809f5993e21734d5cc53a85d8bbb46}{get\_at}}(help\_type<simd512\_wrapper>\ ,\ \textcolor{keywordtype}{unsigned}\ pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00182\ \ \ simd128\_type\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_add809f5993e21734d5cc53a85d8bbb46}{get\_at}}(help\_type<simd128\_wrapper>\ ,\ \textcolor{keywordtype}{unsigned}\ pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00183\ \};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

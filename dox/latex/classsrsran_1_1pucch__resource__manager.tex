@@ -1,0 +1,275 @@
+\doxysection{srsran\+::pucch\+\_\+resource\+\_\+manager Class Reference}
+\hypertarget{classsrsran_1_1pucch__resource__manager}{}\label{classsrsran_1_1pucch__resource__manager}\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+
+
+Class that manages the cell allocation of PUCCH resources across UEs. The correct functioning of \doxylink{classsrsran_1_1pucch__resource__manager}{pucch\+\_\+resource\+\_\+manager} is based on the following assumptions\+: (i) Each UE has max 8 PUCCH F1 and max 8 PUCCH F2 dedicated to HARQ-\/\+ACK reporting. (ii) Each UE has max 1 SR-\/dedicated PUCCH F1 resource and max 1 CSI-\/dedicated PUCCH F2 resource. (iii) The cell PUCCH resource list can have max 128 PUCCH resource, including all formats; at cell level, there is no constraint on how many resource must be F1, F2, or for SR or for CSI. (vi) UEs can have different PUCCH resource lists; however the PUCCH resource ID is unique with the cell. This implies that if two UEs have the same PUCCH resource within their lists, their PUCCH resource ID must be the same. (v) Indexing of the PUCCH F1 and PUCCH F2 resources for HARQ-\/\+ACK reporting must be contiguous within the F1 group and with F2 group. However, the last PUCCH F1 group resource\textquotesingle{}s and the first PUCCH F2 group resource\textquotesingle{}s indices need not be contiguous. E.\+g., PUCCH F1 indices (for HARQ-\/\+ACK reporting) = \{0, ..., 7\}, and PUCCH F2 indices (for HARQ-\/\+ACK reporting) = \{10, ..., 17\}.  
+
+
+
+
+{\ttfamily \#include $<$pucch\+\_\+resource\+\_\+manager.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a81a16bc8a6f73d1d6877b6ef2b973e25}\label{classsrsran_1_1pucch__resource__manager_a81a16bc8a6f73d1d6877b6ef2b973e25} 
+void {\bfseries slot\+\_\+indication} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+tx)
+\begin{DoxyCompactList}\small\item\em Reset all resources to "{}unused"{}. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a12c33ef146bb86101981b4d644e3bf6d}\label{classsrsran_1_1pucch__resource__manager_a12c33ef146bb86101981b4d644e3bf6d} 
+bool {\bfseries is\+\_\+common\+\_\+resource\+\_\+available} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} sl, size\+\_\+t r\+\_\+pucch)
+\begin{DoxyCompactList}\small\item\em Returns true if the common PUCCH resource indexed by r\+\_\+pucch is available at the given slot. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1pucch__resource__manager_ae60b313b4eb6150af00a3302134a6567}\label{classsrsran_1_1pucch__resource__manager_ae60b313b4eb6150af00a3302134a6567} 
+void {\bfseries reserve\+\_\+common\+\_\+resource} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} sl, size\+\_\+t r\+\_\+pucch)
+\begin{DoxyCompactList}\small\item\em Set the common PUCCH resource indexed by r\+\_\+pucch at the given slot as currently "{}not available"{}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_acc21904f68185add3248e3b223025cda}{reserve\+\_\+next\+\_\+f1\+\_\+harq\+\_\+res\+\_\+available}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the next PUCCH resource available to be used for HARQ-\/\+ACK (format 1). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_af451820441803f58f45ec6d90b265f51}{reserve\+\_\+next\+\_\+f2\+\_\+harq\+\_\+res\+\_\+available}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the next PUCCH format 2 resource available to be used for HARQ-\/\+ACK. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a516af5de56b8abb7e9a015fee28cf28a}{reserve\+\_\+specific\+\_\+format2\+\_\+res}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, unsigned res\+\_\+indicator, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns a specific PUCCH format 2 resource (identified by the res. indicator) to be used for HARQ-\/\+ACK. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_ae44246e38b2ff1e41fa94c4546384f0c}{reserve\+\_\+csi\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&ue\+\_\+cell\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the specific PUCCH format 2 resource config to be used for CSI, if available. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a59b1a37f315491278aa7aad2c290a8c5}{reserve\+\_\+sr\+\_\+res\+\_\+available}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+sr, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the specific PUCCH format 1 resource config to be used for SR, if available. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_acfcd84de6b5b859c51c68d219a8a4098}{release\+\_\+harq\+\_\+f1\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Release PUCCH (format 1) resource from being allocated to a given UE. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a9f4da9b7594802e4c1c66248f2bdd88a}{release\+\_\+harq\+\_\+f2\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Release PUCCH (format 2) resource from being allocated to a given UE. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a15b5a050479f5e214eba5caa2592b2c3}{release\+\_\+sr\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+sr, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Release PUCCH (format 1) resource used for SR from being allocated to a given UE. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_abf167b75a5c55bf75860448daf6a4920}{release\+\_\+csi\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+sr, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&ue\+\_\+cell\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Release PUCCH (format 2) resource used for CSI from being allocated to a given UE. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_afeffc4fb86b8d3d528a23cd0aa202617}{fetch\+\_\+f1\+\_\+pucch\+\_\+res\+\_\+indic}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+tx, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the PUCCH resource indicator (format 1) of the resource used for a given RNTI at a given slot. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_ae4219490f4e5ceddf8bcd4389026fc63}{fetch\+\_\+f2\+\_\+pucch\+\_\+res\+\_\+indic}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+tx, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the PUCCH resource indicator (format 2) of the resource used for a given RNTI at a given slot. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a53136d8c1533a7be826aac73d5aa9ea4}{fetch\+\_\+allocated\+\_\+f2\+\_\+harq\+\_\+resource}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+harq, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&pucch\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Fetches the configuration of the PUCCH Format 2 resource used for HARQ previously allocated to a given RNTI for a given slot. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classsrsran_1_1pucch__resource__manager_a874091c3cadec6e8a2bafa444faf69cb}{fetch\+\_\+csi\+\_\+pucch\+\_\+res\+\_\+config}} (\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}} slot\+\_\+tx, \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}} crnti, const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&ue\+\_\+cell\+\_\+cfg)
+\begin{DoxyCompactList}\small\item\em Returns the configuration of the PUCCH resource used for CSI (format 2) for a given RNTI at a given slot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class that manages the cell allocation of PUCCH resources across UEs. The correct functioning of \doxylink{classsrsran_1_1pucch__resource__manager}{pucch\+\_\+resource\+\_\+manager} is based on the following assumptions\+: (i) Each UE has max 8 PUCCH F1 and max 8 PUCCH F2 dedicated to HARQ-\/\+ACK reporting. (ii) Each UE has max 1 SR-\/dedicated PUCCH F1 resource and max 1 CSI-\/dedicated PUCCH F2 resource. (iii) The cell PUCCH resource list can have max 128 PUCCH resource, including all formats; at cell level, there is no constraint on how many resource must be F1, F2, or for SR or for CSI. (vi) UEs can have different PUCCH resource lists; however the PUCCH resource ID is unique with the cell. This implies that if two UEs have the same PUCCH resource within their lists, their PUCCH resource ID must be the same. (v) Indexing of the PUCCH F1 and PUCCH F2 resources for HARQ-\/\+ACK reporting must be contiguous within the F1 group and with F2 group. However, the last PUCCH F1 group resource\textquotesingle{}s and the first PUCCH F2 group resource\textquotesingle{}s indices need not be contiguous. E.\+g., PUCCH F1 indices (for HARQ-\/\+ACK reporting) = \{0, ..., 7\}, and PUCCH F2 indices (for HARQ-\/\+ACK reporting) = \{10, ..., 17\}. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a53136d8c1533a7be826aac73d5aa9ea4}\label{classsrsran_1_1pucch__resource__manager_a53136d8c1533a7be826aac73d5aa9ea4} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!fetch\_allocated\_f2\_harq\_resource@{fetch\_allocated\_f2\_harq\_resource}}
+\index{fetch\_allocated\_f2\_harq\_resource@{fetch\_allocated\_f2\_harq\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{fetch\_allocated\_f2\_harq\_resource()}{fetch\_allocated\_f2\_harq\_resource()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} pucch\+\_\+resource\+\_\+manager\+::fetch\+\_\+allocated\+\_\+f2\+\_\+harq\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Fetches the configuration of the PUCCH Format 2 resource used for HARQ previously allocated to a given RNTI for a given slot. 
+
+\begin{DoxyReturn}{Returns}
+If the resource is found, it returns (i) the pointer to the configuration and (ii) the PUCCH resource indicator corresponding to the PUCCH resource that previously allocated to the UE. Else, the pointer passed will be {\ttfamily nullptr}, whereas the PUCCH resource indicator is to be ignored. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a874091c3cadec6e8a2bafa444faf69cb}\label{classsrsran_1_1pucch__resource__manager_a874091c3cadec6e8a2bafa444faf69cb} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!fetch\_csi\_pucch\_res\_config@{fetch\_csi\_pucch\_res\_config}}
+\index{fetch\_csi\_pucch\_res\_config@{fetch\_csi\_pucch\_res\_config}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{fetch\_csi\_pucch\_res\_config()}{fetch\_csi\_pucch\_res\_config()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} pucch\+\_\+resource\+\_\+manager\+::fetch\+\_\+csi\+\_\+pucch\+\_\+res\+\_\+config (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+tx,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&}]{ue\+\_\+cell\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the configuration of the PUCCH resource used for CSI (format 2) for a given RNTI at a given slot. 
+
+\begin{DoxyReturn}{Returns}
+Pointer to the resource configuration used allocated to the UE; if UE is not found, returns {\ttfamily nullptr}. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_afeffc4fb86b8d3d528a23cd0aa202617}\label{classsrsran_1_1pucch__resource__manager_afeffc4fb86b8d3d528a23cd0aa202617} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!fetch\_f1\_pucch\_res\_indic@{fetch\_f1\_pucch\_res\_indic}}
+\index{fetch\_f1\_pucch\_res\_indic@{fetch\_f1\_pucch\_res\_indic}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{fetch\_f1\_pucch\_res\_indic()}{fetch\_f1\_pucch\_res\_indic()}}
+{\footnotesize\ttfamily int pucch\+\_\+resource\+\_\+manager\+::fetch\+\_\+f1\+\_\+pucch\+\_\+res\+\_\+indic (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+tx,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the PUCCH resource indicator (format 1) of the resource used for a given RNTI at a given slot. 
+
+\begin{DoxyReturn}{Returns}
+PUCCH resource indicator of the resource used allocated to the UE; if UE is not found, returns -\/1. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_ae4219490f4e5ceddf8bcd4389026fc63}\label{classsrsran_1_1pucch__resource__manager_ae4219490f4e5ceddf8bcd4389026fc63} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!fetch\_f2\_pucch\_res\_indic@{fetch\_f2\_pucch\_res\_indic}}
+\index{fetch\_f2\_pucch\_res\_indic@{fetch\_f2\_pucch\_res\_indic}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{fetch\_f2\_pucch\_res\_indic()}{fetch\_f2\_pucch\_res\_indic()}}
+{\footnotesize\ttfamily int pucch\+\_\+resource\+\_\+manager\+::fetch\+\_\+f2\+\_\+pucch\+\_\+res\+\_\+indic (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+tx,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the PUCCH resource indicator (format 2) of the resource used for a given RNTI at a given slot. 
+
+\begin{DoxyReturn}{Returns}
+PUCCH resource indicator of the resource used allocated to the UE; if UE is not found, returns -\/1. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_abf167b75a5c55bf75860448daf6a4920}\label{classsrsran_1_1pucch__resource__manager_abf167b75a5c55bf75860448daf6a4920} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!release\_csi\_resource@{release\_csi\_resource}}
+\index{release\_csi\_resource@{release\_csi\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{release\_csi\_resource()}{release\_csi\_resource()}}
+{\footnotesize\ttfamily bool pucch\+\_\+resource\+\_\+manager\+::release\+\_\+csi\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+sr,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&}]{ue\+\_\+cell\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Release PUCCH (format 2) resource used for CSI from being allocated to a given UE. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em slot\+\_\+harq} & slot for which the PUCCH resource was scheduled. \\
+\hline
+\mbox{\texttt{ in}}  & {\em crnti} & UE from which the resource needs to be released. \\
+\hline
+\mbox{\texttt{ in}}  & {\em pucch\+\_\+cfg} & UE\textquotesingle{}s PUCCH config. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the resource for the UE was found in the allocation records for the given slot. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_acfcd84de6b5b859c51c68d219a8a4098}\label{classsrsran_1_1pucch__resource__manager_acfcd84de6b5b859c51c68d219a8a4098} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!release\_harq\_f1\_resource@{release\_harq\_f1\_resource}}
+\index{release\_harq\_f1\_resource@{release\_harq\_f1\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{release\_harq\_f1\_resource()}{release\_harq\_f1\_resource()}}
+{\footnotesize\ttfamily bool pucch\+\_\+resource\+\_\+manager\+::release\+\_\+harq\+\_\+f1\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Release PUCCH (format 1) resource from being allocated to a given UE. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em slot\+\_\+harq} & slot for which the PUCCH resource was scheduled. \\
+\hline
+\mbox{\texttt{ in}}  & {\em crnti} & UE from which the resource needs to be released. \\
+\hline
+\mbox{\texttt{ in}}  & {\em pucch\+\_\+cfg} & UE\textquotesingle{}s PUCCH config. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the resource for the UE was found in the allocation records for the given slot. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a9f4da9b7594802e4c1c66248f2bdd88a}\label{classsrsran_1_1pucch__resource__manager_a9f4da9b7594802e4c1c66248f2bdd88a} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!release\_harq\_f2\_resource@{release\_harq\_f2\_resource}}
+\index{release\_harq\_f2\_resource@{release\_harq\_f2\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{release\_harq\_f2\_resource()}{release\_harq\_f2\_resource()}}
+{\footnotesize\ttfamily bool pucch\+\_\+resource\+\_\+manager\+::release\+\_\+harq\+\_\+f2\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Release PUCCH (format 2) resource from being allocated to a given UE. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em slot\+\_\+harq} & slot for which the PUCCH resource was scheduled. \\
+\hline
+\mbox{\texttt{ in}}  & {\em crnti} & UE from which the resource needs to be released. \\
+\hline
+\mbox{\texttt{ in}}  & {\em pucch\+\_\+cfg} & UE\textquotesingle{}s PUCCH config. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the resource for the UE was found in the allocation records for the given slot. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a15b5a050479f5e214eba5caa2592b2c3}\label{classsrsran_1_1pucch__resource__manager_a15b5a050479f5e214eba5caa2592b2c3} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!release\_sr\_resource@{release\_sr\_resource}}
+\index{release\_sr\_resource@{release\_sr\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{release\_sr\_resource()}{release\_sr\_resource()}}
+{\footnotesize\ttfamily bool pucch\+\_\+resource\+\_\+manager\+::release\+\_\+sr\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+sr,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Release PUCCH (format 1) resource used for SR from being allocated to a given UE. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em slot\+\_\+harq} & slot for which the PUCCH resource was scheduled. \\
+\hline
+\mbox{\texttt{ in}}  & {\em crnti} & UE from which the resource needs to be released. \\
+\hline
+\mbox{\texttt{ in}}  & {\em pucch\+\_\+cfg} & UE\textquotesingle{}s PUCCH config. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the resource for the UE was found in the allocation records for the given slot. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_ae44246e38b2ff1e41fa94c4546384f0c}\label{classsrsran_1_1pucch__resource__manager_ae44246e38b2ff1e41fa94c4546384f0c} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!reserve\_csi\_resource@{reserve\_csi\_resource}}
+\index{reserve\_csi\_resource@{reserve\_csi\_resource}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{reserve\_csi\_resource()}{reserve\_csi\_resource()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} pucch\+\_\+resource\+\_\+manager\+::reserve\+\_\+csi\+\_\+resource (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\+\_\+cell\+\_\+configuration}} \&}]{ue\+\_\+cell\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the specific PUCCH format 2 resource config to be used for CSI, if available. 
+
+\begin{DoxyRemark}{Remarks}
+If SR multiplexing is enabled, this resource can be used for CSI + SR. 
+\end{DoxyRemark}
+\begin{DoxyReturn}{Returns}
+If the specific PUCCH resource is available, it returns (i) the pointer to the configuration and (ii) the PUCCH resource indicator corresponding to the PUCCH resource that will be used by the UE. Else, the pointer passed will be {\ttfamily nullptr}, whereas the PUCCH resource indicator is to be ignored. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_acc21904f68185add3248e3b223025cda}\label{classsrsran_1_1pucch__resource__manager_acc21904f68185add3248e3b223025cda} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!reserve\_next\_f1\_harq\_res\_available@{reserve\_next\_f1\_harq\_res\_available}}
+\index{reserve\_next\_f1\_harq\_res\_available@{reserve\_next\_f1\_harq\_res\_available}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{reserve\_next\_f1\_harq\_res\_available()}{reserve\_next\_f1\_harq\_res\_available()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} pucch\+\_\+resource\+\_\+manager\+::reserve\+\_\+next\+\_\+f1\+\_\+harq\+\_\+res\+\_\+available (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the next PUCCH resource available to be used for HARQ-\/\+ACK (format 1). 
+
+\begin{DoxyReturn}{Returns}
+If any PUCCH resource available, it returns (i) the pointer to the configuration and (ii) the PUCCH resource indicator corresponding to the PUCCH resource that will be used by the UE. If there are no PUCCH resources available, the pointer passed will be {\ttfamily nullptr}, whereas the PUCCH resource indicator is to be ignored. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_af451820441803f58f45ec6d90b265f51}\label{classsrsran_1_1pucch__resource__manager_af451820441803f58f45ec6d90b265f51} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!reserve\_next\_f2\_harq\_res\_available@{reserve\_next\_f2\_harq\_res\_available}}
+\index{reserve\_next\_f2\_harq\_res\_available@{reserve\_next\_f2\_harq\_res\_available}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{reserve\_next\_f2\_harq\_res\_available()}{reserve\_next\_f2\_harq\_res\_available()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structsrsran_1_1pucch__harq__resource__alloc__record}{pucch\+\_\+harq\+\_\+resource\+\_\+alloc\+\_\+record}} pucch\+\_\+resource\+\_\+manager\+::reserve\+\_\+next\+\_\+f2\+\_\+harq\+\_\+res\+\_\+available (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the next PUCCH format 2 resource available to be used for HARQ-\/\+ACK. 
+
+\begin{DoxyRemark}{Remarks}
+If SR and CSI multiplexing is enabled, this resource can be used for HARQ-\/\+ACK + SR and/or CSI. 
+\end{DoxyRemark}
+\begin{DoxyReturn}{Returns}
+If any PUCCH resource available, it returns (i) the pointer to the configuration and (ii) the PUCCH resource indicator corresponding to the PUCCH resource that will be used by the UE. If there are no PUCCH resources available, the pointer passed will be {\ttfamily nullptr}, whereas the PUCCH resource indicator is to be ignored. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a516af5de56b8abb7e9a015fee28cf28a}\label{classsrsran_1_1pucch__resource__manager_a516af5de56b8abb7e9a015fee28cf28a} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!reserve\_specific\_format2\_res@{reserve\_specific\_format2\_res}}
+\index{reserve\_specific\_format2\_res@{reserve\_specific\_format2\_res}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{reserve\_specific\_format2\_res()}{reserve\_specific\_format2\_res()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} pucch\+\_\+resource\+\_\+manager\+::reserve\+\_\+specific\+\_\+format2\+\_\+res (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+harq,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{unsigned}]{res\+\_\+indicator,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns a specific PUCCH format 2 resource (identified by the res. indicator) to be used for HARQ-\/\+ACK. 
+
+\begin{DoxyRemark}{Remarks}
+If SR and CSI multiplexing is enabled, this resource can be used for HARQ-\/\+ACK + SR and/or CSI. 
+\end{DoxyRemark}
+\begin{DoxyReturn}{Returns}
+If the specific PUCCH resource is available, it returns the pointer to the configuration. Else, it returns {\ttfamily nullptr}. 
+\end{DoxyReturn}
+\Hypertarget{classsrsran_1_1pucch__resource__manager_a59b1a37f315491278aa7aad2c290a8c5}\label{classsrsran_1_1pucch__resource__manager_a59b1a37f315491278aa7aad2c290a8c5} 
+\index{srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}!reserve\_sr\_res\_available@{reserve\_sr\_res\_available}}
+\index{reserve\_sr\_res\_available@{reserve\_sr\_res\_available}!srsran::pucch\_resource\_manager@{srsran::pucch\_resource\_manager}}
+\doxysubsubsection{\texorpdfstring{reserve\_sr\_res\_available()}{reserve\_sr\_res\_available()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{structsrsran_1_1pucch__resource}{pucch\+\_\+resource}} \texorpdfstring{$\ast$}{*} pucch\+\_\+resource\+\_\+manager\+::reserve\+\_\+sr\+\_\+res\+\_\+available (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\+\_\+point}}}]{slot\+\_\+sr,  }\item[{\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\+\_\+t}}}]{crnti,  }\item[{const \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\+\_\+config}} \&}]{pucch\+\_\+cfg }\end{DoxyParamCaption})}
+
+
+
+Returns the specific PUCCH format 1 resource config to be used for SR, if available. 
+
+\begin{DoxyReturn}{Returns}
+If the specific PUCCH resource is available, it returns (i) the pointer to the configuration and (ii) the PUCCH resource indicator corresponding to the PUCCH resource that will be used by the UE. Else, the pointer passed will be {\ttfamily nullptr}, whereas the PUCCH resource indicator is to be ignored. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/scheduler/pucch\+\_\+scheduling/pucch\+\_\+resource\+\_\+manager.\+h\item 
+lib/scheduler/pucch\+\_\+scheduling/pucch\+\_\+resource\+\_\+manager.\+cpp\end{DoxyCompactItemize}

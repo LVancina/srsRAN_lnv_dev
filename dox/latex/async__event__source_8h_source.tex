@@ -1,0 +1,157 @@
+\doxysection{async\+\_\+event\+\_\+source.\+h}
+\hypertarget{async__event__source_8h_source}{}\label{async__event__source_8h_source}\index{include/srsran/support/async/async\_event\_source.h@{include/srsran/support/async/async\_event\_source.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}manual\_event.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }async\_single\_event\_observer;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}(\mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ timer\_db)\ :\ running\_timer(timer\_db.create\_timer())\ \{\}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}(\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{\string~async\_event\_source}}()\ \{\ srsran\_assert(not\ \mbox{\hyperlink{classsrsran_1_1async__event__source_ab9201e892f3701c498541d2bd0a71fa5}{has\_subscriber}}(),\ \textcolor{stringliteral}{"{}Observers\ must\ not\ outlive\ event\ sources"{}});\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1async__event__source_ab9201e892f3701c498541d2bd0a71fa5}{has\_subscriber}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ sub\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1async__event__source_a55928d4de718db20f2c4f3c5310292c8}{set}}(U\&\&\ u)}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1async__event__source_ab9201e892f3701c498541d2bd0a71fa5}{has\_subscriber}}())\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ running\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_a1a4efde28d11d176d481f00ce0274d78}{stop}}();}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keyword}{auto}*\ old\_sub\ =\ sub;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ remove\_observer();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ old\_sub-\/>event.set(std::forward<U>(u));}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}<T>;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ set\_observer(\mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer<T>}}\&\ sub\_)}
+\DoxyCodeLine{00068\ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ srsran\_assert(not\ \mbox{\hyperlink{classsrsran_1_1async__event__source_ab9201e892f3701c498541d2bd0a71fa5}{has\_subscriber}}(),\ \textcolor{stringliteral}{"{}This\ class\ only\ allows\ one\ observer/sink/listener\ per\ transaction"{}});}
+\DoxyCodeLine{00070\ \ \ \ \ srsran\_assert(not\ sub\_.\mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a40d7ac68ec7cff91cdd3e3216a0e8d35}{connected}}(),\ \textcolor{stringliteral}{"{}The\ observer\ cannot\ be\ already\ registered"{}});}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{if}\ (sub\_.\mbox{\hyperlink{classsrsran_1_1async__single__event__observer_acd903b44b3405f18d1f281d6b6734ca2}{complete}}())\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{comment}{//\ observer\ finished\ the\ previous\ transaction.\ Its\ last\ result\ can\ be\ reset.}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ sub\_.\mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a209d7e82f6fd52db6db37beb1f403593}{reset}}();}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \ \ sub\ \ \ \ \ \ \ \ \ =\ \&sub\_;}
+\DoxyCodeLine{00076\ \ \ \ \ sub-\/>parent\ =\ \textcolor{keyword}{this};}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ set\_observer(async\_single\_event\_observer<T>\&\ sub\_,\ std::chrono::milliseconds\ time\_to\_cancel,\ U\&\&\ cancelled\_value)}
+\DoxyCodeLine{00081\ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ set\_observer(sub\_);}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{//\ Setup\ timeout.}}
+\DoxyCodeLine{00084\ \ \ \ \ running\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_a79c9d6ec6c5942aa869ea4ba273536c5}{set}}(time\_to\_cancel,\ [\textcolor{keyword}{this},\ c\ =\ std::forward<U>(cancelled\_value)](\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ )\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source_a55928d4de718db20f2c4f3c5310292c8}{set}}(std::forward<U>(c));}
+\DoxyCodeLine{00086\ \ \ \ \ \});}
+\DoxyCodeLine{00087\ \ \ \ \ running\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{run}}();}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ remove\_observer()}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1async__event__source_ab9201e892f3701c498541d2bd0a71fa5}{has\_subscriber}}(),\ \textcolor{stringliteral}{"{}Unsubscribe\ called\ but\ no\ subscriber\ is\ registered"{}});}
+\DoxyCodeLine{00093\ \ \ \ \ sub-\/>parent\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00094\ \ \ \ \ sub\ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00095\ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ async\_single\_event\_observer<T>*\ sub\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00098\ \ \ unique\_timer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ running\_timer;}
+\DoxyCodeLine{00099\ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00104\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}}
+\DoxyCodeLine{00105\ \{}
+\DoxyCodeLine{00106\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{using\ }result\_type\ \ =\ T;}
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{using\ }awaiter\_type\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structsrsran_1_1manual__event_1_1awaiter__type}{manual\_event<result\_type>::awaiter\_type}};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00111\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}(\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source<T>}}\&\ publisher)\ \{\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a53cf608a22ab568a5af8ad7373ca8e2d}{subscribe\_to}}(publisher);\ \}}
+\DoxyCodeLine{00112\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}(\mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00113\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{async\_single\_event\_observer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer}{\string~async\_single\_event\_observer}}()}
+\DoxyCodeLine{00117\ \ \ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{if}\ (parent\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ parent-\/>remove\_observer();}
+\DoxyCodeLine{00120\ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a53cf608a22ab568a5af8ad7373ca8e2d}{subscribe\_to}}(\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source<T>}}\&\ publisher)\ \{\ publisher.set\_observer(*\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a4e7c72dd6c686ee213a2f53676403b45}{subscribe\_to}}(\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source<T>}}\&\ publisher,\ std::chrono::milliseconds\ time\_to\_cancel,\ U\&\&\ cancelled\_value)}
+\DoxyCodeLine{00131\ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ publisher.set\_observer(*\textcolor{keyword}{this},\ time\_to\_cancel,\ std::forward<U>(cancelled\_value));}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a40d7ac68ec7cff91cdd3e3216a0e8d35}{connected}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ parent\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_acd903b44b3405f18d1f281d6b6734ca2}{complete}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{event}.is\_set();\ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a209d7e82f6fd52db6db37beb1f403593}{reset}}()\ \{\ \textcolor{keyword}{event}.reset();\ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{const}\ T\&\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_adfe1cda4f1269b13d1d27e6d593abfd5}{result}}()\ const\&}
+\DoxyCodeLine{00146\ \ \ \{}
+\DoxyCodeLine{00147\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1async__single__event__observer_acd903b44b3405f18d1f281d6b6734ca2}{complete}}(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ result\ of\ incomplete\ transaction"{}});}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{event}.get();}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00150\ \ \ T\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_adfe1cda4f1269b13d1d27e6d593abfd5}{result}}()\ \&\&}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1async__single__event__observer_acd903b44b3405f18d1f281d6b6734ca2}{complete}}(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ result\ of\ incomplete\ transaction"{}});}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(event).get();}
+\DoxyCodeLine{00154\ \ \ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00157\ \ \ awaiter\_type\ \mbox{\hyperlink{classsrsran_1_1async__single__event__observer_a79ad0a54472cb7a80564c38b3e7b5ff2}{get\_awaiter}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{event}.get\_awaiter();\ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source}}<T>;}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \mbox{\hyperlink{classsrsran_1_1async__event__source}{async\_event\_source<T>}}*\ parent\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00163\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__event}{manual\_event<T>}}\ \ \ \ \ \ \ \ event;}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

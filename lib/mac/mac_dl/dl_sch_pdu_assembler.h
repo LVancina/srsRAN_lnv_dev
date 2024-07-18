@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "mac_dl_ue_repository.h"
+#include "mac_dl_ue_manager.h"
 #include "srsran/mac/lcid_dl_sch.h"
 #include "srsran/mac/mac_pdu_format.h"
 #include "srsran/scheduler/harq_id.h"
@@ -31,7 +31,6 @@
 namespace srsran {
 
 class byte_buffer_chain;
-class cell_dl_harq_buffer_pool;
 
 /// \brief This class represents and encodes a MAC DL-SCH PDU that may contain multiple subPDUs.
 /// Each subPDU is composed of a MAC subheader and MAC CE or MAC SDU payload.
@@ -43,16 +42,15 @@ public:
   {
   public:
     mac_sdu_encoder() = default;
-    mac_sdu_encoder(dl_sch_pdu& pdu_, lcid_t lcid_, unsigned max_sdu_size_);
+    mac_sdu_encoder(dl_sch_pdu& pdu_, lcid_t lcid_, unsigned subhdr_len_, unsigned max_sdu_size_);
 
     bool valid() const { return pdu != nullptr; }
 
-    /// \brief Returns a buffer where the MAC SDU (payload) can be written in-place to avoid memcpys.
-    span<uint8_t> sdu_buffer() const;
+    /// \brief Returns the space that is reserved for this MAC SDU payload.
+    span<uint8_t> sdu_space() const;
 
-    /// \brief Updates the DL-SCH PDU with the encoded MAC SDU subheader and SDU.
-    /// \param[in] sdu_bytes_written Number of bytes written to the SDU buffer (returned by sdu_buffer()).
-    /// \return Number of bytes written to the DL-SCH PDU (MAC SDU subheader + SDU).
+    /// \brief Updates the DL-SCH PDU with the encoded MAC SDU subheader and payload.
+    /// \return Number of bytes written to the DL-SCH PDU (MAC SDU subheader + payload).
     unsigned encode_sdu(unsigned sdu_bytes_written);
 
   private:
@@ -68,8 +66,7 @@ public:
   mac_sdu_encoder get_sdu_encoder(lcid_t lcid, unsigned sdu_payload_len_estimate);
 
   /// Adds a MAC SDU as a subPDU.
-  unsigned add_sdu(lcid_t lcid_, span<uint8_t> sdu);
-  unsigned add_sdu(lcid_t lcid_, const byte_buffer& sdu);
+  unsigned add_sdu(lcid_t lcid_, byte_buffer_chain&& sdu);
 
   /// Adds a UE Contention Resolution CE as a subPDU.
   void add_ue_con_res_id(const ue_con_res_id_t& con_res_payload);
@@ -80,14 +77,11 @@ public:
   /// Adds a padding CE as a subPDU.
   void add_padding(unsigned len);
 
-  /// Number of bytes encoded into the MAC PDU.
+  /// Number of bytes of the MAC PDU.
   unsigned nof_bytes() const { return byte_offset; }
 
   /// Remaining space in number of bytes in the PDU.
   unsigned nof_empty_bytes() const { return pdu.size() - byte_offset; }
-
-  /// Space available in number of bytes in the PDU.
-  unsigned capacity() const { return pdu.size(); }
 
   /// Gets the held MAC PDU bytes.
   span<uint8_t> get() { return pdu.first(byte_offset); }
@@ -103,7 +97,7 @@ private:
 class dl_sch_pdu_assembler
 {
 public:
-  explicit dl_sch_pdu_assembler(mac_dl_ue_repository& ue_mng_, cell_dl_harq_buffer_pool& cell_dl_harq_buffers);
+  explicit dl_sch_pdu_assembler(mac_dl_ue_manager& ue_mng_);
 
   /// \brief Encodes a MAC DL-SCH PDU with the provided scheduler information.
   /// \param rnti RNTI for which the MAC PDU was allocated.
@@ -136,8 +130,7 @@ private:
   /// Assemble MAC subPDU with a CE.
   void assemble_ce(dl_sch_pdu& ue_pdu, rnti_t rnti, const dl_msg_lc_info& subpdu, pdu_log_builder& pdu_logger);
 
-  mac_dl_ue_repository&     ue_mng;
-  cell_dl_harq_buffer_pool& harq_buffers;
+  mac_dl_ue_manager& ue_mng;
 
   srslog::basic_logger& logger;
   // memory buffer to avoid allocations during formatting of pdus

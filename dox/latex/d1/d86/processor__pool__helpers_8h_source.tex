@@ -1,0 +1,84 @@
+\doxysection{processor\+\_\+pool\+\_\+helpers.\+h}
+\hypertarget{processor__pool__helpers_8h_source}{}\label{processor__pool__helpers_8h_source}\index{lib/phy/upper/processor\_pool\_helpers.h@{lib/phy/upper/processor\_pool\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ Repository\ of\ processor\ pools.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Stores\ channel\ processor\ pools,\ organized\ according\ to\ the\ underlying\ numerology.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ Type\ of\ the\ processor.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ processor\_pool\_repository}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Container\ of\ processors.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Each\ entry\ corresponds\ to\ a\ different\ slot.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{using}\ processor\_pool\ =\ std::vector<std::unique\_ptr<T>>;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Container\ of\ processor\ pools.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Each\ entry\ corresponds\ to\ a\ different\ numerology.}}
+\DoxyCodeLine{00046\ \ \ std::array<processor\_pool,\ NOF\_NUMEROLOGIES>\ numerologies;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ a\ reference\ to\ a\ processor\ using\ the\ given\ slot.}}
+\DoxyCodeLine{00050\ \ \ T\&\ get\_processor(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ numerology\ =\ slot\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{numerology}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{)}};}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology\ <\ NOF\_NUMEROLOGIES,\ \textcolor{stringliteral}{"{}Invalid\ numerology\ (\{\})."{}},\ numerology);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ processor\_pool\&\ pool\ =\ numerologies[numerology];}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!pool.empty(),\ \textcolor{stringliteral}{"{}Numerology\ (\{\})\ has\ no\ processors."{}},\ numerology);}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ index\ =\ slot.system\_slot()\ \%\ pool.size();}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{return}\ *pool[index];}
+\DoxyCodeLine{00060\ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Associates\ the\ given\ processor\ pool\ with\ this\ repository.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ Subcarrier\ spacing.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ obj\ New\ processor\ pool\ for\ the\ given\ numerology.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ insert(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ processor\_pool\&\&\ obj)}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ numerology\ =\ \mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}};}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology\ <\ NOF\_NUMEROLOGIES,\ \textcolor{stringliteral}{"{}Invalid\ numerology\ (\{\})."{}},\ numerology);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ processor\_pool\&\ pool\ =\ numerologies[numerology];}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pool.empty(),\ \textcolor{stringliteral}{"{}Numerology\ (\{\})\ already\ has\ processors."{}},\ numerology);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ numerologies[numerology]\ =\ std::move(obj);}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

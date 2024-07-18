@@ -46,7 +46,6 @@ struct log_entry_metadata {
   fmt::dynamic_format_arg_store<fmt::format_context>* store;
   std::string                                         log_name;
   char                                                log_tag;
-  std::shared_ptr<const std::string>                  log_label;
   std::vector<uint8_t>                                hex_dump;
 };
 

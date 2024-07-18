@@ -158,25 +158,18 @@ void ue_configuration_procedure::update_ue_context()
     auto f1u_cfg_it = du_params.ran.qos.find(drbtoadd.five_qi);
     srsran_assert(f1u_cfg_it != du_params.ran.qos.end(), "Undefined F1-U bearer config for {}", drbtoadd.five_qi);
 
-    // TODO: Adjust QoS characteristics passed while creating a DRB since one DRB can contain multiple QoS flow of
-    //  varying 5QI.
-
     // Create DU DRB instance.
-    std::unique_ptr<du_ue_drb> drb =
-        create_drb(drb_creation_info{ue->ue_index,
-                                     ue->pcell_index,
-                                     drbtoadd.drb_id,
-                                     it->lcid,
-                                     it->rlc_cfg,
-                                     it->mac_cfg,
-                                     f1u_cfg_it->second.f1u,
-                                     drbtoadd.uluptnl_info_list,
-                                     ue_mng.get_f1u_teid_pool(),
-                                     du_params,
-                                     ue->get_rlc_rlf_notifier(),
-                                     get_5qi_to_qos_characteristics_mapping(drbtoadd.five_qi),
-                                     drbtoadd.gbr_flow_info,
-                                     drbtoadd.s_nssai});
+    std::unique_ptr<du_ue_drb> drb = create_drb(ue->ue_index,
+                                                ue->pcell_index,
+                                                drbtoadd.drb_id,
+                                                it->lcid,
+                                                it->rlc_cfg,
+                                                it->mac_cfg,
+                                                f1u_cfg_it->second.f1u,
+                                                drbtoadd.uluptnl_info_list,
+                                                ue_mng.get_f1u_teid_pool(),
+                                                du_params,
+                                                ue->get_rlc_rlf_notifier());
     if (drb == nullptr) {
       proc_logger.log_proc_warning("Failed to create {}. Cause: Failed to allocate DU UE resources.", drbtoadd.drb_id);
       continue;
@@ -308,16 +301,6 @@ f1ap_ue_context_update_response ue_configuration_procedure::make_ue_config_respo
       b.mac_lc_ch_cfg_present   = false;
       b.reestablish_rlc_present = true;
     }
-
-    // TODO: Set non-hardcoded servingCellMo.
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.serving_cell_mo_present = true;
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.serving_cell_mo         = 1;
-
-    // Fill fields with -- Cond SyncAndCellAdd
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.first_active_dl_bwp_id_present        = true;
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.first_active_dl_bwp_id                = 0;
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.ul_cfg.first_active_ul_bwp_id_present = true;
-    asn1_cell_group.sp_cell_cfg.sp_cell_cfg_ded.ul_cfg.first_active_ul_bwp_id         = 0;
   }
 
   // Pack cellGroupConfig.

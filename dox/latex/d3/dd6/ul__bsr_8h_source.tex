@@ -1,0 +1,72 @@
+\doxysection{ul\+\_\+bsr.\+h}
+\hypertarget{ul__bsr_8h_source}{}\label{ul__bsr_8h_source}\index{lib/mac/mac\_ul/ul\_bsr.h@{lib/mac/mac\_ul/ul\_bsr.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/to\_array.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/bsr\_format.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ UL\ BSR\ Report\ for\ a\ single\ Logical\ Channel\ Group}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1lcg__bsr__report}{lcg\_bsr\_report}}\ \{}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{namespacesrsran_ae0612c63b7718512651e9d5596a165b7}{lcg\_id\_t}}\ lcg\_id;}
+\DoxyCodeLine{00037\ \ \ uint8\_t\ \ buffer\_size;}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ List\ of\ reported\ UL\ BSRs}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{using}\ lcg\_bsr\_report\_list\ =\ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1lcg__bsr__report}{lcg\_bsr\_report}},\ MAX\_NOF\_LCGS>;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ Decode\ Short\ BSR}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1lcg__bsr__report}{lcg\_bsr\_report}}\ \mbox{\hyperlink{namespacesrsran_a88c13969f70d7ee0e9604669dc9e72aa}{decode\_sbsr}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__view}{byte\_buffer\_view}}\ payload)}
+\DoxyCodeLine{00045\ \{}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(\textcolor{keyword}{not}\ payload.empty(),\ \textcolor{stringliteral}{"{}Trying\ to\ decode\ SBSR\ but\ payload\ is\ empty."{}});}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{structsrsran_1_1lcg__bsr__report}{lcg\_bsr\_report}}\ sbsr\ =\ \{\};}
+\DoxyCodeLine{00048\ \ \ sbsr.lcg\_id\ \ \ \ \ \ \ \ \ =\ uint\_to\_lcg\_id((payload[0]\ \&\ 0xe0U)\ >>\ 5U);}
+\DoxyCodeLine{00049\ \ \ sbsr.buffer\_size\ \ \ \ =\ payload[0]\ \&\ 0x1fU;}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordflow}{return}\ sbsr;}
+\DoxyCodeLine{00051\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1long__bsr__report}{long\_bsr\_report}}\ \{}
+\DoxyCodeLine{00054\ \ \ lcg\_bsr\_report\_list\ list;\ \textcolor{comment}{///\ one\ entry\ for\ each\ reported\ LCG}}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ Decode\ Long\ BSR}}
+\DoxyCodeLine{00058\ \mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{expected}}<\mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{long\_bsr\_report}}>\ \mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{decode\_lbsr}}(\mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{bsr\_format}}\ \mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{format}},\ \mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{byte\_buffer\_view}}\ \mbox{\hyperlink{namespacesrsran_a3a832340243b52b93a11def127c040e5}{payload}});}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ Converts\ the\ buffer\ size\ field\ of\ a\ BSR\ (5\ or\ 8-\/bit\ Buffer\ Size\ field)\ into\ Nof\ Bytes.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)param\ buff\_size\_index\ The\ buffer\ size\ field\ contained\ in\ the\ MAC\ PDU.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)param\ format\ The\ BSR\ format\ that\ determines\ the\ buffer\ size\ field\ length.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)return\ The\ actual\ buffer\ size\ level\ in\ Bytes.}}
+\DoxyCodeLine{00064\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_ac4f5973b7ad3ac12229b9c2d92f15c43}{buff\_size\_field\_to\_bytes}}(size\_t\ buff\_size\_index,\ \mbox{\hyperlink{namespacesrsran_a6cf999d5340bd0ec2a53bd85a7fe1e59}{bsr\_format}}\ format);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

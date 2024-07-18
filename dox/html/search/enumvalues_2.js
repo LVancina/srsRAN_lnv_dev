@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['c_0',['C',['../d9/def/namespacesrsran.html#a4b8eb97251264b1aee7123a8765e1d3ea0d61f8370cad1d412f80b84d143e1257',1,'srsran']]],
+  ['ccch_5fsize_5f48_1',['CCCH_SIZE_48',['../de/d3a/classsrsran_1_1lcid__ul__sch__t.html#af5a0ea0f5c9901308775ac54cfb270cfa2780fc5f60fa39e412b2600bbfa8ec5c',1,'srsran::lcid_ul_sch_t']]],
+  ['ccch_5fsize_5f64_2',['CCCH_SIZE_64',['../de/d3a/classsrsran_1_1lcid__ul__sch__t.html#af5a0ea0f5c9901308775ac54cfb270cfa0732424cb367e860a72855a5f5f0666a',1,'srsran::lcid_ul_sch_t']]],
+  ['cdm4_5ffd2_5ftd2_3',['cdm4_FD2_TD2',['../d9/def/namespacesrsran.html#a92130846fc1b19cec1dd589c82c15dcba2d28931f783d330b995040556d05463a',1,'srsran']]],
+  ['cdm8_5ffd2_5ftd4_4',['cdm8_FD2_TD4',['../d9/def/namespacesrsran.html#a92130846fc1b19cec1dd589c82c15dcbaa3cc2fea5c72c914f5e1636284fe2cd6',1,'srsran']]],
+  ['channel_5festimator_5',['channel_estimator',['../d7/d77/classsrsran_1_1channel__state__information.html#ae4af4a403b69bef37ac9173fa7428286aa677b907ee90f2fda4e01b241f1859bc',1,'srsran::channel_state_information']]],
+  ['control_6',['control',['../d9/def/namespacesrsran.html#a6e791999e341321921cec2656c25bbf7afc5364bf9dbfa34954526becad136d4b',1,'srsran']]],
+  ['coreset0_7',['CORESET0',['../d9/d64/classsrsran_1_1pdcch__processor.html#aef755c37fa33b634f70a9782933d7c58a99db3fe7378d38e9b93f061596de7181',1,'srsran::pdcch_processor']]],
+  ['crb0_8',['CRB0',['../dc/da9/structsrsran_1_1pdsch__processor_1_1pdu__t.html#aa0281d833162f9975838bd6223221fdea4707798c4252dea0e8e58926e58633a5',1,'srsran::pdsch_processor::pdu_t']]],
+  ['crc_5ffailure_9',['crc_failure',['../d9/def/namespacesrsran.html#aabad903407ca6128c3acaa0a8eb0fde8a8e994e95e1ba788cd15c1a4773e98114',1,'srsran']]],
+  ['crc_5fpass_10',['crc_pass',['../d9/def/namespacesrsran.html#aabad903407ca6128c3acaa0a8eb0fde8af8b5f68d5d7596b0ed97d9ae7335273c',1,'srsran']]],
+  ['cri_5fri_5fcqi_11',['cri_ri_cqi',['../d9/def/namespacesrsran.html#a76e9b48d07d4bbf5f2a69f3387138b30a3abee850563051bfa1715bd5fe604bc3',1,'srsran']]],
+  ['cri_5fri_5fli_5fpmi_5fcqi_12',['cri_ri_li_pmi_cqi',['../d9/def/namespacesrsran.html#a76e9b48d07d4bbf5f2a69f3387138b30a1df389fd882583df1b395bbd627f70eb',1,'srsran']]],
+  ['cri_5fri_5fpmi_5fcqi_13',['cri_ri_pmi_cqi',['../d9/def/namespacesrsran.html#a76e9b48d07d4bbf5f2a69f3387138b30a736e97ef49e4128efafe4b76471f9d7e',1,'srsran']]],
+  ['csi_5frs_5fnzp_14',['CSI_RS_NZP',['../d9/def/namespacesrsran.html#a1553c168be2e5dc5ed6ac0825d9f6d8fa9893dd13131811386240aa71d5efd100',1,'srsran']]],
+  ['csi_5frs_5fzp_15',['CSI_RS_ZP',['../d9/def/namespacesrsran.html#a1553c168be2e5dc5ed6ac0825d9f6d8fab47efe2fda7bfd967d6e322a9c737497',1,'srsran']]]
+];

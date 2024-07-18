@@ -140,12 +140,13 @@ public:
   using iterator_category = std::forward_iterator_tag;
 
   byte_buffer_segment_byte_iterator_impl() = default;
-  byte_buffer_segment_byte_iterator_impl(byte_buffer_segment_list::node_t* start_segment, size_t offset_ = 0) :
+  byte_buffer_segment_byte_iterator_impl(byte_buffer_segment_list::node_t* start_segment) :
+    current_segment(start_segment)
+  {
+  }
+  byte_buffer_segment_byte_iterator_impl(byte_buffer_segment_list::node_t* start_segment, size_t offset_) :
     current_segment(start_segment), offset(offset_)
   {
-    while (current_segment != nullptr and current_segment->length() == 0) {
-      current_segment = current_segment->next;
-    }
   }
 
   /// Conversion from iterators of uint8_t (iterator) to const uint8_t (const_iterator).
@@ -249,9 +250,6 @@ public:
   byte_buffer_segment_list_span_iterator_impl(NodeSegmentType* seg, size_t offset_, size_t size_) :
     current_segment(seg), offset(offset_), rem_bytes(size_)
   {
-    while (current_segment != nullptr and current_segment->length() == 0) {
-      current_segment = current_segment->next;
-    }
     srsran_assert(current_segment != nullptr or (offset == 0 and rem_bytes == 0),
                   "Positive offset or length for empty segment");
     srsran_assert(current_segment == nullptr or offset <= current_segment->length(), "Invalid offset");
@@ -261,9 +259,6 @@ public:
   byte_buffer_segment_list_span_iterator_impl(const byte_buffer_segment_byte_iterator_impl<U>& it, size_t size_) :
     byte_buffer_segment_list_span_iterator_impl(it.current_segment, it.offset, size_)
   {
-    while (current_segment != nullptr and current_segment->length() == 0) {
-      current_segment = current_segment->next;
-    }
   }
 
   /// Copy constructor.

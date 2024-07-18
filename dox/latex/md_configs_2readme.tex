@@ -1,0 +1,85 @@
+\chapter{Configuration Examples}
+\hypertarget{md_configs_2readme}{}\label{md_configs_2readme}\index{Configuration Examples@{Configuration Examples}}
+\label{md_configs_2readme_autotoc_md0}%
+\Hypertarget{md_configs_2readme_autotoc_md0}%
+ This folder contains a number of selected example configuration files that represent some of the most common use-\/cases and configuration options. Their main goal is to simplify the bring up and, therefore, they only expose the most important as well as the most likely to change configuration options. For the sake of simplicity and readability they do not list all available configuration sections, subsection and fields.\hypertarget{md_configs_2readme_autotoc_md1}{}\doxysection{\texorpdfstring{Usage}{Usage}}\label{md_configs_2readme_autotoc_md1}
+The srs\+RAN Project g\+NB can be configured via one or multiple configuration files and/or via the command line. When multiple configuration files are specified, their content gets combined by the g\+NB application. In case there are repeated parameters across configuration files, the parameter values of the last file are selected. Similarly, the parameters passed via command line overwrite the parameters specified via configuration files. If the value of a parameter is not specified by neither the configuration files nor through the command line, a default value is selected by the application.
+
+The capability to overlay parameters via multiple configuration files and through the command line is useful to minimize config duplication. For example users can share the same QoS configuration across many experiments in different bands as follows\+:
+
+sudo ./gnb -\/c qos.\+yml -\/c gnb\+\_\+ru\+\_\+ran550\+\_\+tdd\+\_\+n78\+\_\+20mhz.\+yml\hypertarget{md_configs_2readme_autotoc_md2}{}\doxysection{\texorpdfstring{Full list of configuration options}{Full list of configuration options}}\label{md_configs_2readme_autotoc_md2}
+Look \href{https://docs.srsran.com/projects/project/en/latest/user_manuals/source/config_ref.html}{\texttt{ here}} for the main configuration reference. We update this list regularly and aim to always keep it up-\/to-\/date with the actual code.
+
+This process, however, is done manually and might not always be 100\% accurate. To obtain a full list of configuration options available on the command line and in configuration files it is best to invoke the respective binary with the {\ttfamily -\/h} parameter and navigate through the subsections. Note that the each section might contain multiple subsections. To obtain the list of available config options for a subsection it is again required to call the binary with the {\ttfamily subsectioname -\/h} parameter.
+
+For example, to obtain the list of all main g\+NB configuration options run\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\$\ ./apps/gnb/gnb\ -\/h}
+\DoxyCodeLine{srsGNB\ application}
+\DoxyCodeLine{Usage:\ ./apps/gnb/gnb\ [OPTIONS]\ [SUBCOMMAND]}
+\DoxyCodeLine{}
+\DoxyCodeLine{Options:}
+\DoxyCodeLine{\ \ -\/h,-\/-\/help\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Print\ this\ help\ message\ and\ exit}
+\DoxyCodeLine{\ \ -\/v,-\/-\/version\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Display\ program\ version\ information\ and\ exit}
+\DoxyCodeLine{\ \ -\/c\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Read\ config\ from\ file}
+\DoxyCodeLine{\ \ -\/-\/gnb\_id\ UINT\ [411]\ \ \ \ \ \ \ \ \ gNodeB\ identifier}
+\DoxyCodeLine{\ \ -\/-\/gnb\_id\_bit\_length\ UINT:INT\ in\ [22\ -\/\ 32]\ [\ ]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gNodeB\ identifier\ length\ in\ bits}
+\DoxyCodeLine{\ \ -\/-\/ran\_node\_name\ TEXT\ [srsgnb01]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RAN\ node\ name}
+\DoxyCodeLine{\ \ -\/-\/cells\ TEXT\ ...\ \ \ \ \ \ \ \ \ \ \ \ Sets\ the\ cell\ configuration\ on\ a\ per\ cell\ basis,\ overwriting\ the\ default\ configuration\ defined\ by\ cell\_cfg}
+\DoxyCodeLine{\ \ -\/-\/qos\ TEXT\ ...\ \ \ \ \ \ \ \ \ \ \ \ \ \ Configures\ RLC\ and\ PDCP\ radio\ bearers\ on\ a\ per\ 5QI\ basis.}
+\DoxyCodeLine{}
+\DoxyCodeLine{Subcommands:}
+\DoxyCodeLine{\ \ log\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Logging\ configuration}
+\DoxyCodeLine{\ \ pcap\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PCAP\ configuration}
+\DoxyCodeLine{\ \ amf\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AMF\ parameters}
+\DoxyCodeLine{\ \ cu\_cp\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CU-\/CP\ parameters}
+\DoxyCodeLine{\ \ ru\_sdr\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SDR\ Radio\ Unit\ configuration}
+\DoxyCodeLine{\ \ ru\_ofh\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Open\ Fronthaul\ Radio\ Unit\ configuration}
+\DoxyCodeLine{\ \ cell\_cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Default\ cell\ configuration}
+\DoxyCodeLine{\ \ expert\_phy\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Expert\ physical\ layer\ configuration}
+\DoxyCodeLine{\ \ test\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Test\ mode\ configuration}
+
+\end{DoxyCode}
+
+
+To then list all options for the {\ttfamily cell\+\_\+cfg} subcommand, run the binary again with\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\$\ ./apps/gnb/gnb\ cell\_cfg\ -\/h}
+\DoxyCodeLine{Default\ cell\ configuration}
+\DoxyCodeLine{Usage:\ ./apps/gnb/gnb\ cell\_cfg\ [OPTIONS]\ [SUBCOMMAND]}
+\DoxyCodeLine{}
+\DoxyCodeLine{Options:}
+\DoxyCodeLine{\ \ -\/h,-\/-\/help\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Print\ this\ help\ message\ and\ exit}
+\DoxyCodeLine{\ \ -\/-\/pci\ UINT:INT\ in\ [0\ -\/\ 1007]\ [1]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PCI}
+\DoxyCodeLine{\ \ -\/-\/dl\_arfcn\ UINT\ [536020]\ \ \ \ Downlink\ ARFCN}
+\DoxyCodeLine{\ \ -\/-\/band\ TEXT\ [auto]\ \ \ \ \ \ \ \ \ \ NR\ band}
+\DoxyCodeLine{\ \ -\/-\/common\_scs\ ENUM\ [15kHz]\ \ \ Cell\ common\ subcarrier\ spacing}
+\DoxyCodeLine{\ \ -\/-\/channel\_bandwidth\_MHz\ ENUM\ [20]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Channel\ bandwidth\ in\ MHz}
+\DoxyCodeLine{\ \ -\/-\/nof\_antennas\_ul\ UINT\ [1]\ \ Number\ of\ antennas\ in\ uplink}
+\DoxyCodeLine{\ \ -\/-\/nof\_antennas\_dl\ UINT\ [1]\ \ Number\ of\ antennas\ in\ downlink}
+\DoxyCodeLine{\ \ -\/-\/plmn\ TEXT\ [00101]\ \ \ \ \ \ \ \ \ PLMN}
+\DoxyCodeLine{\ \ -\/-\/tac\ UINT\ [7]\ \ \ \ \ \ \ \ \ \ \ \ \ \ TAC}
+\DoxyCodeLine{\ \ -\/-\/ssb\_period\ UINT:\{5,10,20\}\ [10]}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Period\ of\ SSB\ scheduling\ in\ milliseconds}
+\DoxyCodeLine{}
+\DoxyCodeLine{Subcommands:}
+\DoxyCodeLine{\ \ pdcch\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PDCCH\ parameters}
+\DoxyCodeLine{\ \ pdsch\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PDSCH\ parameters}
+\DoxyCodeLine{\ \ pusch\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PUSCH\ parameters}
+\DoxyCodeLine{\ \ pucch\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PUCCH\ parameters}
+\DoxyCodeLine{\ \ prach\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PRACH\ parameters}
+\DoxyCodeLine{\ \ tdd\_ul\_dl\_cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TDD\ UL\ DL\ configuration\ parameters}
+\DoxyCodeLine{\ \ paging\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Paging\ parameters}
+
+\end{DoxyCode}
+
+
+Note that the {\ttfamily cell\+\_\+cfg} subcommand has multiple configuration options but also exposes more subcommands. 

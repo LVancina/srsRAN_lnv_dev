@@ -1,0 +1,102 @@
+\doxysection{sib\+\_\+scheduler.\+h}
+\hypertarget{sib__scheduler_8h_source}{}\label{sib__scheduler_8h_source}\index{lib/scheduler/common\_scheduling/sib\_scheduler.h@{lib/scheduler/common\_scheduling/sib\_scheduler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../pdcch\_scheduling/pdcch\_resource\_allocator.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/scheduler\_expert\_config.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/sched\_consts.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}};}
+\DoxyCodeLine{00034\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a4b8eb97251264b1aee7123a8765e1d3e}{ssb\_pattern\_case}};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ This\ class\ schedules\ the\ SIB1\ and\ fills\ the\ grant\ to\ be\ passed\ to\ passed\ to\ lower\ layers.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1sib1__scheduler}{sib1\_scheduler}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ sib1\_scheduler(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__si__expert__config}{scheduler\_si\_expert\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expert\_cfg\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__resource__allocator}{pdcch\_resource\_allocator}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcch\_sch,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message}{sched\_cell\_configuration\_request\_message}}\&\ msg);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Performs\ beams'\ SIB1s\ (if\ any)\ scheduling\ for\ the\ current\ slot.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out,in]\ res\_grid\ Resource\ grid\ with\ current\ allocations\ and\ scheduling\ results.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ sl\_point\ Slot\ for\ which\ the\ SIB1\ scheduler\ is\ called.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1sib1__scheduler_ab13df715de7b2f178fda642f3e1c74b8}{schedule\_sib1}}(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ res\_grid,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_point);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Searches\ in\ PDSCH\ and\ PDCCH\ for\ space\ to\ allocate\ SIB1\ and\ SIB1's\ DCI,\ respectively.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out,in]\ res\_grid\ Resource\ grid\ with\ current\ allocations\ and\ scheduling\ results.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ beam\_idx\ SSB\ or\ beam\ index\ which\ the\ SIB1\ corresponds\ to.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ time\_resource\ PDSCH\ time\ domain\ resource.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ allocate\_sib1(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ res\_grid,\ \textcolor{keywordtype}{unsigned}\ beam\_idx,\ \textcolor{keywordtype}{unsigned}\ time\_resource);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Fills\ the\ SIB1\ slots,\ at\ which\ each\ beam's\ SIB1\ is\ allocated.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ These\ slots\ are\ computed\ and\ saved\ in\ the\ body\ of\ the\ constructor.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out,in]\ res\_grid\ Resource\ grid\ with\ current\ allocations\ and\ scheduling\ results.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ sib1\_crbs\_grant\ CRBs\ interval\ in\ the\ PDSCH\ allocated\ for\ SIB1.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ time\_resource\ PDSCH\ time\ domain\ resource.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ dmrs\_info\ DMRS\ information\ for\ SIB1.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ tbs\ Transport\ block\ size.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ fill\_sib1\_grant(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ res\_grid,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sib1\_crbs\_grant,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ time\_resource,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__information}{dmrs\_information}}\&\ \ \ \ \ \ \ dmrs\_info,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tbs);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ SIB1\ Logger.}}
+\DoxyCodeLine{00074\ \ \ srslog::basic\_logger\&\ logger\ =\ \mbox{\hyperlink{classsrsran_1_1sib1__scheduler}{srslog}}::\mbox{\hyperlink{classsrsran_1_1sib1__scheduler}{fetch\_basic\_logger}}(\textcolor{stringliteral}{"{}SCHED"{}});}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Parameters\ for\ SIB1\ scheduling.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__si__expert__config}{scheduler\_si\_expert\_config}}\&\ expert\_cfg;}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\_configuration}}\&\ \ \ \ \ \ \ \ \ cell\_cfg;}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcch__resource__allocator}{pdcch\_resource\_allocator}}\&\ \ \ \ \ \ \ \ \ pdcch\_sched;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Parameters\ for\ SIB1\ scheduling.}}
+\DoxyCodeLine{00082\ \ \ uint8\_t\ coreset0;}
+\DoxyCodeLine{00083\ \ \ uint8\_t\ searchspace0;}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ The\ SIB1\ payload\ is\ in\ bytes.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{unsigned}\ sib1\_payload\_size;}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ This\ is\ a\ derived\ parameters,\ that\ depends\ on\ the\ SSB\ periodicity,\ SIB1\ periodicity\ and\ SIB1\ re-\/tx\ periodicity.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{unsigned}\ sib1\_period;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ This\ is\ a\ dummy\ BWP\ configuration\ dimensioned\ based\ on\ CORESET\#0\ RB\ limits.\ It's\ used\ for\ CRB-\/to-\/PRB\ conversion.}}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{structsrsran_1_1bwp__configuration}{bwp\_configuration}}\ coreset0\_bwp\_cfg;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ Array\ of\ Type0-\/PDCCH\ CSS\ slots\ \ (1\ per\ beam)\ that\ will\ be\ used\ for\ SIB1\ scheduling\ [TS\ 38.213,\ Section\ 13].}}
+\DoxyCodeLine{00093\ \ \ std::array<\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \mbox{\hyperlink{namespacesrsran_a3c630d2aec87e998af72d1718d055879}{MAX\_NUM\_BEAMS}}>\ sib1\_type0\_pdcch\_css\_slots;}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \}\ \textcolor{comment}{//\ end\ of\ namespace\ srsran}}
+
+\end{DoxyCode}

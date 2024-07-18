@@ -1,0 +1,319 @@
+\doxysection{slot\+\_\+point.\+h}
+\hypertarget{slot__point_8h_source}{}\label{slot__point_8h_source}\index{include/srsran/ran/slot\_point.h@{include/srsran/ran/slot\_point.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/interval.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Number\ of\ subframers\ per\ frame.\ This\ constant\ doesn't\ depend\ on\ the\ numerology\ used.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_afe120c5fa59fc13e75fa47b6161f3ad3}{NOF\_SUBFRAMES\_PER\_FRAME}}\ =\ 10;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Number\ of\ system\ Frame\ Number\ values.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_a660ccd3cc382442fdadac290341f1524}{size\_t}}\ \mbox{\hyperlink{namespacesrsran_a660ccd3cc382442fdadac290341f1524}{NOF\_SFNS}}\ =\ 1024;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Duration\ of\ a\ subframe\ in\ milliseconds.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_a27de82e40cbcf71e597b17912aaf7722}{SUBFRAME\_DURATION\_MSEC}}\ =\ 1;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Represents\ the\ difference\ between\ two\ slot\ points.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{using}\ slot\_difference\ =\ \textcolor{keywordtype}{int};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ Represents\ the\ numerology,\ SFN\ and\ slot\ index\ of\ the\ current\ slot.}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ It\ provides\ several\ functionalities\ compared\ to\ a\ simple\ integer\ type,\ namely:}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ -\/\ automatic\ wrap-\/around\ of\ SFN\ and\ slot\_index\ on\ increment/decrement.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ -\/\ comparison\ of\ slot\_points\ accounts\ for\ wrap-\/around.\ For\ instance\ slot\ point\ with\ SFN=1023\ and\ slot\ index=9\ is}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \ \ lower\ than\ slot\ point\ with\ SFN=0\ and\ slot\ index=0.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ -\/\ it\ provides\ several\ helper\ methods\ to\ convert\ slot\ point\ to\ SFN,\ slot\_index\ and\ frame\ number.}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ -\/\ it\ can\ encode\ an\ invalid\ slot\_point\ state.}}
+\DoxyCodeLine{00050\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Number\ of\ possible\ numerologies.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint32\_t\ NOF\_NUMEROLOGIES\ =\ 5;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Default\ constructor.\ Sets\ slot\_point\ in\ invalid\ state.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{slot\_point}}()\ :\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}(NOF\_NUMEROLOGIES),\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}(0)\ \{\}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Takes\ a\ numerology\ and\ total\ count\ value.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{slot\_point}}(uint32\_t\ numerology,\ uint32\_t\ count)\ :\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}(numerology),\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}(count)}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology\ <\ NOF\_NUMEROLOGIES,\ \textcolor{stringliteral}{"{}Invalid\ numerology\ idx=\{\}\ passed"{}},\ numerology);}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(count\ <\ nof\_slots\_per\_system\_frame(),\ \textcolor{stringliteral}{"{}Invalid\ slot\ count=\{\}\ passed"{}},\ count);}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Takes\ a\ SCS\ and\ total\ count\ value.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a79f5c4ec444e99888d182e367bd73f09}{slot\_point}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ uint32\_t\ count)\ :\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{(}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}}\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{,}}\ count\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{)}}\ \{\}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Takes\ a\ numerology,\ SFN\ and\ slot\ index\ in\ radio\ frame.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a8406e704b77edf9832db0f41f0a89aea}{slot\_point}}(uint32\_t\ numerology,\ uint32\_t\ sfn\_val,\ uint32\_t\ slot\_radio\_frame\_idx\_)\ :}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}(numerology),\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}(slot\_radio\_frame\_idx\_\ +\ sfn\_val\ *\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{)}})}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology\ <\ NOF\_NUMEROLOGIES,\ \textcolor{stringliteral}{"{}Invalid\ numerology\ idx=\{\}\ passed"{}},\ numerology);}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sfn\_val\ <\ NOF\_SFNS,\ \textcolor{stringliteral}{"{}Invalid\ SFN=\{\}\ provided"{}},\ sfn\_val);}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(slot\_radio\_frame\_idx\_\ <\ nof\_slots\_per\_frame(),}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Slot\ index=\{\}\ exceeds\ maximum\ number\ of\ slots=\{\}"{}},}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_radio\_frame\_idx\_,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_slots\_per\_frame());}
+\DoxyCodeLine{00079\ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Takes\ a\ subcarrier\ spacing,\ SFN\ and\ slot\ index\ in\ radio\ frame.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a245bead986bfa880f3b700e7a28360a7}{slot\_point}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ uint32\_t\ sfn\_val,\ uint32\_t\ slot\_radio\_frame\_idx\_)\ :}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_a8406e704b77edf9832db0f41f0a89aea}{(}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}}\mbox{\hyperlink{classsrsran_1_1slot__point_a8406e704b77edf9832db0f41f0a89aea}{,}}\ sfn\_val\mbox{\hyperlink{classsrsran_1_1slot__point_a8406e704b77edf9832db0f41f0a89aea}{,}}\ slot\_radio\_frame\_idx\_\mbox{\hyperlink{classsrsran_1_1slot__point_a8406e704b77edf9832db0f41f0a89aea}{)}}}
+\DoxyCodeLine{00084\ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ Takes\ a\ numerology,\ SFN,\ subframe\ index\ and\ slot\ index\ within\ subframe.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a353f2985bc07f17a094d7baf491a64ad}{slot\_point}}(uint32\_t\ numerology,\ uint32\_t\ sfn\_val,\ uint32\_t\ subframe\_index\_,\ uint32\_t\ slot\_subframe\_index\_)\ :}
+\DoxyCodeLine{00089\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}(numerology),}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}(slot\_subframe\_index\_\ +\ subframe\_index\_\ *\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{nof\_slots\_per\_subframe}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{)}}\ +\ sfn\_val\ *\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{)}})}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology\ <\ NOF\_NUMEROLOGIES,\ \textcolor{stringliteral}{"{}Invalid\ numerology\ idx=\{\}\ passed"{}},\ numerology);}
+\DoxyCodeLine{00093\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sfn\_val\ <\ NOF\_SFNS,\ \textcolor{stringliteral}{"{}Invalid\ SFN=\{\}\ provided"{}},\ sfn\_val);}
+\DoxyCodeLine{00094\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(subframe\_index\_\ <\ NOF\_SUBFRAMES\_PER\_FRAME,\ \textcolor{stringliteral}{"{}Invalid\ Subframe\ index=\{\}\ provided"{}},\ subframe\_index\_);}
+\DoxyCodeLine{00095\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(slot\_subframe\_index\_\ <\ nof\_slots\_per\_subframe(),}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Slot\ index=\{\}\ exceeds\ maximum\ number\ of\ slots\ in\ subframe=\{\}"{}},}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_subframe\_index\_,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_slots\_per\_subframe());}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Sets\ slot\_point\ to\ invalid\ state.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1e04e815603661bfac6adde7d077c3c9}{clear}}()\ \{\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}\ =\ NOF\_NUMEROLOGIES;\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Determines\ whether\ slot\_point\ was\ correctly\ initialized.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a988d40945efc785f48725c857852c922}{valid}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}\ <\ NOF\_NUMEROLOGIES;\ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ Numerology\ index\ (0..4).}}
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{numerology}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}};\ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing.\ Values:\ \{15kHz,\ 30kHz,\ 60kHz,\ 120kHz,\ 240kHz\}.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{classsrsran_1_1slot__point_abc70a7c7746a1540577cd3b8dd6951ce}{scs}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a2e4c9b3ea403617006756dfa03632b0f}{to\_subcarrier\_spacing}}\mbox{\hyperlink{namespacesrsran_a2e4c9b3ea403617006756dfa03632b0f}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}\mbox{\hyperlink{namespacesrsran_a2e4c9b3ea403617006756dfa03632b0f}{)}};\ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ Slot\ index\ in\ radio\ frame.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Value:\ SCS=15kHz:\ (0..9),\ SCS=30kHz:\ (0..19),\ SCS=60kHz:\ (0..39),\ SCS=120kHz:\ (0..79),\ SCS=240kHz:\ (0..159).}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint32\_t>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ \%\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{)}};\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Radio\ Frame\ Number.\ Value:\ (0..1023).}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a19d7b2faaa1fcc74f3d01560339f7602}{sfn}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint32\_t>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ /\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{)}};\ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ per\ system\ frame.}}
+\DoxyCodeLine{00121\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a2ec6f7fb21e64d981a7462a1b83e5e8e}{nof\_slots\_per\_system\_frame}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ nof\_slots\_per\_frame()\ *\ NOF\_SFNS;\ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ present\ in\ a\ subframe.\ Depends\ on\ numerology.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{nof\_slots\_per\_subframe}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ 1U\ <<\ \textcolor{keyword}{static\_cast}<uint32\_t>(\mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}});\ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ Number\ of\ slots\ present\ in\ a\ frame.\ Depends\ on\ numerology.}}
+\DoxyCodeLine{00127\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{nof\_slots\_per\_subframe}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{)}}\ *\ \mbox{\hyperlink{namespacesrsran_afe120c5fa59fc13e75fa47b6161f3ad3}{NOF\_SUBFRAMES\_PER\_FRAME}};\ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Subframe\ index\ in\ a\ radio\ frame.\ Value:\ (0..9).}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a0a2bc6d1ca538db3bac69627a30cee58}{subframe\_index}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{)}}\ /\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{nof\_slots\_per\_subframe}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{)}};\ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ Conversion\ of\ slot\_point\ to\ system\ slot.}}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a2b47aa352e7f3081b464676c5a2d91b9}{system\_slot}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}};\ \}}
+\DoxyCodeLine{00134\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ to\_uint()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}};\ \}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{explicit}\ operator\ uint32\_t()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}};\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ Get\ Half\ Radio\ Frame\ size\ in\ number\ of\ slots.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a92f19c95fd8babb30751d860b22a79b1}{nof\_hrf\_slots}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{nof\_slots\_per\_frame}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_abe0d14ff8e82408317731dc67ccc7a58}{)}}\ /\ 2;\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ Checks\ if\ slot\ is\ in\ second\ half\ of\ the\ radio\ frame.}}
+\DoxyCodeLine{00141\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_aabb721d5258bcb816b1f6c4fe5ee3599}{is\_odd\_hrf}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a0a2bc6d1ca538db3bac69627a30cee58}{subframe\_index}}\mbox{\hyperlink{classsrsran_1_1slot__point_a0a2bc6d1ca538db3bac69627a30cee58}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a0a2bc6d1ca538db3bac69627a30cee58}{)}}\ >=\ (\mbox{\hyperlink{namespacesrsran_afe120c5fa59fc13e75fa47b6161f3ad3}{NOF\_SUBFRAMES\_PER\_FRAME}}\ /\ 2);\ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ Get\ MOD(slot\ index,\ Nof\ slots\ in\ Half\ Frame).}}
+\DoxyCodeLine{00144\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7d6e10b0d729bf7890503643f2cae4b8}{hrf\_slot\_index}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint32\_t>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ \%\ \mbox{\hyperlink{classsrsran_1_1slot__point_a92f19c95fd8babb30751d860b22a79b1}{nof\_hrf\_slots}}\mbox{\hyperlink{classsrsran_1_1slot__point_a92f19c95fd8babb30751d860b22a79b1}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a92f19c95fd8babb30751d860b22a79b1}{)}};\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ Get\ MOD(slot\ index,\ Nof\ slots\ in\ a\ subframe).}}
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a763d02d08a215708c7b207d45d1680c7}{subframe\_slot\_index}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint32\_t>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ \%\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{nof\_slots\_per\_subframe}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a7c168cce1dc4f31c735f0276fc23e86b}{)}};\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ Equality\ comparison\ of\ two\ slot\_point\ objects.\ Two\ slot\ points\ are\ equal\ if\ their\ numerology,\ SFN\ and\ slot\ index}}
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ have\ the\ same\ value.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7f9c89edf28e1070bac17e56e924918d}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00152\ \ \ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{return}\ other\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}\ ==\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}\ \textcolor{keyword}{and}\ other\mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}\ ==\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}};}
+\DoxyCodeLine{00154\ \ \ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ Inequality\ comparison\ of\ two\ slot\_point\ objects.}}
+\DoxyCodeLine{00157\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_abad02cb0d70f6cf10ec5737eef0fa791}{operator}}!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7f9c89edf28e1070bac17e56e924918d}{==}}\ other);\ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{///\ Checks\ if\ "{}lhs"{}\ slot\ point\ is\ lower\ than\ "{}rhs"{}.\ It\ assumes\ that\ both\ "{}lhs"{}\ and\ "{}rhs"{}\ use\ the\ same\ numerology}}
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{///\ This\ comparison\ accounts\ for\ the\ wrap-\/around\ of\ both\ slot\ index\ and\ SFNs.\ The\ ambiguity\ range\ of\ the\ comparison}}
+\DoxyCodeLine{00161\ \ \ \textcolor{comment}{///\ is\ equal\ to\ half\ of\ the\ total\ number\ of\ slots\ in\ a\ hyperframe.}}
+\DoxyCodeLine{00162\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1f259d03710b690768cd908104cb2f7a}{operator}}<(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00163\ \ \ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(numerology()\ ==\ other.numerology(),\ \textcolor{stringliteral}{"{}Comparing\ slots\ of\ different\ numerologies"{}});}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(other\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ -\/\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}});}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{if}\ (v\ >\ 0)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (v\ <\ (\textcolor{keywordtype}{int})nof\_slots\_per\_system\_frame()\ /\ 2);}
+\DoxyCodeLine{00168\ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordflow}{return}\ (v\ <\ -\/(\textcolor{keywordtype}{int})nof\_slots\_per\_system\_frame()\ /\ 2);}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ Other\ lower/higher\ comparisons\ that\ build\ on\ top\ of\ operator==\ and\ operator<.}}
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a3328902b86d2546180b02df7a82e2278}{operator}}<=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a7f9c89edf28e1070bac17e56e924918d}{==}}\ other)\ \textcolor{keyword}{or}\ (*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1f259d03710b690768cd908104cb2f7a}{<}}\ other);\ \}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator>=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1f259d03710b690768cd908104cb2f7a}{<}}\ other);\ \}}
+\DoxyCodeLine{00175\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator>(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_abad02cb0d70f6cf10ec5737eef0fa791}{!=}}\ other)\ \textcolor{keyword}{and}\ *\textcolor{keyword}{this}\ >=\ other;\ \}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ Implements\ the\ subtraction\ of\ two\ slot\ points.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ @return\ a\ signed\ integer\ that\ is\ positive\ if\ "{}lhs"{}\ is\ higher\ than\ "{}rhs"{},\ zero\ if\ equal,\ and\ negative\ otherwise.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{keyword}{constexpr}\ slot\_difference\ \mbox{\hyperlink{classsrsran_1_1slot__point_a72f44e43d78d6e3b67c3372169a26f3f}{operator}}-\/(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00180\ \ \ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keywordtype}{int}\ a\ =\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ -\/\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(other\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}});}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordflow}{if}\ (a\ >=\ (\textcolor{keywordtype}{int})nof\_slots\_per\_system\_frame()\ /\ 2)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ a\ -\/\ nof\_slots\_per\_system\_frame();}
+\DoxyCodeLine{00184\ \ \ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{if}\ (a\ <\ -\/(\textcolor{keywordtype}{int})nof\_slots\_per\_system\_frame()\ /\ 2)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ a\ +\ nof\_slots\_per\_system\_frame();}
+\DoxyCodeLine{00187\ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{return}\ a;}
+\DoxyCodeLine{00189\ \ \ \}}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \textcolor{comment}{///\ Increment\ slot\_point.\ It\ accounts\ for\ slot\ index\ and\ SFN\ wrap-\/around.}}
+\DoxyCodeLine{00192\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{operator}}++()}
+\DoxyCodeLine{00193\ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}++;}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{if}\ (count\_val\ ==\ nof\_slots\_per\_system\_frame())\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}\ =\ 0;}
+\DoxyCodeLine{00197\ \ \ \ \ \}}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ operator++(\textcolor{keywordtype}{int})}
+\DoxyCodeLine{00201\ \ \ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ ret\{*\textcolor{keyword}{this}\};}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keyword}{this}\mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{-\/>}}\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{operator}}\mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{++}}\mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a710c6d7029d41a6ccb5e64aae57dfc4c}{)}};}
+\DoxyCodeLine{00204\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00205\ \ \ \}}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ Sum\ of\ slot\_point\ by\ an\ integer\ jump\ value.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Unsigned,\ std::enable\_if\_t<std::is\_unsigned<Unsigned>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00209\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \mbox{\hyperlink{classsrsran_1_1slot__point_a2ef493e61c79af160427bce16f2c8d56}{operator}}+=(Unsigned\ jump)}
+\DoxyCodeLine{00210\ \ \ \{}
+\DoxyCodeLine{00211\ \ \ \ \ count\_val\ =\ (count\_val\ +\ jump)\ \%\ nof\_slots\_per\_system\_frame();}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00213\ \ \ \}}
+\DoxyCodeLine{00214\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ operator+=(\textcolor{keywordtype}{int}\ jump)}
+\DoxyCodeLine{00215\ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ nof\_slots\ =\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(nof\_slots\_per\_system\_frame());}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ tmp\ \ \ \ \ \ \ =\ (\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(\mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}})\ +\ jump)\ \%\ nof\_slots;}
+\DoxyCodeLine{00218\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}\ \ \ \ \ \ \ \ \ \ \ =\ tmp\ +\ (tmp\ <\ 0\ ?\ nof\_slots\ :\ 0);}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00220\ \ \ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///\ Subtraction\ of\ slot\ point\ by\ an\ integer\ jump\ value.}}
+\DoxyCodeLine{00223\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ \mbox{\hyperlink{classsrsran_1_1slot__point_a2783973dfb066c584d452c11b57f6d46}{operator}}-\/=(uint32\_t\ jump)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{this}-\/>operator+=(-\/\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(jump));\ \}}
+\DoxyCodeLine{00224\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ operator-\/=(\textcolor{keywordtype}{int}\ jump)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{this}-\/>operator+=(-\/jump);\ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{comment}{///\ Determines\ whether\ this\ slot\_point\ fits\ within\ provided\ slot\ point\ range.}}
+\DoxyCodeLine{00227\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1slot__point_ae3066182cb848c3ee376137747de5e3c}{is\_in\_interval}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ begin,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ end)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (*\textcolor{keyword}{this}\ >=\ begin\ \textcolor{keyword}{and}\ *\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1f259d03710b690768cd908104cb2f7a}{<}}\ end);\ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ Tag\ for\ numerology\ used:\ \{0:\ 15\ kHz,\ 1:\ 30\ kHz,\ 2:\ 60\ kHz,\ 3:\ 120\ kHz,\ 4:\ 240\ kHz\}.}}
+\DoxyCodeLine{00230\ \ \ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a02a54ad3e0d3b45b1d64de612933c6b2}{numerology\_val}}\ :\ 3;}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{///\ Count\ value\ that\ encodes\ both\ SFN\ (0..1023)\ and\ slot\ index\ (0..9/19/39/79/159).}}
+\DoxyCodeLine{00233\ \ \ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1slot__point_a66db24e8cc90dcfc74e277dde3984661}{count\_val}}\ :\ 29;}
+\DoxyCodeLine{00234\ \};}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \textcolor{comment}{///\ Sum\ and\ subtraction\ operations\ between\ slot\_point\ types.}}
+\DoxyCodeLine{00237\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00238\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a039ad32c101e7f4d733257418417b2a5}{operator}}+(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot,\ Integer\ jump)}
+\DoxyCodeLine{00239\ \{}
+\DoxyCodeLine{00240\ \ \ \textcolor{keyword}{static\_assert}(std::is\_integral<Integer>::value,\ \textcolor{stringliteral}{"{}Invalid\ integer\ type"{}});}
+\DoxyCodeLine{00241\ \ \ slot\ +=\ jump;}
+\DoxyCodeLine{00242\ \ \ \textcolor{keywordflow}{return}\ slot;}
+\DoxyCodeLine{00243\ \}}
+\DoxyCodeLine{00244\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ operator+(uint32\_t\ jump,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)}
+\DoxyCodeLine{00245\ \{}
+\DoxyCodeLine{00246\ \ \ slot\ +=\ jump;}
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordflow}{return}\ slot;}
+\DoxyCodeLine{00248\ \}}
+\DoxyCodeLine{00249\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ operator+(\textcolor{keywordtype}{int}\ jump,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)}
+\DoxyCodeLine{00250\ \{}
+\DoxyCodeLine{00251\ \ \ slot\ +=\ jump;}
+\DoxyCodeLine{00252\ \ \ \textcolor{keywordflow}{return}\ slot;}
+\DoxyCodeLine{00253\ \}}
+\DoxyCodeLine{00254\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ operator-\/(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot,\ uint32\_t\ jump)}
+\DoxyCodeLine{00255\ \{}
+\DoxyCodeLine{00256\ \ \ slot\ \mbox{\hyperlink{classsrsran_1_1slot__point_a2783973dfb066c584d452c11b57f6d46}{-\/=}}\ jump;}
+\DoxyCodeLine{00257\ \ \ \textcolor{keywordflow}{return}\ slot;}
+\DoxyCodeLine{00258\ \}}
+\DoxyCodeLine{00259\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ operator-\/(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot,\ \textcolor{keywordtype}{int}\ jump)}
+\DoxyCodeLine{00260\ \{}
+\DoxyCodeLine{00261\ \ \ slot\ -\/=\ jump;}
+\DoxyCodeLine{00262\ \ \ \textcolor{keywordflow}{return}\ slot;}
+\DoxyCodeLine{00263\ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \textcolor{comment}{///\ Get\ maximum\ of\ two\ slot\ points.}}
+\DoxyCodeLine{00266\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ lhs,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ rhs)}
+\DoxyCodeLine{00267\ \{}
+\DoxyCodeLine{00268\ \ \ \textcolor{keywordflow}{return}\ lhs\ >\ rhs\ ?\ lhs\ :\ rhs;}
+\DoxyCodeLine{00269\ \}}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \textcolor{comment}{///\ Get\ minimum\ of\ two\ slot\ points.}}
+\DoxyCodeLine{00272\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ lhs,\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ rhs)}
+\DoxyCodeLine{00273\ \{}
+\DoxyCodeLine{00274\ \ \ \textcolor{keywordflow}{return}\ lhs\ \mbox{\hyperlink{classsrsran_1_1slot__point_a1f259d03710b690768cd908104cb2f7a}{<}}\ rhs\ ?\ lhs\ :\ rhs;}
+\DoxyCodeLine{00275\ \}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \textcolor{comment}{///\ Slot\ Interval\ [start,\ stop).}}
+\DoxyCodeLine{00278\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran}{slot\_interval}}\ =\ \mbox{\hyperlink{namespacesrsran}{interval}}<\mbox{\hyperlink{namespacesrsran}{slot\_point}}>;}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \textcolor{comment}{///\ Convert\ a\ slot\ point\ to\ another\ numerology.\ This\ function\ applies\ a\ "{}floor"{}\ operation\ when\ the\ new\ numerology\ is}}
+\DoxyCodeLine{00281\ \textcolor{comment}{///\ lower\ than\ the\ old\ one.\ E.g.\ Given\ two\ numerologies\ mu1\ and\ mu2,\ where\ m1\ <\ m2,\ this\ conversion\ function\ "{}f"{}\ will}}
+\DoxyCodeLine{00282\ \textcolor{comment}{///\ always\ ensure\ that,\ for\ a\ slot\ t1\ with\ m1\ numerology,\ the\ condition\ "{}f(f(t1,\ mu2),\ m1)\ <=\ t1"{}\ is\ satisfied.}}
+\DoxyCodeLine{00283\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a03f5095acaa68a60d1ee02b1ae296ddd}{set\_slot\_numerology}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl,\ \textcolor{keywordtype}{unsigned}\ new\_numerology)}
+\DoxyCodeLine{00284\ \{}
+\DoxyCodeLine{00285\ \ \ \textcolor{keywordtype}{unsigned}\ old\_numerology\ =\ sl\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{.}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{numerology}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_a6f661d08d0210402eeb539bddbb7a8d0}{)}};}
+\DoxyCodeLine{00286\ \ \ \textcolor{keywordflow}{if}\ (old\_numerology\ >\ new\_numerology)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{\{}}new\_numerology\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{,}}\ sl.to\_uint()\ >>\ (old\_numerology\ -\/\ new\_numerology)\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{\}}};}
+\DoxyCodeLine{00288\ \ \ \}}
+\DoxyCodeLine{00289\ \ \ \textcolor{keywordflow}{if}\ (old\_numerology\ <\ new\_numerology)\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{\{}}new\_numerology\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{,}}\ sl.to\_uint()\ <<\ (new\_numerology\ -\/\ old\_numerology)\mbox{\hyperlink{classsrsran_1_1slot__point_ac872003248a0a6dfdbb55f721cc95632}{\}}};}
+\DoxyCodeLine{00291\ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \textcolor{keywordflow}{return}\ sl;}
+\DoxyCodeLine{00293\ \}}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \textcolor{comment}{///\ FMT\ formatter\ of\ slot\_point\ type.}}
+\DoxyCodeLine{00300\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00301\ \textcolor{keyword}{struct}\ formatter<srsran::slot\_point>\ \{}
+\DoxyCodeLine{00302\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00303\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00304\ \ \ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00306\ \ \ \}}
+\DoxyCodeLine{00307\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00308\ \ \ \textcolor{keyword}{auto}\ format(srsran::slot\_point\ slot,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00309\ \ \ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}.\{\}"{}},\ slot.sfn(),\ slot.slot\_index());}
+\DoxyCodeLine{00311\ \ \ \}}
+\DoxyCodeLine{00312\ \};}
+\DoxyCodeLine{00313\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

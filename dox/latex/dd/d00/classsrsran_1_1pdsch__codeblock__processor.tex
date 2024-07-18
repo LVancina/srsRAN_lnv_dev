@@ -1,0 +1,258 @@
+\doxysection{srsran\+::pdsch\+\_\+codeblock\+\_\+processor Class Reference}
+\hypertarget{classsrsran_1_1pdsch__codeblock__processor}{}\label{classsrsran_1_1pdsch__codeblock__processor}\index{srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}}
+
+
+PDSCH codeblock processor.  
+
+
+
+
+{\ttfamily \#include $<$pdsch\+\_\+codeblock\+\_\+processor.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::pdsch\+\_\+codeblock\+\_\+processor\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=245pt]{db/dd3/classsrsran_1_1pdsch__codeblock__processor__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1configuration}{configuration}}
+\begin{DoxyCompactList}\small\item\em Collects the parameters necessary for processing a PDSCH codeblock. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1result}{result}}
+\begin{DoxyCompactList}\small\item\em Collects the output parameters. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1pdsch__codeblock__processor_adaeb8258d539f6e992cae838056366d1}{pdsch\+\_\+codeblock\+\_\+processor}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc24a\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc24b\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc16\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder}{ldpc\+\_\+encoder}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{encoder\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ldpc__rate__matcher}{ldpc\+\_\+rate\+\_\+matcher}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{rate\+\_\+matcher\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1pseudo__random__generator}{pseudo\+\_\+random\+\_\+generator}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{scrambler\+\_\+}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1modulation__mapper}{modulation\+\_\+mapper}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{modulator\+\_\+}})
+\begin{DoxyCompactList}\small\item\em Builds a codeblock processor with the required dependencies. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1result}{result}} \mbox{\hyperlink{classsrsran_1_1pdsch__codeblock__processor_a6664f070b1874c4c5a37c8a6b5a07222}{process}} (\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$ data, \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1configuration}{configuration}} \&config)
+\begin{DoxyCompactList}\small\item\em Processes a PDSCH codeblock. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classfloat}{float}} \mbox{\hyperlink{classsrsran_1_1pdsch__codeblock__processor_a1925afd3629a2c8e9ce4edb57faf7738}{get\+\_\+scaling}} (\mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\+\_\+scheme}} modulation)
+\begin{DoxyCompactList}\small\item\em Gets the QAM modulation scaling, as per TS38.\+211 Section 5.\+1. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+PDSCH codeblock processor. 
+
+Contains the required dependencies to process PDSCH codeblocks in parallel.
+
+The codeblock processing consists of\+:
+\begin{DoxyEnumerate}
+\item Extracts the codeblock information bits from the transport block;
+\item Appends transport block CRC (if applicable);
+\item Appends zero padding;
+\item Appends codeblock CRC (if applicable);
+\item Appends filler bits as zeros;
+\item Applies LDPC encode;
+\item Applies LDPC rate matching;
+\item Applies scrambling; and
+\item Maps bits into modulation symbols. 
+\end{DoxyEnumerate}
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1pdsch__codeblock__processor_adaeb8258d539f6e992cae838056366d1}\label{classsrsran_1_1pdsch__codeblock__processor_adaeb8258d539f6e992cae838056366d1} 
+\index{srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}!pdsch\_codeblock\_processor@{pdsch\_codeblock\_processor}}
+\index{pdsch\_codeblock\_processor@{pdsch\_codeblock\_processor}!srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}}
+\doxysubsubsection{\texorpdfstring{pdsch\_codeblock\_processor()}{pdsch\_codeblock\_processor()}}
+{\footnotesize\ttfamily srsran\+::pdsch\+\_\+codeblock\+\_\+processor\+::pdsch\+\_\+codeblock\+\_\+processor (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$}]{crc24a\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$}]{crc24b\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\+\_\+calculator}} $>$}]{crc16\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder}{ldpc\+\_\+encoder}} $>$}]{encoder\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ldpc__rate__matcher}{ldpc\+\_\+rate\+\_\+matcher}} $>$}]{rate\+\_\+matcher\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1pseudo__random__generator}{pseudo\+\_\+random\+\_\+generator}} $>$}]{scrambler\+\_\+,  }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1modulation__mapper}{modulation\+\_\+mapper}} $>$}]{modulator\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Builds a codeblock processor with the required dependencies. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00087\ \ \ \ \ crc24a(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc24a\_}})),}
+\DoxyCodeLine{00088\ \ \ \ \ crc24b(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc24b\_}})),}
+\DoxyCodeLine{00089\ \ \ \ \ crc16(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{crc16\_}})),}
+\DoxyCodeLine{00090\ \ \ \ \ encoder(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{encoder\_}})),}
+\DoxyCodeLine{00091\ \ \ \ \ rate\_matcher(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{rate\_matcher\_}})),}
+\DoxyCodeLine{00092\ \ \ \ \ scrambler(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{scrambler\_}})),}
+\DoxyCodeLine{00093\ \ \ \ \ modulator(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{modulator\_}}))}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ srsran\_assert(crc24a,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00096\ \ \ \ \ srsran\_assert(crc24b,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00097\ \ \ \ \ srsran\_assert(crc16,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00098\ \ \ \ \ srsran\_assert(crc24a-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC24A,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00099\ \ \ \ \ srsran\_assert(crc24b-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC24B,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00100\ \ \ \ \ srsran\_assert(crc16-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC16,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00101\ \ \ \ \ srsran\_assert(encoder,\ \textcolor{stringliteral}{"{}Invalid\ LDPC\ encoder."{}});}
+\DoxyCodeLine{00102\ \ \ \ \ srsran\_assert(rate\_matcher,\ \textcolor{stringliteral}{"{}Invalid\ LDPC\ rate\ matcher."{}});}
+\DoxyCodeLine{00103\ \ \ \ \ srsran\_assert(scrambler,\ \textcolor{stringliteral}{"{}Invalid\ scrambler."{}});}
+\DoxyCodeLine{00104\ \ \ \ \ srsran\_assert(modulator,\ \textcolor{stringliteral}{"{}Invalid\ modulator."{}});}
+\DoxyCodeLine{00105\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1pdsch__codeblock__processor_a1925afd3629a2c8e9ce4edb57faf7738}\label{classsrsran_1_1pdsch__codeblock__processor_a1925afd3629a2c8e9ce4edb57faf7738} 
+\index{srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}!get\_scaling@{get\_scaling}}
+\index{get\_scaling@{get\_scaling}!srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}}
+\doxysubsubsection{\texorpdfstring{get\_scaling()}{get\_scaling()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classfloat}{float}} srsran\+::pdsch\+\_\+codeblock\+\_\+processor\+::get\+\_\+scaling (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\+\_\+scheme}}}]{modulation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the QAM modulation scaling, as per TS38.\+211 Section 5.\+1. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{static\_bit\_buffer<0>}}\ temp;}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{return}\ modulator-\/>modulate(span<ci8\_t>(),\ temp,\ modulation);}
+\DoxyCodeLine{00122\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1pdsch__codeblock__processor_a6664f070b1874c4c5a37c8a6b5a07222}\label{classsrsran_1_1pdsch__codeblock__processor_a6664f070b1874c4c5a37c8a6b5a07222} 
+\index{srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}!process@{process}}
+\index{process@{process}!srsran::pdsch\_codeblock\_processor@{srsran::pdsch\_codeblock\_processor}}
+\doxysubsubsection{\texorpdfstring{process()}{process()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1result}{pdsch\+\_\+codeblock\+\_\+processor\+::result}} pdsch\+\_\+codeblock\+\_\+processor\+::process (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$}]{data,  }\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1pdsch__codeblock__processor_1_1configuration}{configuration}} \&}]{config }\end{DoxyParamCaption})}
+
+
+
+Processes a PDSCH codeblock. 
+
+The PDSCH codeblock processing includes transport and code block CRC attachment if applicable, LDPC encoding, rate matching, bit packing, scrambling and modulation.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em data} & Original transport block data without CRC. \\
+\hline
+\mbox{\texttt{ in}}  & {\em config} & Required parameters for processing a codeblock. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A struct with the results. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \textcolor{keyword}{using\ namespace\ }units::literals;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \textcolor{comment}{//\ Initialize\ scrambling\ with\ the\ initial\ state.}}
+\DoxyCodeLine{00033\ \ \ scrambler-\/>init(config.c\_init);}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{//\ Prepare\ codeblock\ data.}}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ =\ 0\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{\_bits}};}
+\DoxyCodeLine{00037\ \ \ cb\_data.\mbox{\hyperlink{classsrsran_1_1static__bit__buffer_a1a0ab7531227d17f74d71d4a91239400}{resize}}(config.cb\_size.value());}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{//\ Calculate\ transport\ block\ size.}}
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ tbs\ =\ \mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}(data.size()).\mbox{\hyperlink{classsrsran_1_1units_1_1bytes_a3633d6a80fc41a40f08be27a32e04acf}{to\_bits}}();}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{//\ Verify\ range\ of\ the\ CB\ information\ bits.}}
+\DoxyCodeLine{00043\ \ \ srsran\_assert(}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ (config.tb\_offset\ +\ config.cb\_info\_size)\ <=\ tbs,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}TB\ offset\ (i.e.,\ \{\})\ and\ number\ of\ information\ bits\ (i.e.,\ \{\})\ exceeds\ the\ transport\ block\ size\ (i.e.,\ \{\})"{}},}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ config.tb\_offset,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ config.cb\_info\_size,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ tbs);}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ Rate\ Matching\ output\ length.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ rm\_length\ =\ config.metadata.cb\_specific.rm\_length;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ Extract\ modulation.}}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ modulation\ =\ config.metadata.tb\_common.mod;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{//\ Number\ of\ bits\ per\ symbol.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{bits\_per\_symbol}}\ =\ \mbox{\hyperlink{namespacesrsran_af78ee928d6d8a3d8ff6bbc753f50c44e}{get\_bits\_per\_symbol}}(modulation);}
+\DoxyCodeLine{00058\ \ \ srsran\_assert(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{bits\_per\_symbol}}\ >=\ 1,\ \textcolor{stringliteral}{"{}Number\ of\ bits\ per\ resource\ element\ must\ be\ greater\ than\ or\ equal\ to\ 1."{}});}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ Copy\ codeblock\ data.}}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ message\ =\ cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_abba52fc044021e0e4492726fc8a4dc24}{first}}(config.cb\_info\_size.value());}
+\DoxyCodeLine{00063\ \ \ \ \ srsvec::copy\_offset(message,\ data,\ config.tb\_offset.value());}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +=\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}(config.cb\_info\_size);}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{//\ Append\ transport\ block\ CRC\ if\ applicable.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{if}\ ((config.tb\_offset\ +\ config.cb\_info\_size)\ ==\ tbs)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ MAX\_BITS\_CRC16\{3824\};}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\_calculator}}\&\ \ \ \ \ \ \ tb\_crc\ \ \ \ \ \ \ \ \ \ =\ (tbs\ <=\ MAX\_BITS\_CRC16)\ ?\ *crc16\ :\ *crc24a;}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \ \ \ \ \ \ \ \ \ \ nof\_tb\_crc\_bits\ =\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}(get\_crc\_size(tb\_crc.\mbox{\hyperlink{classsrsran_1_1crc__calculator_a47c397142a916607dab38210cedc5e4d}{get\_generator\_poly}}()));}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{classunsigned}{crc\_calculator\_checksum\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{tb\_checksum}}\ =\ tb\_crc.\mbox{\hyperlink{classsrsran_1_1crc__calculator_a527fe01b97675f1709ea4995b7a8f936}{calculate\_byte}}(data);}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ =\ 0,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte\_end}}\ =\ nof\_tb\_crc\_bits.\mbox{\hyperlink{classsrsran_1_1units_1_1bits_a240778dc7ade6085090b094fafd45aa5}{truncate\_to\_bytes}}().\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{value}}();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte\_end}};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}})\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{comment}{//\ Extract\ byte\ from\ the\ CRC.}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{tb\_crc\_byte}}\ =\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{tb\_checksum}}\ >>\ (nof\_tb\_crc\_bits.\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{value}}()\ -\/\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ +\ 1)\ *\ 8))\ \&\ 0xffUL;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{comment}{//\ Insert\ the\ byte\ at\ the\ end\ of\ the\ bit\ buffer.}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_a6a4cc3c118ab69642f23eaed6aa6868c}{insert}}(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{tb\_crc\_byte}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}.value(),\ 8);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \textcolor{comment}{//\ Increment\ the\ number\ of\ bits.}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +=\ 8\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{\_bits}};}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Insert\ zero\ padding\ bits.}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits\_end}}\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +\ config.zero\_pad;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits\_end}};)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{comment}{//\ Calculate\ the\ number\ of\ zeros\ to\ pad,\ no\ more\ than\ a\ byte\ at\ a\ time.}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}}\ =\ std::min<units::bits>(8\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{\_bits}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits\_end}}\ -\/\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}});}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \textcolor{comment}{//\ Insert\ the\ zeros\ at\ the\ end\ of\ the\ bit\ buffer.}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_a6a4cc3c118ab69642f23eaed6aa6868c}{insert}}(0\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{UL}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}.value(),\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}}.value());}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{comment}{//\ Increment\ the\ number\ of\ bits.}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}};}
+\DoxyCodeLine{00093\ \ \ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ Append\ codeblock\ CRC\ if\ applicable.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordflow}{if}\ (config.has\_cb\_crc)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\_calculator}}\&\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_crc}}\ =\ *crc24b;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \mbox{\hyperlink{classunsigned}{crc\_calculator\_checksum\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_checksum}}\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_crc}}.calculate(cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_abba52fc044021e0e4492726fc8a4dc24}{first}}(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}.value()));}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ =\ 0,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte\_end}}\ =\ 3;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte\_end}};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}})\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{comment}{//\ Extract\ byte\ from\ the\ CRC.}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_crc\_byte}}\ =\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_checksum}}\ >>\ (24\ -\/\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{i\_checksum\_byte}}\ +\ 1)\ *\ 8))\ \&\ 0xffUL;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{comment}{//\ Insert\ the\ byte\ at\ the\ end\ of\ the\ bit\ buffer.}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_a6a4cc3c118ab69642f23eaed6aa6868c}{insert}}(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cb\_crc\_byte}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}.value(),\ 8);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{comment}{//\ Increment\ the\ number\ of\ bits.}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +=\ 8\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{\_bits}};}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{//\ Append\ filler\ bits\ as\ zeros.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordflow}{while}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ !=\ config.cb\_size)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ Calculate\ the\ number\ of\ zeros\ to\ pad,\ no\ more\ than\ a\ byte\ at\ a\ time.}}
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}}\ =\ std::min<units::bits>(8\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{\_bits}},\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}(config.cb\_size)\ -\/\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}});}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Insert\ the\ zeros\ at\ the\ end\ of\ the\ bit\ buffer.}}
+\DoxyCodeLine{00117\ \ \ \ \ cb\_data.\mbox{\hyperlink{classsrsran_1_1bit__buffer_a6a4cc3c118ab69642f23eaed6aa6868c}{insert}}(0\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{UL}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}.value(),\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}}.value());}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Increment\ the\ number\ of\ bits.}}
+\DoxyCodeLine{00119\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_used\_bits}}\ +=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{nof\_zeros}};}
+\DoxyCodeLine{00120\ \ \ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{//\ Prepare\ rate\ matching\ buffer.}}
+\DoxyCodeLine{00123\ \ \ rm\_buffer.\mbox{\hyperlink{classsrsran_1_1static__bit__buffer_a1a0ab7531227d17f74d71d4a91239400}{resize}}(config.metadata.cb\_specific.full\_length);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{//\ Encode\ the\ segment\ into\ a\ codeblock.}}
+\DoxyCodeLine{00126\ \ \ encoder-\/>encode(rm\_buffer,\ cb\_data,\ config.metadata.tb\_common);}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{//\ Rate\ match\ the\ codeblock.}}
+\DoxyCodeLine{00129\ \ \ temp\_packed\_bits.\mbox{\hyperlink{classsrsran_1_1static__bit__buffer_a1a0ab7531227d17f74d71d4a91239400}{resize}}(rm\_length);}
+\DoxyCodeLine{00130\ \ \ rate\_matcher-\/>rate\_match(temp\_packed\_bits,\ rm\_buffer,\ config.metadata);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{//\ Apply\ scrambling\ sequence.}}
+\DoxyCodeLine{00133\ \ \ scrambler-\/>apply\_xor(temp\_packed\_bits,\ temp\_packed\_bits);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<ci8\_t>}}\ cb\_symbols\ =\ \mbox{\hyperlink{classsrsran_1_1span}{span<ci8\_t>}}(temp\_cb\_symbols).\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(rm\_length\ /\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{bits\_per\_symbol}});}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{//\ Modulate.}}
+\DoxyCodeLine{00138\ \ \ modulator-\/>modulate(cb\_symbols,\ temp\_packed\_bits,\ modulation);}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordflow}{return}\ \{scrambler-\/>get\_state(),\ cb\_symbols\};}
+\DoxyCodeLine{00141\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/phy/upper/channel\+\_\+processors/pdsch\+\_\+codeblock\+\_\+processor.\+h\item 
+lib/phy/upper/channel\+\_\+processors/pdsch\+\_\+codeblock\+\_\+processor.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,246 @@
+\doxysection{SPSCQueue.\+h}
+\hypertarget{SPSCQueue_8h_source}{}\label{SPSCQueue_8h_source}\index{external/rigtorp/SPSCQueue.h@{external/rigtorp/SPSCQueue.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{Copyright\ (c)\ 2020\ Erik\ Rigtorp\ <erik@rigtorp.se>}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{00005\ \textcolor{comment}{of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{00006\ \textcolor{comment}{in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{00007\ \textcolor{comment}{to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{00008\ \textcolor{comment}{copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{00009\ \textcolor{comment}{furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{00010\ \textcolor{comment}{}}
+\DoxyCodeLine{00011\ \textcolor{comment}{The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{00012\ \textcolor{comment}{copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{00013\ \textcolor{comment}{}}
+\DoxyCodeLine{00014\ \textcolor{comment}{THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{00015\ \textcolor{comment}{IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{00016\ \textcolor{comment}{FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{00017\ \textcolor{comment}{AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{00018\ \textcolor{comment}{LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{00019\ \textcolor{comment}{OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{00020\ \textcolor{comment}{SOFTWARE.}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <memory>}\ \textcolor{comment}{//\ std::allocator}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <new>}\ \ \ \ \textcolor{comment}{//\ std::hardware\_destructive\_interference\_size}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <type\_traits>}\ \textcolor{comment}{//\ std::enable\_if,\ std::is\_*\_constructible}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#ifdef\ \_\_has\_cpp\_attribute}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#if\ \_\_has\_cpp\_attribute(nodiscard)}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ RIGTORP\_NODISCARD\ [[nodiscard]]}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#ifndef\ RIGTORP\_NODISCARD}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#define\ RIGTORP\_NODISCARD}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{namespace\ }rigtorp\ \{}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Allocator\ =\ std::allocator<T>>\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}\ \{}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#if\ defined(\_\_cpp\_if\_constexpr)\ \&\&\ defined(\_\_cpp\_lib\_void\_t)}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Alloc2,\ \textcolor{keyword}{typename}\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{struct\ }has\_allocate\_at\_least\ :\ std::false\_type\ \{\};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Alloc2>}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{struct\ }has\_allocate\_at\_least<}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ Alloc2,\ std::void\_t<typename\ Alloc2::value\_type,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ decltype(std::declval<Alloc2\ \&>().allocate\_at\_least(}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size\_t\{\}))>>\ :\ std::true\_type\ \{\};}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ capacity,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Allocator\ \&allocator\ =\ Allocator())}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ :\ capacity\_(capacity),\ allocator\_(allocator)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ The\ queue\ needs\ at\ least\ one\ element}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (capacity\_\ <\ 1)\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ capacity\_\ =\ 1;}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ capacity\_++;\ \textcolor{comment}{//\ Needs\ one\ slack\ element}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ Prevent\ overflowing\ size\_t}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (capacity\_\ >\ SIZE\_MAX\ -\/\ 2\ *\ kPadding)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ capacity\_\ =\ SIZE\_MAX\ -\/\ 2\ *\ kPadding;}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\#if\ defined(\_\_cpp\_if\_constexpr)\ \&\&\ defined(\_\_cpp\_lib\_void\_t)}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{if}\ \textcolor{keyword}{constexpr}\ (has\_allocate\_at\_least<Allocator>::value)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ res\ =\ allocator\_.allocate\_at\_least(capacity\_\ +\ 2\ *\ kPadding);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ slots\_\ =\ res.ptr;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ capacity\_\ =\ res.count\ -\/\ 2\ *\ kPadding;}
+\DoxyCodeLine{00076\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ slots\_\ =\ std::allocator\_traits<Allocator>::allocate(}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ allocator\_,\ capacity\_\ +\ 2\ *\ kPadding);}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00081\ \ \ \ \ slots\_\ =\ std::allocator\_traits<Allocator>::allocate(}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ allocator\_,\ capacity\_\ +\ 2\ *\ kPadding);}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{alignof}(\mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue<T>}})\ ==\ kCacheLineSize,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{sizeof}(\mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue<T>}})\ >=\ 3\ *\ kCacheLineSize,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00087\ \ \ \ \ assert(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}\ *\textcolor{keyword}{>}(\&readIdx\_)\ -\/}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}\ *\textcolor{keyword}{>}(\&writeIdx\_)\ >=}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}std::ptrdiff\_t\textcolor{keyword}{>}(kCacheLineSize));}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{\string~SPSCQueue}}()\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{while}\ (front())\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ pop();}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ std::allocator\_traits<Allocator>::deallocate(allocator\_,\ slots\_,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ capacity\_\ +\ 2\ *\ kPadding);}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{//\ non-\/copyable\ and\ non-\/movable}}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}\ \&operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classrigtorp_1_1SPSCQueue}{SPSCQueue}}\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ emplace(Args\ \&\&...args)\ \textcolor{keyword}{noexcept}(}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ std::is\_nothrow\_constructible<T,\ Args\ \&\&...>::value)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_constructible<T,\ Args\ \&\&...>::value,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}T\ must\ be\ constructible\ with\ Args\&\&..."{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ writeIdx\ =\ writeIdx\_.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{auto}\ nextWriteIdx\ =\ writeIdx\ +\ 1;}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextWriteIdx\ ==\ capacity\_)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ nextWriteIdx\ =\ 0;}
+\DoxyCodeLine{00113\ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{while}\ (nextWriteIdx\ ==\ readIdxCache\_)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ readIdxCache\_\ =\ readIdx\_.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{new}\ (\&slots\_[writeIdx\ +\ kPadding])\ T(std::forward<Args>(args)...);}
+\DoxyCodeLine{00118\ \ \ \ \ writeIdx\_.store(nextWriteIdx,\ std::memory\_order\_release);}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00122\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{bool}\ try\_emplace(Args\ \&\&...args)\ \textcolor{keyword}{noexcept}(}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ std::is\_nothrow\_constructible<T,\ Args\ \&\&...>::value)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_constructible<T,\ Args\ \&\&...>::value,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}T\ must\ be\ constructible\ with\ Args\&\&..."{}});}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ writeIdx\ =\ writeIdx\_.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keyword}{auto}\ nextWriteIdx\ =\ writeIdx\ +\ 1;}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextWriteIdx\ ==\ capacity\_)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ nextWriteIdx\ =\ 0;}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextWriteIdx\ ==\ readIdxCache\_)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ readIdxCache\_\ =\ readIdx\_.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextWriteIdx\ ==\ readIdxCache\_)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{new}\ (\&slots\_[writeIdx\ +\ kPadding])\ T(std::forward<Args>(args)...);}
+\DoxyCodeLine{00138\ \ \ \ \ writeIdx\_.store(nextWriteIdx,\ std::memory\_order\_release);}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00140\ \ \ \}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{void}\ push(\textcolor{keyword}{const}\ T\ \&v)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_copy\_constructible<T>::value)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_copy\_constructible<T>::value,}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}T\ must\ be\ copy\ constructible"{}});}
+\DoxyCodeLine{00145\ \ \ \ \ emplace(v);}
+\DoxyCodeLine{00146\ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ P,\ \textcolor{keyword}{typename}\ =\ \textcolor{keyword}{typename}\ std::enable\_if<}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_constructible<T,\ P\ \&\&>::value>::type>}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{void}\ push(P\ \&\&v)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_constructible<T,\ P\ \&\&>::value)\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ emplace(std::forward<P>(v));}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{00155\ \ \ try\_push(\textcolor{keyword}{const}\ T\ \&v)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_copy\_constructible<T>::value)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_copy\_constructible<T>::value,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}T\ must\ be\ copy\ constructible"{}});}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{return}\ try\_emplace(v);}
+\DoxyCodeLine{00159\ \ \ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ P,\ \textcolor{keyword}{typename}\ =\ \textcolor{keyword}{typename}\ std::enable\_if<}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_constructible<T,\ P\ \&\&>::value>::type>}
+\DoxyCodeLine{00163\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{00164\ \ \ try\_push(P\ \&\&v)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_constructible<T,\ P\ \&\&>::value)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordflow}{return}\ try\_emplace(std::forward<P>(v));}
+\DoxyCodeLine{00166\ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ RIGTORP\_NODISCARD\ T\ *front()\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ readIdx\ =\ readIdx\_.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keywordflow}{if}\ (readIdx\ ==\ writeIdxCache\_)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ writeIdxCache\_\ =\ writeIdx\_.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (writeIdxCache\_\ ==\ readIdx)\ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{return}\ \&slots\_[readIdx\ +\ kPadding];}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \textcolor{keywordtype}{void}\ pop()\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_nothrow\_destructible<T>::value,}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}T\ must\ be\ nothrow\ destructible"{}});}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ readIdx\ =\ readIdx\_.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00183\ \ \ \ \ assert(writeIdx\_.load(std::memory\_order\_acquire)\ !=\ readIdx);}
+\DoxyCodeLine{00184\ \ \ \ \ slots\_[readIdx\ +\ kPadding].\string~T();}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keyword}{auto}\ nextReadIdx\ =\ readIdx\ +\ 1;}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextReadIdx\ ==\ capacity\_)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ nextReadIdx\ =\ 0;}
+\DoxyCodeLine{00188\ \ \ \ \ \}}
+\DoxyCodeLine{00189\ \ \ \ \ readIdx\_.store(nextReadIdx,\ std::memory\_order\_release);}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{size\_t}\ size()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ std::ptrdiff\_t\ diff\ =\ writeIdx\_.load(std::memory\_order\_acquire)\ -\/}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ readIdx\_.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{if}\ (diff\ <\ 0)\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ diff\ +=\ capacity\_;}
+\DoxyCodeLine{00197\ \ \ \ \ \}}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(diff);}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keywordflow}{return}\ writeIdx\_.load(std::memory\_order\_acquire)\ ==}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ readIdx\_.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00204\ \ \ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ RIGTORP\_NODISCARD\ \textcolor{keywordtype}{size\_t}\ capacity()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ capacity\_\ -\/\ 1;\ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00209\ \textcolor{preprocessor}{\#ifdef\ \_\_cpp\_lib\_hardware\_interference\_size}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ kCacheLineSize\ =}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ std::hardware\_destructive\_interference\_size;}
+\DoxyCodeLine{00212\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00213\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ kCacheLineSize\ =\ 64;}
+\DoxyCodeLine{00214\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{//\ Padding\ to\ avoid\ false\ sharing\ between\ slots\_\ and\ adjacent\ allocations}}
+\DoxyCodeLine{00217\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ kPadding\ =\ (kCacheLineSize\ -\/\ 1)\ /\ \textcolor{keyword}{sizeof}(T)\ +\ 1;}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordtype}{size\_t}\ capacity\_;}
+\DoxyCodeLine{00221\ \ \ T\ *slots\_;}
+\DoxyCodeLine{00222\ \textcolor{preprocessor}{\#if\ defined(\_\_has\_cpp\_attribute)\ \&\&\ \_\_has\_cpp\_attribute(no\_unique\_address)}}
+\DoxyCodeLine{00223\ \ \ Allocator\ allocator\_\ [[no\_unique\_address]];}
+\DoxyCodeLine{00224\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00225\ \ \ Allocator\ allocator\_;}
+\DoxyCodeLine{00226\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \textcolor{comment}{//\ Align\ to\ cache\ line\ size\ in\ order\ to\ avoid\ false\ sharing}}
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{//\ readIdxCache\_\ and\ writeIdxCache\_\ is\ used\ to\ reduce\ the\ amount\ of\ cache}}
+\DoxyCodeLine{00230\ \ \ \textcolor{comment}{//\ coherency\ traffic}}
+\DoxyCodeLine{00231\ \ \ \textcolor{keyword}{alignas}(kCacheLineSize)\ std::atomic<size\_t>\ writeIdx\_\ =\ \{0\};}
+\DoxyCodeLine{00232\ \ \ \textcolor{keyword}{alignas}(kCacheLineSize)\ \textcolor{keywordtype}{size\_t}\ readIdxCache\_\ =\ 0;}
+\DoxyCodeLine{00233\ \ \ \textcolor{keyword}{alignas}(kCacheLineSize)\ std::atomic<size\_t>\ readIdx\_\ =\ \{0\};}
+\DoxyCodeLine{00234\ \ \ \textcolor{keyword}{alignas}(kCacheLineSize)\ \textcolor{keywordtype}{size\_t}\ writeIdxCache\_\ =\ 0;}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{//\ Padding\ to\ avoid\ adjacent\ allocations\ to\ share\ cache\ line\ with}}
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{//\ writeIdxCache\_}}
+\DoxyCodeLine{00238\ \ \ \textcolor{keywordtype}{char}\ padding\_[kCacheLineSize\ -\/\ \textcolor{keyword}{sizeof}(writeIdxCache\_)];}
+\DoxyCodeLine{00239\ \};}
+\DoxyCodeLine{00240\ \}\ \textcolor{comment}{//\ namespace\ rigtorp}}
+
+\end{DoxyCode}

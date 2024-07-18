@@ -1,0 +1,281 @@
+\doxysection{benchmark\+\_\+utils.\+h}
+\hypertarget{benchmark__utils_8h_source}{}\label{benchmark__utils_8h_source}\index{include/srsran/support/benchmark\_utils.h@{include/srsran/support/benchmark\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00034\ \textcolor{keyword}{inline}\ std::enable\_if\_t<std::is\_trivially\_copyable<T>::value\ \&\&\ (\textcolor{keyword}{sizeof}(T)\ <=\ \textcolor{keyword}{sizeof}(T*))>}
+\DoxyCodeLine{00035\ \mbox{\hyperlink{namespacesrsran_a6893c289ca38bb9b7836733d12c9a31c}{do\_not\_optimize}}(T\ \textcolor{keyword}{const}\&\ value)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{asm}\ \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"{}"{}}\ :\ :\ \textcolor{stringliteral}{"{}r,m"{}}(value)\ :\ \textcolor{stringliteral}{"{}memory"{}});}
+\DoxyCodeLine{00038\ \}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00040\ \textcolor{keyword}{inline}\ std::enable\_if\_t<!std::is\_trivially\_copyable<T>::value\ ||\ (\textcolor{keyword}{sizeof}(T)\ >\ \textcolor{keyword}{sizeof}(T*))>}
+\DoxyCodeLine{00041\ \mbox{\hyperlink{namespacesrsran_a6893c289ca38bb9b7836733d12c9a31c}{do\_not\_optimize}}(T\ \textcolor{keyword}{const}\&\ value)}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{asm}\ \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"{}"{}}\ :\ :\ \textcolor{stringliteral}{"{}m"{}}(value)\ :\ \textcolor{stringliteral}{"{}memory"{}});}
+\DoxyCodeLine{00044\ \}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00046\ \textcolor{keyword}{inline}\ std::enable\_if\_t<std::is\_trivially\_copyable<T>::value\ \&\&\ (\textcolor{keyword}{sizeof}(T)\ <=\ \textcolor{keyword}{sizeof}(T*))>\ \mbox{\hyperlink{namespacesrsran_a6893c289ca38bb9b7836733d12c9a31c}{do\_not\_optimize}}(T\&\ value)}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{asm}\ \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"{}"{}}\ :\ \textcolor{stringliteral}{"{}+m,r"{}}(value)\ :\ :\ \textcolor{stringliteral}{"{}memory"{}});}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00051\ \textcolor{keyword}{inline}\ std::enable\_if\_t<!std::is\_trivially\_copyable<T>::value\ ||\ (\textcolor{keyword}{sizeof}(T)\ >\ \textcolor{keyword}{sizeof}(T*))>\ \mbox{\hyperlink{namespacesrsran_a6893c289ca38bb9b7836733d12c9a31c}{do\_not\_optimize}}(T\&\ value)}
+\DoxyCodeLine{00052\ \{}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{asm}\ \textcolor{keyword}{volatile}(\textcolor{stringliteral}{"{}"{}}\ :\ \textcolor{stringliteral}{"{}+m"{}}(value)\ :\ :\ \textcolor{stringliteral}{"{}memory"{}});}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1benchmarker}{benchmarker}}}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00061\ \ \ std::string\ title;}
+\DoxyCodeLine{00063\ \ \ uint64\_t\ nof\_repetitions;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{struct\ }benchmark\_result\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ std::string\ description;}
+\DoxyCodeLine{00070\ \ \ \ \ uint64\_t\ size;}
+\DoxyCodeLine{00072\ \ \ \ \ std::vector<uint64\_t>\ measurements;}
+\DoxyCodeLine{00073\ \ \ \};}
+\DoxyCodeLine{00075\ \ \ std::vector<benchmark\_result>\ benchmark\_results;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00079\ \ \ std::pair<uint64\_t,\ uint64\_t>\ get\_max\_meas\_time\_ns()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::max\_element(}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ benchmark\_results.begin(),\ benchmark\_results.end(),\ [](\textcolor{keyword}{const}\ benchmark\_result\&\ a,\ \textcolor{keyword}{const}\ benchmark\_result\&\ b)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ return\ a.measurements.back()\ <\ b.measurements.back();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ \{it-\/>measurements.back(),\ it-\/>size\};}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{unsigned}\ get\_percentile\_width\_time(\textcolor{keywordtype}{double}\ scaling\ =\ 1.0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00090\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00091\ \ \ \ \ uint64\_t\ max\_meas\_ns\ =\ get\_max\_meas\_time\_ns().first;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ percentile\_width\ =}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(std::ceil(std::log10(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(max\_meas\_ns)\ *\ scaling)));}
+\DoxyCodeLine{00094\ \ \ \ \ percentile\_width\ =\ std::max(percentile\_width,\ 6U);}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{return}\ percentile\_width\ +\ 2;}
+\DoxyCodeLine{00096\ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{unsigned}\ get\_percentile\_width\_throughput(\textcolor{keywordtype}{double}\ scaling)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00100\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00101\ \ \ \ \ std::pair<uint64\_t,\ uint64\_t>\ max\_meas\ =\ get\_max\_meas\_time\_ns();}
+\DoxyCodeLine{00102\ \ \ \ \ max\_meas.first\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::max(max\_meas.first,\ 1UL);}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{double}\ throughput\_max\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ convert\_to\_throughput(max\_meas.first,\ max\_meas.second);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ percentile\_width\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(std::ceil(std::log10(throughput\_max\ *\ scaling)))\ +\ 2U;}
+\DoxyCodeLine{00106\ \ \ \ \ percentile\_width\ \ \ \ \ \ \ \ \ \ =\ std::max(percentile\_width,\ 8U);}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{return}\ percentile\_width;}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{unsigned}\ get\_description\_width()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00112\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ descr\_width\ =\ std::max\_element(benchmark\_results.begin(),}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ benchmark\_results.end(),}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [](\textcolor{keyword}{const}\ benchmark\_result\&\ a,\ \textcolor{keyword}{const}\ benchmark\_result\&\ b)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ return\ a.description.size()\ <\ b.description.size();}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \})}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/>description.size();}
+\DoxyCodeLine{00119\ \ \ \ \ descr\_width\ =\ std::max(descr\_width,\ 13U);}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{return}\ descr\_width;}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{void}\ print\_percentile\_header(\textcolor{keywordtype}{unsigned}\ descr\_width,\ \textcolor{keywordtype}{unsigned}\ percentile\_width,\ \textcolor{keyword}{const}\ std::string\&\ units)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00128\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00129\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}\(\backslash\)"{}\{\}\(\backslash\)"{}\ performance\ for\ \{\}\ repetitions.\ All\ values\ are\ in\ \{\}.\(\backslash\)n"{}}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \{:<\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\{:\string^\{\}\}|\(\backslash\)n"{}},}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ title,}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_repetitions,}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ units,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Percentiles:"{}},}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ descr\_width,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}50th"{}},}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}75th"{}},}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}90th"{}},}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}99th"{}},}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}99.9th"{}},}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}99.99th"{}},}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Worst"{}},}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width);}
+\DoxyCodeLine{00150\ \ \ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{double}\ convert\_to\_throughput(uint64\_t\ time\_ns,\ \textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{00157\ \ \ \{}
+\DoxyCodeLine{00158\ \ \ \ \ time\_ns\ =\ std::max(time\_ns,\ 1UL);}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{comment}{//\ To\ get\ a\ more\ precise\ result\ with\ one\ decimal\ place,\ the\ throughput\ is\ calculated\ in\ hundreds\ of\ thousands\ of}}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{comment}{//\ elements\ per\ second\ and\ then\ divided\ by\ ten\ when\ it\ is\ converted\ to\ a\ floating\ point\ number.}}
+\DoxyCodeLine{00162\ \ \ \ \ uint64\_t\ throughput\ =\ (size\ *\ 10000UL)\ /\ time\_ns;}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{comment}{//\ Converts\ to\ floating\ point.}}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{double}\textcolor{keyword}{>}(throughput)\ *\ 0.1;}
+\DoxyCodeLine{00166\ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{keyword}{struct\ }do\_nothing\_functor\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordtype}{void}\ operator()()\ \{\}}
+\DoxyCodeLine{00170\ \ \ \};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00177\ \ \ \mbox{\hyperlink{classsrsran_1_1benchmarker_ad40667f57b56cb16484985be9c7d7fd6}{benchmarker}}(std::string\ title\_,\ uint64\_t\ nof\_repetitions\_)\ :}
+\DoxyCodeLine{00178\ \ \ \ \ title(std::move(title\_)),\ nof\_repetitions(nof\_repetitions\_)}
+\DoxyCodeLine{00179\ \ \ \{}
+\DoxyCodeLine{00180\ \textcolor{preprocessor}{\#if\ ASSERTS\_ENABLED}}
+\DoxyCodeLine{00181\ \ \ \ \ fmt::print(stderr,\ \textcolor{stringliteral}{"{}Warning:\ Assertions\ are\ enabled.\ Performance\ might\ be\ negatively\ affected.\(\backslash\)n"{}});}
+\DoxyCodeLine{00182\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00183\ \ \ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1benchmarker_a9e94d5aa76027c744cf6ba0ffdf41ffe}{print\_percentiles\_time}}(std::string\ units\ =\ \textcolor{stringliteral}{"{}nanoseconds"{}},\ \textcolor{keywordtype}{double}\ scaling\ =\ 1.0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00187\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{if}\ (benchmark\_results.empty())\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{comment}{//\ Get\ width\ plus\ 2\ characters\ for\ 1\ decimal\ position.}}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ percentile\_width\ =\ get\_percentile\_width\_time(scaling);}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ descr\_width\ \ \ \ \ \ =\ get\_description\_width();}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ print\_percentile\_header(descr\_width,\ percentile\_width,\ units);}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ benchmark\_result\&\ result\ :\ benchmark\_results)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}\ \{:\{\}\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\(\backslash\)n"{}},}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.description,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ descr\_width,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.5)]\ *\ scaling,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.75)]\ *\ scaling,}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.9)]\ *\ scaling,}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.99)]\ *\ scaling,}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.999)]\ *\ scaling,}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.9999)]\ *\ scaling,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.measurements.back()\ *\ scaling,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ percentile\_width);}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1benchmarker_a8504fb3746bc87faeffec455eed038d1}{print\_percentiles\_throughput}}(\textcolor{keyword}{const}\ std::string\&\ units,\ \textcolor{keywordtype}{double}\ scaling\ =\ 1.0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00221\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00222\ \ \ \ \ \textcolor{keywordflow}{if}\ (benchmark\_results.empty())\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}No\ benchmark\ results\ for\ \{\}.\(\backslash\)n"{}},\ title);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ percentile\_width\ =\ get\_percentile\_width\_throughput(scaling);}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ descr\_width\ \ \ \ \ \ =\ get\_description\_width();}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \ \ print\_percentile\_header(descr\_width,\ percentile\_width,\ \textcolor{stringliteral}{"{}mega"{}}\ +\ units\ +\ \textcolor{stringliteral}{"{}\ per\ second"{}});}
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ benchmark\_result\&\ result\ :\ benchmark\_results)\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ fmt::print(}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \{:\{\}\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\{:\{\}.1f\}|\(\backslash\)n"{}},}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ result.description,}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ descr\_width,}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.5)],\ result.size)\ *\ scaling,}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.75)],\ result.size)\ *}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaling,}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.9)],\ result.size)\ *\ scaling,}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.99)],\ result.size)\ *}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaling,}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.999)],\ result.size)\ *}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaling,}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{size\_t}\textcolor{keyword}{>}(nof\_repetitions\ *\ 0.9999)],\ result.size)\ *}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaling,}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ percentile\_width,}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ convert\_to\_throughput(result.measurements.back(),\ result.size)\ *\ scaling,}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ percentile\_width);}
+\DoxyCodeLine{00254\ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \}}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00265\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Func,\ \textcolor{keyword}{typename}\ PostFunc\ =\ do\_nothing\_functor>}
+\DoxyCodeLine{00266\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1benchmarker_a8fbaf61d7599c8273919ef92f135f39f}{new\_measure}}(\textcolor{keyword}{const}\ std::string\&\ description,}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ size,}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Func\&\&\ \ \ \ \ \ \ \ \ \ \ \ \ function,}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PostFunc\&\&\ \ \ \ \ \ \ \ \ post\_func\ =\ do\_nothing\_functor\{\})}
+\DoxyCodeLine{00270\ \ \ \{}
+\DoxyCodeLine{00271\ \ \ \ \ benchmark\_result\ result;}
+\DoxyCodeLine{00272\ \ \ \ \ result.description\ =\ description;}
+\DoxyCodeLine{00273\ \ \ \ \ result.size\ \ \ \ \ \ \ \ =\ size;}
+\DoxyCodeLine{00274\ \ \ \ \ result.measurements.reserve(nof\_repetitions);}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keywordflow}{for}\ (uint64\_t\ rep\ =\ 0;\ rep\ !=\ nof\_repetitions;\ ++rep)\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ start\ =\ std::chrono::high\_resolution\_clock::now();}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ function();}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ std::chrono::high\_resolution\_clock::now();}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ result.measurements.push\_back(std::chrono::duration\_cast<std::chrono::nanoseconds>(end\ -\/\ start).count());}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ post\_func();}
+\DoxyCodeLine{00282\ \ \ \ \ \}}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ std::sort(result.measurements.begin(),\ result.measurements.end());}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ benchmark\_results.push\_back(std::move(result));}
+\DoxyCodeLine{00287\ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00294\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Context,\ \textcolor{keyword}{typename}\ Func>}
+\DoxyCodeLine{00295\ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00296\ \ \ \mbox{\hyperlink{classsrsran_1_1benchmarker_a06dc6628baeda5b4984d987472c736c8}{new\_measure\_with\_context}}(\textcolor{keyword}{const}\ std::string\&\ description,\ uint64\_t\ size,\ Context\&\&\ context\_function,\ Func\&\&\ function)}
+\DoxyCodeLine{00297\ \ \ \{}
+\DoxyCodeLine{00298\ \ \ \ \ benchmark\_result\ result;}
+\DoxyCodeLine{00299\ \ \ \ \ result.description\ =\ description;}
+\DoxyCodeLine{00300\ \ \ \ \ result.size\ \ \ \ \ \ \ \ =\ size;}
+\DoxyCodeLine{00301\ \ \ \ \ result.measurements.reserve(nof\_repetitions);}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \ \ \ \ \textcolor{keywordflow}{for}\ (uint64\_t\ rep\ =\ 0;\ rep\ !=\ nof\_repetitions;\ ++rep)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ context\_function();}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ start\ =\ std::chrono::high\_resolution\_clock::now();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ function();}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ std::chrono::high\_resolution\_clock::now();}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ result.measurements.push\_back(std::chrono::duration\_cast<std::chrono::nanoseconds>(end\ -\/\ start).count());}
+\DoxyCodeLine{00309\ \ \ \ \ \}}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ \ \ std::sort(result.measurements.begin(),\ result.measurements.end());}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \ \ benchmark\_results.push\_back(std::move(result));}
+\DoxyCodeLine{00314\ \ \ \}}
+\DoxyCodeLine{00315\ \};}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

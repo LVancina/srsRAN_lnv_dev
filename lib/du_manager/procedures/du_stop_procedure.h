@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include "../du_cell_manager.h"
 #include "../du_ue/du_ue_manager.h"
 #include "procedure_logger.h"
 #include "srsran/du_manager/du_manager_params.h"
@@ -35,16 +34,12 @@ namespace srs_du {
 class du_stop_procedure
 {
 public:
-  explicit du_stop_procedure(du_ue_manager&           ue_mng,
-                             du_cell_manager&         cell_mng_,
-                             f1ap_connection_manager& f1ap_conn_mng_);
+  explicit du_stop_procedure(du_ue_manager& ue_mng);
 
   void operator()(coro_context<async_task<void>>& ctx);
 
 private:
-  du_ue_manager&           ue_mng;
-  du_cell_manager&         cell_mng;
-  f1ap_connection_manager& f1ap_conn_mng;
+  du_ue_manager& ue_mng;
 
   du_procedure_logger proc_logger;
 };

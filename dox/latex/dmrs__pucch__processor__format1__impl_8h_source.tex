@@ -1,0 +1,83 @@
+\doxysection{dmrs\+\_\+pucch\+\_\+processor\+\_\+format1\+\_\+impl.\+h}
+\hypertarget{dmrs__pucch__processor__format1__impl_8h_source}{}\label{dmrs__pucch__processor__format1__impl_8h_source}\index{lib/phy/upper/signal\_processors/pucch/dmrs\_pucch\_processor\_format1\_impl.h@{lib/phy/upper/signal\_processors/pucch/dmrs\_pucch\_processor\_format1\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}pucch\_helper.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}pucch\_orthogonal\_sequence.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_collection.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/signal\_processors/dmrs\_pucch\_processor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{port__channel__estimator_8h}{srsran/phy/upper/signal\_processors/port\_channel\_estimator.h}}"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor__format1__impl}{dmrs\_pucch\_processor\_format1\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor}{dmrs\_pucch\_processor}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1port__channel__estimator_1_1layer__dmrs__pattern}{layer\_dmrs\_pattern}}\ =\ \mbox{\hyperlink{structsrsran_1_1port__channel__estimator_1_1layer__dmrs__pattern}{port\_channel\_estimator::layer\_dmrs\_pattern}};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor__format1__impl}{dmrs\_pucch\_processor\_format1\_impl}}(std::unique\_ptr<pseudo\_random\_generator>\ \ \ \ \ \ \ \ \ \ \ \ prg\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<const\ low\_papr\_sequence\_collection>\ sequence\_collection\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<port\_channel\_estimator>\ \ \ \ \ \ \ \ \ \ \ \ \ ch\_est\_)\ :}
+\DoxyCodeLine{00042\ \ \ \ \ helper(std::move(prg\_)),\ sequence\_collection(std::move(sequence\_collection\_)),\ ch\_estimator(std::move(ch\_est\_))}
+\DoxyCodeLine{00043\ \ \ \{}
+\DoxyCodeLine{00044\ \ \ \ \ srsran\_assert(sequence\_collection,\ \textcolor{stringliteral}{"{}Invalid\ sequence\ collection."{}});}
+\DoxyCodeLine{00045\ \ \ \ \ srsran\_assert(ch\_estimator,\ \textcolor{stringliteral}{"{}Invalid\ port\ channel\ estimator."{}});}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor__format1__impl_acd1f706a681e613ad24a028ea9f3f092}{estimate}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ ce\_,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__helper}{pucch\_helper}}\ helper;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \ \ std::unique\_ptr<const\ low\_papr\_sequence\_collection>\ sequence\_collection;}
+\DoxyCodeLine{00057\ \ \ std::unique\_ptr<port\_channel\_estimator>\ ch\_estimator;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1static__re__measurement}{dmrs\_symbol\_list}}\ temp\_symbols;}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__orthogonal__sequence}{pucch\_orthogonal\_sequence}}\ occ;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{struct\ }sequence\_generation\_config\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ Sequence\ group.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ u;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Sequence\ number.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ v;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{//\ DM-\/RS\ symbol\ index.}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ m;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ Total\ number\ of\ DM-\/RS\ symbols}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\_pucch;}
+\DoxyCodeLine{00074\ \ \ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ generate\_sequence(\mbox{\hyperlink{classsrsran_1_1span}{span<srsran::cf\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sequence,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pucch__config}{pucch\_config}},}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ sequence\_generation\_config\&\ gen\_config,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbol)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{structsrsran_1_1port__channel__estimator_1_1layer__dmrs__pattern}{layer\_dmrs\_pattern}}\ generate\_dmrs\_pattern(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00093\ \};}
+\DoxyCodeLine{00094\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

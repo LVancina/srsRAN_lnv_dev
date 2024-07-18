@@ -45,7 +45,6 @@ protected:
     f1u_gw             = std::make_unique<dummy_f1u_gateway>(f1u_bearer);
     e1ap               = std::make_unique<dummy_e1ap>();
 
-    cu_up_exec_mapper = std::make_unique<dummy_cu_up_executor_pool>(&worker);
     // Create UE cfg
     ue_cfg = {security::sec_as_config{}, activity_notification_level_t::ue, 0};
 
@@ -58,8 +57,8 @@ protected:
                                           *gtpu_tx_notifier,
                                           *gtpu_rx_demux,
                                           *gtpu_f1u_allocator,
-                                          *cu_up_exec_mapper,
                                           gtpu_pcap,
+                                          worker,
                                           test_logger);
   }
 
@@ -69,21 +68,20 @@ protected:
     srslog::flush();
   }
 
-  std::unique_ptr<gtpu_demux_ctrl>                            gtpu_rx_demux;
-  std::unique_ptr<gtpu_teid_pool>                             gtpu_f1u_allocator;
-  std::unique_ptr<gtpu_tunnel_common_tx_upper_layer_notifier> gtpu_tx_notifier;
-  std::unique_ptr<e1ap_control_message_handler>               e1ap;
-  std::unique_ptr<cu_up_executor_pool>                        cu_up_exec_mapper;
-  dummy_inner_f1u_bearer                                      f1u_bearer;
-  null_dlt_pcap                                               gtpu_pcap;
-  std::unique_ptr<f1u_cu_up_gateway>                          f1u_gw;
-  timer_manager                                               timers;
-  ue_context_cfg                                              ue_cfg;
-  std::unique_ptr<ue_manager_ctrl>                            ue_mng;
-  network_interface_config                                    net_config;
-  n3_interface_config                                         n3_config;
-  srslog::basic_logger&                                       test_logger = srslog::fetch_basic_logger("TEST", false);
-  manual_task_worker                                          worker{64};
+  std::unique_ptr<gtpu_demux_ctrl>                     gtpu_rx_demux;
+  std::unique_ptr<gtpu_teid_pool>                      gtpu_f1u_allocator;
+  std::unique_ptr<gtpu_tunnel_tx_upper_layer_notifier> gtpu_tx_notifier;
+  std::unique_ptr<e1ap_control_message_handler>        e1ap;
+  dummy_inner_f1u_bearer                               f1u_bearer;
+  null_dlt_pcap                                        gtpu_pcap;
+  std::unique_ptr<f1u_cu_up_gateway>                   f1u_gw;
+  timer_manager                                        timers;
+  ue_context_cfg                                       ue_cfg;
+  std::unique_ptr<ue_manager_ctrl>                     ue_mng;
+  network_interface_config                             net_config;
+  n3_interface_config                                  n3_config;
+  srslog::basic_logger&                                test_logger = srslog::fetch_basic_logger("TEST", false);
+  manual_task_worker                                   worker{64};
 };
 
 /// UE object handling tests (creation/deletion)

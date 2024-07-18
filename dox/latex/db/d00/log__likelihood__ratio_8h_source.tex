@@ -1,0 +1,362 @@
+\doxysection{log\+\_\+likelihood\+\_\+ratio.\+h}
+\hypertarget{log__likelihood__ratio_8h_source}{}\label{log__likelihood__ratio_8h_source}\index{include/srsran/phy/upper/log\_likelihood\_ratio.h@{include/srsran/phy/upper/log\_likelihood\_ratio.h}}
+\mbox{\hyperlink{log__likelihood__ratio_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Log-\/likelihood\ ratio\ type\ declaration.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{///}}
+\DoxyCodeLine{00026\ \textcolor{comment}{///\ Type\ used\ for\ representing\ log-\/likelihood\ ratios.\ Values\ are\ stored\ in\ an\ \(\backslash\)c\ int8\_t\ variable,\ but\ the\ sum\ operator}}
+\DoxyCodeLine{00027\ \textcolor{comment}{///\ is\ overloaded\ with\ a\ saturated\ sum,\ meaning\ that\ the\ result\ is\ clipped\ if\ it\ (absolutely)\ exceeds\ \(\backslash\)c\ LLR\_MAX.}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bit\_buffer.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/detail/traits.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{numeric}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)brief\ Represents\ log-\/likelihood\ ratio\ (LLR)\ values.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ Log-\/likelihood\ ratios\ are\ represented\ as\ \(\backslash\)c\ int8\_t\ values\ between\ <tt>-\/LLR\_MAX</tt>\ and\ \(\backslash\)c\ LLR\_MAX.\ The\ values}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ <tt>\&plusmn;LLR\_INFTY\ =\ \&plusmn;127</tt>\ are\ reserved\ for\ denoting\ fixed\ bits,\ that\ is\ bits\ that\ are\ surely\ set\ to}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ zero\ (log-\/likelihood\ ratio\ equal\ to\ <tt>+LLR\_INFTY</tt>)\ or\ one\ (log-\/likelihood\ ratio\ equal\ to\ <tt>-\/LLR\_INFTY</tt>).}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Alias\ for\ the\ underlying\ data\ type\ used\ for\ representing\ the\ LLR\ value.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{using}\ value\_type\ =\ int8\_t;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aaf5126acc1b3e03e721f49727c0b83d5}{log\_likelihood\_ratio}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructor\ from\ integral\ type.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Creates\ a\ new\ LLR\ set\ to\ the\ provided\ value\ if\ the\ latter\ is\ in\ the\ range\ <tt>-\/LLR\_MAX</tt>\ to\ \(\backslash\)c\ LLR\_MAX,\ or}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ if\ it\ is\ <tt>\&plusmn;LLR\_INFTY</tt>.\ Otherwise,\ terminates\ the\ program\ execution.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ \ \ \ T\ \ \ \ The\ input\ type.\ Must\ be\ an\ integral\ type.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ val\ \ The\ value\ the\ LLR\ is\ set\ to.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Implicit\ conversions\ are\ allowed\ on\ purpose.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a10e71a65571ae938e7130e9288de5e3b}{log\_likelihood\_ratio}}(T\ val)}
+\DoxyCodeLine{00064\ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_integral<T>::value,\ \textcolor{stringliteral}{"{}LLRs\ must\ be\ initialized\ with\ integer\ values."{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(((val\ <=\ LLR\_MAX)\ \&\&\ (val\ >=\ -\/LLR\_MAX))\ ||\ (val\ ==\ LLR\_INFTY)\ ||\ (val\ ==\ -\/LLR\_INFTY),}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ LLR\ value."{}});}
+\DoxyCodeLine{00068\ \ \ \ \ value\ =\ \textcolor{keyword}{static\_cast}<value\_type>(val);}
+\DoxyCodeLine{00069\ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Conversion\ operators.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ Converts\ the\ LLR\ to\ a\ plain\ \(\backslash\)c\ value\_type\ value.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_ae3e5a90d6b260b4ce889c0b5528e949e}{operator}}\ value\_type()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value;\ \};}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Converts\ the\ LLR\ to\ a\ plain\ \(\backslash\)c\ value\_type\ value.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{constexpr}\ value\_type\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_af50c3c597209aecddd361f93cc12ea68}{to\_value\_type}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value;\ \};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ Converts\ the\ LLR\ to\ a\ plain\ \(\backslash\)c\ int\ value.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_adad70d0ed6d59159f2e82e8582edcce5}{operator}}\ \textcolor{keywordtype}{int}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value;\ \};}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Converts\ the\ LLR\ to\ a\ plain\ \(\backslash\)c\ int\ value.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value;\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Converts\ the\ LLR\ to\ a\ hard\ bit.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ By\ convention,\ the\ null\ LLR\ indeterminate\ case\ returns\ a\ 1\ bit.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{constexpr}\ uint8\_t\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_adb6552c341749f6b85e0cda835f4574b}{to\_hard\_bit}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(value\ <=\ 0);\ \}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ Default\ assignment\ operator.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\&\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aecf804aacb6ad4fe97a2017efd037562}{operator}}=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\&\ other)}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ value\ =\ other.value;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Negation\ (additive\ inverse).}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a5222a079f7e7c2e3b7b413188a73b924}{operator}}-\/()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ -\/value;\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Saturated\ sum.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ The\ result\ is\ clipped\ if\ larger\ (in\ absolute\ value)\ than\ log\_likelihood\_ratio::LLR\_MAX.\ Then,\ for\ instance,}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ <tt>LLR\_MAX\ +\ 2\ =\ LLR\_MAX</tt>\ and\ <tt>-\/LLR\_MAX\ -\/\ 2\ =\ -\/LLR\_MAX</tt>.}}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_af1d868ded3660c878c81b634690814a0}{operator}}+(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00104\ \ \ \{}
+\DoxyCodeLine{00105\ \ \ \ \ rhs\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_ad48b2249e764d269d27b2da88a20c463}{+=}}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ rhs;}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Addition\ assignment\ with\ saturated\ sum.}}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_ad48b2249e764d269d27b2da88a20c463}{operator}}+=(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs);}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Saturated\ difference.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Follows\ naturally\ from\ the\ saturated\ sum:\ <tt>a\ -\/\ b\ =\ a\ +\ (-\/b)</tt>.}}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aa37378da57bb301d36b4d25777507b0e}{operator}}-\/(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this}\ +\ (-\/rhs);\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Subtraction\ assignment\ with\ saturated\ sum.}}
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a870398462d35f9d9a489701ec968e8e8}{operator}}-\/=(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ *\textcolor{keyword}{this}\ +=\ (-\/rhs);}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Comparison\ operators.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ Plain\ comparison\ operator.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_ac4b45f689a041ca0f34c8cf9566f550b}{operator}}==(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ ==\ rhs.value;\ \}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator!=(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ !=\ rhs.value;\ \}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator>(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ >\ rhs.value;\ \}}
+\DoxyCodeLine{00131\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator<(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ <\ rhs.value;\ \}}
+\DoxyCodeLine{00132\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator>=(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ >=\ rhs.value;\ \}}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ operator<=(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ <=\ rhs.value;\ \}}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Clips\ and\ quantizes\ a\ real-\/valued\ (\(\backslash\)c\ float),\ continuous\ log-\/likelihood\ ratio\ to\ the\ discrete}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ representation\ of\ type\ \(\backslash\)c\ log\_likelihood\_ratio.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ \ \ The\ real-\/valued\ log-\/likelihood\ ratio\ to\ quantize.}}
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_limit\ \ The\ input\ value\ mapped\ to\ \(\backslash\)c\ LLR\_MAX.}}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ quantized\ representation\ of\ \(\backslash\)c\ value\ as\ a\ \(\backslash\)c\ log\_likelihood\_ratio\ quantity.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ quantization\ in\ the\ range\ <tt>(-\/range\_limit,\ range\_limit)</tt>\ is\ [mid-\/tread}}
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ uniform](https://en.wikipedia.org/wiki/Quantization\_(signal\_processing)\#Mid-\/riser\_and\_mid-\/tread\_uniform\_quantizers),}}
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ with\ quantization\ step\ <tt>\ range\_limit\ /\ LLR\_MAX\ </tt>.}}
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ All\ values\ larger\ (in\ magnitude)\ than\ \(\backslash\)c\ range\_limit,\ will\ be\ clipped\ and\ mapped\ to}}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ <tt>\&plusmn;LLR\_MAX</tt>,\ depending\ on\ their\ sign.}}
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_ae677c15bc3c5bca9c47c4ff8d754219a}{quantize}}(\textcolor{keywordtype}{float}\ value,\ \textcolor{keywordtype}{float}\ range\_limit);}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ Returns\ the\ special\ value\ "{}positive\ infinity"{}.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_af27bc1564c80e55a5fae2e6c17b6a322}{infinity}}()\ \{\ \textcolor{keywordflow}{return}\ LLR\_INFTY;\ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{///\ Returns\ the\ maximum\ finite\ LLR\ value.}}
+\DoxyCodeLine{00153\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aa64b63afd6a438fd5e64766fb30c83fc}{max}}()\ \{\ \textcolor{keywordflow}{return}\ LLR\_MAX;\ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ Returns\ the\ minimum\ finite\ LLR\ value.}}
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a45e135f32799f1f17bee04115ae1b520}{min}}()\ \{\ \textcolor{keywordflow}{return}\ -\/LLR\_MAX;\ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ Checks\ whether\ a\ log-\/likelihood\ ratio\ has\ a\ finite\ value.}}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aae7a3f9037608183dbe20e65c8512b29}{isfinite}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ llr)}
+\DoxyCodeLine{00160\ \ \ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{return}\ ((llr.value\ >=\ -\/LLR\_MAX)\ \&\&\ (llr.value\ <=\ LLR\_MAX));}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///\ Checks\ whether\ a\ log-\/likelihood\ ratio\ has\ an\ infinite\ value.}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a33cd45619af6e5e25feaff96b0436ee8}{isinf}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ llr)\ \{\ \textcolor{keywordflow}{return}\ !\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aae7a3f9037608183dbe20e65c8512b29}{isfinite}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aae7a3f9037608183dbe20e65c8512b29}{(}}llr\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_aae7a3f9037608183dbe20e65c8512b29}{)}};\ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Promotion\ sum.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00169\ \ \ \textcolor{comment}{///\ As\ opposed\ to\ the\ saturated\ sum\ (i.e.,\ log\_likelihood\_ratio::operator+),\ results\ larger\ (in\ absolute\ value)\ than}}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ \(\backslash\)c\ LLR\_MAX\ are\ set\ to\ <tt>\&plusmn;LLR\_INFTY</tt>.}}
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ a\ First\ summand.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ b\ Second\ summand.}}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ promotion\ sum\ of\ \(\backslash\)c\ a\ and\ \(\backslash\)c\ b.}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_af760df94f84b7a959fba914870db30a8}{promotion\_sum}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ a,\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ b);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Copy\ sign\ from\ a\ number.}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ An\ arithmetic\ type.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ a\ A\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ b\ A\ real\ number.}}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ log-\/likelihood\ ratio\ with\ the\ magnitude\ of\ \(\backslash\)c\ a\ and\ the\ sign\ of\ \(\backslash\)c\ b.}}
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ A\ zero\ in\ the\ second\ argument\ is\ considered\ as\ a\ positive\ number,\ following\ the\ convention\ of\ \(\backslash\)c}}
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///\ std::copysign.}}
+\DoxyCodeLine{00184\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00185\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a241db679f43ed07e36012b6c87efabf7}{copysign}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ a,\ T\ b)}
+\DoxyCodeLine{00186\ \ \ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_arithmetic<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ an\ arithmetic\ type."{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{if}\ (b\ <\ 0)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/std::abs(a.value);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{return}\ std::abs(a.value);}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{///\ Absolute\ value.}}
+\DoxyCodeLine{00195\ \ \ \textcolor{keyword}{static}\ value\_type\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a799337b4ebc2bd57a4099e34b16d0481}{abs}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ a)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<value\_type>(std::abs(a\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{.}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{(}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{)}}));\ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Soft\ XOR\ operation.}}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{///\ The\ soft\ XOR\ between\ two\ LLRs\ \(\backslash\)c\ x\ and\ \(\backslash\)c\ y\ is\ the\ log-\/likelihood\ ratio\ corresponding\ to\ the\ logical\ XOR\ operation}}
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{///\ \(\backslash\)f\$a\ \(\backslash\)oplus\ b\(\backslash\)f\$,\ where\ \(\backslash\)f\$a\(\backslash\)f\$\ and\ \(\backslash\)f\$b\(\backslash\)f\$\ are\ the\ bits\ whose\ soft\ representation\ is\ \(\backslash\)c\ x\ and\ \(\backslash\)c\ y,\ respectively.}}
+\DoxyCodeLine{00201\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ For\ complexity\ reasons,\ the\ true\ soft\ xor\ function}}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{///\ \(\backslash\)text\{soft\_xor\}(x,\ y)\ =\ \(\backslash\)sign(x\ y)\ \(\backslash\)cdot\ \(\backslash\)Phi\(\backslash\)Bigl(\(\backslash\)Phi(\(\backslash\)abs\{x\})\ +}}
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ \(\backslash\)Phi(\(\backslash\)abs\{y\})\(\backslash\)Bigr)\ \(\backslash\)qquad\(\backslash\)text\{with\ \}}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ \(\backslash\)Phi:\ \(\backslash\)mathbb\{R\}\_+\ \(\backslash\)to\ \(\backslash\)mathbb\{R\}\_+;\ u\ \(\backslash\)mapsto\ \(\backslash\)Phi(u)\ =\ -\/\(\backslash\)ln\(\backslash\)Bigl(\(\backslash\)tanh\(\backslash\)Bigl(\(\backslash\)frac\{u\}\{2\}\(\backslash\)Bigr)\(\backslash\)Bigr)}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ is\ replaced\ by\ the\ common\ approximation}}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ \(\backslash\)f[}}
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ \(\backslash\)text\{soft\_xor\}(x,\ y)\ \(\backslash\)approx\ \(\backslash\)sign(x\ y)\ \(\backslash\)cdot\ \(\backslash\)min\(\backslash\)bigl\(\backslash\)\{\(\backslash\)abs\{x\},\ \(\backslash\)abs\{y\}\(\backslash\)bigr\(\backslash\)\}.}}
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{///\ \(\backslash\)f]}}
+\DoxyCodeLine{00212\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a2da44466ae6da8a7cc7ff2eaea71980f}{soft\_xor}}(\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ x,\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ y)}
+\DoxyCodeLine{00213\ \ \ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordtype}{int}\ abs\_x\ =\ std::abs(x.value);}
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{keywordtype}{int}\ abs\_y\ =\ std::abs(y.value);}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordflow}{if}\ (x.value\ *\ y.value\ <\ 0)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/std::min(abs\_x,\ abs\_y);}
+\DoxyCodeLine{00218\ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{return}\ std::min(abs\_x,\ abs\_y);}
+\DoxyCodeLine{00220\ \ \ \}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{//\ Documentation\ at\ definition\ (see\ below).}}
+\DoxyCodeLine{00223\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00224\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a42a939f284485e6972db33a4d402fb92}{norm\_squared}}(\textcolor{keyword}{const}\ T\&\ x);}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{comment}{//\ Documentation\ at\ definition\ (see\ below).}}
+\DoxyCodeLine{00227\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ V>}
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{static}\ V\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a8ea17249a339d6c9ded5a3f63865e096}{dot\_prod}}(\textcolor{keyword}{const}\ T\&\ x,\ \textcolor{keyword}{const}\ U\&\ y,\ V\ init);}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ Actual\ LLR\ value.}}
+\DoxyCodeLine{00232\ \ \ value\_type\ value\ =\ 0;}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Represents\ a\ log-\/likelihood\ ratio\ set\ to\ infinity.}}
+\DoxyCodeLine{00235\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{///\ An\ LLR\ takes\ the\ value\ \(\backslash\)c\ LLR\_INFTY\ when\ the\ corresponding\ bit\ is\ certainly\ zero.\ Similarly,\ an\ LLR\ takes\ the}}
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{///\ value\ <tt>-\/LLR\_INFTY</tt>\ when\ the\ corresponding\ bit\ is\ certainly\ one.}}
+\DoxyCodeLine{00238\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ LLR\_INFTY\ =\ 127;}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Maximum\ (finite)\ value\ of\ a\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{///\ Finite\ LLRs\ take\ values\ between\ <tt>-\/LLR\_MAX</tt>\ and\ \(\backslash\)c\ LLR\_MAX\ (both\ included).}}
+\DoxyCodeLine{00243\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ LLR\_MAX\ =\ 120;}
+\DoxyCodeLine{00244\ \};}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \textcolor{comment}{///\ \(\backslash\)name\ Common\ numerical\ constants.}}
+\DoxyCodeLine{00247\ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{comment}{///\ Maximum\ finite\ log-\/likelihood\ ratio\ value.}}
+\DoxyCodeLine{00250\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{namespacesrsran_a0ca1113f3ed0bd1e21f876f39bb527ad}{LLR\_MAX}}\ =\ \mbox{\hyperlink{namespacesrsran}{log\_likelihood\_ratio}}::\mbox{\hyperlink{namespacesrsran}{max}}();}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \textcolor{comment}{///\ Minimum\ finite\ log-\/likelihood\ ratio\ value.}}
+\DoxyCodeLine{00253\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{namespacesrsran_adcaa3b0f54abc9729b9de4ecb6af8ae3}{LLR\_MIN}}\ =\ \mbox{\hyperlink{namespacesrsran}{log\_likelihood\_ratio}}::\mbox{\hyperlink{namespacesrsran}{min}}();}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \textcolor{comment}{///\ "{}Positive\ infinity"{}\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00256\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ \mbox{\hyperlink{namespacesrsran_a3fadd4e2825eab0b4e8f0cca28eb62a0}{LLR\_INFINITY}}\ =\ \mbox{\hyperlink{namespacesrsran}{log\_likelihood\_ratio}}::\mbox{\hyperlink{namespacesrsran}{infinity}}();}
+\DoxyCodeLine{00257\ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \textcolor{comment}{///\ Checks\ if\ \(\backslash\)c\ T\ is\ compatible\ with\ a\ span\ of\ log\_likelihood\_ratios.}}
+\DoxyCodeLine{00262\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00263\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__llr__span__compatible}{is\_llr\_span\_compatible}}\ :\ std::false\_type\ \{}
+\DoxyCodeLine{00264\ \ \ \textcolor{comment}{//\ Intentionally\ empty.}}
+\DoxyCodeLine{00265\ \};}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \textcolor{comment}{///\ Checks\ if\ \(\backslash\)c\ T\ is\ compatible\ with\ a\ span\ of\ log\_likelihood\_ratios.}}
+\DoxyCodeLine{00268\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00269\ \textcolor{keyword}{struct}\ is\_llr\_span\_compatible<T,}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<std::is\_convertible<T,\ span<log\_likelihood\_ratio>>::value\ ||}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_convertible<T,\ span<\textcolor{keyword}{const}\ log\_likelihood\_ratio>>::value>>}
+\DoxyCodeLine{00272\ \ \ :\ std::true\_type\ \{}
+\DoxyCodeLine{00273\ \ \ \textcolor{comment}{//\ Intentionally\ empty.}}
+\DoxyCodeLine{00274\ \};}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \textcolor{comment}{///\ \(\backslash\)brief\ Dot\ product\ of\ a\ sequence\ of\ LLRs\ and\ a\ sequence\ of\ values\ of\ an\ arithmetic\ type.}}
+\DoxyCodeLine{00279\ \textcolor{comment}{///}}
+\DoxyCodeLine{00280\ \textcolor{comment}{///\ Computes\ the\ dot\ product\ (a.k.a.\ inner\ product\ or\ scalar\ product)\ of\ the\ two\ input\ sequences,\ adding\ an\ initial}}
+\DoxyCodeLine{00281\ \textcolor{comment}{///\ offset.}}
+\DoxyCodeLine{00282\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ \ \ \ \ \ \ \ \ A\ span\ (or\ any\ container\ convertible\ to\ a\ span)\ of\ log-\/likelihood\ ratios\ (either\ constant\ or}}
+\DoxyCodeLine{00283\ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ volatile).}}
+\DoxyCodeLine{00284\ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ \ \ \ \ \ \ \ \ A\ span\ (or\ any\ container\ convertible\ to\ a\ span)\ of\ an\ arithmetic\ type.}}
+\DoxyCodeLine{00285\ \textcolor{comment}{///\ \(\backslash\)tparam\ V\ \ \ \ \ \ \ \ \ Output\ type\ (must\ be\ compatible\ with\ the\ product\ of\ objects\ of\ type\ \(\backslash\)c\ T\ and\ \(\backslash\)c\ U).}}
+\DoxyCodeLine{00286\ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ \ \ \ \ A\ sequence\ of\ (possibly\ constant)\ log-\/likelihood\ ratios.}}
+\DoxyCodeLine{00287\ \textcolor{comment}{///\ \(\backslash\)param[in]\ y\ \ \ \ \ \ A\ second\ sequence\ of\ values.}}
+\DoxyCodeLine{00288\ \textcolor{comment}{///\ \(\backslash\)param[in]\ init\ \ \ Initialization\ value.}}
+\DoxyCodeLine{00289\ \textcolor{comment}{///\ \(\backslash\)return\ The\ dot\ product\ between\ the\ two\ spans\ plus\ \(\backslash\)c\ init,\ i.e.\ \(\backslash\)f\$\ x\ \(\backslash\)cdot\ y\ +\ \(\backslash\)textup\{init\}\ =\ \(\backslash\)sum\_i\ x\_i\ y\_i\ +}}
+\DoxyCodeLine{00290\ \textcolor{comment}{///\ \(\backslash\)textup\{init\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00291\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ two\ input\ spans\ must\ have\ the\ same\ length.}}
+\DoxyCodeLine{00292\ \textcolor{comment}{///\ \(\backslash\)remark\ This\ function\ treats\ the\ LLRs\ as\ real\ values,\ thus\ neither\ saturation\ nor\ promotion\ apply.}}
+\DoxyCodeLine{00293\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ V>}
+\DoxyCodeLine{00294\ V\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}::\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a8ea17249a339d6c9ded5a3f63865e096}{dot\_prod}}(\textcolor{keyword}{const}\ T\&\ x,\ \textcolor{keyword}{const}\ U\&\ y,\ V\ init)}
+\DoxyCodeLine{00295\ \{}
+\DoxyCodeLine{00296\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_llr\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ LLRs"{}});}
+\DoxyCodeLine{00297\ \ \ \textcolor{keyword}{static\_assert}(srsvec::detail::is\_arithmetic\_span\_compatible<U>::value,}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ arithmetics"{}});}
+\DoxyCodeLine{00299\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(x.size()\ ==\ y.size(),\ \textcolor{stringliteral}{"{}Input\ spans\ must\ have\ identical\ sizes:\ '\{\}'\ vs\ '\{\}'"{}},\ x.size(),\ y.size());}
+\DoxyCodeLine{00300\ \ \ \textcolor{keywordflow}{return}\ std::inner\_product(}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ x.begin(),\ x.end(),\ y.begin(),\ init,\ std::plus<V>(),\ [](\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ a,\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ b)\ \{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ a\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{.}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{(}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{)}}\ *\ b\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{.}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{(}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{)}};}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00304\ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \textcolor{comment}{///\ \(\backslash\)brief\ Squared\ Euclidean\ norm\ of\ a\ sequence\ of\ LLRs.}}
+\DoxyCodeLine{00307\ \textcolor{comment}{///}}
+\DoxyCodeLine{00308\ \textcolor{comment}{///\ Computes\ the\ squared\ Euclidean\ norm\ (sum\ of\ the\ squares\ of\ the\ elements)\ of\ the\ input\ sequence\ of\ LLRs.}}
+\DoxyCodeLine{00309\ \textcolor{comment}{///}}
+\DoxyCodeLine{00310\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ \ \ \ \ A\ span\ (or\ any\ container\ convertible\ to\ a\ span)\ of\ a\ log-\/likelihood\ ratios\ (either\ constant\ or}}
+\DoxyCodeLine{00311\ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ volatile).}}
+\DoxyCodeLine{00312\ \textcolor{comment}{///\ \(\backslash\)param[in]\ x\ \ A\ sequence\ of\ (possibly\ constant)\ log-\/likelihood\ ratios.}}
+\DoxyCodeLine{00313\ \textcolor{comment}{///\ \(\backslash\)return\ The\ squared\ Euclidean\ norm\ of\ \(\backslash\)c\ x\ as\ an\ integer.}}
+\DoxyCodeLine{00314\ \textcolor{comment}{///\ \(\backslash\)remark\ This\ function\ treats\ the\ LLRs\ as\ real\ values,\ thus\ neither\ saturation\ nor\ promotion\ apply.}}
+\DoxyCodeLine{00315\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00316\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}::\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a42a939f284485e6972db33a4d402fb92}{norm\_squared}}(\textcolor{keyword}{const}\ T\&\ x)}
+\DoxyCodeLine{00317\ \{}
+\DoxyCodeLine{00318\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_llr\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span\ of\ LLRs"{}});}
+\DoxyCodeLine{00319\ \ \ \textcolor{keywordflow}{return}\ std::accumulate(}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ x.begin(),\ x.end(),\ 0,\ [](\textcolor{keywordtype}{int}\ a,\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}\ b)\ \{\ \textcolor{keywordflow}{return}\ a\ +\ b\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{.}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{(}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{)}}\ *\ b\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{.}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{to\_int}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{(}}\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio_a9afe861da6ba0fe2262e2113ab3f9279}{)}};\ \});}
+\DoxyCodeLine{00321\ \}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \textcolor{comment}{///\ \(\backslash\)brief\ Obtains\ hard\ bits\ from\ a\ vector\ of\ soft\ bits.}}
+\DoxyCodeLine{00324\ \textcolor{comment}{///}}
+\DoxyCodeLine{00325\ \textcolor{comment}{///\ Performs\ hard\ decision\ on\ a\ vector\ of\ soft\ bits.\ The\ resulting\ bits\ are\ packed\ and\ stored\ in\ an\ \(\backslash\)ref}}
+\DoxyCodeLine{00326\ \textcolor{comment}{///\ srsran::bit\_buffer.}}
+\DoxyCodeLine{00327\ \textcolor{comment}{///}}
+\DoxyCodeLine{00328\ \textcolor{comment}{///\ \(\backslash\)param[out]\ hard\_bits\ Buffer\ of\ hard\ bits.}}
+\DoxyCodeLine{00329\ \textcolor{comment}{///\ \(\backslash\)param[in]\ soft\_bits\ Buffer\ of\ soft\ bits.}}
+\DoxyCodeLine{00330\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a6dff3aa5abb3f4bb10b46513b48a373e}{hard\_decision}}(bit\_buffer\&\ hard\_bits,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ soft\_bits);}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00334\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ srsran::log\_likelihood\_ratio.}}
+\DoxyCodeLine{00337\ \textcolor{comment}{///}}
+\DoxyCodeLine{00338\ \textcolor{comment}{///\ See\ https://fmt.dev/latest/api.html\#formatting-\/user-\/defined-\/types.}}
+\DoxyCodeLine{00339\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00340\ \textcolor{keyword}{struct}\ formatter<srsran::log\_likelihood\_ratio>\ \{}
+\DoxyCodeLine{00341\ \ \ \textcolor{comment}{///\ Parser.}}
+\DoxyCodeLine{00342\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00343\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00344\ \ \ \{}
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00346\ \ \ \}}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \ \ \textcolor{comment}{///\ Formatter.}}
+\DoxyCodeLine{00349\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00350\ \ \ \textcolor{keyword}{auto}\ format(srsran::log\_likelihood\_ratio\ llr,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00351\ \ \ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ \textcolor{keyword}{static\_cast}<srsran::log\_likelihood\_ratio::value\_type>(llr));}
+\DoxyCodeLine{00353\ \ \ \}}
+\DoxyCodeLine{00354\ \};}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

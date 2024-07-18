@@ -1,0 +1,105 @@
+\doxysection{ofh\+\_\+downlink\+\_\+handler\+\_\+impl.\+h}
+\hypertarget{ofh__downlink__handler__impl_8h_source}{}\label{ofh__downlink__handler__impl_8h_source}\index{lib/ofh/transmitter/ofh\_downlink\_handler\_impl.h@{lib/ofh/transmitter/ofh\_downlink\_handler\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__data__flow__cplane__scheduling__commands_8h}{"{}ofh\_data\_flow\_cplane\_scheduling\_commands.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__data__flow__uplane__downlink__data_8h}{"{}ofh\_data\_flow\_uplane\_downlink\_data.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__tx__window__checker_8h}{"{}ofh\_tx\_window\_checker.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ethernet/ethernet\_frame\_pool.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ofh\_constants.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/transmitter/ofh\_downlink\_handler.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/transmitter/ofh\_transmitter\_configuration.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/tdd/tdd\_ul\_dl\_config.h"{}}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Downlink\ handler\ implementation\ configuration.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config}{downlink\_handler\_impl\_config}}\ \{}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Radio\ sector\ identifier.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_a06f0028fc2f450412b3e380c398429d9}{sector}};}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Downlink\ eAxCs.}}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_SUPPORTED\_EAXC>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_aae1f0349a97da7ded47d7790a83fc0de}{dl\_eaxc}};}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Optional\ TDD\ configuration.}}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1tdd__ul__dl__config__common}{tdd\_ul\_dl\_config\_common}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_a567e292c72d7bbdb58847fbb3c124ed2}{tdd\_config}};}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Cyclic\ prefix.}}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_a90790f9390a6b33c476cd3e438f12761}{cp}};}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing.}}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_a43870c0722d797b44a55ab797a77b247}{scs}};}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Downlink\ processing\ time\ in\ microseconds.}}
+\DoxyCodeLine{00052\ \ \ std::chrono::microseconds\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_a782ce53e3f2277c52dd24ce01b94507c}{dl\_processing\_time}};}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ Transmission\ window\ timing\ parameters\ for\ delay\ management.}}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1du__tx__window__timing__parameters}{du\_tx\_window\_timing\_parameters}}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config_aaa9639a88f490267a6cc34dca1e9e0bc}{tx\_timing\_params}};}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ Downlink\ handler\ implementation\ dependencies.}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies}{downlink\_handler\_impl\_dependencies}}\ \{}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Logger}}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a7923ba4cc49eab391da57e37e8eb8def}{srslog}}::\mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a7923ba4cc49eab391da57e37e8eb8def}{basic\_logger}}*\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a7923ba4cc49eab391da57e37e8eb8def}{logger}};}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Data\ flow\ for\ Control-\/Plane.}}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a5c42f53280fd9605607e116203744859}{std}}::\mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a5c42f53280fd9605607e116203744859}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a5c42f53280fd9605607e116203744859}{data\_flow\_cplane\_scheduling\_commands}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_a5c42f53280fd9605607e116203744859}{data\_flow\_cplane}};}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ Data\ flow\ for\ User-\/Plane.}}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_abfb5e0cdc929ac8e54025026991d9e50}{std}}::\mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_abfb5e0cdc929ac8e54025026991d9e50}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_abfb5e0cdc929ac8e54025026991d9e50}{data\_flow\_uplane\_downlink\_data}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_abfb5e0cdc929ac8e54025026991d9e50}{data\_flow\_uplane}};}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ Ethernet\ frame\ pool.}}
+\DoxyCodeLine{00066\ \ \ std::shared\_ptr<ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies_af0e205ac79c3774b4f73ff4aa4305468}{frame\_pool\_ptr}};}
+\DoxyCodeLine{00067\ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ Open\ Fronthaul\ downlink\ handler\ implementation.}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1downlink__handler__impl}{downlink\_handler\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1downlink__handler}{downlink\_handler}}}
+\DoxyCodeLine{00071\ \{}
+\DoxyCodeLine{00072\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00073\ \ \ downlink\_handler\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__config}{downlink\_handler\_impl\_config}}\&\ config,\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1downlink__handler__impl__dependencies}{downlink\_handler\_impl\_dependencies}}\&\&\ dependencies);}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1downlink__handler__impl_a41748bfac5c500c86e74c8ed415a76c1}{handle\_dl\_data}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__context}{resource\_grid\_context}}\&\ context,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1downlink__handler__impl_adfecb6725d21f7453aa63972a93d10eb}{set\_error\_notifier}}(\mbox{\hyperlink{classsrsran_1_1ofh_1_1error__notifier}{error\_notifier}}\&\ notifier)\ \textcolor{keyword}{override}\ \{\ err\_notifier\ =\ std::ref(notifier);\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Returns\ the\ OTA\ symbol\ boundary\ notifier\ of\ this\ downlink\ handler\ implementation.}}
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1ota__symbol__boundary__notifier}{ota\_symbol\_boundary\_notifier}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1downlink__handler__impl_ab1d1cd1af3053b424e266fdd365442f2}{get\_ota\_symbol\_boundary\_notifier}}()\ \{\ \textcolor{keywordflow}{return}\ window\_checker;\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_id;}
+\DoxyCodeLine{00086\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cp;}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1tdd__ul__dl__config__common}{tdd\_ul\_dl\_config\_common}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tdd\_config;}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_SUPPORTED\_EAXC>\ dl\_eaxc;}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1tx__window__checker}{tx\_window\_checker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ window\_checker;}
+\DoxyCodeLine{00091\ \ \ std::unique\_ptr<data\_flow\_cplane\_scheduling\_commands>\ data\_flow\_cplane;}
+\DoxyCodeLine{00092\ \ \ std::unique\_ptr<data\_flow\_uplane\_downlink\_data>\ \ \ \ \ \ \ data\_flow\_uplane;}
+\DoxyCodeLine{00093\ \ \ std::shared\_ptr<ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frame\_pool\_ptr;}
+\DoxyCodeLine{00094\ \ \ ether::\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frame\_pool;}
+\DoxyCodeLine{00095\ \ \ std::reference\_wrapper<\mbox{\hyperlink{classsrsran_1_1ofh_1_1error__notifier}{error\_notifier}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ err\_notifier;}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00099\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

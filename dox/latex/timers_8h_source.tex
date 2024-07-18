@@ -1,0 +1,241 @@
+\doxysection{timers.\+h}
+\hypertarget{timers_8h_source}{}\label{timers_8h_source}\index{include/srsran/support/timers.h@{include/srsran/support/timers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/intrusive\_list.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/unique\_function.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/variant.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <deque>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ :\ \textcolor{keywordtype}{unsigned}\ \{\ invalid\ =\ std::numeric\_limits<unsigned>::max()\ \};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ =\ std::chrono::milliseconds;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{using\ }cmd\_id\_t\ =\ uint32\_t;}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ INVALID\_DURATION\ =\ std::numeric\_limits<timer\_duration>::max();}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{enum\ class}\ state\_t\ \{\ stopped,\ running,\ expired\ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{struct\ }cmd\_t\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{enum}\ action\_t\ \{\ start,\ stop,\ destroy\ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ id;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00076\ \ \ \ \ cmd\_id\_t\ cmd\_id;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00079\ \ \ \ \ action\_t\ action;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ duration;}
+\DoxyCodeLine{00083\ \ \ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{struct\ }timer\_frontend\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ parent;}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ id;}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ exec\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00097\ \ \ \ \ std::atomic<cmd\_id\_t>\ cmd\_id\{0\};}
+\DoxyCodeLine{00099\ \ \ \ \ state\_t\ state\ =\ state\_t::stopped;}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ duration\ =\ INVALID\_DURATION;}
+\DoxyCodeLine{00103\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_function}}<void(\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})>\ timeout\_callback;}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ timer\_frontend(\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ parent\_,\ \mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ id\_);}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{void}\ destroy();}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{void}\ set(\mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ duration);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordtype}{void}\ set(\mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ duration,\ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_function}}<\textcolor{keywordtype}{void}(\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})>\ callback);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{void}\ run();}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00116\ \ \ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{struct\ }timer\_backend\_context\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ cmd\_id\_t\ cmd\_id\ \ =\ 0;}
+\DoxyCodeLine{00121\ \ \ \ \ state\_t\ \ state\ \ \ =\ state\_t::stopped;}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ timeout\ =\ 0;}
+\DoxyCodeLine{00123\ \ \ \};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{keyword}{struct\ }timer\_handle\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1intrusive__double__linked__list__element}{intrusive\_double\_linked\_list\_element}}<>,\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1intrusive__forward__list__element}{intrusive\_forward\_list\_element}}<>\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ std::unique\_ptr<timer\_frontend>\ frontend;}
+\DoxyCodeLine{00128\ \ \ \ \ timer\_backend\_context\ \ \ \ \ \ \ \ \ \ \ backend;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ timer\_handle()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00131\ \ \ \};}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39}{timer\_manager}}(\textcolor{keywordtype}{size\_t}\ pre\_reserve\_capacity\ =\ 64);}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}{tick}}();}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \mbox{\hyperlink{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}{create\_unique\_timer}}(\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec);}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8}{nof\_timers}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8}{nof\_running\_timers}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00154\ \ \ timer\_frontend\&\ create\_frontend\_timer(\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec);}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordtype}{void}\ push\_timer\_command(cmd\_t\ cmd);}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ create\_timer\_handle(std::unique\_ptr<timer\_frontend>\ timer);}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{keywordtype}{void}\ start\_timer\_backend(timer\_handle\&\ timer,\ \textcolor{keywordtype}{unsigned}\ duration);}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordtype}{bool}\ try\_stop\_timer\_backend(timer\_handle\&\ timer,\ \textcolor{keywordtype}{bool}\ expiry\_reason);}
+\DoxyCodeLine{00169\ \ \ \textcolor{keywordtype}{void}\ stop\_timer\_backend(timer\_handle\&\ timer,\ \textcolor{keywordtype}{bool}\ expiry\_reason);}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00172\ \ \ \textcolor{keywordtype}{void}\ destroy\_timer\_backend(timer\_handle\&\ timer);}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{bool}\ trigger\_timeout\_handling(timer\_handle\&\ timer);}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordtype}{void}\ handle\_postponed\_timeouts();}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{unsigned}\ cur\_time\ =\ 0;}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{size\_t}\ nof\_timers\_running\ =\ 0;}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00196\ \ \ std::deque<timer\_handle>\ timer\_list;}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00199\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \ \ \ \ \ \ \ \ \ \ free\_list\_mutex;}
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ next\_timer\_id\ =\ 0;}
+\DoxyCodeLine{00201\ \ \ std::vector<timer\_frontend*>\ free\_list;}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00208\ \ \ std::vector<intrusive\_double\_linked\_list<timer\_handle>>\ time\_wheel;}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00213\ \ \ std::deque<std::pair<timer\_id\_t,\ cmd\_id\_t>>\ failed\_to\_trigger\_timers;}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00216\ \ \ std::mutex\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_mutex;}
+\DoxyCodeLine{00217\ \ \ std::vector<variant<cmd\_t,\ std::unique\_ptr<timer\_frontend>>>\ pending\_cmds,\ cmds\_to\_process;}
+\DoxyCodeLine{00218\ \};}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00223\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}}
+\DoxyCodeLine{00224\ \{}
+\DoxyCodeLine{00225\ \ \ \textcolor{keyword}{using\ }state\_t\ =\ timer\_manager::state\_t;}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00228\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00229\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00230\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}(\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :\ handle(std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.handle,\ \textcolor{keyword}{nullptr}))\ \{\}}
+\DoxyCodeLine{00233\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00234\ \ \ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer_a98054a87f53f29fe0b5ec05a1714ed01}{reset}}();}
+\DoxyCodeLine{00236\ \ \ \ \ handle\ =\ std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.handle,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{\string~unique\_timer}}()\ \{\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a98054a87f53f29fe0b5ec05a1714ed01}{reset}}();\ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00242\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a98054a87f53f29fe0b5ec05a1714ed01}{reset}}()}
+\DoxyCodeLine{00243\ \ \ \{}
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}())\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ handle-\/>destroy();}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ handle\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00247\ \ \ \ \ \}}
+\DoxyCodeLine{00248\ \ \ \}}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00251\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ handle\ !=\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00254\ \ \ \mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a2232d20922016eae4754e4966017b318}{id}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\ ?\ handle-\/>id\ :\ timer\_id\_t::invalid;\ \}}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00257\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_aa2eaabc8cfb2ff1ca0e4263847c4cc67}{is\_set}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\ \&\&\ handle-\/>duration\ !=\ timer\_manager::INVALID\_DURATION;\ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{is\_running}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\ \&\&\ handle-\/>state\ ==\ timer\_manager::state\_t::running;\ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00263\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a616a78a8128f49a808daee1450c06f7c}{has\_expired}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\ \&\&\ handle-\/>state\ ==\ timer\_manager::state\_t::expired;\ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00266\ \ \ \mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a97ad01e4b7d8588d25596489c362b15b}{duration}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}()\ ?\ handle-\/>duration\ :\ timer\_manager::INVALID\_DURATION;\ \}}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00269\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a79c9d6ec6c5942aa869ea4ba273536c5}{set}}(\mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a97ad01e4b7d8588d25596489c362b15b}{duration}},\ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_function}}<\textcolor{keywordtype}{void}(\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})>\ callback)}
+\DoxyCodeLine{00270\ \ \ \{}
+\DoxyCodeLine{00271\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}(),\ \textcolor{stringliteral}{"{}Trying\ to\ setup\ empty\ timer\ pimpl"{}});}
+\DoxyCodeLine{00272\ \ \ \ \ handle-\/>set(\mbox{\hyperlink{classsrsran_1_1unique__timer_a97ad01e4b7d8588d25596489c362b15b}{duration}},\ std::move(callback));}
+\DoxyCodeLine{00273\ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00276\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a7943b179dd5b5efedaee6ec0359899df}{set}}(\mbox{\hyperlink{namespacesrsran_ae78e137cc0f1b8e1ad1384453e5e38a3}{timer\_duration}}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a97ad01e4b7d8588d25596489c362b15b}{duration}})}
+\DoxyCodeLine{00277\ \ \ \{}
+\DoxyCodeLine{00278\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}(),\ \textcolor{stringliteral}{"{}Trying\ to\ setup\ empty\ timer\ pimpl"{}});}
+\DoxyCodeLine{00279\ \ \ \ \ handle-\/>set(\mbox{\hyperlink{classsrsran_1_1unique__timer_a97ad01e4b7d8588d25596489c362b15b}{duration}});}
+\DoxyCodeLine{00280\ \ \ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00283\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{run}}()}
+\DoxyCodeLine{00284\ \ \ \{}
+\DoxyCodeLine{00285\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1unique__timer_af009b842ea6d7f5bd5ba2cc87016b8bf}{is\_valid}}(),\ \textcolor{stringliteral}{"{}Starting\ invalid\ timer"{}});}
+\DoxyCodeLine{00286\ \ \ \ \ handle-\/>run();}
+\DoxyCodeLine{00287\ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00290\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1unique__timer_a1a4efde28d11d176d481f00ce0274d78}{stop}}()}
+\DoxyCodeLine{00291\ \ \ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{is\_running}}())\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ handle-\/>stop();}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00298\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}};}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}(timer\_manager::timer\_frontend\&\ impl)\ :\ handle(\&impl)\ \{\}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ timer\_manager::timer\_frontend*\ handle\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00303\ \};}
+\DoxyCodeLine{00304\ }
+\DoxyCodeLine{00306\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}}
+\DoxyCodeLine{00307\ \{}
+\DoxyCodeLine{00308\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00309\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00310\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}(\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ timer\_mng\_,\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ timer\_exec\_)\ :}
+\DoxyCodeLine{00311\ \ \ \ \ timer\_mng(\&timer\_mng\_),\ timer\_exec(\&timer\_exec\_)}
+\DoxyCodeLine{00312\ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \}}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ create\_timer()\ \{\ \textcolor{keywordflow}{return}\ timer\_mng-\/>\mbox{\hyperlink{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}{create\_unique\_timer}}(*timer\_exec);\ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00318\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}*\ timer\_mng\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00319\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ timer\_exec\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00320\ \};}
+\DoxyCodeLine{00321\ }
+\DoxyCodeLine{00322\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

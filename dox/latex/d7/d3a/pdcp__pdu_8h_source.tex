@@ -1,0 +1,165 @@
+\doxysection{pdcp\+\_\+pdu.\+h}
+\hypertarget{pdcp__pdu_8h_source}{}\label{pdcp__pdu_8h_source}\index{lib/pdcp/pdcp\_pdu.h@{lib/pdcp/pdcp\_pdu.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Maximum\ supported\ size\ of\ a\ PDCP\ SDU}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 4.3.1}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_sdu\_max\_size\ =\ 9000;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Maximum\ supported\ size\ of\ a\ PDCP\ Control\ PDU}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 4.3.1}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_control\_pdu\_max\_size\ =\ 9000;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ PDCP\ Data/Control\ (D/C)\ field}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 6.3.7}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ pdcp\_dc\_field\ :\ \textcolor{keywordtype}{unsigned}\ \{}
+\DoxyCodeLine{00043\ \ \ control\ =\ 0b00,\ \textcolor{comment}{///<\ Control\ PDU}}
+\DoxyCodeLine{00044\ \ \ data\ \ \ \ =\ 0b01\ \ \textcolor{comment}{///<\ Data\ PDU}}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ to\_number(pdcp\_dc\_field\ dc)}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dc);}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ \(\backslash\)brief\ Reads\ the\ D/C\ field\ from\ the\ first\ (header)\ byte\ of\ a\ PDCP\ PDU}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ \(\backslash\)param\ first\_byte\ First\ byte\ of\ the\ PDU\ (passed\ by\ value)}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ \(\backslash\)return\ Value\ of\ the\ D/C\ field}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{constexpr}\ pdcp\_dc\_field\ pdcp\_pdu\_get\_dc(uint8\_t\ first\_byte)}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<pdcp\_dc\_field>((first\_byte\ >>\ 7U)\ \&\ 0x01U);}
+\DoxyCodeLine{00057\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ PDCP\ Control\ PDU\ type}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 6.3.8}}
+\DoxyCodeLine{00061\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ pdcp\_control\_pdu\_type\ :\ \textcolor{keywordtype}{unsigned}\ \{}
+\DoxyCodeLine{00062\ \ \ status\_report\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0b000,\ \textcolor{comment}{///<\ PDCP\ status\ report}}
+\DoxyCodeLine{00063\ \ \ interspersed\_rohc\_feedback\ =\ 0b001,\ \textcolor{comment}{///<\ Interspersed\ ROHC\ feedback}}
+\DoxyCodeLine{00064\ \ \ ehc\_feedback\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0b010\ \ \textcolor{comment}{///<\ EHC\ feedback}}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ \textcolor{keyword}{constexpr}\ uint16\_t\ to\_number(pdcp\_control\_pdu\_type\ type)}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint16\_t>(type);}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \(\backslash\)brief\ Reads\ the\ CPT\ field\ from\ the\ first\ (header)\ byte\ of\ a\ PDCP\ control\ PDU}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ \(\backslash\)param\ first\_byte\ First\ byte\ of\ the\ PDU\ (passed\ by\ value)}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ \(\backslash\)return\ Value\ of\ the\ CPT\ field}}
+\DoxyCodeLine{00074\ \textcolor{keyword}{constexpr}\ pdcp\_control\_pdu\_type\ pdcp\_control\_pdu\_get\_cpt(uint8\_t\ first\_byte)}
+\DoxyCodeLine{00075\ \{}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<pdcp\_control\_pdu\_type>((first\_byte\ >>\ 4U)\ \&\ 0x07U);}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ PDCP\ Data\ PDU\ header}}
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 6.2.2}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{struct}\ pdcp\_data\_pdu\_header\ \{}
+\DoxyCodeLine{00082\ \ \ uint32\_t\ sn;\ \textcolor{comment}{///<\ Sequence\ number}}
+\DoxyCodeLine{00083\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ PDCP\ Control\ PDU\ header}}
+\DoxyCodeLine{00086\ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 6.2.3}}
+\DoxyCodeLine{00087\ \textcolor{keyword}{struct}\ pdcp\_control\_pdu\_header\ \{}
+\DoxyCodeLine{00088\ \ \ pdcp\_control\_pdu\_type\ cpt;\ \textcolor{comment}{///<\ Control\ PDU\ type\ (control\ PDU\ only,\ ignored\ for\ data\ PDUs)}}
+\DoxyCodeLine{00089\ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00096\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_dc\_field>\ \{}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00099\ \ \ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00101\ \ \ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_dc\_field\ dc,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00105\ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}ctrl"{}},\ \textcolor{stringliteral}{"{}data"{}}\};}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[to\_number(dc)]);}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00112\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_control\_pdu\_type>\ \{}
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00114\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00115\ \ \ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00117\ \ \ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00120\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_control\_pdu\_type\ cpt,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00121\ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}status\_report"{}},\ \textcolor{stringliteral}{"{}rohc\_feedback"{}},\ \textcolor{stringliteral}{"{}ehc\_feedback"{}}\};}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[to\_number(cpt)]);}
+\DoxyCodeLine{00124\ \ \ \}}
+\DoxyCodeLine{00125\ \};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00128\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_data\_pdu\_header>\ \{}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00131\ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdcp\_data\_pdu\_header\&\ hdr,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00138\ \ \ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}sn=\{\}"{}},\ hdr.sn);}
+\DoxyCodeLine{00140\ \ \ \}}
+\DoxyCodeLine{00141\ \};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00144\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_control\_pdu\_header>\ \{}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00147\ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00152\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdcp\_control\_pdu\_header\&\ hdr,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00154\ \ \ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}cpt=\{\}"{}},\ hdr.cpt);}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

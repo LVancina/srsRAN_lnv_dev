@@ -1,0 +1,73 @@
+\doxysection{f1u\+\_\+adapters.\+h}
+\hypertarget{f1u__adapters_8h_source}{}\label{f1u__adapters_8h_source}\index{lib/cu\_up/adapters/f1u\_adapters.h@{lib/cu\_up/adapters/f1u\_adapters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/f1u/cu\_up/f1u\_rx\_delivery\_notifier.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/f1u/cu\_up/f1u\_rx\_sdu\_notifier.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_rx.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_tx.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }srs\_cu\_up\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1f1u__pdcp__adapter}{f1u\_pdcp\_adapter}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1f1u__rx__sdu__notifier}{f1u\_rx\_sdu\_notifier}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1f1u__rx__delivery__notifier}{f1u\_rx\_delivery\_notifier}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{void}\ connect\_pdcp(\mbox{\hyperlink{classsrsran_1_1pdcp__rx__lower__interface}{pdcp\_rx\_lower\_interface}}\&\ pdcp\_rx\_handler\_,\ \mbox{\hyperlink{classsrsran_1_1pdcp__tx__lower__interface}{pdcp\_tx\_lower\_interface}}\&\ pdcp\_tx\_handler\_)}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ pdcp\_rx\_handler\ =\ \&pdcp\_rx\_handler\_;}
+\DoxyCodeLine{00041\ \ \ \ \ pdcp\_tx\_handler\ =\ \&pdcp\_tx\_handler\_;}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{void}\ on\_new\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcp\_rx\_handler\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}F1-\/U"{}}).warning(\textcolor{stringliteral}{"{}Unconnected\ PDCP\ handler.\ Dropping\ F1-\/U\ SDU"{}});}
+\DoxyCodeLine{00048\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ pdcp\_rx\_handler-\/>\mbox{\hyperlink{classsrsran_1_1pdcp__rx__lower__interface_a831aa82a3c246bd196e6616ad25bca4e}{handle\_pdu}}(std::move(sdu));}
+\DoxyCodeLine{00050\ \ \ \ \ \}}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ on\_transmit\_notification(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00055\ \ \ \ \ pdcp\_tx\_handler-\/>\mbox{\hyperlink{classsrsran_1_1pdcp__tx__lower__interface_a5f8543d42531b79425a52b62d944377a}{handle\_transmit\_notification}}(highest\_pdcp\_sn);}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ on\_delivery\_notification(uint32\_t\ highest\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00059\ \ \ \ \ pdcp\_tx\_handler-\/>\mbox{\hyperlink{classsrsran_1_1pdcp__tx__lower__interface_a4f06eb3f10586bd8d2f809ba246a5b3c}{handle\_delivery\_notification}}(highest\_pdcp\_sn);}
+\DoxyCodeLine{00060\ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcp__rx__lower__interface}{pdcp\_rx\_lower\_interface}}*\ pdcp\_rx\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcp__tx__lower__interface}{pdcp\_tx\_lower\_interface}}*\ pdcp\_tx\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00068\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

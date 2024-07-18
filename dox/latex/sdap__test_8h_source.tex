@@ -1,0 +1,104 @@
+\doxysection{sdap\+\_\+test.\+h}
+\hypertarget{sdap__test_8h_source}{}\label{sdap__test_8h_source}\index{tests/unittests/sdap/sdap\_test.h@{tests/unittests/sdap/sdap\_test.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ "{}lib/sdap/sdap\_entity\_impl.h"{}}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}srsran/sdap/sdap.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/manual\_task\_worker.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <gtest/gtest.h>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }srs\_cu\_up\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__upper__dummy}{sdap\_upper\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__rx__sdu__notifier}{sdap\_rx\_sdu\_notifier}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ std::queue<byte\_buffer>\ sdu\_queue;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{//\ sdap\_rx\_sdu\_notifier\ interface}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__upper__dummy_a2ffe693dbbbfeadbc2fefe1c0e5e15c6}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qfi)\textcolor{keyword}{\ override\ }\{\ sdu\_queue.push(std::move(pdu));\ \};}
+\DoxyCodeLine{00043\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__lower__dummy}{sdap\_lower\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier}{sdap\_tx\_pdu\_notifier}}}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ std::queue<byte\_buffer>\ pdu\_queue;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ sdap\_tx\_pdu\_notifier\ interface}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__lower__dummy_adb27129097de68741e86a53ff1705baa}{on\_new\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu)\textcolor{keyword}{\ override\ }\{\ pdu\_queue.push(std::move(pdu));\ \};}
+\DoxyCodeLine{00053\ \};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00056\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__test}{sdap\_test}}\ :\ \textcolor{keyword}{public}\ ::testing::Test}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ SetUp()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00060\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ init\ test's\ logger}}
+\DoxyCodeLine{00062\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00063\ \ \ \ \ logger.\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ init\ SDAP\ logger}}
+\DoxyCodeLine{00066\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SDAP"{}},\ \textcolor{keyword}{false}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::basic\_levels::debug);}
+\DoxyCodeLine{00067\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SDAP"{}},\ \textcolor{keyword}{false}).\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_abd66c985d09bb6d321627fe302298101}{set\_hex\_dump\_max\_size}}(-\/1);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Creating\ SDAP\ entity."{}});}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{comment}{//\ Create\ test\ frames}}
+\DoxyCodeLine{00072\ \ \ \ \ ul\_sink\ \ =\ std::make\_unique<sdap\_upper\_dummy>();}
+\DoxyCodeLine{00073\ \ \ \ \ dl\_sink1\ =\ std::make\_unique<sdap\_lower\_dummy>();}
+\DoxyCodeLine{00074\ \ \ \ \ dl\_sink2\ =\ std::make\_unique<sdap\_lower\_dummy>();}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{//\ Create\ SDAP\ TX\ entity}}
+\DoxyCodeLine{00077\ \ \ \ \ ue\_inactivity\_timer\ =\ timers.create\_timer();}
+\DoxyCodeLine{00078\ \ \ \ \ ue\_inactivity\_timer.\mbox{\hyperlink{classsrsran_1_1unique__timer_a79c9d6ec6c5942aa869ea4ba273536c5}{set}}(std::chrono::milliseconds(10000),\ [](\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})\ \{\});}
+\DoxyCodeLine{00079\ \ \ \ \ sdap\ =\ std::make\_unique<sdap\_entity\_impl>(7,\ pdu\_session\_id\_t::min,\ ue\_inactivity\_timer,\ *ul\_sink);}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ TearDown()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00083\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ flush\ logger\ after\ each\ test}}
+\DoxyCodeLine{00085\ \ \ \ \ srslog::flush();}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker}{manual\_task\_worker}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worker\{64\};}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\_manager;}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers\{timers\_manager,\ worker\};}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer;}
+\DoxyCodeLine{00093\ \ \ std::unique\_ptr<sdap\_upper\_dummy>\ ul\_sink;}
+\DoxyCodeLine{00094\ \ \ std::unique\_ptr<sdap\_lower\_dummy>\ dl\_sink1;}
+\DoxyCodeLine{00095\ \ \ std::unique\_ptr<sdap\_lower\_dummy>\ dl\_sink2;}
+\DoxyCodeLine{00096\ \ \ std::unique\_ptr<sdap\_entity\_impl>\ sdap;}
+\DoxyCodeLine{00097\ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

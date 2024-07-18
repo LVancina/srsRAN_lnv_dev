@@ -1,0 +1,187 @@
+\doxysection{srsran\+::prach\+\_\+processor\+\_\+worker Class Reference}
+\hypertarget{classsrsran_1_1prach__processor__worker}{}\label{classsrsran_1_1prach__processor__worker}\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+
+
+Lower PHY PRACH processor worker subcomponent.  
+
+
+
+
+{\ttfamily \#include $<$prach\+\_\+processor\+\_\+worker.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::prach\+\_\+processor\+\_\+worker\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=227pt]{db/d13/classsrsran_1_1prach__processor__worker__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a375677994380bd87c11053a4a243faee}{prach\+\_\+processor\+\_\+worker}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ofdm__prach__demodulator}{ofdm\+\_\+prach\+\_\+demodulator}} $>$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{demodulator\+\_\+}}, \mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{async\+\_\+task\+\_\+executor\+\_\+}}, \mbox{\hyperlink{classsrsran_1_1sampling__rate}{sampling\+\_\+rate}} srate, \mbox{\hyperlink{classunsigned}{unsigned}} max\+\_\+nof\+\_\+ports)
+\begin{DoxyCompactList}\small\item\em Creates a PRACH processor worker. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a85b63bea37bf93d9a862da732eaa4e2e}{connect}} (\mbox{\hyperlink{classsrsran_1_1prach__processor__notifier}{prach\+\_\+processor\+\_\+notifier}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{notifier\+\_\+}})
+\begin{DoxyCompactList}\small\item\em Connects the worker with the given PRACH processor notifier. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_ac99ed39908cafc0087e913bc81452ff2}{handle\+\_\+request}} (\mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\+\_\+buffer}} \&buffer, \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\+\_\+buffer\+\_\+context}} \&context)
+\begin{DoxyCompactList}\small\item\em Handles a PRACH occasion request. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a1d86927449b096ef17ae2b9221909b22}{process\+\_\+symbol}} (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\+\_\+gateway\+\_\+buffer\+\_\+reader}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{samples}}, \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1prach__processor__baseband_1_1symbol__context}{prach\+\_\+processor\+\_\+baseband\+::symbol\+\_\+context}} \&context)
+\begin{DoxyCompactList}\small\item\em Processes an OFDM symbol. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1prach__processor__worker_a1e7e8d43717654370a434217c225dffe}{is\+\_\+available}} () \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Determines whether the PRACH processor worker is available. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Lower PHY PRACH processor worker subcomponent. 
+
+The worker contains a finite-\/state machine with four possible states\+: idle, wait, collecting and processing. See states for more information.
+
+The implementation assumes that\+:
+\begin{DoxyItemize}
+\item \doxylink{classsrsran_1_1prach__processor__worker_ac99ed39908cafc0087e913bc81452ff2}{handle\+\_\+request()} and \doxylink{classsrsran_1_1prach__processor__worker_a1e7e8d43717654370a434217c225dffe}{is\+\_\+available()} are called from a first thread, and
+\item \doxylink{classsrsran_1_1prach__processor__worker_a1d86927449b096ef17ae2b9221909b22}{process\+\_\+symbol()} is called from a second, different thread. 
+\end{DoxyItemize}
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1prach__processor__worker_a375677994380bd87c11053a4a243faee}\label{classsrsran_1_1prach__processor__worker_a375677994380bd87c11053a4a243faee} 
+\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}!prach\_processor\_worker@{prach\_processor\_worker}}
+\index{prach\_processor\_worker@{prach\_processor\_worker}!srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+\doxysubsubsection{\texorpdfstring{prach\_processor\_worker()}{prach\_processor\_worker()}}
+{\footnotesize\ttfamily srsran\+::prach\+\_\+processor\+\_\+worker\+::prach\+\_\+processor\+\_\+worker (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1ofdm__prach__demodulator}{ofdm\+\_\+prach\+\_\+demodulator}} $>$}]{demodulator\+\_\+,  }\item[{\mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&}]{async\+\_\+task\+\_\+executor\+\_\+,  }\item[{\mbox{\hyperlink{classsrsran_1_1sampling__rate}{sampling\+\_\+rate}}}]{srate,  }\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{max\+\_\+nof\+\_\+ports }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a PRACH processor worker. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00107\ \ \ \ \ demodulator(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{demodulator\_}})),}
+\DoxyCodeLine{00108\ \ \ \ \ async\_task\_executor(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{async\_task\_executor\_}}),}
+\DoxyCodeLine{00109\ \ \ \ \ sampling\_rate\_Hz(srate.to\_Hz()),}
+\DoxyCodeLine{00110\ \ \ \ \ temp\_baseband(max\_nof\_ports,\ prach\_constants::MAX\_WINDOW\_LENGTH.to\_samples(sampling\_rate\_Hz))}
+\DoxyCodeLine{00111\ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ srsran\_assert(sampling\_rate\_Hz\ \&\&\ prach\_constants::MAX\_WINDOW\_LENGTH.is\_sample\_accurate(sampling\_rate\_Hz),}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ sampling\ rate\ of\ \{\}\ Hz."{}},}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sampling\_rate\_Hz);}
+\DoxyCodeLine{00115\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1prach__processor__worker_a85b63bea37bf93d9a862da732eaa4e2e}\label{classsrsran_1_1prach__processor__worker_a85b63bea37bf93d9a862da732eaa4e2e} 
+\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}!connect@{connect}}
+\index{connect@{connect}!srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+\doxysubsubsection{\texorpdfstring{connect()}{connect()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} srsran\+::prach\+\_\+processor\+\_\+worker\+::connect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1prach__processor__notifier}{prach\+\_\+processor\+\_\+notifier}} \&}]{notifier\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Connects the worker with the given PRACH processor notifier. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00118\ \{\ notifier\ =\ \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{notifier\_}};\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1prach__processor__worker_ac99ed39908cafc0087e913bc81452ff2}\label{classsrsran_1_1prach__processor__worker_ac99ed39908cafc0087e913bc81452ff2} 
+\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}!handle\_request@{handle\_request}}
+\index{handle\_request@{handle\_request}!srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+\doxysubsubsection{\texorpdfstring{handle\_request()}{handle\_request()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} prach\+\_\+processor\+\_\+worker\+::handle\+\_\+request (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\+\_\+buffer}} \&}]{buffer,  }\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\+\_\+buffer\+\_\+context}} \&}]{context }\end{DoxyParamCaption})}
+
+
+
+Handles a PRACH occasion request. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em buffer} & PRACH buffer. \\
+\hline
+\mbox{\texttt{ in}}  & {\em context} & PRACH occasion context. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00145\ \{}
+\DoxyCodeLine{00146\ \ \ srsran\_assert(state\ ==\ states::idle,\ \textcolor{stringliteral}{"{}Invalid\ state."{}});}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ prach\_context\ =\ context;}
+\DoxyCodeLine{00149\ \ \ buffer\ \ \ \ \ \ \ \ =\ \&buffer\_;}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{//\ Calculate\ the\ PRACH\ window\ size\ starting\ at\ the\ beginning\ of\ the\ slot.}}
+\DoxyCodeLine{00152\ \ \ window\_length\ =}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aae60fdd6dfc5e4aad04607ddbe5982b1}{get\_prach\_window\_duration}}(context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a75071d89f12c9df9cba8d45a312738db}{format}},\ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a62e868abf420e4401a860311e53309f9}{pusch\_scs}},\ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a1530821e8cd26832c55cf63ceecaac38}{start\_symbol}},\ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a8d9d2418d876fd2bb2083974fb4b6181}{nof\_td\_occasions}})}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ .\mbox{\hyperlink{classsrsran_1_1phy__time__unit_a942e82e30afbcebbc43f1943738f9d19}{to\_samples}}(sampling\_rate\_Hz);}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{//\ Reset\ number\ of\ collected\ samples.}}
+\DoxyCodeLine{00157\ \ \ nof\_samples\ =\ 0;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{//\ Transition\ to\ wait\ for\ the\ beginning\ of\ the\ PRACH\ window.}}
+\DoxyCodeLine{00160\ \ \ state\ =\ states::wait;}
+\DoxyCodeLine{00161\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1prach__processor__worker_a1e7e8d43717654370a434217c225dffe}\label{classsrsran_1_1prach__processor__worker_a1e7e8d43717654370a434217c225dffe} 
+\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}!is\_available@{is\_available}}
+\index{is\_available@{is\_available}!srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+\doxysubsubsection{\texorpdfstring{is\_available()}{is\_available()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::prach\+\_\+processor\+\_\+worker\+::is\+\_\+available (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Determines whether the PRACH processor worker is available. 
+
+A PRACH processor is available when it is {\ttfamily idle}. See states for more information regarding the PRACH worker internal states. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00135\ \{\ \textcolor{keywordflow}{return}\ state\ ==\ states::idle;\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1prach__processor__worker_a1d86927449b096ef17ae2b9221909b22}\label{classsrsran_1_1prach__processor__worker_a1d86927449b096ef17ae2b9221909b22} 
+\index{srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}!process\_symbol@{process\_symbol}}
+\index{process\_symbol@{process\_symbol}!srsran::prach\_processor\_worker@{srsran::prach\_processor\_worker}}
+\doxysubsubsection{\texorpdfstring{process\_symbol()}{process\_symbol()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} prach\+\_\+processor\+\_\+worker\+::process\+\_\+symbol (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\+\_\+gateway\+\_\+buffer\+\_\+reader}} \&}]{samples,  }\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{structsrsran_1_1prach__processor__baseband_1_1symbol__context}{prach\+\_\+processor\+\_\+baseband\+::symbol\+\_\+context}} \&}]{context }\end{DoxyParamCaption})}
+
+
+
+Processes an OFDM symbol. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em samples} & Baseband samples. \\
+\hline
+\mbox{\texttt{ in}}  & {\em context} & OFDM symbol context. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00165\ \{}
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{//\ Run\ FSM.}}
+\DoxyCodeLine{00167\ \ \ \textcolor{keywordflow}{switch}\ (state)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{case}\ states::idle:}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keywordflow}{case}\ states::wait:}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ run\_state\_wait(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{samples}},\ context);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{case}\ states::collecting:}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ run\_state\_collecting(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{samples}},\ context);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{case}\ states::processing:}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/phy/lower/processors/uplink/prach/prach\+\_\+processor\+\_\+worker.\+h\item 
+lib/phy/lower/processors/uplink/prach/prach\+\_\+processor\+\_\+worker.\+cpp\end{DoxyCompactItemize}

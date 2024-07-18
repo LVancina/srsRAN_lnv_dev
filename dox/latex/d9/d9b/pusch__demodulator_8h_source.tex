@@ -1,0 +1,107 @@
+\doxysection{pusch\+\_\+demodulator.\+h}
+\hypertarget{pusch__demodulator_8h_source}{}\label{pusch__demodulator_8h_source}\index{include/srsran/phy/upper/channel\_processors/pusch/pusch\_demodulator.h@{include/srsran/phy/upper/channel\_processors/pusch/pusch\_demodulator.h}}
+\mbox{\hyperlink{pusch__demodulator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ demodulator\ interface.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_estimation.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/dmrs\_mapping.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/rb\_allocation.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/modulation\_scheme.h"{}}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__codeword__buffer}{pusch\_codeword\_buffer}};}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__demodulator__notifier}{pusch\_demodulator\_notifier}};}
+\DoxyCodeLine{00039\ \textcolor{keyword}{class}\ resource\_grid\_reader;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ demodulator\ interface.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ The\ demodulation\ of\ a\ PUSCH\ consists\ of:}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ -\/\ extracting\ allocated\ REs\ from\ the\ resource\ grid,}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ -\/\ equalizing\ of\ the\ extracted\ RE,}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ -\/\ soft-\/demodulation\ of\ the\ complex\ data,\ and}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ -\/\ descrambling.}}
+\DoxyCodeLine{00048\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__demodulator}{pusch\_demodulator}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Parameters\ defining\ the\ demodulation\ procedure\ of\ a\ PUSCH\ transmission.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{///\ Radio\ Network\ Temporary\ Identifier,\ see\ parameter\ \(\backslash\)f\$n\_\{RNTI\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.3.1.1.}}
+\DoxyCodeLine{00054\ \ \ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a5a7844b041ebfce5b2b180e164158600}{rnti}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ Allocation\ RB\ list:\ the\ entries\ set\ to\ true\ are\ used\ for\ transmission.}}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a069314bbb27c714857810aeb790e7647}{bounded\_bitset}}<\mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a069314bbb27c714857810aeb790e7647}{MAX\_RB}}>\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a069314bbb27c714857810aeb790e7647}{rb\_mask}};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{///\ Modulation\ scheme\ used\ for\ transmission.}}
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a59ed01798151499ba7f34d11309e0f1a}{modulation}};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{///\ Time\ domain\ allocation\ within\ a\ slot:\ start\ symbol\ index\ \{0,\ ...,\ 12\}.}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_acb765de1e8966599ce2cee15e6cdf9d9}{start\_symbol\_index}};}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{///\ Time\ domain\ allocation\ within\ a\ slot:\ number\ of\ symbols\ \{1,\ ...,\ 14\}.}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a0e8b09292150c557638890d48d3ed4d9}{nof\_symbols}};}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{///\ OFDM\ symbols\ containing\ DM-\/RS:\ boolean\ mask.}}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1symbol__slot__mask}{symbol\_slot\_mask}}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_ad6d2257dc1117517aa52cd922a15b691}{dmrs\_symb\_pos}};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{///\ DM-\/RS\ configuration\ type.}}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dmrs__type}{dmrs\_type}}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_ab6463c1b87b4a24ec00414fa6eae35a7}{dmrs\_config\_type}};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ DM-\/RS\ CDM\ groups\ without\ data.}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_aa194236b4c9a43ba2a430f3c26795582}{nof\_cdm\_groups\_without\_data}};}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{///\ Scrambling\ identifier,\ see\ parameter\ \(\backslash\)f\$n\_\{ID\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.3.1.1.\ Range\ is\ \{0,\ ...,\ 1023\}.}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a8763d18e2956ce82e179b6ed2a8b65fa}{n\_id}};}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ transmit\ layers.}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a7d3904b51d061c9cacdc103ba4e02b7a}{nof\_tx\_layers}};}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{///\ Receive\ antenna\ port\ indices\ the\ PUSCH\ transmission\ is\ mapped\ to.}}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ MAX\_PORTS>\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration_a66de4ff02ab9cedf1adc4fdf4ee46dc2}{rx\_ports}};}
+\DoxyCodeLine{00075\ \ \ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pusch__demodulator_a52dd53ae1f6753b7cae05ab1a388aa5c}{pusch\_demodulator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Demodulates\ a\ PUSCH\ transmission.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ Computes\ log-\/likelihood\ ratios\ from\ channel\ samples\ by\ reversing\ all\ the\ operations\ described\ in\ TS38.211\ Section}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ 6.3.1.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)remarks}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ -\/\ The\ size\ of\ \(\backslash\)c\ data\ determines\ the\ codeword\ size\ in\ soft\ bits.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ -\/\ The\ total\ number\ of\ LLR\ must\ be\ consistent\ with\ the\ number\ of\ RE\ allocated\ to\ the\ transmission.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ codeword\_buffer\ Codeword\ buffer.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ notifier\ \ \ \ \ \ \ \ Demodulation\ statistics\ notifier.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ grid\ \ \ \ \ \ \ \ \ \ \ \ Resource\ grid\ for\ the\ current\ slot.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ estimates\ \ \ \ \ \ \ Channel\ estimates\ for\ the\ REs\ allocated\ to\ the\ PUSCH\ transmission.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ \ \ \ \ \ \ \ \ Configuration\ parameters.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pusch__demodulator_afafb9bb556d8858b86138d82e233a209}{demodulate}}(\mbox{\hyperlink{classsrsran_1_1pusch__codeword__buffer}{pusch\_codeword\_buffer}}\&\ \ \ \ \ \ codeword\_buffer,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__demodulator__notifier}{pusch\_demodulator\_notifier}}\&\ notifier,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ \ \ \ \ estimates,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pusch__demodulator_1_1configuration}{configuration}}\&\ \ \ \ \ \ \ \ config)\ =\ 0;}
+\DoxyCodeLine{00099\ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

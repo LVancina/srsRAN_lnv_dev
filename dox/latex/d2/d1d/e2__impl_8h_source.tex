@@ -1,0 +1,128 @@
+\doxysection{e2\+\_\+impl.\+h}
+\hypertarget{e2__impl_8h_source}{}\label{e2__impl_8h_source}\index{lib/e2/common/e2\_impl.h@{lib/e2/common/e2\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}procedures/e2\_ric\_control\_procedure.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}procedures/e2\_setup\_procedure.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}procedures/e2\_subscription\_delete\_procedure.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}procedures/e2\_subscription\_setup\_procedure.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/e2ap/e2ap.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e2/e2.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e2/e2ap\_configuration.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e2/e2sm/e2sm\_factory.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e2/e2sm/e2sm\_manager.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/nr\_cgi.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/fifo\_async\_task\_scheduler.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{map}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1e2__event__manager}{e2\_event\_manager}};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{class}\ e2\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e2__interface}{e2\_interface}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ e2\_impl(\mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\&\ \ \ \ \ \ cfg\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ timers\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__message__notifier}{e2\_message\_notifier}}\&\ \ \ \ \ e2\_pdu\_notifier\_,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2__subscription__manager}{e2\_subscription\_manager}}\&\ subscription\_mngr\_,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1e2sm__manager}{e2sm\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ e2sm\_mngr\_);}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ start()\ \textcolor{keyword}{override}\{\};}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ stop()\ \textcolor{keyword}{override}\{\};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ E2\ connection\ manager\ functions.}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\mbox{\hyperlink{structsrsran_1_1e2__setup__response__message}{e2\_setup\_response\_message}}>\ \mbox{\hyperlink{classsrsran_1_1e2__impl_a52c0476ba6a5b425a227bc128869c012}{handle\_e2\_setup\_request}}(\mbox{\hyperlink{structsrsran_1_1e2__setup__request__message}{e2\_setup\_request\_message}}\&\ request)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\mbox{\hyperlink{structsrsran_1_1e2__setup__response__message}{e2\_setup\_response\_message}}>\ \mbox{\hyperlink{classsrsran_1_1e2__impl_a2747bb8fc4f504a81a4071f02113a8d2}{start\_initial\_e2\_setup\_routine}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ E2\_event\_\ handler\ functions.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1e2__impl_a3e1daff4033a38e92cf8fd95f69b3228}{handle\_connection\_loss}}()\ \textcolor{keyword}{override}\ \{\}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ E2\ message\ handler\ functions.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1e2__impl_acfbaf8f999e6ea48d22b4648284cdd9c}{handle\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2__message}{e2\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ e2sm\ configuration\ functions.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1e2__impl_a0aa1d4ad13f3f4a02817414f967a1c81}{add\_service\_model}}(\textcolor{keyword}{const}\ std::string\&\ ran\_oid,\ std::unique\_ptr<e2sm\_handler>\ e2sm\_handler);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ initiating\ message.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ outcome\ The\ received\ initiating\ message.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{void}\ handle\_initiating\_message(\textcolor{keyword}{const}\ asn1::e2ap::\mbox{\hyperlink{structasn1_1_1e2ap_1_1init__msg__s}{init\_msg\_s}}\&\ outcome);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ successful\ outcome.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ outcome\ The\ received\ successful\ outcome\ message.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ handle\_successful\_outcome(\textcolor{keyword}{const}\ asn1::e2ap::\mbox{\hyperlink{structasn1_1_1e2ap_1_1successful__outcome__s}{successful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ unsuccessful\ outcome.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ outcome\ The\ received\ unsuccessful\ outcome\ message.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ handle\_unsuccessful\_outcome(\textcolor{keyword}{const}\ asn1::e2ap::\mbox{\hyperlink{structasn1_1_1e2ap_1_1unsuccessful__outcome__s}{unsuccessful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ ric\ subscription\ request\ message.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ ric\ subscription\ request\ message.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{void}\ handle\_ric\_subscription\_request(\textcolor{keyword}{const}\ asn1::e2ap::ricsubscription\_request\_s\&\ msg);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ ric\ control\ request\ message.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ ric\ control\ request\ message.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ ric\ control\ response\ message.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ handle\_ric\_control\_request(\textcolor{keyword}{const}\ asn1::e2ap::ri\_cctrl\_request\_s\ msg);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ ric\ subscription\ delete\ request\ message.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ ric\ subscription\ delete\ request\ message.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{void}\ handle\_ric\_subscription\_delete\_request(\textcolor{keyword}{const}\ asn1::e2ap::ricsubscription\_delete\_request\_s\&\ msg);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ handle\ e2\ setup\ response\ message\ from\ the\ ric\ interface.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ @param[in]\ msg\ \ The\ received\ e2\ setup\ response\ message.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ handle\_e2\_setup\_response(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2__setup__response__message}{e2\_setup\_response\_message}}\&\ msg);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ handle\ e2\ setup\ failure\ message\ from\ the\ ric\ interface.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ \ The\ received\ e2\ setup\ failure\ message.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ handle\_e2\_setup\_failure(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2__setup__response__message}{e2\_setup\_response\_message}}\&\ msg);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ set\ the\ allowed\ ran\ functions\ from\ the\ e2\ setuo\ response\ message.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ ran\_function\_id\ from\ the\ e2\ setup\ response\ message.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ set\_allowed\_ran\_functions(\textcolor{keyword}{const}\ uint16\_t\ ran\_function\_id);}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg;}
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00109\ \ \ \mbox{\hyperlink{classsrsran_1_1e2__message__notifier}{e2\_message\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_notifier;}
+\DoxyCodeLine{00110\ \ \ std::map<uint16\_t,\ asn1::e2ap::ra\_nfunction\_item\_s>\ \ candidate\_ran\_functions;}
+\DoxyCodeLine{00111\ \ \ std::map<uint16\_t,\ asn1::e2ap::ra\_nfunction\_item\_s>\ \ allowed\_ran\_functions;}
+\DoxyCodeLine{00112\ \ \ std::map<std::string,\ std::unique\_ptr<e2sm\_handler>>\ e2sm\_handlers;}
+\DoxyCodeLine{00113\ \ \ \mbox{\hyperlink{classsrsran_1_1e2__subscriber__mgmt}{e2\_subscriber\_mgmt}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subscription\_mngr;}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{classsrsran_1_1e2sm__manager}{e2sm\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ e2sm\_mngr;}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1e2__subscription__setup__procedure}{e2\_subscription\_setup\_procedure}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subscribe\_proc;}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1e2__subscription__delete__procedure}{e2\_subscription\_delete\_procedure}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subscribe\_delete\_proc;}
+\DoxyCodeLine{00117\ \ \ std::unique\_ptr<e2\_event\_manager>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ events;}
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{classsrsran_1_1fifo__async__task__scheduler}{fifo\_async\_task\_scheduler}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_tasks;}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ current\_transaction\_id\ =\ 0;\ \textcolor{comment}{//\ store\ current\ E2AP\ transaction\ id}}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

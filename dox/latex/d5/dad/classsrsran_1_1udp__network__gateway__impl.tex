@@ -1,0 +1,76 @@
+\doxysection{srsran\+::udp\+\_\+network\+\_\+gateway\+\_\+impl Class Reference}
+\hypertarget{classsrsran_1_1udp__network__gateway__impl}{}\label{classsrsran_1_1udp__network__gateway__impl}\index{srsran::udp\_network\_gateway\_impl@{srsran::udp\_network\_gateway\_impl}}
+
+
+Inheritance diagram for srsran\+::udp\+\_\+network\+\_\+gateway\+\_\+impl\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d8/ddb/classsrsran_1_1udp__network__gateway__impl__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for srsran\+::udp\+\_\+network\+\_\+gateway\+\_\+impl\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{dc/d6f/classsrsran_1_1udp__network__gateway__impl__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1udp__network__gateway__impl_a35a98c1135d690f2dd244ef32fb441b7}{udp\+\_\+network\+\_\+gateway\+\_\+impl}} (\mbox{\hyperlink{structsrsran_1_1udp__network__gateway__config}{udp\+\_\+network\+\_\+gateway\+\_\+config}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{config\+\_\+}}, \mbox{\hyperlink{classsrsran_1_1network__gateway__data__notifier__with__src__addr}{network\+\_\+gateway\+\_\+data\+\_\+notifier\+\_\+with\+\_\+src\+\_\+addr}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{data\+\_\+notifier\+\_\+}}, \mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{io\+\_\+executor\+\_\+}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1udp__network__gateway__impl_a35a98c1135d690f2dd244ef32fb441b7}\label{classsrsran_1_1udp__network__gateway__impl_a35a98c1135d690f2dd244ef32fb441b7} 
+\index{srsran::udp\_network\_gateway\_impl@{srsran::udp\_network\_gateway\_impl}!udp\_network\_gateway\_impl@{udp\_network\_gateway\_impl}}
+\index{udp\_network\_gateway\_impl@{udp\_network\_gateway\_impl}!srsran::udp\_network\_gateway\_impl@{srsran::udp\_network\_gateway\_impl}}
+\doxysubsubsection{\texorpdfstring{udp\_network\_gateway\_impl()}{udp\_network\_gateway\_impl()}}
+{\footnotesize\ttfamily udp\+\_\+network\+\_\+gateway\+\_\+impl\+::udp\+\_\+network\+\_\+gateway\+\_\+impl (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structsrsran_1_1udp__network__gateway__config}{udp\+\_\+network\+\_\+gateway\+\_\+config}}}]{config\+\_\+,  }\item[{\mbox{\hyperlink{classsrsran_1_1network__gateway__data__notifier__with__src__addr}{network\+\_\+gateway\+\_\+data\+\_\+notifier\+\_\+with\+\_\+src\+\_\+addr}} \&}]{data\+\_\+notifier\+\_\+,  }\item[{\mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&}]{io\+\_\+executor\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00041\ \ \ config(std::move(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{config\_}})),}
+\DoxyCodeLine{00042\ \ \ data\_notifier(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{data\_notifier\_}}),}
+\DoxyCodeLine{00043\ \ \ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}UDP-\/GW"{}})),}
+\DoxyCodeLine{00044\ \ \ io\_tx\_executor(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{io\_tx\_executor\_}})}
+\DoxyCodeLine{00045\ \{}
+\DoxyCodeLine{00046\ \ \ logger.info(\textcolor{stringliteral}{"{}UDP\ GW\ configured.\ rx\_max\_mmsg=\{\}"{}},\ config.rx\_max\_mmsg);}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ Allocate\ RX\ buffers}}
+\DoxyCodeLine{00049\ \ \ rx\_mem.resize(config.rx\_max\_mmsg);}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{classuint32__t}{uint32\_t}}\ i\ =\ 0;\ i\ <\ config.rx\_max\_mmsg;\ ++i)\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ rx\_mem[i].resize(network\_gateway\_udp\_max\_len);}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ Allocate\ context\ for\ recv\_mmsg}}
+\DoxyCodeLine{00055\ \ \ rx\_srcaddr.resize(config.rx\_max\_mmsg);}
+\DoxyCodeLine{00056\ \ \ rx\_msghdr.resize(config.rx\_max\_mmsg);}
+\DoxyCodeLine{00057\ \ \ rx\_iovecs.resize(config.rx\_max\_mmsg);}
+\DoxyCodeLine{00058\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1udp__network__gateway__impl_af8aeae02e2f10582fc46cd73695fe4ce}\label{classsrsran_1_1udp__network__gateway__impl_af8aeae02e2f10582fc46cd73695fe4ce} 
+\index{srsran::udp\_network\_gateway\_impl@{srsran::udp\_network\_gateway\_impl}!````~udp\_network\_gateway\_impl@{\texorpdfstring{$\sim$}{\string~}udp\_network\_gateway\_impl}}
+\index{````~udp\_network\_gateway\_impl@{\texorpdfstring{$\sim$}{\string~}udp\_network\_gateway\_impl}!srsran::udp\_network\_gateway\_impl@{srsran::udp\_network\_gateway\_impl}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}udp\_network\_gateway\_impl()}{\string~udp\_network\_gateway\_impl()}}
+{\footnotesize\ttfamily srsran\+::udp\+\_\+network\+\_\+gateway\+\_\+impl\+::\texorpdfstring{$\sim$}{\string~}udp\+\_\+network\+\_\+gateway\+\_\+impl (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00042\ \{\ close\_socket();\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/gateways/udp\+\_\+network\+\_\+gateway\+\_\+impl.\+h\item 
+lib/gateways/udp\+\_\+network\+\_\+gateway\+\_\+impl.\+cpp\end{DoxyCompactItemize}

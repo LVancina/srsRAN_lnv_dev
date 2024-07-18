@@ -1,0 +1,54 @@
+\chapter{Amarisoft support}
+\hypertarget{md_utils_2trx__srsran_2README}{}\label{md_utils_2trx__srsran_2README}\index{Amarisoft support@{Amarisoft support}}
+Amarisoft\textquotesingle{}s UE can be interfaced with {\ttfamily srsran} applications using a custom TRX driver implementation without the need of any RF device.
+
+In order to enable the TRX driver compilation, the TRX driver header path must be provided\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cmake\ ..\ -\/DENABLE\_EXPORT=TRUE\ -\/DENABLE\_ZEROMQ=TRUE\ -\/DENABLE\_TRX\_DRIVER=TRUE\ -\/DTRX\_DRIVER\_DIR=<path\ to\ trx\_uhd-\/linux-\/...>}
+\DoxyCodeLine{make\ trx\_srsran\_test}
+\DoxyCodeLine{ctest\ -\/R\ trx\_srsran\_test}
+
+\end{DoxyCode}
+
+
+Make sure CMake finds the file {\ttfamily trx\+\_\+driver.\+h} in the specified folder. CMake must print a similar line\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{-\/-\/\ Found\ trx\_driver.h\ in\ TRX\_DRIVER\_DIR=/home/user/amarisoft/2021-\/03-\/15/trx\_uhd-\/linux-\/2021-\/03-\/15/trx\_driver.h}
+
+\end{DoxyCode}
+
+
+A symbolic link must be done for the UE application to load the driver\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ <path\ to\ lteue-\/linux-\/...>}
+\DoxyCodeLine{ln\ -\/s\ <path\ to\ srsran\ build\ directory>/utils/trx\_srsran/libtrx\_srsran.so\ trx\_srsran.so}
+
+\end{DoxyCode}
+
+
+And finally, the UE\textquotesingle{}s RF configuration shall be\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rf\_driver:\ \{}
+\DoxyCodeLine{\ \ //\ Select\ srsran\ TRX\ driver.}
+\DoxyCodeLine{\ \ name:\ "{}srsran"{},}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ //\ TCP\ transmit\ and\ receive\ ports.}
+\DoxyCodeLine{\ \ tx\_port0:\ \ "{}tcp://*:6000"{},}
+\DoxyCodeLine{\ \ rx\_port0:\ \ "{}tcp://localhost:5000"{},}
+\DoxyCodeLine{\ \ tx\_port1:\ \ "{}tcp://*:6001"{},}
+\DoxyCodeLine{\ \ rx\_port1:\ \ "{}tcp://localhost:5001"{},}
+\DoxyCodeLine{\ \ tx\_port2:\ \ "{}tcp://*:6002"{},}
+\DoxyCodeLine{\ \ rx\_port2:\ \ "{}tcp://localhost:5002"{},}
+\DoxyCodeLine{\ \ tx\_port3:\ \ "{}tcp://*:6003"{},}
+\DoxyCodeLine{\ \ rx\_port3:\ \ "{}tcp://localhost:5003"{},}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ //\ srsran\ logging\ level.}
+\DoxyCodeLine{\ \ log\_level:\ "{}info"{},}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ //\ Enables\ a\ noise\ generator\ in\ the\ uplink\ path.\ Determines\ the\ noise\ power\ spectral\ density\ in\ dBm/Hz\ for\ each\ gNb\ }
+\DoxyCodeLine{\ \ //\ receive\ channel.}
+\DoxyCodeLine{\ \ noise\_spd:\ -\/174,}
+\DoxyCodeLine{\},}
+
+\end{DoxyCode}
+ 

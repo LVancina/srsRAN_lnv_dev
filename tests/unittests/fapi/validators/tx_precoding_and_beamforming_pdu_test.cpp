@@ -20,8 +20,7 @@
  *
  */
 
-#include "../../../lib/fapi/validators/tx_precoding_and_beamforming_pdu.h"
-#include "../message_builder_helpers.h"
+#include "../../../lib/fapi/pdu_validators/tx_precoding_and_beamforming_pdu.h"
 #include "helpers.h"
 
 using namespace srsran;

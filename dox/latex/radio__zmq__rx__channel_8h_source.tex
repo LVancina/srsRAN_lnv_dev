@@ -1,0 +1,98 @@
+\doxysection{radio\+\_\+zmq\+\_\+rx\+\_\+channel.\+h}
+\hypertarget{radio__zmq__rx__channel_8h_source}{}\label{radio__zmq__rx__channel_8h_source}\index{lib/radio/zmq/radio\_zmq\_rx\_channel.h@{lib/radio/zmq/radio\_zmq\_rx\_channel.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}radio\_zmq\_rx\_channel\_fsm.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/blocking\_queue.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_writer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/radio/radio\_notification\_handler.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/async\_queue.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <zmq.h>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1radio__zmq__rx__channel}{radio\_zmq\_rx\_channel}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::set<int>\ VALID\_SOCKET\_TYPES;}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{const}\ std::chrono::microseconds\ circ\_buffer\_try\_push\_sleep\{1\};}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{const}\ std::chrono::microseconds\ circ\_buffer\_try\_pop\_sleep\{1\};}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{unsigned}\ stream\_id;}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{unsigned}\ channel\_id;}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__zmq__rx__channel__fsm}{radio\_zmq\_rx\_channel\_fsm}}\ state\_fsm;}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{void}*\ sock\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{int}\ socket\_type;}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1blocking__queue}{blocking\_queue<cf\_t>}}\ circular\_buffer;}
+\DoxyCodeLine{00062\ \ \ std::vector<cf\_t>\ buffer;}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notification\_handler;}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ async\_executor;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description}{channel\_description}}\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a5cb9aa8c2156a40bccc0093147a3dd03}{socket\_type}};}
+\DoxyCodeLine{00074\ \ \ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a32a413c364b5c0199959b76114fef0ab}{address}};}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_ae9b943d07816cf1f6e1a8e7ddf0fb290}{stream\_id}};}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a7cf6e9f999897c39fd07790b29745f9c}{channel\_id}};}
+\DoxyCodeLine{00080\ \ \ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a8895a17f75b4f58f31a5270820cafdaa}{channel\_id\_str}};}
+\DoxyCodeLine{00082\ \ \ \ \ srslog::basic\_levels\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_acd9157f0b2fcbaecdb376b71470869b8}{log\_level}};}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a5ee13d3fdac20b420a75ed5684c688ab}{trx\_timeout\_ms}};}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_ae0161b6acc4d1f6bdae1e346823158da}{linger\_timeout\_ms}};}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description_a17778a5b9fb93a256c746183aecc64b5}{buffer\_size}};}
+\DoxyCodeLine{00089\ \ \ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__zmq__rx__channel}{radio\_zmq\_rx\_channel}}(\textcolor{keywordtype}{void}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zmq\_context,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__rx__channel_1_1channel__description}{channel\_description}}\&\ \ config,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notification\_handler,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_executor\_);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__zmq__rx__channel}{\string~radio\_zmq\_rx\_channel}}();}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{bool}\ is\_successful()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ state\_fsm.\mbox{\hyperlink{classsrsran_1_1radio__zmq__rx__channel__fsm_a40ea55c644d39e84d3c21f3104c207f7}{is\_running}}();\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ send\_request();}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ receive\_response();}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ run\_async();}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ receive(\mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ buffer);}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordtype}{void}\ start();}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{void}\ wait\_stop();}
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

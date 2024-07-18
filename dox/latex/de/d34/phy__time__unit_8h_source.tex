@@ -1,0 +1,250 @@
+\doxysection{phy\+\_\+time\+\_\+unit.\+h}
+\hypertarget{phy__time__unit_8h_source}{}\label{phy__time__unit_8h_source}\index{include/srsran/ran/phy\_time\_unit.h@{include/srsran/ran/phy\_time\_unit.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/math\_utils.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ \(\backslash\)brief\ Physical\ layer\ time\ unit.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ This\ class\ abstracts\ the\ PHY\ reference\ time\ unit\ \(\backslash\)f\$T\_c\(\backslash\)f\$\ described\ in\ TS38.211\ Section\ 4.1.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Internal\ value\ type.\ It\ uses\ 64-\/bit\ word\ to\ avoid\ intermediate\ multiplications\ to\ overflow.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{using}\ value\_type\ =\ int64\_t;}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Maximum\ subcarrier\ spacing\ in\ hertz,\ constant\ \(\backslash\)f\$\(\backslash\)Delta\ f\_\{max\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ MAX\_SCS\_HZ\ =\ 480\ *\ 1000;}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Constant\ \(\backslash\)f\$N\_f\(\backslash\)f\$.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ N\_F\ =\ 4096;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Reference\ time\ unit\ in\ seconds,\ that\ is\ \(\backslash\)f\$T\_c\ =\ 1/(\(\backslash\)Delta\ f\_\{max\}\ \(\backslash\)times\ N\_f)\(\backslash\)f\$.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{double}\ T\_C\ =\ 1.0\ /\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{double}>(MAX\_SCS\_HZ\ *\ N\_F);}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Reference\ subcarrier\ spacing,\ constant\ \(\backslash\)f\$\(\backslash\)Delta\ f\_\{ref\}\(\backslash\)f\$}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ SCS\_REF\_HZ\ =\ 15\ *\ 1000;}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ DFT\ size\ for\ the\ reference\ subcarrier\ spacing,\ constant\ \(\backslash\)f\$N\_\{f,ref\}\(\backslash\)f\$}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ N\_F\_REF\ =\ 2048;}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Constant\ \(\backslash\)f\$\(\backslash\)kappa=T\_s/T\_c=64\(\backslash\)f\$.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ value\_type\ KAPPA\ =\ 64;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Actual\ value\ as\ a\ multiple\ of\ \(\backslash\)f\$T\_c\(\backslash\)f\$.}}
+\DoxyCodeLine{00052\ \ \ value\_type\ value\ =\ 0;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Private\ constructor\ from\ a\ value\ in\ units\ of\ \(\backslash\)f\$T\_c\(\backslash\)f\$.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ phy\_time\_unit(value\_type\ value\_)\ :\ value(value\_)}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Creates\ a\ default\ physical\ layer\ time\ of\ zero\ units.}}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a4eaf26a0ca9ea6c675cc230f7c19e2a9}{phy\_time\_unit}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ stored\ time\ unit\ in\ multiple\ of\ \(\backslash\)f\$T\_c\(\backslash\)f\$.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{const}\ value\_type\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ae057f68f102a46404dfe260e58331bb8}{to\_Tc}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value;\ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ time\ in\ seconds.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ Return\ type.\ Must\ be\ a\ floating\ point\ type\ (default:\ double).}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ U\ =\ \textcolor{keywordtype}{double}>}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{constexpr}\ U\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a2ff9cda97bc4196edee275927c1d9430}{to\_seconds}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00071\ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<\textcolor{keywordtype}{double},\ U>::value\ \&\&\ std::is\_floating\_point<U>::value,\ \textcolor{stringliteral}{"{}Invalid\ type."{}});}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<U>(value)\ *\ \textcolor{keyword}{static\_cast}<U>(T\_C);}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Determines\ if\ the\ time\ value\ is\ sample\ accurate\ given\ a\ sampling\ rate\ in\ hertz.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ The\ time\ value\ is\ sample\ accurate\ if\ the\ time\ is\ equivalent\ to\ an\ integer\ number\ of\ samples\ for\ the\ given\ sampling}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ rate.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ Any\ data\ type\ that\ can\ be\ converted\ to\ \(\backslash\)c\ value\_type.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ sampling\_rate\_Hz\ Sample\ rate\ in\ hertz.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ time\ is\ equivalent\ to\ an\ integer\ number\ of\ samples,\ false\ otherwise.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ U>}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a968c63e932c70dcc17a4ebb192b7e97c}{is\_sample\_accurate}}(U\ sampling\_rate\_Hz\_)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00086\ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<U,\ value\_type>::value,\ \textcolor{stringliteral}{"{}Invalid\ type."{}});}
+\DoxyCodeLine{00088\ \ \ \ \ value\_type\ sampling\_rate\_Hz\ =\ \textcolor{keyword}{static\_cast}<value\_type>(sampling\_rate\_Hz\_);}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{return}\ ((std::abs(value)\ *\ sampling\_rate\_Hz)\ \%\ (SCS\_REF\_HZ\ *\ N\_F\_REF\ *\ KAPPA))\ ==\ 0;}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ time\ expressed\ as\ a\ number\ of\ samples\ for\ the\ given\ sampling\ rate.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ An\ assertion\ is\ triggered\ if\ the\ result\ would\ be\ a\ non-\/integer\ number\ of\ samples.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ Any\ data\ type\ that\ can\ be\ converted\ to\ \(\backslash\)c\ value\_type.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ \ \ \ \ \ Subcarrier\ spacing\ in\ hertz.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ dft\_size\ DFT\ size\ corresponding\ to\ the\ subcarrier\ spacing.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ time\ value\ in\ samples.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{constexpr}\ value\_type\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a942e82e30afbcebbc43f1943738f9d19}{to\_samples}}(U\ sampling\_rate\_Hz\_)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00102\ \ \ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<U,\ value\_type>::value,\ \textcolor{stringliteral}{"{}Invalid\ type."{}});}
+\DoxyCodeLine{00104\ \ \ \ \ value\_type\ sampling\_rate\_Hz\ =\ \textcolor{keyword}{static\_cast}<value\_type>(sampling\_rate\_Hz\_);}
+\DoxyCodeLine{00105\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(is\_sample\_accurate(sampling\_rate\_Hz),}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Incompatible\ sampling\ rate\ \{\}.\{:02\}\ MHz\ with\ time\ \{\}."{}},}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sampling\_rate\_Hz\ /\ 1000000,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (sampling\_rate\_Hz\ \%\ 1000000)\ /\ 10000,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value);}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{return}\ (value\ *\ sampling\_rate\_Hz)\ /\ (SCS\_REF\_HZ\ *\ N\_F\_REF\ *\ KAPPA);}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ time\ expressed\ in\ units\ of\ \(\backslash\)f\$T\_\{\(\backslash\)textup\{A\}\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Conversion\ is\ performed\ as\ per\ TS38.213\ Section\ 4.2,\ rounding\ to\ the\ nearest\ integer.}}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ Subcarrier\ spacing.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Used\ to\ compute\ the\ Timing\ Advance\ Command\ to\ be\ sent\ in\ RAR\ (not\ in\ MAC\ CE).}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a6b82c581724b552f57d753362b2bd6c0}{to\_Ta}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00120\ \ \ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a5c94122d2fc9f48d55bb381a9a5edfb1}{divide\_round}}\mbox{\hyperlink{namespacesrsran_a5c94122d2fc9f48d55bb381a9a5edfb1}{(}}value\ *\ \mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{pow2}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{(}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{)}}\mbox{\hyperlink{namespacesrsran_a5c94122d2fc9f48d55bb381a9a5edfb1}{,}}\ 16U\ *\ KAPPA\mbox{\hyperlink{namespacesrsran_a5c94122d2fc9f48d55bb381a9a5edfb1}{)}};}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ Overload\ addition\ operator.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_aada3531a683f72c064248c1f9b6a9a8a}{operator}}+(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ ret(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00128\ \ \ \ \ ret\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ad187be0adc31c33f30f81987051a71d4}{+=}}\ other;}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ Overload\ addition\ assignment\ operator.}}
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ad187be0adc31c33f30f81987051a71d4}{operator}}+=(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)}
+\DoxyCodeLine{00134\ \ \ \{}
+\DoxyCodeLine{00135\ \ \ \ \ value\ +=\ other.value;}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00137\ \ \ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ Overload\ subtraction\ operator.}}
+\DoxyCodeLine{00140\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a8b22842c4af287a183e7e016680feadc}{operator}}-\/(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ ret(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00143\ \ \ \ \ ret\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a794cf0e2657e3c4842734c0ec93692bf}{-\/=}}\ other;}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00145\ \ \ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{///\ Overload\ subtraction\ operator.}}
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a794cf0e2657e3c4842734c0ec93692bf}{operator}}-\/=(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)}
+\DoxyCodeLine{00149\ \ \ \{}
+\DoxyCodeLine{00150\ \ \ \ \ value\ -\/=\ other.value;}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{///\ Overload\ multiplication\ assignment\ operator.}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a06ca224039e379175c03637f66cd692d}{operator}}*(\textcolor{keywordtype}{unsigned}\ multiplier)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00156\ \ \ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ ret(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00158\ \ \ \ \ ret\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a18ba98f72d644bfa4fb4e3f60e24ec38}{*=}}\ multiplier;}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00160\ \ \ \}}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{///\ Overload\ multiplication\ assignment\ operator.}}
+\DoxyCodeLine{00163\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a18ba98f72d644bfa4fb4e3f60e24ec38}{operator}}*=(\textcolor{keywordtype}{unsigned}\ multiplier)}
+\DoxyCodeLine{00164\ \ \ \{}
+\DoxyCodeLine{00165\ \ \ \ \ value\ *=\ multiplier;}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00167\ \ \ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \textcolor{comment}{///\ Overload\ division\ operator.}}
+\DoxyCodeLine{00170\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_adb3795f0e92ebc5cfb85fada4381979a}{operator}}/(\textcolor{keywordtype}{unsigned}\ divisor)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00171\ \ \ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ ret(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00173\ \ \ \ \ ret\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a8b067b49d847a32183979471793789e8}{/=}}\ divisor;}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00175\ \ \ \}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ Overload\ division\ assignment\ operator.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a8b067b49d847a32183979471793789e8}{operator}}/=(\textcolor{keywordtype}{unsigned}\ divisor)}
+\DoxyCodeLine{00179\ \ \ \{}
+\DoxyCodeLine{00180\ \ \ \ \ value\ /=\ divisor;}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00182\ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{///\ Overload\ equal\ to\ operator.}}
+\DoxyCodeLine{00185\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a609be0b9f8900cda234f96fdde70a3ad}{operator}}==(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ ==\ other.value;\ \}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{///\ Overload\ not\ equal\ to\ operator.}}
+\DoxyCodeLine{00188\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_aaf34f76838be6bb33e9b2a17f8e51ed9}{operator}}!=(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ !=\ other.value;\ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{comment}{///\ Overload\ greater\ than\ operator.}}
+\DoxyCodeLine{00191\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a719d34ebc84032add6373567867cecc3}{operator}}>(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ >\ other.value;\ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ Overload\ lower\ than\ operator.}}
+\DoxyCodeLine{00194\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac2a92cca6893f4fdbb05f0748f9a91ce}{operator}}<(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ <\ other.value;\ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{///\ Overload\ greater\ than\ or\ equal\ to\ operator.}}
+\DoxyCodeLine{00197\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a81273f37f1023ed2461920920326c079}{operator}}>=(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ >=\ other.value;\ \}}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{///\ Overload\ lower\ than\ or\ equal\ to\ operator.}}
+\DoxyCodeLine{00200\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ad05b22d9631e1b4d4066c5a472d3b299}{operator}}<=(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ value\ <=\ other.value;\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{///\ Creates\ a\ physical\ layer\ time\ from\ units\ of\ \(\backslash\)f\$\(\backslash\)kappa\(\backslash\)f\$.}}
+\DoxyCodeLine{00203\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_aec95e7a791907476aea8a4fb4c7c1f2b}{from\_units\_of\_kappa}}(\textcolor{keywordtype}{unsigned}\ units\_of\_kappa)}
+\DoxyCodeLine{00204\ \ \ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}(\textcolor{keyword}{static\_cast}<value\_type>(units\_of\_kappa)\ *\ KAPPA);}
+\DoxyCodeLine{00206\ \ \ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ Creates\ a\ physical\ layer\ time\ from\ units\ of\ \(\backslash\)f\$T\_c\(\backslash\)f\$.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac095bb1e2e9a29efd93238cf0fe23971}{from\_units\_of\_Tc}}(\textcolor{keywordtype}{unsigned}\ units\_of\_Tc)}
+\DoxyCodeLine{00210\ \ \ \{}
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}(\textcolor{keyword}{static\_cast}<value\_type>(units\_of\_Tc));}
+\DoxyCodeLine{00212\ \ \ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ Creates\ a\ physical\ layer\ time\ from\ a\ timing\ advance\ command\ \(\backslash\)f\$T\_A\(\backslash\)f\$,\ as\ per\ TS38.213\ Section\ 4.2.}}
+\DoxyCodeLine{00215\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac0f717131f29881b19a9438e21216fd0}{from\_timing\_advance}}(\textcolor{keywordtype}{unsigned}\ units\_of\_Ta,\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs)}
+\DoxyCodeLine{00216\ \ \ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac095bb1e2e9a29efd93238cf0fe23971}{from\_units\_of\_Tc}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac095bb1e2e9a29efd93238cf0fe23971}{(}}units\_of\_Ta\ *\ 16U\ *\ KAPPA\ /\ \mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{pow2}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{(}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{to\_numerology\_value}}\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{(}}scs\mbox{\hyperlink{namespacesrsran_a226e52de355262a1ad4e998b4cedefd7}{)}}\mbox{\hyperlink{namespacesrsran_a643a31fe220053ca684e67ba6c6aadf2}{)}}\mbox{\hyperlink{classsrsran_1_1phy__time__unit_ac095bb1e2e9a29efd93238cf0fe23971}{)}};}
+\DoxyCodeLine{00218\ \ \ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ Creates\ a\ physical\ layer\ time\ from\ seconds.}}
+\DoxyCodeLine{00221\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit_a9759195d4f33e9afbf1c790ab103af94}{from\_seconds}}(\textcolor{keywordtype}{double}\ seconds)}
+\DoxyCodeLine{00222\ \ \ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{comment}{//\ Convert\ to\ units\ of\ Tc.}}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordtype}{double}\ tc\_units\_dbl\ =\ seconds\ /\ T\_C;}
+\DoxyCodeLine{00225\ \ \ \ \ \textcolor{comment}{//\ Multiply\ by\ ten\ and\ convert\ to\ value\_type.}}
+\DoxyCodeLine{00226\ \ \ \ \ value\_type\ tc\_units\ =\ \textcolor{keyword}{static\_cast}<value\_type>(tc\_units\_dbl\ *\ 10.0);}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{comment}{//\ Round\ to\ the\ nearest\ integer\ avoiding\ using\ std::round.}}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}(tc\_units\ /\ 10\ +\ (tc\_units\ \%\ 10)\ /\ 5);}
+\DoxyCodeLine{00229\ \ \ \}}
+\DoxyCodeLine{00230\ \};}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ sampling\ rate\ from\ a\ subcarrier\ spacing\ and\ a\ DFT\ size\ combination.}}
+\DoxyCodeLine{00233\ \textcolor{comment}{///\ \(\backslash\)tparam\ U\ \ \ \ \ \ \ Return\ data\ type.\ Must\ be\ convertible\ to\ unsigned\ (default:\ double).}}
+\DoxyCodeLine{00234\ \textcolor{comment}{///\ \(\backslash\)param[in]\ scs\ \ Subcarrier\ spacing.}}
+\DoxyCodeLine{00235\ \textcolor{comment}{///\ \(\backslash\)param\ dft\_size\ DFT\ size.}}
+\DoxyCodeLine{00236\ \textcolor{comment}{///\ \(\backslash\)return\ The\ sampling\ rate\ in\ hertz\ from\ the\ given\ SCS\ and\ DFT\ size.}}
+\DoxyCodeLine{00237\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U\ =\ \textcolor{keywordtype}{double}>}
+\DoxyCodeLine{00238\ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ U\ \mbox{\hyperlink{namespacesrsran_af7e1cfa828177b067334574244a06c8f}{to\_sampling\_rate\_Hz}}(\mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs,\ \textcolor{keywordtype}{unsigned}\ dft\_size)}
+\DoxyCodeLine{00239\ \{}
+\DoxyCodeLine{00240\ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<\textcolor{keywordtype}{unsigned},\ U>::value,\ \textcolor{stringliteral}{"{}Invalid\ type."{}});}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<U>(\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{scs\_to\_khz}}\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{(}}scs\mbox{\hyperlink{namespacesrsran_a8c3848f1144990e3777cdc7e1ab27cf7}{)}}\ *\ 1000\ *\ dft\_size);}
+\DoxyCodeLine{00242\ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

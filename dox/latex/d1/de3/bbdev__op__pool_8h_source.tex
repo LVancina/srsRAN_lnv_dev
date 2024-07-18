@@ -1,0 +1,64 @@
+\doxysection{bbdev\+\_\+op\+\_\+pool.\+h}
+\hypertarget{bbdev__op__pool_8h_source}{}\label{bbdev__op__pool_8h_source}\index{include/srsran/hal/dpdk/bbdev/bbdev\_op\_pool.h@{include/srsran/hal/dpdk/bbdev/bbdev\_op\_pool.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{rte\_mempool}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ dpdk\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ RAII\ wrapping\ for\ dpdk\ bbdev\ operation\ pool\ structures.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool}{bbdev\_op\_pool}}}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ Constructor.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ pool\_\ Pointer\ to\ a\ dpdk\ memory\ pool.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_a8e50dfc7b382e4f3b8e5d50565ad3a03}{bbdev\_op\_pool}}(::rte\_mempool*\ pool\_)\ :\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_a8e50dfc7b382e4f3b8e5d50565ad3a03}{pool}}(*\mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_a8e50dfc7b382e4f3b8e5d50565ad3a03}{pool\_}})\ \{\ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pool\_,\ \textcolor{stringliteral}{"{}Invalid\ bbdev\ op\ pool."{}});\ \}}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Destructor.}}
+\DoxyCodeLine{00039\ \ \ \string~\mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_ab6be78672d058968ccb39dda05414d9c}{bbdev\_op\_pool}}()}
+\DoxyCodeLine{00040\ \ \ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ Free\ the\ memory\ buffer\ pool.}}
+\DoxyCodeLine{00042\ \ \ \ \ ::rte\_mempool\_free(\&pool);}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ Returns\ a\ pointer\ to\ the\ actual\ memory\ pool\ object.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Pointer\ to\ the\ memory\ pool.}}
+\DoxyCodeLine{00047\ \ \ ::\mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_a534c0f311a271abcc4435251bb0a4aa2}{rte\_mempool}}*\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_a534c0f311a271abcc4435251bb0a4aa2}{get\_pool}}()\ \{\ \textcolor{keywordflow}{return}\ \&pool;\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{//\ Returns\ a\ pointer\ to\ a\ constant\ memory\ pool\ object.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Pointer\ to\ a\ constant\ memory\ pool.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{const}\ ::\mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_ad02b319c894aa86f9fbafec755b702ad}{rte\_mempool}}*\ \mbox{\hyperlink{classsrsran_1_1dpdk_1_1bbdev__op__pool_ad02b319c894aa86f9fbafec755b702ad}{get\_pool}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \&pool;\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00054\ \ \ ::rte\_mempool\&\ pool;}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \}\ \textcolor{comment}{//\ namespace\ dpdk}}
+\DoxyCodeLine{00058\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

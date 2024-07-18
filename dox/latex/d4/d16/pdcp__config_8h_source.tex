@@ -1,0 +1,496 @@
+\doxysection{pdcp\+\_\+config.\+h}
+\hypertarget{pdcp__config_8h_source}{}\label{pdcp__config_8h_source}\index{include/srsran/pdcp/pdcp\_config.h@{include/srsran/pdcp/pdcp\_config.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pdcp/pdcp\_t\_reordering.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ PDCP\ NR\ SRB\ or\ DRB\ information.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a40dbb8c1c2d97d55fd44cc67ddc5361c}{pdcp\_rb\_type}}\ \{\ srb,\ drb\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ PDCP\ NR\ RLC\ mode\ information.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a9e50d988260b31c9ea661e6ff525036f}{pdcp\_rlc\_mode}}\ \{\ um,\ am\ \};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ PDCP\ NR\ sequence\ number\ field.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ :\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{uint8\_t}}\ \{\ size12bits\ =\ 12,\ size18bits\ =\ 18\ \};}
+\DoxyCodeLine{00043\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ pdcp\_sn\_size\_from\_uint(\mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\&\ sn\_size,\ uint16\_t\ num)}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{if}\ (num\ ==\ 12)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ sn\_size\ =\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}::size12bits;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00048\ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordflow}{if}\ (num\ ==\ 18)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ sn\_size\ =\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}::size18bits;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ PDCP\ SN\ size\ from\ enum\ to\ unsigned\ integer.}}
+\DoxyCodeLine{00057\ \textcolor{keyword}{constexpr}\ uint8\_t\ \mbox{\hyperlink{namespacesrsran_a989063fed1fa108772e5fa785491c989}{pdcp\_sn\_size\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ sn\_size)}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(sn\_size);}
+\DoxyCodeLine{00060\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ value\ range\ of\ the\ sequence\ numbers}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)param\ sn\_size\ Length\ of\ the\ sequence\ number\ field\ in\ bits}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ \(\backslash\)return\ cardinality\ of\ sn\_size}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_adf5fcacd0f51c7b80441353c4b764689}{pcdp\_sn\_cardinality}}(uint16\_t\ sn\_size)}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(sn\_size\ <\ 32,\ \textcolor{stringliteral}{"{}Cardinality\ of\ sn\_size=\{\}\ exceeds\ return\ type\ 'uint32\_t'"{}},\ sn\_size);}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{return}\ (1\ <<\ sn\_size);}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ PDCP\ window\ size}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ \(\backslash\)param\ sn\_size\ Length\ of\ the\ sequence\ number\ field\ in\ bits}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ \(\backslash\)return\ size\ of\ the\ window}}
+\DoxyCodeLine{00074\ \textcolor{keyword}{constexpr}\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_a32e1b47224c42e6e606f187972e1fe99}{pdcp\_window\_size}}(uint16\_t\ sn\_size)}
+\DoxyCodeLine{00075\ \{}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_adf5fcacd0f51c7b80441353c4b764689}{pcdp\_sn\_cardinality}}\mbox{\hyperlink{namespacesrsran_adf5fcacd0f51c7b80441353c4b764689}{(}}sn\_size\ -\/\ 1\mbox{\hyperlink{namespacesrsran_adf5fcacd0f51c7b80441353c4b764689}{)}};}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ Maximum\ supported\ PDCP\ SDU\ size,\ see\ TS\ 38.323,\ section\ 4.3.1.}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{constexpr}\ uint16\_t\ \mbox{\hyperlink{namespacesrsran_a77f9c41af0c1eaa2e930c96c2be4aa21}{pdcp\_max\_sdu\_size}}\ =\ 9000;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ PDCP\ security\ direction}}
+\DoxyCodeLine{00083\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}\ \{\ uplink,\ downlink\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ PDCP\ NR\ discard\ timer\ values.}}
+\DoxyCodeLine{00086\ \textcolor{comment}{///\ This\ timer\ is\ configured\ only\ for\ DRBs.\ In\ the\ transmitter,}}
+\DoxyCodeLine{00087\ \textcolor{comment}{///\ a\ new\ timer\ is\ started\ upon\ reception\ of\ an\ SDU\ from\ upper\ layer.}}
+\DoxyCodeLine{00088\ \textcolor{comment}{///\ See\ TS\ 38.322\ for\ timer\ description\ and\ TS\ 38.331\ for\ valid\ timer\ durations.}}
+\DoxyCodeLine{00089\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}\ \{}
+\DoxyCodeLine{00090\ \ \ ms10\ \ \ \ \ =\ 10,}
+\DoxyCodeLine{00091\ \ \ ms20\ \ \ \ \ =\ 20,}
+\DoxyCodeLine{00092\ \ \ ms30\ \ \ \ \ =\ 30,}
+\DoxyCodeLine{00093\ \ \ ms40\ \ \ \ \ =\ 40,}
+\DoxyCodeLine{00094\ \ \ ms50\ \ \ \ \ =\ 50,}
+\DoxyCodeLine{00095\ \ \ ms60\ \ \ \ \ =\ 60,}
+\DoxyCodeLine{00096\ \ \ ms75\ \ \ \ \ =\ 75,}
+\DoxyCodeLine{00097\ \ \ ms100\ \ \ \ =\ 100,}
+\DoxyCodeLine{00098\ \ \ ms150\ \ \ \ =\ 150,}
+\DoxyCodeLine{00099\ \ \ ms200\ \ \ \ =\ 200,}
+\DoxyCodeLine{00100\ \ \ ms250\ \ \ \ =\ 250,}
+\DoxyCodeLine{00101\ \ \ ms300\ \ \ \ =\ 300,}
+\DoxyCodeLine{00102\ \ \ ms500\ \ \ \ =\ 500,}
+\DoxyCodeLine{00103\ \ \ ms750\ \ \ \ =\ 750,}
+\DoxyCodeLine{00104\ \ \ ms1500\ \ \ =\ 1500,}
+\DoxyCodeLine{00105\ \ \ infinity\ =\ -\/1}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ pdcp\_discard\_timer\_from\_int(\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}\&\ discard\_timer,\ \textcolor{keywordtype}{int}\ num)}
+\DoxyCodeLine{00108\ \{}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordflow}{switch}\ (num)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{case}\ 10:}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{case}\ 20:}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{case}\ 30:}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{case}\ 40:}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{case}\ 50:}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{case}\ 60:}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{case}\ 75:}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{case}\ 100:}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{case}\ 150:}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{case}\ 200:}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{case}\ 250:}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{case}\ 300:}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordflow}{case}\ 500:}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{case}\ 750:}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{case}\ 1500:}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{case}\ -\/1:}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ discard\_timer\ =\ \textcolor{keyword}{static\_cast}<\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}>(num);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ PDCP\ NR\ discard\ timer\ from\ enum\ to\ integer.}}
+\DoxyCodeLine{00134\ \textcolor{keyword}{constexpr}\ int16\_t\ \mbox{\hyperlink{namespacesrsran_a0e5314399389ebeaa28a0b8fb78955d9}{pdcp\_discard\_timer\_to\_int}}(\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}\ discard\_timer)}
+\DoxyCodeLine{00135\ \{}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<int16\_t>(discard\_timer);}
+\DoxyCodeLine{00137\ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{comment}{///\ The\ PDCP\ cannot\ re-\/use\ COUNTs,\ see\ TS\ 38.331,\ section\ 5.3.1.2.}}
+\DoxyCodeLine{00140\ \textcolor{comment}{///\ To\ avoid\ this,\ we\ define\ two\ thresholds,\ one\ where\ we\ accept\ messages}}
+\DoxyCodeLine{00141\ \textcolor{comment}{///\ but\ notify\ the\ RRC\ and\ another\ where\ we\ no\ longer\ accept\ messages.}}
+\DoxyCodeLine{00142\ \textcolor{comment}{///\ Here,\ we\ define\ some\ default\ values\ for\ this,\ both\ for\ TX\ and\ RX.}}
+\DoxyCodeLine{00143\ \textcolor{keyword}{const}\ uint32\_t\ \mbox{\hyperlink{namespacesrsran_a21a889a2604235a1c9acce21d9fe7758}{pdcp\_tx\_default\_max\_count\_notify}}\ =\ 0xc0000000;}
+\DoxyCodeLine{00144\ \textcolor{keyword}{const}\ uint32\_t\ pdcp\_tx\_default\_max\_count\_hard\ \ \ =\ UINT32\_MAX\ -\/\ 1;}
+\DoxyCodeLine{00145\ \textcolor{keyword}{const}\ uint32\_t\ pdcp\_rx\_default\_max\_count\_notify\ =\ 0xc0000000;}
+\DoxyCodeLine{00146\ \textcolor{keyword}{const}\ uint32\_t\ pdcp\_rx\_default\_max\_count\_hard\ \ \ =\ 0xd0000000;}
+\DoxyCodeLine{00147\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__max__count}{pdcp\_max\_count}}\ \{}
+\DoxyCodeLine{00148\ \ \ uint32\_t\ notify;}
+\DoxyCodeLine{00149\ \ \ uint32\_t\ hard;}
+\DoxyCodeLine{00150\ \};}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__base}{pdcp\_custom\_config\_base}}\ \{}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__max__count}{pdcp\_max\_count}}\ max\_count\ =\ \{\mbox{\hyperlink{namespacesrsran_a21a889a2604235a1c9acce21d9fe7758}{pdcp\_tx\_default\_max\_count\_notify}},\ pdcp\_tx\_default\_max\_count\_hard\};}
+\DoxyCodeLine{00154\ \};}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__tx}{pdcp\_custom\_config\_tx}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__base}{pdcp\_custom\_config\_base}}\ \{}
+\DoxyCodeLine{00157\ \ \ uint16\_t\ rlc\_sdu\_queue\ =\ 4096;}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ warn\_on\_drop\ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__rx}{pdcp\_custom\_config\_rx}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__base}{pdcp\_custom\_config\_base}}\ \{}
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{//\ Empty}}
+\DoxyCodeLine{00163\ \};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{comment}{///\ \(\backslash\)brief\ Non-\/standard\ configurable\ parameters\ for\ PDCP}}
+\DoxyCodeLine{00166\ \textcolor{comment}{///}}
+\DoxyCodeLine{00167\ \textcolor{comment}{///\ Configurable\ parameters\ for\ the\ PDCP\ entity}}
+\DoxyCodeLine{00168\ \textcolor{comment}{///\ that\ are\ not\ explicitly\ specified\ in\ the\ RRC\ specifications.}}
+\DoxyCodeLine{00169\ \textcolor{comment}{///\ This\ separation\ is\ necessary,\ as\ the\ CU-\/CP\ cannot\ transmit}}
+\DoxyCodeLine{00170\ \textcolor{comment}{///\ these\ parameters\ to\ the\ CU-\/UP,\ so\ it's\ necessary\ for\ the}}
+\DoxyCodeLine{00171\ \textcolor{comment}{///\ CU-\/UP\ to\ store\ these\ configurations\ itself.}}
+\DoxyCodeLine{00172\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config}{pdcp\_custom\_config}}\ \{}
+\DoxyCodeLine{00173\ \ \ timer\_duration\ \ \ \ \ \ \ \ metrics\_period;}
+\DoxyCodeLine{00174\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__tx}{pdcp\_custom\_config\_tx}}\ tx\ =\ \{\};}
+\DoxyCodeLine{00175\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__rx}{pdcp\_custom\_config\_rx}}\ rx\ =\ \{\};}
+\DoxyCodeLine{00176\ \};}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{comment}{///\ \(\backslash\)brief\ Configurable\ parameters\ for\ PDCP\ that\ are\ common}}
+\DoxyCodeLine{00179\ \textcolor{comment}{///\ for\ both\ TX\ and\ RX.}}
+\DoxyCodeLine{00180\ \textcolor{comment}{///}}
+\DoxyCodeLine{00181\ \textcolor{comment}{///\ Ref:\ 3GPP\ TS\ 38.331\ version\ 15.2.1}}
+\DoxyCodeLine{00182\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__config__common}{pdcp\_config\_common}}\ \{}
+\DoxyCodeLine{00183\ \ \ \mbox{\hyperlink{namespacesrsran_a40dbb8c1c2d97d55fd44cc67ddc5361c}{pdcp\_rb\_type}}\ \ \ \ \ \ \ \ \ \ \ \ rb\_type;}
+\DoxyCodeLine{00184\ \ \ \mbox{\hyperlink{namespacesrsran_a9e50d988260b31c9ea661e6ff525036f}{pdcp\_rlc\_mode}}\ \ \ \ \ \ \ \ \ \ \ rlc\_mode;}
+\DoxyCodeLine{00185\ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ \ \ \ \ sn\_size;}
+\DoxyCodeLine{00186\ \ \ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}\ direction;}
+\DoxyCodeLine{00187\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ integrity\_protection\_required;}
+\DoxyCodeLine{00188\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ciphering\_required;}
+\DoxyCodeLine{00189\ \};}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__tx__config}{pdcp\_tx\_config}}\ :\ \mbox{\hyperlink{structsrsran_1_1pdcp__config__common}{pdcp\_config\_common}}\ \{}
+\DoxyCodeLine{00192\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}>\ discard\_timer;}
+\DoxyCodeLine{00193\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ status\_report\_required;}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__tx}{pdcp\_custom\_config\_tx}}\ \ \ \ \ \ \ \ custom;}
+\DoxyCodeLine{00195\ \};}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__rx__config}{pdcp\_rx\_config}}\ :\ \mbox{\hyperlink{structsrsran_1_1pdcp__config__common}{pdcp\_config\_common}}\ \{}
+\DoxyCodeLine{00198\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out\_of\_order\_delivery;}
+\DoxyCodeLine{00199\ \ \ \mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}\ \ \ \ \ t\_reordering;}
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config__rx}{pdcp\_custom\_config\_rx}}\ custom;}
+\DoxyCodeLine{00201\ \};}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \textcolor{comment}{///\ \(\backslash\)brief\ Configurable\ parameters\ for\ PDCP}}
+\DoxyCodeLine{00204\ \textcolor{comment}{///}}
+\DoxyCodeLine{00205\ \textcolor{comment}{///\ Parameters\ and\ valid\ values\ for\ them\ are\ taken\ from}}
+\DoxyCodeLine{00206\ \textcolor{comment}{///\ the\ RRC-\/NR\ PDCP-\/Config\ Information\ Element.}}
+\DoxyCodeLine{00207\ \textcolor{comment}{///}}
+\DoxyCodeLine{00208\ \textcolor{comment}{///\ Ref:\ 3GPP\ TS\ 38.331\ version\ 15.2.1}}
+\DoxyCodeLine{00209\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pdcp__config}{pdcp\_config}}\ \{}
+\DoxyCodeLine{00210\ \ \ \mbox{\hyperlink{namespacesrsran_a40dbb8c1c2d97d55fd44cc67ddc5361c}{pdcp\_rb\_type}}\ \ rb\_type;}
+\DoxyCodeLine{00211\ \ \ \mbox{\hyperlink{namespacesrsran_a9e50d988260b31c9ea661e6ff525036f}{pdcp\_rlc\_mode}}\ rlc\_mode;}
+\DoxyCodeLine{00212\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ integrity\_protection\_required;}
+\DoxyCodeLine{00213\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ ciphering\_required;}
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{struct}\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sn\_size;}
+\DoxyCodeLine{00216\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}\ \ \ \ \ \ direction;}
+\DoxyCodeLine{00217\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}>\ discard\_timer;}
+\DoxyCodeLine{00218\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ status\_report\_required;}
+\DoxyCodeLine{00219\ \ \ \}\ tx;}
+\DoxyCodeLine{00220\ \ \ \textcolor{keyword}{struct}\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ \ \ \ \ sn\_size;}
+\DoxyCodeLine{00222\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}\ direction;}
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out\_of\_order\_delivery;}
+\DoxyCodeLine{00224\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}\ \ \ \ \ \ \ t\_reordering;}
+\DoxyCodeLine{00225\ \ \ \}\ rx;}
+\DoxyCodeLine{00226\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__custom__config}{pdcp\_custom\_config}}\ custom;}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__tx__config}{pdcp\_tx\_config}}\ get\_tx\_config()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00229\ \ \ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__tx__config}{pdcp\_tx\_config}}\ cfg;}
+\DoxyCodeLine{00231\ \ \ \ \ cfg.rb\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rb\_type;}
+\DoxyCodeLine{00232\ \ \ \ \ cfg.rlc\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rlc\_mode;}
+\DoxyCodeLine{00233\ \ \ \ \ cfg.integrity\_protection\_required\ =\ integrity\_protection\_required;}
+\DoxyCodeLine{00234\ \ \ \ \ cfg.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ tx.sn\_size;}
+\DoxyCodeLine{00235\ \ \ \ \ cfg.direction\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ tx.direction;}
+\DoxyCodeLine{00236\ \ \ \ \ cfg.discard\_timer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ tx.discard\_timer;}
+\DoxyCodeLine{00237\ \ \ \ \ cfg.status\_report\_required\ \ \ \ \ \ \ \ =\ tx.status\_report\_required;}
+\DoxyCodeLine{00238\ \ \ \ \ cfg.custom\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ custom.tx;}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00240\ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__rx__config}{pdcp\_rx\_config}}\ get\_rx\_config()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00242\ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__rx__config}{pdcp\_rx\_config}}\ cfg;}
+\DoxyCodeLine{00244\ \ \ \ \ cfg.rb\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rb\_type;}
+\DoxyCodeLine{00245\ \ \ \ \ cfg.rlc\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rlc\_mode;}
+\DoxyCodeLine{00246\ \ \ \ \ cfg.integrity\_protection\_required\ =\ integrity\_protection\_required;}
+\DoxyCodeLine{00247\ \ \ \ \ cfg.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rx.sn\_size;}
+\DoxyCodeLine{00248\ \ \ \ \ cfg.direction\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rx.direction;}
+\DoxyCodeLine{00249\ \ \ \ \ cfg.out\_of\_order\_delivery\ \ \ \ \ \ \ \ \ =\ rx.out\_of\_order\_delivery;}
+\DoxyCodeLine{00250\ \ \ \ \ cfg.t\_reordering\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rx.t\_reordering;}
+\DoxyCodeLine{00251\ \ \ \ \ cfg.custom\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ custom.rx;}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00253\ \ \ \}}
+\DoxyCodeLine{00254\ \};}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \textcolor{comment}{///\ \(\backslash\)brief\ Make\ default\ SRB\ parameters\ for\ PDCP}}
+\DoxyCodeLine{00257\ \textcolor{comment}{///\ Ref:\ 3GPP\ TS\ 38.331,\ section\ 9.2.1}}
+\DoxyCodeLine{00258\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1pdcp__config}{pdcp\_config}}\ \mbox{\hyperlink{namespacesrsran_acaaaed17d5fedcf2d73556ff7df2d881}{pdcp\_make\_default\_srb\_config}}()}
+\DoxyCodeLine{00259\ \{}
+\DoxyCodeLine{00260\ \ \ \mbox{\hyperlink{structsrsran_1_1pdcp__config}{pdcp\_config}}\ config\ =\ \{\};}
+\DoxyCodeLine{00261\ \ \ \textcolor{comment}{//\ common\ TX/RX\ parameters}}
+\DoxyCodeLine{00262\ \ \ config.rb\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a40dbb8c1c2d97d55fd44cc67ddc5361c}{pdcp\_rb\_type}}::srb;}
+\DoxyCodeLine{00263\ \ \ config.rlc\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a9e50d988260b31c9ea661e6ff525036f}{pdcp\_rlc\_mode}}::am;}
+\DoxyCodeLine{00264\ \ \ config.integrity\_protection\_required\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00265\ \ \ config.ciphering\_required\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \textcolor{comment}{//\ Tx\ config}}
+\DoxyCodeLine{00268\ \ \ config.tx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}::size12bits;}
+\DoxyCodeLine{00269\ \ \ config.tx.direction\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}::downlink;}
+\DoxyCodeLine{00270\ \ \ config.tx.status\_report\_required\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \textcolor{comment}{//\ Rx\ config}}
+\DoxyCodeLine{00273\ \ \ config.rx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}::size12bits;}
+\DoxyCodeLine{00274\ \ \ config.rx.direction\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a19fba91857b46e3646c5576d55523de5}{pdcp\_security\_direction}}::uplink;}
+\DoxyCodeLine{00275\ \ \ config.rx.out\_of\_order\_delivery\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00276\ \ \ config.rx.t\_reordering\ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}::infinity;}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \textcolor{comment}{//\ Custom\ config}}
+\DoxyCodeLine{00279\ \ \ config.custom\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{\};}
+\DoxyCodeLine{00280\ \ \ config.custom.tx.rlc\_sdu\_queue\ =\ 512;}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \textcolor{keywordflow}{return}\ config;}
+\DoxyCodeLine{00283\ \}}
+\DoxyCodeLine{00284\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \textcolor{comment}{//}}
+\DoxyCodeLine{00287\ \textcolor{comment}{//\ Formatters}}
+\DoxyCodeLine{00288\ \textcolor{comment}{//}}
+\DoxyCodeLine{00289\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \textcolor{comment}{//\ SN\ size}}
+\DoxyCodeLine{00292\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00293\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_sn\_size>\ \{}
+\DoxyCodeLine{00294\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00295\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00296\ \ \ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00298\ \ \ \}}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00301\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_sn\_size\ sn\_size,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00302\ \ \ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ pdcp\_sn\_size\_to\_uint(sn\_size));}
+\DoxyCodeLine{00304\ \ \ \}}
+\DoxyCodeLine{00305\ \};}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \textcolor{comment}{//\ RB\ type}}
+\DoxyCodeLine{00308\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00309\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_rb\_type>\ \{}
+\DoxyCodeLine{00310\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00311\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00312\ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00314\ \ \ \}}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_rb\_type\ type,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00318\ \ \ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}SRB"{}},\ \textcolor{stringliteral}{"{}DRB"{}}\};}
+\DoxyCodeLine{00320\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(type)]);}
+\DoxyCodeLine{00321\ \ \ \}}
+\DoxyCodeLine{00322\ \};}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \textcolor{comment}{//\ RLC\ mode}}
+\DoxyCodeLine{00325\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00326\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_rlc\_mode>\ \{}
+\DoxyCodeLine{00327\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00328\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00329\ \ \ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00331\ \ \ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00334\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_rlc\_mode\ mode,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00335\ \ \ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}UM"{}},\ \textcolor{stringliteral}{"{}AM"{}}\};}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(mode)]);}
+\DoxyCodeLine{00338\ \ \ \}}
+\DoxyCodeLine{00339\ \};}
+\DoxyCodeLine{00340\ }
+\DoxyCodeLine{00341\ \textcolor{comment}{//\ Reordering\ timer}}
+\DoxyCodeLine{00342\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00343\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_t\_reordering>\ \{}
+\DoxyCodeLine{00344\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00345\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00346\ \ \ \{}
+\DoxyCodeLine{00347\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00348\ \ \ \}}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00351\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_t\_reordering\ t\_reordering,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00353\ \ \ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \textcolor{keywordflow}{if}\ (t\_reordering\ ==\ srsran::pdcp\_t\_reordering::infinity)\ \{}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}infinity"{}});}
+\DoxyCodeLine{00356\ \ \ \ \ \}}
+\DoxyCodeLine{00357\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ srsran::pdcp\_t\_reordering\_to\_int(t\_reordering));}
+\DoxyCodeLine{00358\ \ \ \}}
+\DoxyCodeLine{00359\ \};}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \textcolor{comment}{//\ Discard\ timer}}
+\DoxyCodeLine{00362\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00363\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_discard\_timer>\ \{}
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00365\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00366\ \ \ \{}
+\DoxyCodeLine{00367\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00368\ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00371\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_discard\_timer\ discard\_timer,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00373\ \ \ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keywordflow}{if}\ (discard\_timer\ ==\ srsran::pdcp\_discard\_timer::infinity)\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}infinity"{}});}
+\DoxyCodeLine{00376\ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ srsran::pdcp\_discard\_timer\_to\_int(discard\_timer));}
+\DoxyCodeLine{00378\ \ \ \}}
+\DoxyCodeLine{00379\ \};}
+\DoxyCodeLine{00380\ }
+\DoxyCodeLine{00381\ \textcolor{comment}{//\ Custom\ TX\ config}}
+\DoxyCodeLine{00382\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00383\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_custom\_config\_tx>\ \{}
+\DoxyCodeLine{00384\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00385\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00386\ \ \ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00388\ \ \ \}}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00391\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_custom\_config\_tx\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00392\ \ \ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}count\_notify=\{\}\ count\_max=\{\}\ rlc\_sdu\_queue=\{\}\ warn\_on\_drop=\{\}"{}},}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.max\_count.notify,}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.max\_count.hard,}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rlc\_sdu\_queue,}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.warn\_on\_drop);}
+\DoxyCodeLine{00399\ \ \ \}}
+\DoxyCodeLine{00400\ \};}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \textcolor{comment}{//\ Custom\ RX\ config}}
+\DoxyCodeLine{00403\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00404\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_custom\_config\_rx>\ \{}
+\DoxyCodeLine{00405\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00406\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00407\ \ \ \{}
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00409\ \ \ \}}
+\DoxyCodeLine{00410\ }
+\DoxyCodeLine{00411\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00412\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_custom\_config\_rx\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00413\ \ \ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}count\_notify=\{\}\ count\_max=\{\}"{}},\ cfg.max\_count.notify,\ cfg.max\_count.hard);}
+\DoxyCodeLine{00415\ \ \ \}}
+\DoxyCodeLine{00416\ \};}
+\DoxyCodeLine{00417\ }
+\DoxyCodeLine{00418\ \textcolor{comment}{//\ TX\ config}}
+\DoxyCodeLine{00419\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00420\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_tx\_config>\ \{}
+\DoxyCodeLine{00421\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00422\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00423\ \ \ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00425\ \ \ \}}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00428\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_tx\_config\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00429\ \ \ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rb\_type=\{\}\ rlc\_mode=\{\}\ sn\_size=\{\}\ discard\_timer=\{\}\ \{\}"{}},}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rb\_type,}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rlc\_mode,}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.sn\_size,}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.discard\_timer,}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.custom);}
+\DoxyCodeLine{00437\ \ \ \}}
+\DoxyCodeLine{00438\ \};}
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \textcolor{comment}{//\ RX\ config}}
+\DoxyCodeLine{00441\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00442\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_rx\_config>\ \{}
+\DoxyCodeLine{00443\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00444\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00445\ \ \ \{}
+\DoxyCodeLine{00446\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00447\ \ \ \}}
+\DoxyCodeLine{00448\ }
+\DoxyCodeLine{00449\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00450\ \ \ \textcolor{keyword}{auto}\ format(srsran::pdcp\_rx\_config\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00451\ \ \ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rb\_type=\{\}\ rlc\_mode=\{\}\ sn\_size=\{\}\ t\_reordering=\{\}\ \{\}"{}},}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rb\_type,}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rlc\_mode,}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.sn\_size,}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.t\_reordering,}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.custom);}
+\DoxyCodeLine{00459\ \ \ \}}
+\DoxyCodeLine{00460\ \};}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \textcolor{comment}{//\ PDCP\ config}}
+\DoxyCodeLine{00463\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00464\ \textcolor{keyword}{struct}\ formatter<srsran::pdcp\_config>\ \{}
+\DoxyCodeLine{00465\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00466\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00467\ \ \ \{}
+\DoxyCodeLine{00468\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00469\ \ \ \}}
+\DoxyCodeLine{00470\ }
+\DoxyCodeLine{00471\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00472\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdcp\_config\&\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00473\ \ \ \{}
+\DoxyCodeLine{00474\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rb\_type=\{\}\ rlc\_mode=\{\}\ int\_req=\{\}\ cip\_req=\{\}\ TX=[sn\_size=\{\}\ discard\_timer=\{\}]\ "{}}}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}RX=[sn\_size=\{\}\ t\_reordering=\{\}\ out\_of\_order=\{\}]\ custom\_tx=[\{\}]\ custom\_rx=[\{\}]"{}},}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rb\_type,}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rlc\_mode,}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.integrity\_protection\_required,}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.ciphering\_required,}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.tx.sn\_size,}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.tx.discard\_timer,}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rx.sn\_size,}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rx.t\_reordering,}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.rx.out\_of\_order\_delivery,}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.custom.tx,}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg.custom.rx);}
+\DoxyCodeLine{00488\ \ \ \}}
+\DoxyCodeLine{00489\ \};}
+\DoxyCodeLine{00490\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

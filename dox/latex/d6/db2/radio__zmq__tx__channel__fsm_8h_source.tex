@@ -1,0 +1,189 @@
+\doxysection{radio\+\_\+zmq\+\_\+tx\+\_\+channel\+\_\+fsm.\+h}
+\hypertarget{radio__zmq__tx__channel__fsm_8h_source}{}\label{radio__zmq__tx__channel__fsm_8h_source}\index{lib/radio/zmq/radio\_zmq\_tx\_channel\_fsm.h@{lib/radio/zmq/radio\_zmq\_tx\_channel\_fsm.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__zmq__timer_8h}{"{}radio\_zmq\_timer.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{condition\_variable}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{mutex}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm}{radio\_zmq\_tx\_channel\_fsm}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{comment}{///\ Describes\ the\ possible\ states.}}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ states\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{///\ Indicates\ it\ failed\ to\ initialize.}}
+\DoxyCodeLine{00037\ \ \ \ \ UNINITIALIZED\ =\ 0,}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{///\ The\ channel\ has\ been\ successfully\ initialised\ and\ it\ is\ waiting\ to\ start.}}
+\DoxyCodeLine{00039\ \ \ \ \ WAIT\_START,}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{///\ The\ channel\ waits\ for\ a\ request.}}
+\DoxyCodeLine{00041\ \ \ \ \ WAIT\_REQUEST,}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{///\ The\ channel\ waits\ for\ data\ to\ transmit.}}
+\DoxyCodeLine{00043\ \ \ \ \ WAIT\_DATA,}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{///\ Waits\ for\ the\ asynchronous\ thread\ to\ notify\ a\ stop.}}
+\DoxyCodeLine{00045\ \ \ \ \ WAIT\_STOP,}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ Indicates\ it\ is\ notify\_stop.}}
+\DoxyCodeLine{00047\ \ \ \ \ STOPPED}
+\DoxyCodeLine{00048\ \ \ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Indicates\ the\ current\ state.}}
+\DoxyCodeLine{00051\ \ \ states\ state\ =\ states::UNINITIALIZED;}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Protects\ the\ state\ and\ transitions.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ mutex;}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Condition\ variable\ to\ wait\ for\ certain\ states.}}
+\DoxyCodeLine{00055\ \ \ std::condition\_variable\ cvar;}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ State\ waiting\ timer.}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__zmq__timer}{radio\_zmq\_timer}}\ timer;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Same\ than\ is\_running().}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{bool}\ is\_running\_unprotected()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ state\ ==\ states::WAIT\_REQUEST\ ||\ state\ ==\ states::WAIT\_DATA;\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ Notifies\ that\ the\ transmit\ stream\ has\ been\ initialized\ successfully.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a4e2c7d5df82a56297500825ba4e61876}{init\_successful}}()}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(state\ ==\ states::UNINITIALIZED,\ \textcolor{stringliteral}{"{}Invalid\ state."{}});}
+\DoxyCodeLine{00068\ \ \ \ \ state\ =\ states::WAIT\_START;}
+\DoxyCodeLine{00069\ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Notifies\ the\ asynchronous\ processing\ has\ started.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a365d3657ef4bdfc3ea8020d451a4e4c1}{on\_start}}()}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(state\ ==\ states::WAIT\_START,\ \textcolor{stringliteral}{"{}Invalid\ state."{}});}
+\DoxyCodeLine{00076\ \ \ \ \ state\ =\ states::WAIT\_REQUEST;}
+\DoxyCodeLine{00077\ \ \ \ \ timer.start();}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Notifies\ that\ the\ stream\ detected\ an\ error\ it\ cannot\ recover\ from.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_aa45bbe954f56ea27b24af5ae7006e455}{on\_error}}()}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00084\ \ \ \ \ state\ =\ states::STOPPED;}
+\DoxyCodeLine{00085\ \ \ \ \ cvar.notify\_all();}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ Notifies\ that\ a\ request\ was\ received.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a9280f4c354fe28bd80d149607f458b29}{request\_received}}()}
+\DoxyCodeLine{00090\ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ states::WAIT\_REQUEST)\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ state\ =\ states::WAIT\_DATA;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ timer.start();}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Notifies\ a\ block\ of\ data\ was\ send.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a05fa11c083c963446264ab08bbea9f9f}{data\_sent}}()}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ states::WAIT\_DATA)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ state\ =\ states::WAIT\_REQUEST;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ timer.start();}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ Notifies\ a\ stop\ was\ signaled\ and\ wait\ for\ asynchronous\ executor\ to\ stop.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_ad981fc293f4afc46508cad92e2d21ad2}{stop}}()}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{if}\ (is\_running\_unprotected())\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ state\ =\ states::WAIT\_STOP;}
+\DoxyCodeLine{00114\ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Waits\ for\ the\ asynchronous\ tasks\ notifies\ that\ has\ notify\_stop.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a726c463265c3be0a40713de391705c0f}{wait\_stop}}()}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{while}\ (state\ !=\ states::STOPPED)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ cvar.wait(lock);}
+\DoxyCodeLine{00123\ \ \ \ \ \}}
+\DoxyCodeLine{00124\ \ \ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ Notifies\ the\ asynchronous\ task\ has\ notify\_stop.}}
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a48737cd8081bd695b0172a3b8f6b958c}{async\_task\_stopped}}()}
+\DoxyCodeLine{00128\ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00130\ \ \ \ \ state\ =\ states::STOPPED;}
+\DoxyCodeLine{00131\ \ \ \ \ cvar.notify\_all();}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ Gets\ if\ the\ channel\ has\ been\ successfully\ initialised.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_affc074f5a76273a360f9fb5deaa52c59}{is\_initiated}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00136\ \ \ \{}
+\DoxyCodeLine{00137\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{return}\ state\ >\ states::UNINITIALIZED;}
+\DoxyCodeLine{00139\ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ Indicates\ whether\ the\ current\ state\ is\ operational.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a006067ef5e4e6e09286fd23e2b6a0436}{is\_running}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{return}\ is\_running\_unprotected();}
+\DoxyCodeLine{00146\ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ Indicates\ whether\ it\ has\ a\ pending\ request.}}
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_a7bc6840b118b5ec174db823cf407c18f}{has\_pending\_request}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00150\ \ \ \{}
+\DoxyCodeLine{00151\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{return}\ state\ ==\ states::WAIT\_DATA;}
+\DoxyCodeLine{00153\ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ the\ waiting\ time\ for\ request\ or\ data\ has\ expired.}}
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ The\ request\ and\ data\ wait\ expires\ only\ if:}}
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{///\ -\/\ the\ current\ state\ is\ waiting\ for\ a\ request;\ or}}
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{///\ -\/\ the\ current\ state\ is\ waiting\ for\ data.}}
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00161\ \ \ \textcolor{comment}{///\ The\ expiration\ occurs\ when\ a\ certain\ time\ had\ past\ since:}}
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{///\ -\/\ the\ last\ state\ transition\ from\ waiting\ data\ to\ waiting\ for\ request;\ or}}
+\DoxyCodeLine{00163\ \ \ \textcolor{comment}{///\ -\/\ last\ time\ an\ expiration\ was\ detected.}}
+\DoxyCodeLine{00164\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm_af7bcaa163a319aabf132e1d074a19549}{has\_wait\_expired}}()}
+\DoxyCodeLine{00165\ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{comment}{//\ It\ can\ only\ be\ expired\ if\ it\ is\ currently\ running.}}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordflow}{if}\ (!is\_running\_unprotected())\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00171\ \ \ \ \ \}}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ timer\ has\ not\ expired.}}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordflow}{if}\ (!timer.is\_expired())\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00176\ \ \ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{comment}{//\ Update\ timer\ with\ new\ time.}}
+\DoxyCodeLine{00179\ \ \ \ \ timer.start();}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ \};}
+\DoxyCodeLine{00183\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

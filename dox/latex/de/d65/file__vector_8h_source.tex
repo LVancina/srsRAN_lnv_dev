@@ -1,0 +1,108 @@
+\doxysection{file\+\_\+vector.\+h}
+\hypertarget{file__vector_8h_source}{}\label{file__vector_8h_source}\index{include/srsran/support/file\_vector.h@{include/srsran/support/file\_vector.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{fstream}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)c\ file\_vector\ open\ modes.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\ \{}
+\DoxyCodeLine{00034\ \ \ \textcolor{comment}{///\ Opens\ the\ file\ in\ read-\/only\ mode.}}
+\DoxyCodeLine{00035\ \ \ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{read\_only}},}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Opens\ the\ file\ in\ write-\/only\ mode.}}
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8a2629564984b808cf7e6cfc61a0286d69}{write\_only}},}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Opens\ the\ file\ in\ read-\/write\ mode.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Any\ previous\ content\ of\ the\ file\ will\ be\ lost.}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8a06ad287ea83b37a6f9db3d8d10d72c8f}{read\_write}}}
+\DoxyCodeLine{00042\ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)brief\ Simple\ binary\ file\ input-\/output\ interface.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ An\ object\ of\ this\ file\ allows\ reading\ and\ writing\ values\ of\ type\ \(\backslash\)c\ T\ from\ and\ to\ a\ binary\ file.}}
+\DoxyCodeLine{00048\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1file__vector}{file\_vector}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ file\_name;}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\ \ \ \ op;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructor.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Sets\ the\ name\ and\ the\ mode\ (default\ is\ \(\backslash\)e\ read-\/only)\ of\ the\ binary\ file.\ No\ operations\ are\ performed\ on\ the\ file.}}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrsran_1_1file__vector_a3b2af9013ffa89d72b648bb01d13fdc8}{file\_vector}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ filename,\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\ op\_\ =\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{::}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{read\_only}})\ :\ file\_name(filename),\ op(op\_)\ \{\}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Returns\ the\ file\ name.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classsrsran_1_1file__vector_aa6468c0cfc42c01b97c8b51056425cde}{get\_file\_name}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ file\_name;\ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Reads\ the\ file.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ The\ contents\ of\ the\ file\ are\ dumped\ to\ a\ \(\backslash\)c\ std::vector<T>.\ The\ file\ is\ closed\ when\ the\ operation\ is\ completed.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)warning\ An\ exception\ arises\ if\ the\ file\ cannot\ be\ opened\ or\ if\ the\ write-\/only\ open\ mode\ was\ specified\ at}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ creation.}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1file__vector_aec35fdf2b52ce5d8d9f681f815f04e42}{std}}::\mbox{\hyperlink{classsrsran_1_1file__vector_aec35fdf2b52ce5d8d9f681f815f04e42}{vector}}<\mbox{\hyperlink{classsrsran_1_1file__vector_aec35fdf2b52ce5d8d9f681f815f04e42}{T}}>\ \mbox{\hyperlink{classsrsran_1_1file__vector_aec35fdf2b52ce5d8d9f681f815f04e42}{read}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(op\ !=\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8a2629564984b808cf7e6cfc61a0286d69}{::}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8a2629564984b808cf7e6cfc61a0286d69}{write\_only}},\ \textcolor{stringliteral}{"{}The\ file\_vector\ was\ created\ with\ write-\/only\ permissions."{}});}
+\DoxyCodeLine{00071\ \ \ \ \ std::ifstream\ binary\_file(file\_name,\ std::ios::in\ |\ std::ios::binary);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(binary\_file.is\_open(),\ \textcolor{stringliteral}{"{}Error\ opening\ file\ '\{\}'.\ \{\}."{}},\ file\_name,\ strerror(errno));}
+\DoxyCodeLine{00074\ \ \ \ \ std::vector<T>\ read\_data;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ T\ read\_value;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{while}\ (binary\_file.read(\textcolor{keyword}{reinterpret\_cast}<\textcolor{keywordtype}{char}*>(\&read\_value),\ \textcolor{keyword}{sizeof}(T)))\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ read\_data.push\_back(read\_value);}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{return}\ read\_data;}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Writes\ data\ to\ the\ file.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ The\ sequence\ of\ \(\backslash\)c\ T\ values\ viewed\ by\ \(\backslash\)c\ write\_data\ are\ written\ to\ the\ file.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ If\ the\ specified\ file\ does\ not\ exist,\ it\ is\ created.\ If\ it\ exists,\ previous\ contents\ will\ be\ erased.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ The\ file\ is\ closed\ when\ the\ operation\ is\ completed.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)warning\ An\ exception\ arises\ if\ the\ file\ cannot\ be\ opened\ or\ if\ the\ read-\/only\ open\ mode\ was\ specified\ at\ creation.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1file__vector_a93db6410bbc3e568b24f94abebb6b265}{write}}(span<\textcolor{keyword}{const}\ T>\ write\_data)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00092\ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(op\ !=\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{::}}\mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{read\_only}},\ \textcolor{stringliteral}{"{}The\ file\_vector\ was\ created\ with\ read-\/only\ permissions."{}});}
+\DoxyCodeLine{00094\ \ \ \ \ std::ofstream\ binary\_file(file\_name,\ std::ios::out\ |\ std::ios::binary);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(binary\_file.is\_open(),\ \textcolor{stringliteral}{"{}Error\ opening\ file\ '\{\}'.\ \{\}."{}},\ file\_name,\ strerror(errno));}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ binary\_file.write(\textcolor{keyword}{reinterpret\_cast}<\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*>(write\_data.begin()),\ write\_data.size()\ *\ \textcolor{keyword}{sizeof}(T));}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ \};}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

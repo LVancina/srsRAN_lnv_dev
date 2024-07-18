@@ -1,0 +1,229 @@
+\doxysection{rlc\+\_\+um\+\_\+pdu.\+h}
+\hypertarget{rlc__um__pdu_8h_source}{}\label{rlc__um__pdu_8h_source}\index{lib/rlc/rlc\_um\_pdu.h@{lib/rlc/rlc\_um\_pdu.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_config.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}fmt/format.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_complete\_sdu\ =\ 1;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_no\_so\ \ =\ 1;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_12bit\_sn\_no\_so\ =\ 2;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_no\_so(\mbox{\hyperlink{namespacesrsran_adc21d913d29e6d0bf48c5abce52bee31}{rlc\_um\_sn\_size}}\ sn\_size)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordflow}{switch}\ (sn\_size)\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{case}\ rlc\_um\_sn\_size::size6bits:}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_no\_so;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{case}\ rlc\_um\_sn\_size::size12bits:}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_12bit\_sn\_no\_so;}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}Cannot\ determine\ RLC\ UM\ PDU\ header\ size\ without\ SO:\ unsupported\ sn\_size=\{\}."{}},}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to\_number(sn\_size));}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_no\_so;}
+\DoxyCodeLine{00046\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_with\_so\ \ =\ 3;}
+\DoxyCodeLine{00049\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_12bit\_sn\_with\_so\ =\ 4;}
+\DoxyCodeLine{00050\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_pdu\_header\_size\_with\_so(\mbox{\hyperlink{namespacesrsran_adc21d913d29e6d0bf48c5abce52bee31}{rlc\_um\_sn\_size}}\ sn\_size)}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{switch}\ (sn\_size)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{case}\ rlc\_um\_sn\_size::size6bits:}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_with\_so;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{case}\ rlc\_um\_sn\_size::size12bits:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_12bit\_sn\_with\_so;}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}Cannot\ determine\ RLC\ UM\ PDU\ header\ size\ with\ SO:\ unsupported\ sn\_size=\{\}."{}},}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to\_number(sn\_size));}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordflow}{return}\ rlc\_um\_pdu\_header\_size\_6bit\_sn\_no\_so;}
+\DoxyCodeLine{00061\ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header}{rlc\_um\_pdu\_header}}\ \{}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798}{rlc\_si\_field}}\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}};\ \ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{namespacesrsran_adc21d913d29e6d0bf48c5abce52bee31}{rlc\_um\_sn\_size}}\ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a3081b872c91bb3a49153b8a1b0cdcf44}{sn\_size}};\ }
+\DoxyCodeLine{00066\ \ \ uint16\_t\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}};\ \ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ uint16\_t\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a576b3037ef830805618ce863e585db93}{so}};\ \ \ \ \ \ }
+\DoxyCodeLine{00068\ \};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{00071\ \textcolor{comment}{\ *\ Header\ pack/unpack\ helper\ functions}}
+\DoxyCodeLine{00072\ \textcolor{comment}{\ *\ Ref:\ 3GPP\ TS\ 38.322\ version\ 15.3.0\ Section\ 6.2.2.3}}
+\DoxyCodeLine{00073\ \textcolor{comment}{\ ***************************************************************************/}}
+\DoxyCodeLine{00074\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{00075\ rlc\_um\_read\_data\_pdu\_header(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer__view}{byte\_buffer\_view}}\&\ pdu,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_adc21d913d29e6d0bf48c5abce52bee31}{rlc\_um\_sn\_size}}\ sn\_size,\ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header}{rlc\_um\_pdu\_header}}*\ header)}
+\DoxyCodeLine{00076\ \{}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__reader}{byte\_buffer\_reader}}\ pdu\_reader\ =\ pdu;}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordflow}{if}\ (pdu\_reader.\mbox{\hyperlink{classsrsran_1_1byte__buffer__reader_ac60e89fcf20711ba93b20c382a312c24}{empty}}())\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).warning(}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}UMD\ PDU\ too\ small.\ pdu\_len=\{\}\ hdr\_len=\{\}"{}},\ pdu.\mbox{\hyperlink{classsrsran_1_1byte__buffer__view_a779c0f30d8ccff3944084130af6adde3}{length}}(),\ rlc\_um\_pdu\_header\_size\_no\_so(sn\_size));}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a3081b872c91bb3a49153b8a1b0cdcf44}{sn\_size}}\ =\ sn\_size;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ Fixed\ part}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordflow}{if}\ (sn\_size\ ==\ rlc\_um\_sn\_size::size6bits)\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ =\ (\mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798}{rlc\_si\_field}})((*pdu\_reader\ >>\ 6U)\ \&\ 0x03U);\ \textcolor{comment}{//\ 2\ bits\ SI}}
+\DoxyCodeLine{00089\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}}\ =\ *pdu\_reader\ \&\ 0x3fU;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 6\ bits\ SN}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{//\ sanity\ check}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{if}\ (header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{rlc\_si\_field::full\_sdu}}\ and\ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}}\ !=\ 0)\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ reserved\ bits\ are\ set."{}});}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ ++pdu\_reader;}
+\DoxyCodeLine{00096\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (sn\_size\ ==\ rlc\_um\_sn\_size::size12bits)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ =\ (\mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798}{rlc\_si\_field}})((*pdu\_reader\ >>\ 6U)\ \&\ 0x03U);\ \textcolor{comment}{//\ 2\ bits\ SI}}
+\DoxyCodeLine{00098\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}}\ =\ (*pdu\_reader\ \&\ 0x0fU)\ <<\ 8U;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 4\ bits\ SN}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{if}\ (header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{rlc\_si\_field::full\_sdu}}\ and\ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}}\ !=\ 0)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ reserved\ bits\ are\ set."{}});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00102\ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{comment}{//\ sanity\ check}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{if}\ (header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798ac765a37c312f93b9f28d7cfca6553ac2}{rlc\_si\_field::first\_segment}})\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \textcolor{comment}{//\ make\ sure\ two\ reserved\ bits\ are\ not\ set}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((*pdu\_reader\ >>\ 4U)\ \&\ 0x03U)\ !=\ 0)\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ reserved\ bits\ are\ set."{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{if}\ (header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ !=\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{rlc\_si\_field::full\_sdu}})\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \textcolor{comment}{//\ continue\ unpacking\ remaining\ SN}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ ++pdu\_reader;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu\_reader.\mbox{\hyperlink{classsrsran_1_1byte__buffer__reader_ac60e89fcf20711ba93b20c382a312c24}{empty}}())\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ missing\ lower\ byte\ of\ SN."{}});}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}}\ |=\ (*pdu\_reader\ \&\ 0xffU);\ \textcolor{comment}{//\ 8\ bits\ SN}}
+\DoxyCodeLine{00121\ \ \ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ ++pdu\_reader;}
+\DoxyCodeLine{00124\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Unsupported\ sn\_size=\{\}."{}},\ to\_number(sn\_size));}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00127\ \ \ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{//\ Read\ optional\ part}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordflow}{if}\ (header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798ad1cd941e9361399f0433d63e6f7d7c76}{rlc\_si\_field::last\_segment}}\ ||\ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798ad412dc4a0fc06627a670a14512f8f247}{rlc\_si\_field::middle\_segment}})\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{//\ read\ SO}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu\_reader.\mbox{\hyperlink{classsrsran_1_1byte__buffer__reader_ac60e89fcf20711ba93b20c382a312c24}{empty}}())\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ missing\ upper\ byte\ of\ SO."{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a576b3037ef830805618ce863e585db93}{so}}\ =\ (*pdu\_reader\ \&\ 0xffU)\ <<\ 8U;}
+\DoxyCodeLine{00137\ \ \ \ \ ++pdu\_reader;}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdu\_reader.\mbox{\hyperlink{classsrsran_1_1byte__buffer__reader_ac60e89fcf20711ba93b20c382a312c24}{empty}}())\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RLC"{}}).error(\textcolor{stringliteral}{"{}Malformed\ PDU,\ missing\ lower\ byte\ of\ SO."{}});}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ header-\/>\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a576b3037ef830805618ce863e585db93}{so}}\ |=\ (*pdu\_reader\ \&\ 0xffU);}
+\DoxyCodeLine{00143\ \ \ \ \ ++pdu\_reader;}
+\DoxyCodeLine{00144\ \ \ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00147\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_nr\_packed\_length(\textcolor{keyword}{const}\ rlc\_um\_pdu\_header\&\ header)}
+\DoxyCodeLine{00150\ \{}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{size\_t}\ len\ =\ 0;}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordflow}{if}\ (header.si\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{rlc\_si\_field::full\_sdu}})\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{comment}{//\ that's\ all\ ..}}
+\DoxyCodeLine{00154\ \ \ \ \ len++;}
+\DoxyCodeLine{00155\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{if}\ (header.sn\_size\ ==\ rlc\_um\_sn\_size::size6bits)\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{comment}{//\ Only\ 1B\ for\ SN}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ len++;}
+\DoxyCodeLine{00159\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \textcolor{comment}{//\ 2\ B\ for\ 12bit\ SN}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ len\ +=\ 2;}
+\DoxyCodeLine{00162\ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keywordflow}{if}\ (header.so)\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \textcolor{comment}{//\ Two\ bytes\ always\ for\ segment\ information}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ len\ +=\ 2;}
+\DoxyCodeLine{00166\ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordflow}{return}\ len;}
+\DoxyCodeLine{00169\ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ rlc\_um\_write\_data\_pdu\_header(span<uint8\_t>\ buf,\ \textcolor{keyword}{const}\ rlc\_um\_pdu\_header\&\ header)}
+\DoxyCodeLine{00172\ \{}
+\DoxyCodeLine{00173\ \ \ span<uint8\_t>::iterator\ buf\_it\ =\ buf.begin();}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ *buf\_it\ =\ (to\_number(header.si)\ \&\ 0x03U)\ <<\ 6U;\ \textcolor{comment}{//\ 2\ bits\ SI}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \textcolor{keywordflow}{if}\ (header.si\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{rlc\_si\_field::full\_sdu}})\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keywordflow}{return}\ 1;\ \textcolor{comment}{//\ that's\ all}}
+\DoxyCodeLine{00179\ \ \ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \textcolor{keywordflow}{if}\ (header.sn\_size\ ==\ rlc\_um\_sn\_size::size6bits)\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{comment}{//\ 6-\/bit\ SN}}
+\DoxyCodeLine{00183\ \ \ \ \ *buf\_it\ |=\ (header.sn\ \&\ 0x3fU);\ \textcolor{comment}{//\ write\ SN\ (6\ bit)}}
+\DoxyCodeLine{00184\ \ \ \ \ buf\_it++;}
+\DoxyCodeLine{00185\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{comment}{//\ 12-\/bit\ SN}}
+\DoxyCodeLine{00187\ \ \ \ \ *buf\_it\ |=\ (header.sn\ >>\ 8U)\ \&\ 0xfU;\ \textcolor{comment}{//\ upper\ 4\ bits\ of\ SN}}
+\DoxyCodeLine{00188\ \ \ \ \ buf\_it++;}
+\DoxyCodeLine{00189\ \ \ \ \ *buf\_it\ =\ header.sn\ \&\ 0xffU;\ \textcolor{comment}{//\ lower\ part\ 8\ bits\ of\ SN}}
+\DoxyCodeLine{00190\ \ \ \ \ buf\_it++;}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \textcolor{keywordflow}{if}\ (header.so\ !=\ 0)\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{comment}{//\ write\ SO}}
+\DoxyCodeLine{00194\ \ \ \ \ *buf\_it\ =\ header.so\ >>\ 8U;\ \textcolor{comment}{//\ upper\ part\ of\ SO}}
+\DoxyCodeLine{00195\ \ \ \ \ buf\_it++;}
+\DoxyCodeLine{00196\ \ \ \ \ *buf\_it\ =\ header.so\ \&\ 0xffU;\ \textcolor{comment}{//\ lower\ part\ of\ SO}}
+\DoxyCodeLine{00197\ \ \ \ \ buf\_it++;}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordflow}{return}\ std::distance(buf.begin(),\ buf\_it);}
+\DoxyCodeLine{00200\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00205\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00206\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::rlc\_um\_pdu\_header>\ \{}
+\DoxyCodeLine{00207\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00208\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00209\ \ \ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00211\ \ \ \}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header}{srsran::rlc\_um\_pdu\_header}}\&\ hdr,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00215\ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordflow}{if}\ (hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}}\ ==\ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798a4dff537721d1435566e8a133eeac2bdf}{srsran::rlc\_si\_field::full\_sdu}})\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \textcolor{comment}{//\ Header\ of\ full\ SDU\ only\ has\ SI;\ no\ SN\ and\ no\ SO.}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}si=\{\}"{}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a576b3037ef830805618ce863e585db93}{so}});}
+\DoxyCodeLine{00219\ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}si=\{\}\ sn=\{\}\ so=\{\}"{}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_ad32a4861ad04c56f44937c696639fee3}{si}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_af8b1b6059c25d2772c2409b14f03bf1a}{sn}},\ hdr.\mbox{\hyperlink{structsrsran_1_1rlc__um__pdu__header_a576b3037ef830805618ce863e585db93}{so}});}
+\DoxyCodeLine{00221\ \ \ \}}
+\DoxyCodeLine{00222\ \};}
+\DoxyCodeLine{00223\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

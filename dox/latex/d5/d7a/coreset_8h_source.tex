@@ -1,0 +1,145 @@
+\doxysection{coreset.\+h}
+\hypertarget{coreset_8h_source}{}\label{coreset_8h_source}\index{include/srsran/ran/pdcch/coreset.h@{include/srsran/ran/pdcch/coreset.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/pdcch\_constants.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/resource\_allocation/rb\_interval.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Max\ number\ of\ CORESETs\ per\ BWP\ per\ cell\ (including\ UE-\/specific\ and\ common\ CORESETs).}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331,\ "{}PDCCH-\/Config"{}.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_a10fa02a7c16ca0cd3fb5729a843df6a0}{size\_t}}\ \mbox{\hyperlink{namespacesrsran_a10fa02a7c16ca0cd3fb5729a843df6a0}{MAX\_NOF\_CORESETS\_PER\_BWP}}\ =\ 3;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Describes\ a\ frequency\ resource\ bitmap\ for\ CORESET\ allocation.\ Each\ resource\ represents\ a\ group\ of\ 6\ PRBs.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331,\ "{}ControlResourceSet"{}}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{using}\ freq\_resource\_bitmap\ =\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset}}<pdcch\_constants::MAX\_NOF\_FREQ\_RESOURCES,\ \textcolor{keyword}{true}>;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)brief\ CORESET\ identifier.\ This\ value\ is\ UE-\/specific,\ which\ means\ that\ a\ UE\ can\ have\ up\ to}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ "{}maxNrofControlResourceSets"{}\ CORESETS\ configured.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331,\ "{}maxNrofControlResourceSets"{}.}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ :\ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{uint8\_t}}\ \{\ MAX\_CORESET\_ID\ =\ 11,\ MAX\_NOF\_CORESETS\ =\ 12\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ to\_coreset\_id(\textcolor{keywordtype}{unsigned}\ cs\_id)}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}>(cs\_id);}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ CORESET\ configuration.}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.331,\ "{}ControlResourceSet"{}.}}
+\DoxyCodeLine{00052\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration}{coreset\_configuration}}\ \{}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type}{interleaved\_mapping\_type}}\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{///\ Values:\ (2,\ 3,\ 6).}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a83acb7808916bb5046e2c1c97eed8c2c}{reg\_bundle\_sz}};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{///\ Values:\ (2,\ 3,\ 6).}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a40bdcef4688ebd2ca9c9aa4af814c5f2}{interleaver\_sz}};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{///\ Values:\ (0..MAX\_NOF\_PRBS-\/1).}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a02e18d2befe20582dfec28e9a0414c5c}{shift\_index}};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type}{interleaved\_mapping\_type}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00062\ \ \ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a83acb7808916bb5046e2c1c97eed8c2c}{reg\_bundle\_sz}}\ ==\ rhs\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a83acb7808916bb5046e2c1c97eed8c2c}{.}}\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a83acb7808916bb5046e2c1c97eed8c2c}{reg\_bundle\_sz}}\ \textcolor{keyword}{and}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a40bdcef4688ebd2ca9c9aa4af814c5f2}{interleaver\_sz}}\ ==\ rhs\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a40bdcef4688ebd2ca9c9aa4af814c5f2}{.}}\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a40bdcef4688ebd2ca9c9aa4af814c5f2}{interleaver\_sz}}\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a02e18d2befe20582dfec28e9a0414c5c}{shift\_index}}\ ==\ rhs\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a02e18d2befe20582dfec28e9a0414c5c}{.}}\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type_a02e18d2befe20582dfec28e9a0414c5c}{shift\_index}};}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \};}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ precoder\_granularity\_type\ \{\ same\_as\_reg\_bundle,\ all\_contiguous\_rbs\ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{namespacesrsran_a17ec2f6288d81621ac1556d8996e4ae0}{coreset\_id}}\ id;}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Duration\ in\ number\ of\ symbols.\ Values:\ (1..maxCORESETDuration).}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_ac70faa1088f184a624da17749bc1c863}{duration}};}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1coreset__configuration_1_1interleaved__mapping__type}{interleaved\_mapping\_type}}>\ interleaved;}
+\DoxyCodeLine{00073\ \ \ precoder\_granularity\_type\ \ \ \ \ \ \ \ \ \ precoder\_granurality;}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ PDCCH\ DMRS\ scrambling\ initialization.\ Values:\ (0..65535).}}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{unsigned}>\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_ac046f15738bc6c6d7c930a437fe3c946}{pdcch\_dmrs\_scrambling\_id}};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ set\_coreset0\_crbs(\mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ crbs)}
+\DoxyCodeLine{00078\ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(id\ ==\ to\_coreset\_id(0),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ CORESET\#0\ RBs\ for\ a\ coresetId>0"{}});}
+\DoxyCodeLine{00080\ \ \ \ \ coreset0\_rbs\ =\ crbs;}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\&\ coreset0\_crbs()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(id\ ==\ to\_coreset\_id(0),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ CORESET\#0\ RBs\ for\ a\ coresetId>0"{}});}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ coreset0\_rbs;}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ set\_freq\_domain\_resources(freq\_resource\_bitmap\ res\_bitmap)}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(id\ !=\ to\_coreset\_id(0),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ CORESET\#0\ RBs\ for\ a\ coresetId>0"{}});}
+\DoxyCodeLine{00091\ \ \ \ \ other\_coreset\_freq\_resources\ =\ res\_bitmap;}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{const}\ freq\_resource\_bitmap\&\ freq\_domain\_resources()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(id\ !=\ to\_coreset\_id(0),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ CORESET\#0\ RBs\ for\ a\ coresetId>0"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ other\_coreset\_freq\_resources;}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration}{coreset\_configuration}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::tie(id,\ duration,\ interleaved,\ precoder\_granurality,\ pdcch\_dmrs\_scrambling\_id)\ !=}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ std::tie(rhs.id,\ rhs.duration,\ rhs.interleaved,\ rhs.precoder\_granurality,\ rhs.pdcch\_dmrs\_scrambling\_id))\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{if}\ (id\ ==\ to\_coreset\_id(0))\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (coreset0\_crbs()\ ==\ rhs.coreset0\_crbs());}
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{return}\ (freq\_domain\_resources()\ ==\ rhs.freq\_domain\_resources());}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ Computes\ \(\backslash\)f\$N\_\{CCE\}\(\backslash\)f\$,\ as\ per\ TS\ 38.213,\ Section\ 9.2.1,\ which\ is\ the\ number\ of\ CCEs\ in\ a\ CORESET\ of\ a\ PDCCH}}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ reception\ with\ DCI\ format\ 1\_0\ or\ DCI\ format\ 1\_1.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_ae9c22676fc31638083893cb4d4b8edb1}{get\_nof\_cces}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00114\ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ For\ \(\backslash\)c\ frequencyDomainResources,\ TS\ 38.331,\ each\ 1\ in\ the\ bitset\ corresponds\ to\ 6\ RBs.}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_rbs\ =\ id\ ==\ to\_coreset\_id(0)}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ coreset0\_rbs.length()}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ (other\_coreset\_freq\_resources.count()\ *\ pdcch\_constants::NOF\_RB\_PER\_FREQ\_RESOURCE);}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{//\ A\ CCE\ corresponds\ to\ 6\ REGs,\ where\ a\ REG\ is\ 1\ RB\ x\ 1\ symbol.}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{return}\ (nof\_rbs\ *\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_ac70faa1088f184a624da17749bc1c863}{duration}})\ /\ pdcch\_constants::NOF\_REG\_PER\_CCE;}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ Computes\ the\ lowest\ RB\ used\ by\ the\ CORESET.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1coreset__configuration_a37f10437cd541f11d674608985506324}{get\_coreset\_start\_crb}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00125\ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_RBS\_PER\_GROUP\ =\ 6U;}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{if}\ (id\ ==\ to\_coreset\_id(0))\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ coreset0\_crbs().start();}
+\DoxyCodeLine{00129\ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{const}\ uint64\_t\ lowest\_bit\ =\ other\_coreset\_freq\_resources.find\_lowest(0,\ other\_coreset\_freq\_resources.size());}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{return}\ lowest\_bit\ *\ NOF\_RBS\_PER\_GROUP;}
+\DoxyCodeLine{00132\ \ \ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \ \ \ \ \ \ \ \ coreset0\_rbs;}
+\DoxyCodeLine{00136\ \ \ freq\_resource\_bitmap\ other\_coreset\_freq\_resources;}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

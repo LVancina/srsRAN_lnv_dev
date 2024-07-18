@@ -1,0 +1,253 @@
+\doxysection{prefixed\+\_\+logger.\+h}
+\hypertarget{prefixed__logger_8h_source}{}\label{prefixed__logger_8h_source}\index{include/srsran/support/prefixed\_logger.h@{include/srsran/support/prefixed\_logger.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/format\_utils.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ Class\ used\ to\ store\ common\ logging\ parameters\ for\ all\ types\ RLC\ entities.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ It\ provides\ logging\ helpers,\ so\ that\ the\ UE\ index\ and\ LCID\ are\ always\ logged.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)param\ log\_name\ name\ of\ the\ logger\ we\ want\ to\ use\ (e.g.\ RLC,\ PDCP,\ etc.)}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)param\ du\_index\ UE\ identifier\ within\ the\ DU}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)param\ lcid\ LCID\ for\ the\ bearer}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Prefix>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{prefixed\_logger}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ prefixed\_logger(\textcolor{keyword}{const}\ std::string\&\ log\_name,\ Prefix\ prefix\_,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ prefix\_separator\_\ =\ \textcolor{stringliteral}{"{}"{}})\ :}
+\DoxyCodeLine{00041\ \ \ \ \ logger(srslog::fetch\_basic\_logger(log\_name,\ \textcolor{keyword}{false})),\ prefix(prefix\_),\ prefix\_separator(prefix\_separator\_)}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ \ \ set\_prefix(Prefix\ prefix\_)\ \{\ prefix\ =\ prefix\_;\ \}}
+\DoxyCodeLine{00046\ \ \ Prefix\ get\_prefix()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ prefix;\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ log\_debug(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00050\ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ log\_helper(logger.debug,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{void}\ log\_info(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ log\_helper(logger.info,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ log\_warning(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ log\_helper(logger.warning,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ log\_error(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ log\_helper(logger.error,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ log(\textcolor{keyword}{const}\ srslog::basic\_levels\ level,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00071\ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{switch}\ (level)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::debug:}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ log\_debug(fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::info:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ log\_info(fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::warning:}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ log\_warning(fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::error:}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ log\_error(fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::none:}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ skip}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ log\_warning(\textcolor{stringliteral}{"{}Unsupported\ log\ level:\ \{\}"{}},\ basic\_level\_to\_string(level));}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{void}\ log\_debug(It\ it\_begin,\ It\ it\_end,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00096\ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ log\_helper(it\_begin,\ it\_end,\ logger.debug,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ log\_info(It\ it\_begin,\ It\ it\_end,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00101\ \ \ \{}
+\DoxyCodeLine{00102\ \ \ \ \ log\_helper(it\_begin,\ it\_end,\ logger.info,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00103\ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ log\_warning(It\ it\_begin,\ It\ it\_end,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00106\ \ \ \{}
+\DoxyCodeLine{00107\ \ \ \ \ log\_helper(it\_begin,\ it\_end,\ logger.warning,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{void}\ log\_error(It\ it\_begin,\ It\ it\_end,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00111\ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ log\_helper(it\_begin,\ it\_end,\ logger.error,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{void}\ log(\textcolor{keyword}{const}\ srslog::basic\_levels\ level,\ It\ it\_begin,\ It\ it\_end,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00117\ \ \ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{switch}\ (level)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::debug:}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ log\_debug(it\_begin,\ it\_end,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::info:}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ log\_info(it\_begin,\ it\_end,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::warning:}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ log\_warning(it\_begin,\ it\_end,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::error:}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ log\_error(it\_begin,\ it\_end,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::none:}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ skip}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ log\_warning(\textcolor{stringliteral}{"{}Unsupported\ log\ level:\ \{\}"{}},\ basic\_level\_to\_string(level));}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00141\ \ \ \textcolor{keywordtype}{void}\ log\_debug(uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00142\ \ \ \{}
+\DoxyCodeLine{00143\ \ \ \ \ log\_helper(msg,\ len,\ logger.debug,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00144\ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{void}\ log\_debug(\textcolor{keyword}{const}\ uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00147\ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \ \ log\_helper(msg,\ len,\ logger.debug,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{void}\ log\_info(uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00152\ \ \ \{}
+\DoxyCodeLine{00153\ \ \ \ \ log\_helper(msg,\ len,\ logger.info,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00154\ \ \ \}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{void}\ log\_info(\textcolor{keyword}{const}\ uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00157\ \ \ \{}
+\DoxyCodeLine{00158\ \ \ \ \ log\_helper(msg,\ len,\ logger.info,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00159\ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ log\_warning(uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00162\ \ \ \{}
+\DoxyCodeLine{00163\ \ \ \ \ log\_helper(msg,\ len,\ logger.warning,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00164\ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordtype}{void}\ log\_warning(\textcolor{keyword}{const}\ uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00167\ \ \ \{}
+\DoxyCodeLine{00168\ \ \ \ \ log\_helper(msg,\ len,\ logger.warning,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordtype}{void}\ log\_error(uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00172\ \ \ \{}
+\DoxyCodeLine{00173\ \ \ \ \ log\_helper(msg,\ len,\ logger.error,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00174\ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordtype}{void}\ log\_error(\textcolor{keyword}{const}\ uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00177\ \ \ \{}
+\DoxyCodeLine{00178\ \ \ \ \ log\_helper(msg,\ len,\ logger.error,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00179\ \ \ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{void}\ log(\textcolor{keyword}{const}\ srslog::basic\_levels\ level,\ uint8\_t*\ msg,\ size\_t\ len,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00183\ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordflow}{switch}\ (level)\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::debug:}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ log\_debug(msg,\ len,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::info:}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ log\_info(msg,\ len,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::warning:}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ log\_warning(msg,\ len,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::error:}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ log\_error(msg,\ len,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srslog::basic\_levels::none:}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ skip}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ log\_warning(\textcolor{stringliteral}{"{}Unsupported\ log\ level:\ \{\}"{}},\ basic\_level\_to\_string(level));}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00203\ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ srslog::basic\_logger\&\ get\_basic\_logger()\ \{\ \textcolor{keywordflow}{return}\ logger;\ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00209\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00210\ \ \ Prefix\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prefix;}
+\DoxyCodeLine{00211\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ \ \ \ prefix\_separator;}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00214\ \ \ \textcolor{keywordtype}{void}\ log\_helper(srslog::\mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ channel,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00215\ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordflow}{if}\ (!channel\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{.}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{enabled}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{(}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{)}})\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00218\ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \ \ fmt::memory\_buffer\ buffer;}
+\DoxyCodeLine{00220\ \ \ \ \ fmt::format\_to(buffer,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00221\ \ \ \ \ channel(\textcolor{stringliteral}{"{}\{\}\{\}\{\}"{}},\ prefix,\ prefix\_separator,\ to\_c\_str(buffer));}
+\DoxyCodeLine{00222\ \ \ \}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{void}\ log\_helper(It\ it\_begin,\ It\ it\_end,\ srslog::\mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ channel,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{if}\ (!channel\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{.}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{enabled}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{(}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{)}})\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ fmt::memory\_buffer\ buffer;}
+\DoxyCodeLine{00231\ \ \ \ \ fmt::format\_to(buffer,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00232\ \ \ \ \ channel(it\_begin,\ it\_end,\ \textcolor{stringliteral}{"{}\{\}\{\}\{\}"{}},\ prefix,\ prefix\_separator,\ to\_c\_str(buffer));}
+\DoxyCodeLine{00233\ \ \ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00236\ \ \ \textcolor{keywordtype}{void}\ log\_helper(\textcolor{keyword}{const}\ uint8\_t*\ msg,\ size\_t\ len,\ srslog::\mbox{\hyperlink{classsrslog_1_1log__channel}{log\_channel}}\&\ channel,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ fmt,\ Args\&\&...\ args)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00237\ \ \ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keywordflow}{if}\ (!channel\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{.}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{enabled}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{(}}\mbox{\hyperlink{classsrslog_1_1log__channel_a83613046d610cd73d72541cdbada379d}{)}})\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ fmt::memory\_buffer\ buffer;}
+\DoxyCodeLine{00242\ \ \ \ \ fmt::format\_to(buffer,\ fmt,\ std::forward<Args>(args)...);}
+\DoxyCodeLine{00243\ \ \ \ \ channel(msg,\ len,\ \textcolor{stringliteral}{"{}\{\}\{\}\{\}"{}},\ prefix,\ prefix\_separator,\ to\_c\_str(buffer));}
+\DoxyCodeLine{00244\ \ \ \}}
+\DoxyCodeLine{00245\ \};}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

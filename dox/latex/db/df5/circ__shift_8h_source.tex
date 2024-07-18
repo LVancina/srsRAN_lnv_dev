@@ -1,0 +1,85 @@
+\doxysection{circ\+\_\+shift.\+h}
+\hypertarget{circ__shift_8h_source}{}\label{circ__shift_8h_source}\index{include/srsran/srsvec/circ\_shift.h@{include/srsran/srsvec/circ\_shift.h}}
+\mbox{\hyperlink{circ__shift_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Circular\ shifts.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ srsvec\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ Circularly\ shifts\ a\ sequence\ in\ the\ forward\ direction.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ The\ element\ at\ position\ \(\backslash\)c\ i\ is\ moved\ to\ position\ <tt>i\ +\ shift<\(\backslash\)tt>.\ Elements\ that\ fall\ beyond\ the\ end\ of\ the}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ sequence\ are\ reintroduced\ at\ its\ start.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ \ \ \ \ \ \ Shifted\ output\ sequence.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ in\ \ \ \ \ \ \ \ Original\ input\ sequence.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ shift\ \ \ \ \ The\ number\ of\ positions\ the\ sequence\ is\ shifted\ by.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)remark\ Cannot\ be\ used\ to\ override\ memory.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00043\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{circ__shift_8h_af72cc937a290f6ef9e8ff8f9e8a8178e}{circ\_shift\_forward}}(T\&\&\ out,\ \textcolor{keyword}{const}\ U\&\ in,\ \textcolor{keywordtype}{unsigned}\ shift)}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<U>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{types_8h_acdb1ab36b8a44f874dbabf478a19c64d}{srsran\_srsvec\_assert\_size}}(out,\ in);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ length\ =\ out.size();}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(std::abs(in.data()\ -\/\ out.data())\ >=\ length,\ \textcolor{stringliteral}{"{}Input\ and\ output\ memory\ overlap."{}});}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ copy(out.first(shift),\ in.last(shift));}
+\DoxyCodeLine{00053\ \ \ copy(out.subspan(shift,\ length\ -\/\ shift),\ in.first(length\ -\/\ shift));}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ \(\backslash\)brief\ Circularly\ shifts\ a\ sequence\ in\ the\ backward\ direction.}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ The\ element\ at\ position\ \(\backslash\)c\ i\ is\ moved\ to\ position\ <tt>i\ -\/\ shift<\(\backslash\)tt>.\ Elements\ that\ fall\ beyond\ the\ beginning\ of\ the}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ sequence\ are\ reintroduced\ at\ its\ end.}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ \ \ \ \ \ \ Shifted\ output\ sequence.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ in\ \ \ \ \ \ \ \ Original\ input\ sequence.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ shift\ \ \ \ \ The\ number\ of\ positions\ the\ sequence\ is\ shifted\ by.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)remark\ Cannot\ be\ used\ to\ override\ memory.}}
+\DoxyCodeLine{00064\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00065\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{circ__shift_8h_af8445dbb276f692594ce0df7b174aaac}{circ\_shift\_backward}}(T\&\&\ out,\ \textcolor{keyword}{const}\ U\&\ in,\ \textcolor{keywordtype}{unsigned}\ shift)}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<T>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{static\_assert}(detail::is\_span\_compatible<U>::value,\ \textcolor{stringliteral}{"{}Template\ type\ is\ not\ compatible\ with\ a\ span"{}});}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{types_8h_acdb1ab36b8a44f874dbabf478a19c64d}{srsran\_srsvec\_assert\_size}}(out,\ in);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{unsigned}\ length\ =\ out.size();}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(std::abs(in.data()\ -\/\ out.data())\ >=\ length,\ \textcolor{stringliteral}{"{}Input\ and\ output\ memory\ overlap."{}});}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ copy(out.first(length\ -\/\ shift),\ in.last(length\ -\/\ shift));}
+\DoxyCodeLine{00075\ \ \ copy(out.subspan(length\ -\/\ shift,\ shift),\ in.first(shift));}
+\DoxyCodeLine{00076\ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \}\ \textcolor{comment}{//\ namespace\ srsvec}}
+\DoxyCodeLine{00079\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

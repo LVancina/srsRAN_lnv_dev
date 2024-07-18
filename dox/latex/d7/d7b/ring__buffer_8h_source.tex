@@ -1,0 +1,545 @@
+\doxysection{ring\+\_\+buffer.\+h}
+\hypertarget{ring__buffer_8h_source}{}\label{ring__buffer_8h_source}\index{include/srsran/adt/ring\_buffer.h@{include/srsran/adt/ring\_buffer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/detail/operations.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/detail/type\_storage.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Container>}
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct}\ rebind\_buffer\_storage;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00043\ \textcolor{keyword}{struct}\ rebind\_buffer\_storage<std::vector<T>>\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{using}\ type\ =\ std::vector<type\_storage<T>>;}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ size\_t\ N>}
+\DoxyCodeLine{00048\ \textcolor{keyword}{struct}\ rebind\_buffer\_storage<std::array<T,\ N>>\ \{}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{using}\ type\ =\ std::array<type\_storage<T>,\ N>;}
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Container,\ \textcolor{keywordtype}{bool}\ ForcePower2Size>}
+\DoxyCodeLine{00053\ \textcolor{keyword}{class}\ ring\_buffer\_storage;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ \(\backslash\)brief\ Specialization\ of\ internal\ ring\_buffer\ data\ storage\ for\ the\ case\ a\ std::array\ is\ used.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ This\ specialization\ tries\ to\ leverage\ the\ fact\ that\ the\ buffer\ size\ is\ known\ at\ compile\ time.\ If\ \(\backslash\)c\ N\ is\ a\ power}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ of\ 2,\ the\ compiler\ should\ be\ able\ to\ convert\ the\ \%\ operation\ into\ a\ bit-\/wise\ and.}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ size\_t\ N,\ \textcolor{keywordtype}{bool}\ ForcePower2Size>}
+\DoxyCodeLine{00059\ \textcolor{keyword}{class}\ ring\_buffer\_storage<std::array<T,\ N>,\ ForcePower2Size>}
+\DoxyCodeLine{00060\ \{}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{not}\ ForcePower2Size\ \textcolor{keyword}{or}\ ((N\ \&\ (N\ -\/\ 1))\ ==\ 0),\ \textcolor{stringliteral}{"{}N\ must\ be\ a\ power\ of\ 2\ if\ ForcePower2Size\ is\ set"{}});}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{constexpr}\ ring\_buffer\_storage()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00065\ \ \ ring\_buffer\_storage(size\_t\ \textcolor{comment}{/**/},\ \textcolor{keywordtype}{unsigned}\ rpos\_,\ \textcolor{keywordtype}{unsigned}\ count\_)\ :\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}(rpos\_),\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}}(count\_)\ \{\}}
+\DoxyCodeLine{00066\ \ \ ring\_buffer\_storage(ring\_buffer\_storage\&\&\ other)\ \textcolor{keyword}{noexcept}\ :}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}(std::exchange(other.rpos,\ 0)),\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}}(std::exchange(other.count,\ 0))}
+\DoxyCodeLine{00068\ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_move\_constructible<T>::value,\ \textcolor{stringliteral}{"{}T\ must\ be\ move-\/constructible"{}});}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}};\ ++i)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ idx\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{advance\_pos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{,}}\ i\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{)}};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ data[idx].emplace(std::move(other.data[idx].get()));}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ other.data[idx].destroy();}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ \ \ ring\_buffer\_storage\&\ operator=(ring\_buffer\_storage\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00077\ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}};\ ++i)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ data[\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{advance\_pos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{,}}\ i\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{)}}].destroy();}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}\ \ =\ std::exchange(other.rpos,\ 0);}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}}\ =\ std::exchange(other.count,\ 0);}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ <\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}};\ ++i)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ idx\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{advance\_pos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{,}}\ i\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{)}};}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ data[idx].emplace(std::move(other.data[idx].get()));}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ other.data[idx].destroy();}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ max\_size()\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ N;\ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Advance\ \(\backslash\)c\ pos\ by\ \(\backslash\)c\ n\ positions\ accounting\ for\ wrap-\/around.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a06925f07f32d06a7c548a186782fc199}{advance\_pos}}(\textcolor{keywordtype}{unsigned}\ pos,\ \textcolor{keywordtype}{unsigned}\ n)\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ (pos\ +\ n)\ \%\ max\_size();\ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ set\_size(\textcolor{keywordtype}{unsigned}\ sz)}
+\DoxyCodeLine{00097\ \ \ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{//\ do\ nothing.}}
+\DoxyCodeLine{00099\ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_aad4c49a72cb02ddcf284da16beebfcca}{rpos}}\ \ =\ 0;\ \textcolor{comment}{///<\ Reading\ position}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__storage_3_01std_1_1array_3_01T_00_01N_01_4_00_01ForcePower2Size_01_4_a2da66726107a55b9867ccef1c26a739c}{count}}\ =\ 0;\ \textcolor{comment}{///<\ Number\ of\ elements\ in\ the\ buffer}}
+\DoxyCodeLine{00103\ \ \ std::array<T,\ N>\ data;}
+\DoxyCodeLine{00104\ \};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{comment}{///\ \(\backslash\)brief\ Specialization\ of\ internal\ ring\_buffer\ data\ storage\ for\ the\ case\ a\ std::vector\ is\ used.}}
+\DoxyCodeLine{00107\ \textcolor{comment}{///\ For\ this\ specialization,\ the\ compiler\ does\ not\ know\ the\ size\ of\ the\ buffer\ at\ compile\ time.}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00109\ \textcolor{keyword}{class}\ ring\_buffer\_storage<std::vector<T>,\ \textcolor{keyword}{false}>}
+\DoxyCodeLine{00110\ \{}
+\DoxyCodeLine{00111\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00112\ \ \ \textcolor{keyword}{explicit}\ ring\_buffer\_storage(\textcolor{keywordtype}{unsigned}\ sz\ =\ 0)\ :\ data(sz)\ \{\}}
+\DoxyCodeLine{00113\ \ \ ring\_buffer\_storage(size\_t\ max\_size\_,\ \textcolor{keywordtype}{unsigned}\ rpos\_,\ \textcolor{keywordtype}{unsigned}\ count\_)\ :\ rpos(rpos\_),\ count(count\_),\ data(max\_size\_)}
+\DoxyCodeLine{00114\ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ \ \ ring\_buffer\_storage(ring\_buffer\_storage\&\&\ other)\ \textcolor{keyword}{noexcept}\ :}
+\DoxyCodeLine{00117\ \ \ \ \ rpos(std::exchange(other.rpos,\ 0)),\ count(std::exchange(other.count,\ 0)),\ data(std::move(other.data))}
+\DoxyCodeLine{00118\ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ \ \ ring\_buffer\_storage\&\ operator=(ring\_buffer\_storage\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00121\ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ count;\ ++i)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ data[\textcolor{keyword}{this}-\/>advance\_pos(rpos,\ i)].destroy();}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ rpos\ \ =\ std::exchange(other.rpos,\ 0);}
+\DoxyCodeLine{00126\ \ \ \ \ count\ =\ std::exchange(other.count,\ 0);}
+\DoxyCodeLine{00127\ \ \ \ \ data\ \ =\ std::move(other.data);}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{void}\ swap(ring\_buffer\_storage\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00132\ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ std::swap(rpos,\ other.rpos);}
+\DoxyCodeLine{00134\ \ \ \ \ std::swap(count,\ other.count);}
+\DoxyCodeLine{00135\ \ \ \ \ std::swap(data,\ other.data);}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ size\_t\ max\_size()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ data.size();\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{void}\ set\_size(\textcolor{keywordtype}{unsigned}\ sz)}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(count\ ==\ 0\ \textcolor{keyword}{or}\ sz\ ==\ data.size(),\ \textcolor{stringliteral}{"{}Dynamic\ resizes\ not\ supported\ when\ ring\ buffer\ is\ not\ empty"{}});}
+\DoxyCodeLine{00143\ \ \ \ \ data.resize(sz);}
+\DoxyCodeLine{00144\ \ \ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Advance\ \(\backslash\)c\ pos\ by\ \(\backslash\)c\ n\ positions\ accounting\ for\ wrap-\/around.}}
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{unsigned}\ advance\_pos(\textcolor{keywordtype}{unsigned}\ pos,\ \textcolor{keywordtype}{unsigned}\ n)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ (pos\ +\ n)\ \%\ max\_size();\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ rpos\ \ =\ 0;\ \textcolor{comment}{///<\ Reading\ position}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ count\ =\ 0;\ \textcolor{comment}{///<\ Number\ of\ elements\ in\ the\ buffer}}
+\DoxyCodeLine{00151\ \ \ std::vector<T>\ data;\ \ \ \ \ \ \textcolor{comment}{///<\ Container\ where\ elements\ are\ stored}}
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{comment}{///\ \(\backslash\)brief\ Specialization\ of\ internal\ ring\_buffer\ data\ storage\ for\ the\ case\ a\ std::vector\ is\ used.}}
+\DoxyCodeLine{00155\ \textcolor{comment}{///\ For\ this\ specialization,\ the\ compiler\ does\ not\ know\ the\ size\ of\ the\ buffer\ at\ compile\ time,\ but\ it\ knows\ that\ it\ is}}
+\DoxyCodeLine{00156\ \textcolor{comment}{///\ a\ power\ of\ 2.\ Thus,\ it\ is\ able\ to\ avoid\ the\ \%\ operator,\ and\ uses\ instead\ a\ bit-\/wise\ and.}}
+\DoxyCodeLine{00157\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00158\ \textcolor{keyword}{class}\ ring\_buffer\_storage<std::vector<T>,\ \textcolor{keyword}{true}>\ :\ \textcolor{keyword}{private}\ ring\_buffer\_storage<std::vector<T>,\ \textcolor{keyword}{false}>}
+\DoxyCodeLine{00159\ \{}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{using}\ super\_type\ =\ ring\_buffer\_storage<std::vector<T>,\ \textcolor{keyword}{false}>;}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ to\_next\_pow2(\textcolor{keywordtype}{unsigned}\ sz)\ \{\ \textcolor{keywordflow}{return}\ pow(2,\ ceil(log(sz)\ /\ log(2)));\ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{using}\ super\_type::count;}
+\DoxyCodeLine{00166\ \ \ \textcolor{keyword}{using}\ super\_type::data;}
+\DoxyCodeLine{00167\ \ \ \textcolor{keyword}{using}\ super\_type::max\_size;}
+\DoxyCodeLine{00168\ \ \ \textcolor{keyword}{using}\ super\_type::rpos;}
+\DoxyCodeLine{00169\ \ \ \textcolor{keyword}{using}\ super\_type::super\_type;}
+\DoxyCodeLine{00170\ \ \ \textcolor{keyword}{using}\ super\_type::swap;}
+\DoxyCodeLine{00171\ \ \ \textcolor{keyword}{explicit}\ ring\_buffer\_storage(\textcolor{keywordtype}{unsigned}\ sz)\ :\ super\_type(to\_next\_pow2(sz))\ \{\}}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordtype}{void}\ set\_size(\textcolor{keywordtype}{unsigned}\ sz)}
+\DoxyCodeLine{00174\ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{comment}{//\ Round\ up\ to\ closest\ power\ of\ 2.}}
+\DoxyCodeLine{00176\ \ \ \ \ super\_type::set\_size(to\_next\_pow2(sz));}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Advance\ \(\backslash\)c\ pos\ by\ \(\backslash\)c\ n\ positions\ accounting\ for\ wrap-\/around.\ Leverages\ the\ fact\ that\ max\_size()\ is\ a\ power}}
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ of\ 2.}}
+\DoxyCodeLine{00181\ \ \ \textcolor{keywordtype}{unsigned}\ advance\_pos(\textcolor{keywordtype}{unsigned}\ pos,\ \textcolor{keywordtype}{unsigned}\ n)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00182\ \ \ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{comment}{//\ x\ mod\ y\ ==\ x\ *\ (y\ -\/\ 1),\ when\ y\ is\ power\ of\ 2.}}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordflow}{return}\ (pos\ +\ n)\ \&\ (\textcolor{keyword}{this}-\/>max\_size()\ -\/\ 1);}
+\DoxyCodeLine{00185\ \ \ \}}
+\DoxyCodeLine{00186\ \};}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \textcolor{comment}{///\ Base\ common\ class\ for\ definition\ of\ ring\ buffer\ data\ structures\ with\ the\ following\ features:}}
+\DoxyCodeLine{00189\ \textcolor{comment}{///\ -\/\ no\ allocations\ while\ pushing/popping\ new\ elements.\ Just\ an\ internal\ index\ update}}
+\DoxyCodeLine{00190\ \textcolor{comment}{///\ -\/\ it\ provides\ an\ api\ to\ push/pop\ elements\ like\ a\ queue}}
+\DoxyCodeLine{00191\ \textcolor{comment}{///\ -\/\ it\ provides\ an\ iterator\ interface\ to\ iterate\ over\ added\ elements\ in\ the\ buffer}}
+\DoxyCodeLine{00192\ \textcolor{comment}{///\ -\/\ not\ thread-\/safe.}}
+\DoxyCodeLine{00193\ \textcolor{comment}{///\ \(\backslash\)tparam\ Container\ underlying\ container\ type\ used\ as\ buffer\ (e.g.\ std::array<T,\ N>\ or\ std::vector<T>).}}
+\DoxyCodeLine{00194\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Container,\ \textcolor{keywordtype}{bool}\ ForcePower2Size>}
+\DoxyCodeLine{00195\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}}
+\DoxyCodeLine{00196\ \{}
+\DoxyCodeLine{00197\ \ \ \textcolor{keyword}{static\_assert}(std::is\_same<T,\ \textcolor{keyword}{typename}\ Container::value\_type>::value,\ \textcolor{stringliteral}{"{}Invalid\ container\ value\_type"{}});}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{static\_assert}(\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{std}}::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{is\_same}}<\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{Container}},\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{std}}::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{vector}}<\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{T}}>>::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{value}}\ \textcolor{keyword}{or}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{is\_std\_array}}<\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{Container}}>::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{value}},}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ container\ type.\ Only\ std::vector\ and\ std::array\ are\ supported"{}});}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ has\_static\_size\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__std__array}{is\_std\_array}}<Container>::value;}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{keyword}{using}\ raw\_container\ \ \ \ =\ \textcolor{keyword}{typename}\ detail::rebind\_buffer\_storage<Container>::type;}
+\DoxyCodeLine{00204\ \ \ \textcolor{keyword}{using}\ buffer\_type\ \ \ \ \ \ =\ ring\_buffer\_storage<raw\_container,\ ForcePower2Size>;}
+\DoxyCodeLine{00205\ \ \ \textcolor{keyword}{using}\ ring\_buffer\_type\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}<T,\ Container,\ ForcePower2Size>;}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ Iterator\ implementation.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ DataType\ can\ be\ T\ or\ const\ T.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ DataType>}
+\DoxyCodeLine{00210\ \ \ \textcolor{keyword}{class}\ iterator\_impl}
+\DoxyCodeLine{00211\ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keyword}{using}\ parent\_type\ =\ std::conditional\_t<std::is\_same<DataType,\ T>::value,\ ring\_buffer\_type,\ \textcolor{keyword}{const}\ ring\_buffer\_type>;}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \ \ iterator\_impl(parent\_type\&\ parent\_,\ \textcolor{keywordtype}{unsigned}\ ring\_idx\_)\ :\ parent(\&parent\_),\ ring\_idx(ring\_idx\_)}
+\DoxyCodeLine{00215\ \ \ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ring\_idx\ <=\ parent-\/>size(),\ \textcolor{stringliteral}{"{}Invalid\ iterator\ position"{}});}
+\DoxyCodeLine{00217\ \ \ \ \ \}}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ \ =\ std::remove\_const\_t<DataType>;}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ \ =\ DataType\&;}
+\DoxyCodeLine{00222\ \ \ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ \ =\ DataType*;}
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{keyword}{using}\ difference\_type\ \ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keyword}{using}\ iterator\_category\ =\ std::forward\_iterator\_tag;}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \ \ iterator\_impl<DataType>\&\ operator++()}
+\DoxyCodeLine{00227\ \ \ \ \ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ inc\_();}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00230\ \ \ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \ \ iterator\_impl<DataType>\ operator++(\textcolor{keywordtype}{int})}
+\DoxyCodeLine{00233\ \ \ \ \ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ iterator\_impl<DataType>\ tmp(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ ++(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tmp;}
+\DoxyCodeLine{00237\ \ \ \ \ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ an\ iterator\ object\ that\ corresponds\ to\ the\ current\ iterator,\ incremented\ by\ \(\backslash\)c\ n\ positions.}}
+\DoxyCodeLine{00240\ \ \ \ \ iterator\_impl<DataType>\ operator+(difference\_type\ n)}
+\DoxyCodeLine{00241\ \ \ \ \ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ iterator\_impl<DataType>\ tmp(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ tmp\ +=\ n;}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tmp;}
+\DoxyCodeLine{00245\ \ \ \ \ \}}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Increment\ iterator\ by\ \(\backslash\)c\ n\ positions.}}
+\DoxyCodeLine{00248\ \ \ \ \ iterator\_impl<DataType>\&\ operator+=(difference\_type\ n)}
+\DoxyCodeLine{00249\ \ \ \ \ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ inc\_(n);}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00252\ \ \ \ \ \}}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ pointer\ \ \ operator-\/>()\ \{\ \textcolor{keywordflow}{return}\ \&get();\ \}}
+\DoxyCodeLine{00255\ \ \ \ \ pointer\ \ \ operator-\/>()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \&get();\ \}}
+\DoxyCodeLine{00256\ \ \ \ \ reference\ operator*()\ \{\ \textcolor{keywordflow}{return}\ get();\ \}}
+\DoxyCodeLine{00257\ \ \ \ \ reference\ operator*()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ get();\ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ iterator\_impl<DataType>\&\ it)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ it.parent\ ==\ parent\ \textcolor{keyword}{and}\ it.ring\_idx\ ==\ ring\_idx;\ \}}
+\DoxyCodeLine{00260\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ iterator\_impl<DataType>\&\ it)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ ==\ it);\ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \ \ \ \ difference\_type\ operator-\/(\textcolor{keyword}{const}\ iterator\_impl<DataType>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ring\_idx\ -\/\ other.ring\_idx;\ \}}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00265\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}<T,\ Container,\ ForcePower2Size>;}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordtype}{void}\ assert\_idx\_within\_bounds()}
+\DoxyCodeLine{00268\ \ \ \ \ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ring\_idx\ <\ parent-\/>size(),}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}index=\{\}\ is\ out-\/of-\/bounds\ [\{\},\ \{\})"{}},}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ring\_idx,}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ parent-\/>buffer.rpos,}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ parent-\/>size());}
+\DoxyCodeLine{00274\ \ \ \ \ \}}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keywordtype}{void}\ inc\_()}
+\DoxyCodeLine{00277\ \ \ \ \ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(*\textcolor{keyword}{this}\ !=\ parent-\/>end(),\ \textcolor{stringliteral}{"{}Incrementing\ iterator\ beyond\ end()"{}});}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ ring\_idx++;}
+\DoxyCodeLine{00280\ \ \ \ \ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \ \ \textcolor{keywordtype}{void}\ inc\_(difference\_type\ n)}
+\DoxyCodeLine{00283\ \ \ \ \ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\ >\ 0)\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ring\_idx\ +\ n\ <=\ parent-\/>size(),\ \textcolor{stringliteral}{"{}Incrementing\ iterator\ beyond\ end()"{}});}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (n\ <\ 0)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ring\_idx\ +\ n\ <=\ parent-\/>size(),\ \textcolor{stringliteral}{"{}Decrementing\ iterator\ beyond\ begin()"{}});}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ ring\_idx\ +=\ n;}
+\DoxyCodeLine{00290\ \ \ \ \ \}}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00292\ \ \ \ \ reference\ get()}
+\DoxyCodeLine{00293\ \ \ \ \ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ assert\_idx\_within\_bounds();}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parent-\/>buffer.data[parent-\/>buffer.advance\_pos(parent-\/>buffer.rpos,\ ring\_idx)].get();}
+\DoxyCodeLine{00296\ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ reference\ get()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00298\ \ \ \ \ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ assert\_idx\_within\_bounds();}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parent-\/>buffer.data[parent-\/>buffer.advance\_pos(parent-\/>buffer.rpos,\ ring\_idx)].get();}
+\DoxyCodeLine{00301\ \ \ \ \ \}}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \ \ \ \ parent\_type*\ parent;}
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ ring\_idx;\ \textcolor{comment}{///<\ When\ iterator\ is\ at\ begin(),\ ring\_idx\ is\ zero.}}
+\DoxyCodeLine{00305\ \ \ \};}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00308\ \ \ \textcolor{keyword}{using}\ index\_type\ \ \ \ \ \ =\ \textcolor{keywordtype}{unsigned};}
+\DoxyCodeLine{00309\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{value\_type}}\ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{std}}::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{remove\_const\_t}}<\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{T}}>;}
+\DoxyCodeLine{00310\ \ \ \textcolor{keyword}{using}\ difference\_type\ =\ \textcolor{keyword}{typename}\ Container::difference\_type;}
+\DoxyCodeLine{00311\ \ \ \textcolor{keyword}{using}\ size\_type\ \ \ \ \ \ \ =\ \textcolor{keywordtype}{unsigned};}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ max\_size\_is\_power\_of\_2\ =\ ForcePower2Size;}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \textcolor{keyword}{using}\ iterator\ \ \ \ \ \ \ =\ iterator\_impl<T>;}
+\DoxyCodeLine{00316\ \ \ \textcolor{keyword}{using}\ const\_iterator\ =\ iterator\_impl<\textcolor{keyword}{const}\ T>;}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \textcolor{keyword}{constexpr}\ ring\_buffer\_impl()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00319\ \ \ \string~ring\_buffer\_impl()\ \{\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{clear}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{)}};\ \}}
+\DoxyCodeLine{00320\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Dummy\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ T,}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<\textcolor{keyword}{not}\ ring\_buffer\_impl<Dummy,\ Container,\ ForcePower2Size>::has\_static\_size,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00322\ \ \ \textcolor{keyword}{explicit}\ ring\_buffer\_impl(size\_type\ sz)\ :\ buffer(sz)}
+\DoxyCodeLine{00323\ \ \ \{}
+\DoxyCodeLine{00324\ \ \ \}}
+\DoxyCodeLine{00325\ \ \ ring\_buffer\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ other)\ \textcolor{keyword}{noexcept}\ :}
+\DoxyCodeLine{00326\ \ \ \ \ buffer(other.max\_size(),\ other.buffer.rpos,\ other.buffer.count)}
+\DoxyCodeLine{00327\ \ \ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_copy\_constructible<T>::value,\ \textcolor{stringliteral}{"{}T\ must\ be\ copy-\/constructible"{}});}
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ buffer.count;\ ++i)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\ =\ buffer.advance\_pos(buffer.rpos,\ i);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ buffer.data[n].emplace(other.buffer.data[n].get());}
+\DoxyCodeLine{00332\ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \}}
+\DoxyCodeLine{00334\ \ \ ring\_buffer\_impl(\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\&\ other)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00335\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00336\ \ \ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_copy\_constructible<T>::value,\ \textcolor{stringliteral}{"{}T\ must\ be\ copy-\/constructible"{}});}
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ !=\ \&other)\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{clear}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{)}};}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ buffer.set\_size(other.buffer.data.size());}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ buffer.rpos\ \ =\ other.buffer.rpos;}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ buffer.count\ =\ other.buffer.count;}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ buffer.count;\ ++i)\ \{}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ n\ =\ buffer.advance\_pos(buffer.rpos,\ i);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ buffer.data[n].emplace(other.buffer.data[n].get());}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00349\ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\&\ other)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ the\ maximum\ number\ of\ elements\ that\ can\ be\ stored\ in\ the\ ring\_buffer.}}
+\DoxyCodeLine{00353\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a4d100fb10cf0f01e27c36cf88d7de6bb}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a4d100fb10cf0f01e27c36cf88d7de6bb}{max\_size}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ buffer.max\_size();\ \}}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00356\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{full}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ size()\ ==\ max\_size();\ \}}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00358\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ ring\_buffer\ is\ empty.}}
+\DoxyCodeLine{00359\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af5dc3a3ec599a73f864e6e17cde987aa}{empty}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ buffer.count\ ==\ 0;\ \}}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ the\ number\ of\ elements\ currently\ stored\ in\ the\ ring\_buffer.}}
+\DoxyCodeLine{00362\ \ \ \textcolor{keyword}{constexpr}\ size\_type\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{size}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ buffer.count;\ \}}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Dummy\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ T,}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<\textcolor{keyword}{not}\ ring\_buffer\_impl<Dummy,\ Container,\ ForcePower2Size>::has\_static\_size,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00366\ \ \ \textcolor{keywordtype}{void}\ set\_size(size\_type\ sz)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00367\ \ \ \{}
+\DoxyCodeLine{00368\ \ \ \ \ buffer.set\_size(sz);}
+\DoxyCodeLine{00369\ \ \ \}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Push\ an\ element\ to\ the\ ring\ buffer.\ Asserts\ if\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00372\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ std::enable\_if\_t<std::is\_convertible<U,\ T>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00373\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a7533e0b892a2601732798c05c1ddc31c}{push}}(U\&\&\ u)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00374\ \ \ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ full(),\ \textcolor{stringliteral}{"{}Circular\ buffer\ is\ full."{}});}
+\DoxyCodeLine{00376\ \ \ \ \ buffer.data[get\_wpos()].emplace(std::forward<U>(u));}
+\DoxyCodeLine{00377\ \ \ \ \ buffer.count++;}
+\DoxyCodeLine{00378\ \ \ \}}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Push\ elements\ of\ a\ range\ into\ the\ ring\ buffer\ in\ a\ batch.\ Asserts\ if\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00381\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00382\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a9712250ba9c4eafc7374162e1e402f87}{push}}(It\ b,\ It\ e)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00383\ \ \ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<std::decay\_t<\textcolor{keyword}{decltype}(*std::declval<It>())>,\ T>::value,}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ type\ passed\ to\ ::push"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ b;\ it\ !=\ e;\ ++it)\ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ push(*it);}
+\DoxyCodeLine{00388\ \ \ \ \ \}}
+\DoxyCodeLine{00389\ \ \ \}}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Push\ elements\ of\ a\ span\ into\ the\ ring\ buffer\ in\ a\ batch.\ Asserts\ if\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00392\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_ab2869290398d9776e1b2d8ed9db0f240}{push}}(span<value\_type>\ range)\ \textcolor{keyword}{noexcept}\ \{\ push(range.begin(),\ range.end());\ \}}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Tries\ to\ push\ an\ element\ to\ the\ circular\ buffer.\ If\ ring\_buffer\ is\ full,\ returns\ false.}}
+\DoxyCodeLine{00395\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ std::enable\_if\_t<std::is\_convertible<U,\ T>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00396\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_ae6e3ea62ace80bf9f63159cfa67f556f}{try\_push}}(U\&\&\ u)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00397\ \ \ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{full}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a53bd82733e7ea48a43b9b4eba89b869e}{)}})\ \{}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00400\ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ push(std::forward<U>(u));}
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00403\ \ \ \}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Pushes\ elements\ to\ the\ ring\ buffer\ in\ a\ batch.\ Stops\ when\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00406\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Number\ of\ elements\ pushed.}}
+\DoxyCodeLine{00407\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00408\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a0884bb3aef88c3d5f4daac811b54aca5}{try\_push}}(It\ b,\ It\ e)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00409\ \ \ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<std::decay\_t<\textcolor{keyword}{decltype}(*std::declval<It>())>,\ T>::value,}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ type\ passed\ to\ ::push"{}});}
+\DoxyCodeLine{00412\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ =\ 0;}
+\DoxyCodeLine{00413\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ b;\ it\ !=\ e;\ ++it)\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ try\_push(*it))\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00418\ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00420\ \ \ \}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Pushes\ elements\ of\ a\ span\ into\ the\ ring\ buffer\ in\ a\ batch.\ Stops\ when\ ring\_buffer\ is\ full.}}
+\DoxyCodeLine{00423\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a02c0385faa2d406bd8055cc199026e51}{try\_push}}(span<value\_type>\ range)\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ try\_push(range.begin(),\ range.end());\ \}}
+\DoxyCodeLine{00424\ }
+\DoxyCodeLine{00425\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Pops\ element\ from\ ring\_buffer.\ If\ ring\_buffer\ is\ empty,\ asserts.}}
+\DoxyCodeLine{00426\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1e65da25acdc92d7520ef79aa34e6fdf}{pop}}()}
+\DoxyCodeLine{00427\ \ \ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ empty(),\ \textcolor{stringliteral}{"{}Cannot\ call\ pop()\ in\ empty\ circular\ buffer"{}});}
+\DoxyCodeLine{00429\ \ \ \ \ buffer.data[buffer.rpos].destroy();}
+\DoxyCodeLine{00430\ \ \ \ \ buffer.rpos\ =\ buffer.advance\_pos(buffer.rpos,\ 1);}
+\DoxyCodeLine{00431\ \ \ \ \ buffer.count-\/-\/;}
+\DoxyCodeLine{00432\ \ \ \}}
+\DoxyCodeLine{00433\ }
+\DoxyCodeLine{00434\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Pops\ elements\ from\ ring\_buffer\ into\ a\ range.}}
+\DoxyCodeLine{00435\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Number\ of\ popped\ elements.}}
+\DoxyCodeLine{00436\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ It>}
+\DoxyCodeLine{00437\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_ae94fbc5e7170d3ab592be9e50613f599}{pop\_into}}(It\ b,\ It\ e)}
+\DoxyCodeLine{00438\ \ \ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ orig\_size\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{size}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{)}};}
+\DoxyCodeLine{00440\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ b;\ it\ !=\ e;\ ++it)\ \{}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af5dc3a3ec599a73f864e6e17cde987aa}{empty}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af5dc3a3ec599a73f864e6e17cde987aa}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af5dc3a3ec599a73f864e6e17cde987aa}{)}})\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ *it\ =\ std::move(buffer.data[buffer.rpos].get());}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1e65da25acdc92d7520ef79aa34e6fdf}{pop}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1e65da25acdc92d7520ef79aa34e6fdf}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1e65da25acdc92d7520ef79aa34e6fdf}{)}};}
+\DoxyCodeLine{00446\ \ \ \ \ \}}
+\DoxyCodeLine{00447\ \ \ \ \ \textcolor{keywordflow}{return}\ orig\_size\ -\/\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{size}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{(}}\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a429cb0ce3a24bb67d5cbd58fc30080cb}{)}};}
+\DoxyCodeLine{00448\ \ \ \}}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Pops\ elements\ from\ ring\_buffer\ into\ a\ span.}}
+\DoxyCodeLine{00451\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Number\ of\ popped\ elements.}}
+\DoxyCodeLine{00452\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a1484ad7e910b46ee262d03331eb9dc3b}{pop\_into}}(span<value\_type>\ range)\ \{\ \textcolor{keywordflow}{return}\ pop\_into(range.begin(),\ range.end());\ \}}
+\DoxyCodeLine{00453\ }
+\DoxyCodeLine{00454\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Fetches\ the\ top\ position\ of\ ring\_buffer.\ The\ function\ asserts\ if\ empty.}}
+\DoxyCodeLine{00455\ \ \ T\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_abd8c574507c47bd3d6e464ce96d263b6}{top}}()}
+\DoxyCodeLine{00456\ \ \ \{}
+\DoxyCodeLine{00457\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ empty(),\ \textcolor{stringliteral}{"{}Cannot\ call\ top()\ in\ empty\ circular\ buffer"{}});}
+\DoxyCodeLine{00458\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.data[buffer.rpos].get();}
+\DoxyCodeLine{00459\ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \textcolor{keyword}{const}\ T\&\ top()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00461\ \ \ \{}
+\DoxyCodeLine{00462\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ empty(),\ \textcolor{stringliteral}{"{}Cannot\ call\ top()\ in\ empty\ circular\ buffer"{}});}
+\DoxyCodeLine{00463\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.data[buffer.rpos].get();}
+\DoxyCodeLine{00464\ \ \ \}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Clears\ the\ content\ of\ the\ ring\_buffer.}}
+\DoxyCodeLine{00467\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_afe8656477b9924bdbbca79f1204c0108}{clear}}()}
+\DoxyCodeLine{00468\ \ \ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ buffer.count;\ ++i)\ \{}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ buffer.data[buffer.advance\_pos(buffer.rpos,\ i)].destroy();}
+\DoxyCodeLine{00471\ \ \ \ \ \}}
+\DoxyCodeLine{00472\ \ \ \ \ buffer.rpos\ \ =\ 0;}
+\DoxyCodeLine{00473\ \ \ \ \ buffer.count\ =\ 0;}
+\DoxyCodeLine{00474\ \ \ \}}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Random\ access\ to\ position\ of\ the\ ring\_buffer.}}
+\DoxyCodeLine{00477\ \ \ T\&\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_a7f44b5a527e2ea4632c42a7b1569b620}{operator}}[](index\_type\ i)}
+\DoxyCodeLine{00478\ \ \ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\ <\ size(),\ \textcolor{stringliteral}{"{}Out-\/of-\/bounds\ access\ to\ circular\ buffer\ (\{\}\ >=\ \{\})"{}},\ i,\ buffer.count);}
+\DoxyCodeLine{00480\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.data[buffer.advance\_pos(buffer.rpos,\ i)].get();}
+\DoxyCodeLine{00481\ \ \ \}}
+\DoxyCodeLine{00482\ \ \ \textcolor{keyword}{const}\ T\&\ operator[](index\_type\ i)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00483\ \ \ \{}
+\DoxyCodeLine{00484\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\ <\ size(),\ \textcolor{stringliteral}{"{}Out-\/of-\/bounds\ access\ to\ circular\ buffer\ (\{\}\ >=\ \{\})"{}},\ i,\ buffer.count);}
+\DoxyCodeLine{00485\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.data[buffer.advance\_pos(buffer.rpos,\ i)].get();}
+\DoxyCodeLine{00486\ \ \ \}}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00488\ \ \ iterator\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ iterator(*\textcolor{keyword}{this},\ 0);\ \}}
+\DoxyCodeLine{00489\ \ \ const\_iterator\ begin()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(*\textcolor{keyword}{this},\ 0);\ \}}
+\DoxyCodeLine{00490\ \ \ iterator\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ iterator(*\textcolor{keyword}{this},\ buffer.count);\ \}}
+\DoxyCodeLine{00491\ \ \ const\_iterator\ end()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(*\textcolor{keyword}{this},\ buffer.count);\ \}}
+\DoxyCodeLine{00492\ }
+\DoxyCodeLine{00493\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00494\ \ \ \{}
+\DoxyCodeLine{00495\ \ \ \ \ \textcolor{keywordflow}{return}\ std::equal(begin(),\ end(),\ other.begin(),\ other.end());}
+\DoxyCodeLine{00496\ \ \ \}}
+\DoxyCodeLine{00497\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ ==\ other);\ \}}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Apply\ predicate\ callable\ to\ elements\ until\ the\ predicate\ returns\ true.}}
+\DoxyCodeLine{00500\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ func\ Predicate\ functor.}}
+\DoxyCodeLine{00501\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ or\ false\ if\ an\ element\ was\ found\ for\ which\ funct(element)\ returned\ true.}}
+\DoxyCodeLine{00502\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ F>}
+\DoxyCodeLine{00503\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl_af0b65d8ef38df9fa4ce50609322497d9}{apply\_first}}(\textcolor{keyword}{const}\ F\&\ func)}
+\DoxyCodeLine{00504\ \ \ \{}
+\DoxyCodeLine{00505\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ begin();\ it\ !=\ end();\ it++)\ \{}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (func(*it))\ \{}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00509\ \ \ \ \ \}}
+\DoxyCodeLine{00510\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00511\ \ \ \}}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00514\ \ \ size\_type\ get\_wpos()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ buffer.advance\_pos(buffer.rpos,\ buffer.count);\ \}}
+\DoxyCodeLine{00515\ }
+\DoxyCodeLine{00516\ \ \ buffer\_type\ buffer;}
+\DoxyCodeLine{00517\ \};}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00520\ }
+\DoxyCodeLine{00521\ \textcolor{comment}{///\ Ring\ buffer\ with\ internal\ data\ storage\ via\ a\ std::vector<T>.}}
+\DoxyCodeLine{00522\ \textcolor{comment}{///\ -\/\ size\ can\ be\ defined\ at\ construction\ or\ via\ set\_size.}}
+\DoxyCodeLine{00523\ \textcolor{comment}{///\ -\/\ not\ thread-\/safe.}}
+\DoxyCodeLine{00524\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ value\ type\ stored\ by\ buffer}}
+\DoxyCodeLine{00525\ \textcolor{comment}{///\ \(\backslash\)tparam\ RoundUpSizeToPowerOf2\ Whether\ the\ ring\ buffer\ size\ gets\ round\ up\ to\ the\ next\ power\ of\ 2.\ When\ set\ to\ true,}}
+\DoxyCodeLine{00526\ \textcolor{comment}{///\ the\ compiler\ is\ able\ to\ avoid\ the\ \%\ operation\ and\ use\ instead\ the\ "{}bitwise-\/and"{}\ operation.}}
+\DoxyCodeLine{00527\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ \mbox{\hyperlink{namespacesrsran}{T}},\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran}{RoundUpSizeToPowerOf2}}\ =\ \textcolor{keyword}{true}>}
+\DoxyCodeLine{00528\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran}{ring\_buffer}}\ =\ \mbox{\hyperlink{namespacesrsran}{detail}}::\mbox{\hyperlink{namespacesrsran}{ring\_buffer\_impl}}<\mbox{\hyperlink{namespacesrsran}{T}},\ \mbox{\hyperlink{namespacesrsran}{std}}::\mbox{\hyperlink{namespacesrsran}{vector}}<\mbox{\hyperlink{namespacesrsran}{T}}>,\ \mbox{\hyperlink{namespacesrsran}{RoundUpSizeToPowerOf2}}>;}
+\DoxyCodeLine{00529\ }
+\DoxyCodeLine{00530\ \textcolor{comment}{///\ \(\backslash\)brief\ Ring\ buffer\ with\ fixed,\ embedded\ data\ storage\ via\ a\ std::array<T,\ N>.\ It\ can\ contain\ up\ to\ N\ elements.}}
+\DoxyCodeLine{00531\ \textcolor{comment}{///\ -\/\ Given\ that\ the\ buffer\ size\ is\ known\ at\ compile-\/time,\ the\ circular\ iteration\ over\ the\ buffer\ may\ be\ more\ optimized}}
+\DoxyCodeLine{00532\ \textcolor{comment}{///\ (e.g.\ when\ N\ is\ a\ power\ of\ 2,\ \%\ operator\ can\ be\ avoided).}}
+\DoxyCodeLine{00533\ \textcolor{comment}{///\ -\/\ not\ thread-\/safe.}}
+\DoxyCodeLine{00534\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ value\ type\ stored\ by\ buffer.}}
+\DoxyCodeLine{00535\ \textcolor{comment}{///\ \(\backslash\)tparam\ N\ Maximum\ capacity\ of\ the\ ring\ buffer.}}
+\DoxyCodeLine{00536\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ size\_t\ N>}
+\DoxyCodeLine{00537\ \textcolor{keyword}{using}\ static\_ring\_buffer\ =\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1ring__buffer__impl}{ring\_buffer\_impl}}<T,\ std::array<T,\ N>,\ \textcolor{keyword}{false}>;}
+\DoxyCodeLine{00538\ }
+\DoxyCodeLine{00539\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

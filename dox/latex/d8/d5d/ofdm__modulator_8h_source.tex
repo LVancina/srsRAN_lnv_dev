@@ -1,0 +1,109 @@
+\doxysection{ofdm\+\_\+modulator.\+h}
+\hypertarget{ofdm__modulator_8h_source}{}\label{ofdm__modulator_8h_source}\index{include/srsran/phy/lower/modulation/ofdm\_modulator.h@{include/srsran/phy/lower/modulation/ofdm\_modulator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ resource\_grid\_reader;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Setup\ configuration\ parameters.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct}\ ofdm\_modulator\_configuration\ \{}
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ Indicates\ the\ numeorology\ of\ the\ OFDM\ modulator.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{keywordtype}{unsigned}\ numerology;}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ Indicates\ the\ resource\ grid\ bandwidth\ in\ resource\ blocks.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{unsigned}\ bw\_rb;}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Indicates\ the\ DFT\ size.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{unsigned}\ dft\_size;}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Cyclic\ prefix.}}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ cp;}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Scaling\ factor\ at\ the\ DFT\ output.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{float}\ scale;}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Indicates\ the\ center\ frequency\ of\ the\ carrier\ in\ Hz.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{double}\ center\_freq\_hz;}
+\DoxyCodeLine{00047\ \};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ an\ OFDM\ modulator\ that\ modulates\ at\ symbol\ granularity.}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ \(\backslash\)remark\ Performs\ OFDM\ modulation\ as\ per\ TS\ 38.211\ section\ 5.3.1\ OFDM\ baseband\ signal\ generation\ for\ all\ channels}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ except\ PRACH.}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ \(\backslash\)remark\ In\ addition\ to\ modulation,\ it\ applies\ phase\ compensation\ as\ per\ TS\ 38.211\ section\ 5.4\ Modulation\ and}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ upconversion}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{class}\ ofdm\_symbol\_modulator}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{virtual}\ \string~ofdm\_symbol\_modulator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ symbol\ size\ including\ cyclic\ prefix.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_index\ Indicates\ the\ symbol\ index\ within\ the\ subframe.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ samples\ for\ the\ given\ symbol\ index.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_symbol\_size(\textcolor{keywordtype}{unsigned}\ symbol\_index)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Modulates\ an\ OFDM\ signal\ with\ symbol\ granularity.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Provides\ the\ time\ domain\ modulated\ signal.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ grid\ Provides\ the\ input\ as\ frequency-\/domain\ signal\ corresponding\ to\ one\ slot.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ port\_index\ Indicates\ the\ port\ index\ to\ modulate.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\_index\ Symbol\ index\ within\ the\ subframe\ to\ modulate.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ input\ size\ must\ be\ consistent\ with\ the\ configured\ bandwidth.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ output\ size\ must\ be\ equal\ to\ the\ the\ symbol\ size.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00073\ \ \ modulate(span<cf\_t>\ output,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ symbol\_index)\ =\ 0;}
+\DoxyCodeLine{00074\ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ an\ OFDM\ modulator\ with\ slot\ granularity.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)remark\ Performs\ OFDM\ modulation\ as\ per\ TS\ 38.211\ section\ 5.3.1\ OFDM\ baseband\ signal\ generation\ for\ all\ channels}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ except\ PRACH.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ \(\backslash\)remark\ In\ addition\ to\ modulation,\ it\ applies\ phase\ compensation\ as\ per\ TS\ 38.211\ section\ 5.4\ Modulation\ and}}
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ upconversion.}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{class}\ ofdm\_slot\_modulator}
+\DoxyCodeLine{00082\ \{}
+\DoxyCodeLine{00083\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{virtual}\ \string~ofdm\_slot\_modulator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ slot\ size.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_index\ Indicates\ the\ slot\ index\ within\ the\ subframe.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ samples\ for\ the\ given\ slot\ index.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_slot\_size(\textcolor{keywordtype}{unsigned}\ slot\_index)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Modulates\ an\ OFDM\ signal\ with\ slot\ granularity.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Provides\ the\ time\ domain\ modulated\ signal\ destination.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ grid\ Provides\ the\ input\ as\ frequency-\/domain\ signal\ corresponding\ to\ one\ slot.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ port\_index\ Indicates\ the\ port\ index\ to\ modulate.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\_index\ Slot\ index\ within\ the\ subframe\ to\ modulate.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ input\ size\ must\ be\ consistent\ with\ the\ configured\ bandwidth.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ output\ size\ must\ be\ equal\ to\ the\ slot\ size.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00100\ \ \ modulate(span<cf\_t>\ output,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keywordtype}{unsigned}\ port\_index,\ \textcolor{keywordtype}{unsigned}\ slot\_index)\ =\ 0;}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

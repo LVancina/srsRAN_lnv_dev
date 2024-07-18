@@ -1,0 +1,246 @@
+\doxysection{neon\+\_\+helpers.\+h}
+\hypertarget{phy_2upper_2channel__modulation_2neon__helpers_8h_source}{}\label{phy_2upper_2channel__modulation_2neon__helpers_8h_source}\index{lib/phy/upper/channel\_modulation/neon\_helpers.h@{lib/phy/upper/channel\_modulation/neon\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{arm\_neon}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ neon\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ Absolute\ values.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Absolute\ values.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ Input\ single-\/precision\ NEON\ register.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)return\ A\ single-\/precision\ NEON\ register\ with\ the\ absolute\ value.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{inline}\ float32x4\_t\ abs\_f32(float32x4\_t\ value)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordflow}{return}\ vabsq\_f32(value);}
+\DoxyCodeLine{00038\ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)brief\ Copy\ sign\ from\ a\ single-\/precision\ NEON\ register.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value0\ Single-\/precision\ NEON\ register.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value1\ Single-\/precision\ NEON\ register.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ \(\backslash\)return\ A\ single-\/precision\ NEON\ register\ with\ the\ magnitudes\ of\ \(\backslash\)c\ value0\ and\ the\ signs\ of\ \(\backslash\)c\ value1.}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)remark\ A\ zero\ in\ the\ second\ argument\ is\ considered\ as\ a\ positive\ number,\ following\ the\ convention\ of\ \(\backslash\)c}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ std::copysign.}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{inline}\ float32x4\_t\ copysign\_f32(float32x4\_t\ value0,\ float32x4\_t\ value1)}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \ \ float32x4\_t\ abs\_value0\ =\ vabsq\_f32(value0);}
+\DoxyCodeLine{00049\ \ \ float32x4\_t\ neg\_value0\ =\ vnegq\_f32(abs\_value0);}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ uint32x4\_t\ \ sign\_mask\ \ =\ vtstq\_s32(vreinterpretq\_s32\_f32(value1),\ vdupq\_n\_s32(0x80000000));}}
+\DoxyCodeLine{00051\ \ \ uint32x4\_t\ sign\_mask\ =\ vreinterpretq\_u32\_s32(vshrq\_n\_s32(vreinterpretq\_s32\_f32(value1),\ 31));}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{return}\ vbslq\_f32(sign\_mask,\ neg\_value0,\ abs\_value0);}
+\DoxyCodeLine{00053\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ \(\backslash\)brief\ Clips\ the\ values\ of\ a\ single-\/precision\ NEON\ register.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ The\ values\ greater\ than\ \(\backslash\)c\ range\_ceil\ or\ lower\ than\ \(\backslash\)c\ range\_floor\ are\ substituted\ by\ their\ corresponding\ range}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ limits.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ \ Input\ values.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_ceil\ \ Ceiling\ values.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_floor\ Floor\ values.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)return\ A\ single-\/precision\ NEON\ register\ containing\ the\ clipped\ values.}}
+\DoxyCodeLine{00064\ \textcolor{keyword}{inline}\ float32x4\_t\ clip\_f32(float32x4\_t\ value,\ float32x4\_t\ range\_ceil,\ float32x4\_t\ range\_floor)}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \ \ value\ =\ vbslq\_f32(vcgtq\_f32(value,\ range\_ceil),\ range\_ceil,\ value);}
+\DoxyCodeLine{00067\ \ \ value\ =\ vbslq\_f32(vcgtq\_f32(range\_floor,\ value),\ range\_floor,\ value);}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \(\backslash\)brief\ Clips\ the\ values\ of\ a\ NEON\ register\ carrying\ four\ signed\ 32-\/bit\ integers.}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ The\ values\ greater\ than\ \(\backslash\)c\ range\_ceil\ or\ lower\ than\ \(\backslash\)c\ range\_floor\ are\ substituted\ by\ their\ corresponding\ range}}
+\DoxyCodeLine{00074\ \textcolor{comment}{///\ limits.}}
+\DoxyCodeLine{00075\ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ \ Input\ values.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_ceil\ \ Ceiling\ values.}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_floor\ Floor\ values.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ \(\backslash\)return\ A\ NEON\ register\ containing\ the\ clipped\ values.}}
+\DoxyCodeLine{00080\ \textcolor{keyword}{inline}\ int32x4\_t\ clip\_s32(int32x4\_t\ value,\ int32x4\_t\ range\_ceil,\ int32x4\_t\ range\_floor)}
+\DoxyCodeLine{00081\ \{}
+\DoxyCodeLine{00082\ \ \ value\ =\ vbslq\_s32(vcgtq\_s32(value,\ range\_ceil),\ range\_ceil,\ value);}
+\DoxyCodeLine{00083\ \ \ value\ =\ vbslq\_s32(vcgtq\_s32(range\_floor,\ value),\ range\_floor,\ value);}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00085\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{comment}{///\ \(\backslash\)brief\ Ensures\ that\ 32-\/bit\ integers\ are\ bounded,\ otherwise\ set\ them\ to\ zero.}}
+\DoxyCodeLine{00088\ \textcolor{comment}{///}}
+\DoxyCodeLine{00089\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ Integers\ to\ be\ tested.}}
+\DoxyCodeLine{00090\ \textcolor{comment}{///\ \(\backslash\)param[in]\ bound\_up\ \ \ Upper\ bound.}}
+\DoxyCodeLine{00091\ \textcolor{comment}{///\ \(\backslash\)param[in]\ bound\_low\ \ Lower\ bound.}}
+\DoxyCodeLine{00092\ \textcolor{comment}{///\ \(\backslash\)return\ The\ input\ integers\ with\ zeros\ in\ place\ of\ the\ out-\/of-\/bound\ values.}}
+\DoxyCodeLine{00093\ \textcolor{keyword}{inline}\ int32x4\_t\ check\_bounds\_s32(int32x4\_t\ value,\ int32x4\_t\ bound\_up,\ int32x4\_t\ bound\_low)}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \ \ int32x4\_t\ \ ZEROS\ =\ vdupq\_n\_s32(0);}
+\DoxyCodeLine{00096\ \ \ uint32x4\_t\ mask\ \ =\ vcgtq\_s32(value,\ bound\_up);}
+\DoxyCodeLine{00097\ \ \ value\ \ \ \ \ \ \ \ \ \ \ \ =\ vbslq\_s32(mask,\ ZEROS,\ value);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ mask\ \ =\ vcgtq\_s32(bound\_low,\ value);}
+\DoxyCodeLine{00100\ \ \ value\ =\ vbslq\_s32(mask,\ ZEROS,\ value);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00103\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{comment}{///\ \(\backslash\)brief\ Clips\ and\ quantizes\ four\ single-\/precision\ NEON\ registers,\ continuous\ log-\/likelihood\ ratio\ to\ the\ discrete}}
+\DoxyCodeLine{00106\ \textcolor{comment}{///\ representation\ of\ type\ \(\backslash\)c\ log\_likelihood\_ratio\ in\ a\ single\ NEON\ register.}}
+\DoxyCodeLine{00107\ \textcolor{comment}{///}}
+\DoxyCodeLine{00108\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\_0\ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ the\ first\ four\ continuous\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00109\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\_1\ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ the\ second\ four\ continuous\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00110\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\_2\ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ the\ third\ four\ continuous\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00111\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\_3\ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ the\ fourth\ four\ continuous\ log-\/likelihood\ ratio.}}
+\DoxyCodeLine{00112\ \textcolor{comment}{///\ \(\backslash\)param[in]\ range\_limit\ \ The\ input\ value\ mapped\ to\ \(\backslash\)ref\ log\_likelihood\_ratio::max().}}
+\DoxyCodeLine{00113\ \textcolor{comment}{///\ \(\backslash\)return\ A\ quantized\ representation\ of\ the\ input\ values\ as\ \(\backslash\)c\ log\_likelihood\_ratio\ quantity.}}
+\DoxyCodeLine{00114\ \textcolor{comment}{///\ \(\backslash\)note\ The\ quantization\ in\ the\ range\ <tt>(-\/range\_limit,\ range\_limit)</tt>\ is\ [mid-\/tread}}
+\DoxyCodeLine{00115\ \textcolor{comment}{///\ uniform](https://en.wikipedia.org/wiki/Quantization\_(signal\_processing)\#Mid-\/riser\_and\_mid-\/tread\_uniform\_quantizers),}}
+\DoxyCodeLine{00116\ \textcolor{comment}{///\ with\ quantization\ step\ <tt>\ range\_limit\ /\ LLR\_MAX\ </tt>.}}
+\DoxyCodeLine{00117\ \textcolor{comment}{///\ \(\backslash\)note\ All\ values\ larger\ (in\ magnitude)\ than\ \(\backslash\)c\ range\_limit,\ will\ be\ clipped\ and\ mapped\ to}}
+\DoxyCodeLine{00118\ \textcolor{comment}{///\ <tt>\&plusmn;LLR\_MAX</tt>,\ depending\ on\ their\ sign.}}
+\DoxyCodeLine{00119\ \textcolor{keyword}{inline}\ int8x16\_t}
+\DoxyCodeLine{00120\ quantize\_f32(float32x4\_t\ value\_0,\ float32x4\_t\ value\_1,\ float32x4\_t\ value\_2,\ float32x4\_t\ value\_3,\ \textcolor{keywordtype}{float}\ range\_limit)}
+\DoxyCodeLine{00121\ \{}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{//\ Scale.}}
+\DoxyCodeLine{00123\ \ \ float32x4\_t\ SCALE\ =\ vdupq\_n\_f32(\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{float}>(log\_likelihood\_ratio::max().to\_int())\ /\ range\_limit);}
+\DoxyCodeLine{00124\ \ \ value\_0\ \ \ \ \ \ \ \ \ \ \ =\ vmulq\_f32(value\_0,\ SCALE);}
+\DoxyCodeLine{00125\ \ \ value\_1\ \ \ \ \ \ \ \ \ \ \ =\ vmulq\_f32(value\_1,\ SCALE);}
+\DoxyCodeLine{00126\ \ \ value\_2\ \ \ \ \ \ \ \ \ \ \ =\ vmulq\_f32(value\_2,\ SCALE);}
+\DoxyCodeLine{00127\ \ \ value\_3\ \ \ \ \ \ \ \ \ \ \ =\ vmulq\_f32(value\_3,\ SCALE);}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{//\ Clip\ and\ round\ to\ the\ nearest\ integer.}}
+\DoxyCodeLine{00130\ \ \ float32x4\_t\ RANGE\_CEIL\ \ =\ vdupq\_n\_f32(log\_likelihood\_ratio::max().to\_int());}
+\DoxyCodeLine{00131\ \ \ float32x4\_t\ RANGE\_FLOOR\ =\ vdupq\_n\_f32(log\_likelihood\_ratio::min().to\_int());}
+\DoxyCodeLine{00132\ \ \ value\_0\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ vrndnq\_f32(clip\_f32(value\_0,\ RANGE\_CEIL,\ RANGE\_FLOOR));}
+\DoxyCodeLine{00133\ \ \ value\_1\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ vrndnq\_f32(clip\_f32(value\_1,\ RANGE\_CEIL,\ RANGE\_FLOOR));}
+\DoxyCodeLine{00134\ \ \ value\_2\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ vrndnq\_f32(clip\_f32(value\_2,\ RANGE\_CEIL,\ RANGE\_FLOOR));}
+\DoxyCodeLine{00135\ \ \ value\_3\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ vrndnq\_f32(clip\_f32(value\_3,\ RANGE\_CEIL,\ RANGE\_FLOOR));}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{//\ Convert\ to\ 32\ bit\ integer.}}
+\DoxyCodeLine{00138\ \ \ int32x4\_t\ llr\_s32\_0\ =\ vcvtq\_s32\_f32(value\_0);}
+\DoxyCodeLine{00139\ \ \ int32x4\_t\ llr\_s32\_1\ =\ vcvtq\_s32\_f32(value\_1);}
+\DoxyCodeLine{00140\ \ \ int32x4\_t\ llr\_s32\_2\ =\ vcvtq\_s32\_f32(value\_2);}
+\DoxyCodeLine{00141\ \ \ int32x4\_t\ llr\_s32\_3\ =\ vcvtq\_s32\_f32(value\_3);}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{//\ Check\ bounds\ one\ more\ time:\ if\ value\_X\ contains\ a\ NaN,\ its\ casting\ to\ int32\_t\ is\ indeterminate\ -\/\ set\ it\ to\ zero.}}
+\DoxyCodeLine{00144\ \ \ int32x4\_t\ BOUND\_UP\ \ =\ vdupq\_n\_s32(log\_likelihood\_ratio::max().to\_int());}
+\DoxyCodeLine{00145\ \ \ int32x4\_t\ BOUND\_LOW\ =\ vdupq\_n\_s32(log\_likelihood\_ratio::min().to\_int());}
+\DoxyCodeLine{00146\ \ \ llr\_s32\_0\ \ \ \ \ \ \ \ \ \ \ =\ check\_bounds\_s32(llr\_s32\_0,\ BOUND\_UP,\ BOUND\_LOW);}
+\DoxyCodeLine{00147\ \ \ llr\_s32\_1\ \ \ \ \ \ \ \ \ \ \ =\ check\_bounds\_s32(llr\_s32\_1,\ BOUND\_UP,\ BOUND\_LOW);}
+\DoxyCodeLine{00148\ \ \ llr\_s32\_2\ \ \ \ \ \ \ \ \ \ \ =\ check\_bounds\_s32(llr\_s32\_2,\ BOUND\_UP,\ BOUND\_LOW);}
+\DoxyCodeLine{00149\ \ \ llr\_s32\_3\ \ \ \ \ \ \ \ \ \ \ =\ check\_bounds\_s32(llr\_s32\_3,\ BOUND\_UP,\ BOUND\_LOW);}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \textcolor{comment}{//\ Conversion\ to\ 16\ bit\ and\ cast\ to\ int8\ (every\ odd\ element\ of\ the\ vector\ will\ be\ 0\ or\ 0xff).}}
+\DoxyCodeLine{00152\ \ \ int8x8\_t\ llr\_s8\_0\ =\ vreinterpret\_s8\_s16(vmovn\_s32(llr\_s32\_0));}
+\DoxyCodeLine{00153\ \ \ int8x8\_t\ llr\_s8\_1\ =\ vreinterpret\_s8\_s16(vmovn\_s32(llr\_s32\_1));}
+\DoxyCodeLine{00154\ \ \ int8x8\_t\ llr\_s8\_2\ =\ vreinterpret\_s8\_s16(vmovn\_s32(llr\_s32\_2));}
+\DoxyCodeLine{00155\ \ \ int8x8\_t\ llr\_s8\_3\ =\ vreinterpret\_s8\_s16(vmovn\_s32(llr\_s32\_3));}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{//\ Merge\ resulting\ LLRs\ into\ a\ single\ register.}}
+\DoxyCodeLine{00158\ \ \ int8x8\_t\ out\_llrs\_s8\_0\ =\ vuzp1\_s8(llr\_s8\_0,\ llr\_s8\_1);}
+\DoxyCodeLine{00159\ \ \ int8x8\_t\ out\_llrs\_s8\_1\ =\ vuzp1\_s8(llr\_s8\_2,\ llr\_s8\_3);}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordflow}{return}\ vcombine\_s8(out\_llrs\_s8\_0,\ out\_llrs\_s8\_1);}
+\DoxyCodeLine{00161\ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \textcolor{comment}{///\ \(\backslash\)brief\ Helper\ function\ to\ calculate\ an\ interval\ index\ from\ single-\/precision\ NEON\ register\ values.}}
+\DoxyCodeLine{00164\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ \ \ \ \ Input\ NEON\ register.}}
+\DoxyCodeLine{00165\ \textcolor{comment}{///\ \(\backslash\)param[in]\ interval\_width\ Interval\ width.}}
+\DoxyCodeLine{00166\ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_intervals\ \ Number\ of\ intervals.}}
+\DoxyCodeLine{00167\ \textcolor{comment}{///\ \(\backslash\)return\ A\ NEON\ register\ carrying\ four\ signed\ 32-\/bit\ integers\ with\ the\ corresponding\ interval\ indexes.}}
+\DoxyCodeLine{00168\ \textcolor{keyword}{inline}\ uint32x4\_t\ compute\_interval\_idx(float32x4\_t\ value,\ \textcolor{keywordtype}{float}\ interval\_width,\ \textcolor{keywordtype}{int}\ nof\_intervals)}
+\DoxyCodeLine{00169\ \{}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{//\ Scale.}}
+\DoxyCodeLine{00171\ \ \ value\ =\ vmulq\_f32(value,\ vdupq\_n\_f32(1.0F\ /\ interval\_width));}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{//\ Round\ to\ the\ lowest\ integer.}}
+\DoxyCodeLine{00174\ \ \ value\ =\ vrndmq\_f32(value);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{//\ Convert\ to\ int32.}}
+\DoxyCodeLine{00177\ \ \ int32x4\_t\ idx\ =\ vcvtq\_s32\_f32(value);}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \textcolor{comment}{//\ Add\ interval\ offset.}}
+\DoxyCodeLine{00180\ \ \ idx\ =\ vaddq\_s32(idx,\ vdupq\_n\_s32(nof\_intervals\ /\ 2));}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{//\ Clip\ index\ and\ return.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordflow}{return}\ vreinterpretq\_u32\_s32(clip\_s32(idx,\ vdupq\_n\_s32(nof\_intervals\ -\/\ 1),\ vdupq\_n\_s32(0)));}
+\DoxyCodeLine{00184\ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ values\ from\ a\ look-\/up\ table.}}
+\DoxyCodeLine{00187\ \textcolor{comment}{///\ \(\backslash\)param[in]\ table\ \ \ Look-\/up\ table\ containing\ eight\ single-\/precision\ values.}}
+\DoxyCodeLine{00188\ \textcolor{comment}{///\ \(\backslash\)param[in]\ indexes\ NEON\ register\ containing\ four\ indexes.}}
+\DoxyCodeLine{00189\ \textcolor{comment}{///\ \(\backslash\)return\ A\ single-\/precision\ NEON\ register\ containing\ the\ eight\ values\ corresponding\ to\ the\ indexes.}}
+\DoxyCodeLine{00190\ \textcolor{keyword}{inline}\ float32x4\_t\ look\_up\_table(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ table,\ uint32x4\_t\ indexes)}
+\DoxyCodeLine{00191\ \{}
+\DoxyCodeLine{00192\ \ \ float32x4\_t\ value\ =\ vdupq\_n\_f32(0.0);}
+\DoxyCodeLine{00193\ \ \ value\ \ \ \ \ \ \ \ \ \ \ \ \ =\ vsetq\_lane\_f32(table[vgetq\_lane\_u32(indexes,\ 0)],\ value,\ 0);}
+\DoxyCodeLine{00194\ \ \ value\ \ \ \ \ \ \ \ \ \ \ \ \ =\ vsetq\_lane\_f32(table[vgetq\_lane\_u32(indexes,\ 1)],\ value,\ 1);}
+\DoxyCodeLine{00195\ \ \ value\ \ \ \ \ \ \ \ \ \ \ \ \ =\ vsetq\_lane\_f32(table[vgetq\_lane\_u32(indexes,\ 2)],\ value,\ 2);}
+\DoxyCodeLine{00196\ \ \ value\ \ \ \ \ \ \ \ \ \ \ \ \ =\ vsetq\_lane\_f32(table[vgetq\_lane\_u32(indexes,\ 3)],\ value,\ 3);}
+\DoxyCodeLine{00197\ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00198\ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{comment}{///\ \(\backslash\)brief\ Applies\ an\ interval\ function\ to\ a\ series\ of\ values.}}
+\DoxyCodeLine{00201\ \textcolor{comment}{///\ \(\backslash\)tparam\ Table\ \ \ \ \ \ \ \ \ \ \ \ \ Look-\/up\ table\ type.\ All\ tables\ mut\ be\ of\ the\ same\ type.}}
+\DoxyCodeLine{00202\ \textcolor{comment}{///\ \(\backslash\)param[in]\ value\ \ \ \ \ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ eight\ input\ values.}}
+\DoxyCodeLine{00203\ \textcolor{comment}{///\ \(\backslash\)param[in]\ rcp\_noise\ \ \ \ \ \ Single-\/precision\ NEON\ register\ with\ the\ reciprocal\ noise\ corresponding\ to\ the\ values.}}
+\DoxyCodeLine{00204\ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_intervals\ \ Number\ of\ intervals.}}
+\DoxyCodeLine{00205\ \textcolor{comment}{///\ \(\backslash\)param[in]\ interval\_width\ Interval\ width\ to\ quantify\ the\ interval\ indexes.}}
+\DoxyCodeLine{00206\ \textcolor{comment}{///\ \(\backslash\)param[in]\ slopes\ \ \ \ \ \ \ \ \ Table\ with\ the\ slope\ of\ each\ interval.}}
+\DoxyCodeLine{00207\ \textcolor{comment}{///\ \(\backslash\)param[in]\ intercepts\ \ \ \ \ Table\ with\ the\ interception\ points\ of\ each\ interval.}}
+\DoxyCodeLine{00208\ \textcolor{comment}{///\ \(\backslash\)return\ A\ single-\/precision\ NEON\ register\ containing\ the\ results\ of\ the\ interval\ function.}}
+\DoxyCodeLine{00209\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ number\ of\ intervals\ must\ be\ lower\ than\ or\ equal\ to\ \(\backslash\)c\ Table\ size.}}
+\DoxyCodeLine{00210\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Table>}
+\DoxyCodeLine{00211\ \textcolor{keyword}{inline}\ float32x4\_t\ interval\_function(float32x4\_t\ \ value,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ float32x4\_t\ \ rcp\_noise,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ \ \ \ \ interval\_width,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ nof\_intervals,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Table\&\ slopes,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Table\&\ intercepts)}
+\DoxyCodeLine{00217\ \{}
+\DoxyCodeLine{00218\ \ \ uint32x4\_t\ interval\_index\ =\ neon::compute\_interval\_idx(value,\ interval\_width,\ nof\_intervals);}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ float32x4\_t\ slope\ \ \ \ \ =\ neon::look\_up\_table(slopes.data(),\ interval\_index);}
+\DoxyCodeLine{00221\ \ \ float32x4\_t\ intercept\ =\ neon::look\_up\_table(intercepts.data(),\ interval\_index);}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordflow}{return}\ vmulq\_f32(vaddq\_f32(vmulq\_f32(slope,\ value),\ intercept),\ rcp\_noise);}
+\DoxyCodeLine{00224\ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \textcolor{comment}{///\ \(\backslash\)brief\ Safe\ division.}}
+\DoxyCodeLine{00227\ \textcolor{comment}{///}}
+\DoxyCodeLine{00228\ \textcolor{comment}{///\ \(\backslash\)return\ <tt>dividend\ /\ divisor</tt>\ if\ \(\backslash\)c\ divisor\ is\ not\ zero,\ \(\backslash\)c\ 0\ otherwise.}}
+\DoxyCodeLine{00229\ \textcolor{keyword}{inline}\ float32x4\_t\ safe\_div(float32x4\_t\ dividend,\ float32x4\_t\ divisor)}
+\DoxyCodeLine{00230\ \{}
+\DoxyCodeLine{00231\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ float32x4\_t\ all\_zero\ =\ vdupq\_n\_f32(0.0f);}
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{//\ Compare\ divisor\ to\ zero\ (greater\ than).}}
+\DoxyCodeLine{00233\ \ \ uint32x4\_t\ \ mask\ \ \ =\ vcgtq\_f32(divisor,\ all\_zero);}
+\DoxyCodeLine{00234\ \ \ float32x4\_t\ result\ =\ vdivq\_f32(dividend,\ divisor);}
+\DoxyCodeLine{00235\ \ \ \textcolor{keywordflow}{return}\ vbslq\_f32(mask,\ result,\ all\_zero);}
+\DoxyCodeLine{00236\ \}}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \}\ \textcolor{comment}{//\ namespace\ neon}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

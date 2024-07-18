@@ -1,0 +1,83 @@
+\doxysection{srsran\+::manual\+\_\+event\texorpdfstring{$<$}{<} Data \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classsrsran_1_1manual__event}{}\label{classsrsran_1_1manual__event}\index{srsran::manual\_event$<$ Data $>$@{srsran::manual\_event$<$ Data $>$}}
+
+
+Awaitable type that can be manually set to one of the states\+:  
+
+
+
+
+{\ttfamily \#include $<$manual\+\_\+event.\+h$>$}
+
+Inheritance diagram for srsran\+::manual\+\_\+event\texorpdfstring{$<$}{<} Data \texorpdfstring{$>$}{>}\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classsrsran_1_1manual__event}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsrsran_1_1manual__event_1_1awaiter__type}{awaiter\+\_\+type}}
+\begin{DoxyCompactList}\small\item\em Awaiter object type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1manual__event_adc9ca2a95e6c848aa974bcd30467d059}\label{classsrsran_1_1manual__event_adc9ca2a95e6c848aa974bcd30467d059} 
+using {\bfseries result\+\_\+type} = Data
+\begin{DoxyCompactList}\small\item\em Stored value type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1manual__event_af7395d3c9cd8d17ff5bf0c7b42b94e95}\label{classsrsran_1_1manual__event_af7395d3c9cd8d17ff5bf0c7b42b94e95} 
+{\footnotesize template$<$typename U $>$ }\\void {\bfseries set} (U \&\&u)
+\begin{DoxyCompactList}\small\item\em Called to set event value, and trigger all awaiting coroutines. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1manual__event_a6531176b3e4de367c8394ea9bad8c508}\label{classsrsran_1_1manual__event_a6531176b3e4de367c8394ea9bad8c508} 
+const Data \& {\bfseries get} () const
+\begin{DoxyCompactList}\small\item\em Called to object stored value when event is set. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1manual__event_a304e8a8dae1cc932f30b383722e34760}\label{classsrsran_1_1manual__event_a304e8a8dae1cc932f30b383722e34760} 
+\mbox{\hyperlink{structsrsran_1_1manual__event_1_1awaiter__type}{awaiter\+\_\+type}} {\bfseries get\+\_\+awaiter} ()
+\begin{DoxyCompactList}\small\item\em awaiter interface \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{srsran\+::detail\+::manual\+\_\+event\+\_\+common}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries manual\+\_\+event\+\_\+common} (const \mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{manual\+\_\+event\+\_\+common}} \&event\+\_\+)=delete
+\item 
+\mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{manual\+\_\+event\+\_\+common}} \& {\bfseries operator=} (const \mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{manual\+\_\+event\+\_\+common}} \&event\+\_\+)=delete
+\item 
+void {\bfseries reset} ()
+\begin{DoxyCompactList}\small\item\em Resets event state. \end{DoxyCompactList}\item 
+bool {\bfseries is\+\_\+set} () const
+\begin{DoxyCompactList}\small\item\em Check if event value is set. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{srsran\+::detail\+::manual\+\_\+event\+\_\+common}}}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries flush} ()
+\begin{DoxyCompactList}\small\item\em triggers all awaiting coroutines after event is set \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classsrsran_1_1detail_1_1manual__event__common}{srsran\+::detail\+::manual\+\_\+event\+\_\+common}}}
+\begin{DoxyCompactItemize}
+\item 
+void \texorpdfstring{$\ast$}{*} {\bfseries state} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Data$>$\newline
+class srsran\+::manual\+\_\+event$<$ Data $>$}
+Awaitable type that can be manually set to one of the states\+: 
+
+
+\begin{DoxyItemize}
+\item "{}unset"{} state -\/ Coroutines that await on an "{}unset"{} \doxylink{classsrsran_1_1manual__event}{manual\+\_\+event} get suspended. They are only resumed when the \doxylink{classsrsran_1_1manual__event}{manual\+\_\+event} transitions to "{}set"{} state via the \doxylink{classsrsran_1_1manual__event_af7395d3c9cd8d17ff5bf0c7b42b94e95}{manual\+\_\+event\+::set} method.
+\item "{}set"{} state -\/ Coroutines that await on a "{}set"{} \doxylink{classsrsran_1_1manual__event}{manual\+\_\+event} do not get suspended and get automatically resumed. Once "{}set"{}, the awaiting coroutines have to option to extract the {\ttfamily Data} that was stored in the \doxylink{classsrsran_1_1manual__event}{manual\+\_\+event}. Multiple coroutines can simultaneously await this awaitable when in "{}unset"{} state. All the awaiting coroutines will be resumed once the awaitable is set. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Data} & type of data passed to awaiting coroutine. \\
+\hline
+\end{DoxyTemplParams}
+
+\end{DoxyItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/srsran/support/async/manual\+\_\+event.\+h\end{DoxyCompactItemize}

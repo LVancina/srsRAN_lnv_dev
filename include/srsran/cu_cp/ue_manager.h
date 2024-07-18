@@ -35,17 +35,6 @@ namespace srs_cu_cp {
 class du_processor_rrc_ue_control_message_notifier;
 class du_processor_rrc_ue_srb_control_notifier;
 
-/// \brief Context of a CU-CP UE.
-struct cu_cp_ue_context {
-  du_index_t  du_idx   = du_index_t::invalid;
-  gnb_du_id_t du_id    = gnb_du_id_t::invalid;
-  ue_index_t  ue_index = ue_index_t::invalid;
-  rnti_t      crnti    = rnti_t::INVALID_RNTI;
-  /// \brief Flag to disable new UE reconfigurations. This can be used, for instance, to reconfigure UE contexts
-  /// that are in the process of handover.
-  bool reconfiguration_disabled = false;
-};
-
 /// Common UE interface.
 class ue_base
 {
@@ -106,10 +95,6 @@ public:
   /// \brief Set the RRC UE SRB notifier of the UE.
   /// \param[in] rrc_ue_srb_notifier_ RRC UE SRB control notifier of the UE.
   virtual void set_rrc_ue_srb_notifier(du_processor_rrc_ue_srb_control_notifier& rrc_ue_srb_notifier_) = 0;
-
-  /// \brief Retrieves the UE context.
-  virtual cu_cp_ue_context&       get_ue_context()       = 0;
-  virtual const cu_cp_ue_context& get_ue_context() const = 0;
 };
 
 /// UE configuration passed to CU-CP
@@ -186,6 +171,9 @@ public:
 
   /// \brief Get the RRC UE control notifier of the UE.
   virtual ngap_rrc_ue_control_notifier& get_rrc_ue_control_notifier() = 0;
+
+  /// \brief Get the DU processor control notifier of the UE.
+  virtual ngap_du_processor_control_notifier& get_du_processor_control_notifier() = 0;
 };
 
 /// NGAP UE manager interface.
@@ -199,10 +187,12 @@ public:
   /// \param[in] ue_index Index of the UE to add the notifiers to.
   /// \param[in] rrc_ue_pdu_notifier RRC UE PDU notifier for the UE.
   /// \param[in] rrc_ue_ctrl_notifier RRC UE control notifier for the UE.
+  /// \param[in] du_processor_ctrl_notifier DU processor control notifier for the UE.
   /// \return Pointer to the NGAP UE if found, nullptr otherwise.
-  virtual ngap_ue* set_ue_ng_context(ue_index_t                    ue_index,
-                                     ngap_rrc_ue_pdu_notifier&     rrc_ue_pdu_notifier,
-                                     ngap_rrc_ue_control_notifier& rrc_ue_ctrl_notifier) = 0;
+  virtual ngap_ue* set_ue_ng_context(ue_index_t                          ue_index,
+                                     ngap_rrc_ue_pdu_notifier&           rrc_ue_pdu_notifier,
+                                     ngap_rrc_ue_control_notifier&       rrc_ue_ctrl_notifier,
+                                     ngap_du_processor_control_notifier& du_processor_ctrl_notifier) = 0;
 
   /// \brief Find the NGAP UE with the given UE index.
   /// \param[in] ue_index Index of the UE to be found.

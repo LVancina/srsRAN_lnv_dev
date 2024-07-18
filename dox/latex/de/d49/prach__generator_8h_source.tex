@@ -1,0 +1,72 @@
+\doxysection{prach\+\_\+generator.\+h}
+\hypertarget{prach__generator_8h_source}{}\label{prach__generator_8h_source}\index{include/srsran/phy/upper/channel\_processors/prach\_generator.h@{include/srsran/phy/upper/channel\_processors/prach\_generator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bounded\_integer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/prach/prach\_format\_type.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/prach/restricted\_set\_config.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ PRACH\ generator\ interface.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Generates\ the\ PRACH\ frequency-\/domain\ sequences\ as\ per\ TS38.211\ Section\ 6.3.3.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1prach__generator}{prach\_generator}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Collects\ the\ necessary\ parameters\ to\ generate\ a\ PRACH\ frequency-\/domain\ signal.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{///\ Preamble\ format.}}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a80c3e0271a30bccec9122a9dfedb79a6}{prach\_format\_type}}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration_a6cd97abef53c40cddf6ee4d0b7dfd259}{format}};}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Root\ sequence\ index.}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$i\(\backslash\)f\$\ to\ select\ the\ PRACH\ sequence\ number\ from:}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ -\/\ TS38.211\ Table\ 6.3.3.1-\/3\ with\ range\ \{0,\ ...,\ 837\}\ for\ long\ preambles,\ and}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{///\ -\/\ TS38.211\ Table\ 6.3.3.1-\/4\ with\ range\ \{0,\ ...,\ 137\}\ for\ short\ preambles.}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration_a60f33211465da8590e326c413de6d643}{root\_sequence\_index}};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{///\ Index\ of\ the\ preamble\ to\ generate.\ Possible\ values\ are\ \{0,\ ...,\ 63\}.}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration_a7e090a8e11faae0463e73ce26f86fb56}{preamble\_index}};}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ Restricted\ set\ configuration.}}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aa23dcd1ad781960d6f2f0888dd714878}{restricted\_set\_config}}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration_a2511d675f4fef61f0b2d0401c621e9f9}{restricted\_set}};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ shift\ configuration\ index.\ Possible\ values\ are\ \{0,\ ...,\ 15\}.}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration_ac022f7b55020bece53f2f7eef535cbb6}{zero\_correlation\_zone}};}
+\DoxyCodeLine{00056\ \ \ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1prach__generator_a8c3b0873fd4afde2f69318cca8710bbd}{prach\_generator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ the\ frequency-\/domain\ PRACH\ sequence\ \(\backslash\)f\$y\_\{u,v\}(n)\(\backslash\)f\$.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Parameters\ describing\ the\ generated\ sequence.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/only\ view\ of\ the\ generated\ sequence.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{virtual}\ span<\textcolor{keyword}{const}\ cf\_t>\ \mbox{\hyperlink{classsrsran_1_1prach__generator_a7389ee8b0a72cc692926bf0e221f0dd5}{generate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__generator_1_1configuration}{configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

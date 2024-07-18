@@ -1,0 +1,251 @@
+\doxysection{srs\+\_\+channel\+\_\+matrix.\+h}
+\hypertarget{srs__channel__matrix_8h_source}{}\label{srs__channel__matrix_8h_source}\index{include/srsran/ran/srs/srs\_channel\_matrix.h@{include/srsran/ran/srs/srs\_channel\_matrix.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/tensor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/srs/srs\_constants.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/sc\_prod.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{initializer\_list}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)brief\ SRS-\/based\ estimated\ channel\ matrix.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Wideband\ channel\ matrix\ estimated\ from\ the\ Sounding\ Reference\ Signals\ (SRS).\ The\ complex\ channel\ coefficients\ are}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ arranged\ by\ i)\ receive\ ports\ and\ ii)\ transmit\ ports.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Channel\ matrix\ dimensions.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_abd71f21a1af16656e3685f4c4e0f0de4}{dims}}\ :\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_abd71f21a1af16656e3685f4c4e0f0de4}{uint8\_t}}\ \{\ rx\_port\ =\ 0,\ tx\_port,\ all\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Default\ constructor\ -\/\ constructs\ a\ channel\ matrix\ with\ no\ coefficients.}}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_aecddded568091551f5bdf3e14ac58dd5}{srs\_channel\_matrix}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ channel\ matrix\ with\ the\ desired\ number\ of\ transmit\ and\ receive\ ports.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_rx\_ports\ Number\ of\ receive\ ports.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_tx\_ports\ \ Number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ receive\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_rx\_ports.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ transmit\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_tx\_ports.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86d3a5fe072c877240e4d2b0b11d55d1}{srs\_channel\_matrix}}(\textcolor{keywordtype}{unsigned}\ nof\_rx\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_tx\_ports)\ :\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86d3a5fe072c877240e4d2b0b11d55d1}{data}}(\{\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86d3a5fe072c877240e4d2b0b11d55d1}{nof\_rx\_ports}},\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86d3a5fe072c877240e4d2b0b11d55d1}{nof\_tx\_ports}}\})}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_rx\_ports\ <=\ srs\_constants::max\_nof\_rx\_ports,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ receive\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rx\_ports,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_rx\_ports);}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_tx\_ports\ <=\ srs\_constants::max\_nof\_tx\_ports,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ transmit\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rx\_ports,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_rx\_ports);}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ channel\ matrix\ with\ the\ desired\ number\ of\ receive\ and\ transmit\ ports.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Creates\ a\ channel\ matrix\ with\ the\ specified\ dimensions,\ and\ sets\ its\ contents\ to\ the\ provided\ coefficients}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ values.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ coefficients\ Channel\ coefficient\ list,\ arranged\ by\ i)\ receive\ port\ and\ ii)\ transmit\ port.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_rx\_ports\ Number\ of\ receive\ ports.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_tx\_ports\ \ Number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ receive\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_rx\_ports.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ transmit\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_tx\_ports.}}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{srs\_channel\_matrix}}(\textcolor{keyword}{const}\ std::initializer\_list<cf\_t>\&\ coefficients,\ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_tx\_ports)\ :}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{srs\_channel\_matrix}}(\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{span}}<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{cf\_t}}>(\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{coefficients}}.\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{begin}}(),\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{coefficients}}.\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{end}}()),\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{nof\_rx\_ports}},\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a4426cf980a7fe1da8e27d620e926ed84}{nof\_tx\_ports}})}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructs\ a\ channel\ matrix\ with\ the\ desired\ number\ of\ receive\ and\ transmit\ ports.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Creates\ a\ channel\ matrix\ with\ the\ specified\ dimensions,\ and\ sets\ its\ contents\ to\ the\ provided\ coefficients}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ values.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ coefficients\ Channel\ coefficient\ list,\ arranged\ by\ i)\ receive\ port\ and\ ii)\ transmit\ port.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_rx\_ports\ Number\ of\ receive\ ports.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_tx\_ports\ \ Number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ receive\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_rx\_ports.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ transmit\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_tx\_ports.}}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a46a642496ee239e998a7f5316a725ffc}{srs\_channel\_matrix}}(span<\textcolor{keyword}{const}\ cf\_t>\ coefficients,\ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_tx\_ports)\ :}
+\DoxyCodeLine{00093\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a46a642496ee239e998a7f5316a725ffc}{data}}(\{\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a46a642496ee239e998a7f5316a725ffc}{nof\_rx\_ports}},\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a46a642496ee239e998a7f5316a725ffc}{nof\_tx\_ports}}\})}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(coefficients.size()\ ==\ nof\_rx\_ports\ *\ nof\_tx\_ports,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ coefficients,\ i.e.,\ \{\},\ does\ not\ match\ the\ specified\ matrix\ dimensions,\ i.e.,\ \{\}\ "{}}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}transmit\ ports,\ \{\}\ receive\ ports."{}},}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ coefficients.size(),}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_tx\_ports,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rx\_ports);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_rx\_ports\ <=\ srs\_constants::max\_nof\_rx\_ports,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ receive\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rx\_ports,}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_rx\_ports);}
+\DoxyCodeLine{00106\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_tx\_ports\ <=\ srs\_constants::max\_nof\_tx\_ports,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ transmit\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_tx\_ports,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_tx\_ports);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ Copy\ the\ weights\ into\ the\ tensor.}}
+\DoxyCodeLine{00112\ \ \ \ \ srsvec::copy(data.get\_view<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all)>(\{\}),\ coefficients);}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Copy\ constructor.}}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{srs\_channel\_matrix}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ other)\ :\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{data}}(\{\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{other}}.\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{get\_nof\_rx\_ports}}(),\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{other}}.\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a9e73ede29a16b4997f121d31389944e1}{get\_nof\_tx\_ports}}()\})}
+\DoxyCodeLine{00117\ \ \ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Copy\ the\ weights\ into\ the\ tensor.}}
+\DoxyCodeLine{00119\ \ \ \ \ srsvec::copy(data.get\_view<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all)>(\{\}),}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ other.data.get\_view<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all)>(\{\}));}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Overload\ assignment\ operator.}}
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ Channel\ matrix\ to\ copy.}}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a45ab44f2fd412ef53d72677562cea3ed}{operator}}=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ other)}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ ==\ \&other)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00129\ \ \ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{//\ Resize\ the\ tensor.}}
+\DoxyCodeLine{00132\ \ \ \ \ resize(other\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{.}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{get\_nof\_rx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{)}},\ other\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{.}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{get\_nof\_tx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{)}});}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{//\ Copy\ the\ weights\ into\ the\ tensor.}}
+\DoxyCodeLine{00134\ \ \ \ \ srsvec::copy(data.get\_view<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all)>(\{\}),}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ other.data.get\_view<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dims::all)>(\{\}));}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00137\ \ \ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Overload\ equality\ comparison\ operator.}}
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ other\ Channel\ matrix\ to\ compare\ against.}}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \(\backslash\)c\ true\ if\ both\ channel\ matrices\ are\ exactly\ the\ same,\ \(\backslash\)c\ false\ otherwise.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86fb5df2df852b10a85f1de8142ebfab}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ other)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports\ =\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{get\_nof\_rx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{)}};}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_tx\_ports\ =\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{get\_nof\_tx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{)}};}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_rx\_ports\ !=\ other\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{.}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{get\_nof\_rx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{)}})\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_tx\_ports\ !=\ other\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{.}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{get\_nof\_tx\_ports}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{(}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{)}})\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_layer\ =\ 0;\ i\_layer\ !=\ nof\_rx\_ports;\ ++i\_layer)\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_port\ =\ 0;\ i\_port\ !=\ nof\_tx\_ports;\ ++i\_port)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{get\_coefficient}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{(}}i\_layer\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{,}}\ i\_port\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{)}}\ !=\ other\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{.}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{get\_coefficient}}\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{(}}i\_layer\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{,}}\ i\_port\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{)}})\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \ \ \}}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00163\ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \textcolor{comment}{///\ Overload\ inequality\ comparison\ operator.}}
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a64ca63788c8fb3a9e0b72706080c473b}{operator}}!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a86fb5df2df852b10a85f1de8142ebfab}{==}}\ other);\ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///\ Gets\ the\ current\ number\ of\ receive\ ports.}}
+\DoxyCodeLine{00169\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb4516d638c868ace62053fdd2d32c73}{get\_nof\_rx\_ports}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::rx\_port);\ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ Gets\ the\ current\ number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a1fde4e8e54b1da817c7dace84518d4d2}{get\_nof\_tx\_ports}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::tx\_port);\ \}}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ channel\ coefficient\ from\ the\ matrix.}}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_rx\_port\ Receive\ port\ index.}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_tx\_port\ Transmit\ port\ index.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ channel\ coefficient\ for\ the\ given\ transmit\ and\ receive\ ports.}}
+\DoxyCodeLine{00179\ \ \ cf\_t\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a98e66b2b9142f0a661ac488ea9b210b9}{get\_coefficient}}(\textcolor{keywordtype}{unsigned}\ i\_rx\_port,\ \textcolor{keywordtype}{unsigned}\ i\_tx\_port)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00180\ \ \ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\_rx\_port\ <\ get\_nof\_rx\_ports(),}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ receive\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_rx\_port,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_rx\_ports()\ -\/\ 1);}
+\DoxyCodeLine{00185\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\_tx\_port\ <\ get\_nof\_tx\_ports(),}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ transmit\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_tx\_port,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_tx\_ports()\ -\/\ 1);}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{return}\ data[\{i\_rx\_port,\ i\_tx\_port\}];}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ a\ channel\ coefficient\ in\ the\ matrix\ to\ a\ specified\ value.}}
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ coefficient\ Channel\ coefficient\ to\ set.}}
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_rx\_port\ \ \ Receive\ port\ index.}}
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ i\_tx\_port\ \ \ Transmit\ port\ index.}}
+\DoxyCodeLine{00197\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_a895141e07087dd0645c8110fcdb749d5}{set\_coefficient}}(cf\_t\ coefficient,\ \textcolor{keywordtype}{unsigned}\ i\_rx\_port,\ \textcolor{keywordtype}{unsigned}\ i\_tx\_port)}
+\DoxyCodeLine{00198\ \ \ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\_rx\_port\ <\ get\_nof\_rx\_ports(),}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ receive\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_rx\_port,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_rx\_ports()\ -\/\ 1);}
+\DoxyCodeLine{00203\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(i\_tx\_port\ <\ get\_nof\_tx\_ports(),}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ transmit\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_tx\_port,}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_tx\_ports()\ -\/\ 1);}
+\DoxyCodeLine{00207\ \ \ \ \ data[\{i\_rx\_port,\ i\_tx\_port\}]\ =\ coefficient;}
+\DoxyCodeLine{00208\ \ \ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ Scales\ all\ the\ coefficients\ by\ a\ scaling\ factor.}}
+\DoxyCodeLine{00211\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix}{srs\_channel\_matrix}}\&\ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_acb501287ad1b3eaa94ba56232b7460cb}{operator}}*=(\textcolor{keywordtype}{float}\ scale)}
+\DoxyCodeLine{00212\ \ \ \{}
+\DoxyCodeLine{00213\ \ \ \ \ srsvec::sc\_prod(data.get\_data(),\ scale,\ data.get\_data());}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00218\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Resizes\ the\ number\ of\ coefficients\ to\ a\ desired\ number\ of\ receive\ and\ transmit\ ports.}}
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_rx\_ports\ Number\ of\ receive\ ports.}}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ nof\_tx\_ports\ Number\ of\ transmit\ ports.}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ receive\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_rx\_ports.}}
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ the\ number\ of\ transmit\ ports\ exceeds\ \(\backslash\)ref\ srs\_constants::max\_nof\_tx\_ports.}}
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordtype}{void}\ resize(\textcolor{keywordtype}{unsigned}\ nof\_rx\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_tx\_ports)}
+\DoxyCodeLine{00224\ \ \ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_rx\_ports\ <=\ srs\_constants::max\_nof\_rx\_ports,}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ receive\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rx\_ports,}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_rx\_ports);}
+\DoxyCodeLine{00229\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(nof\_tx\_ports\ <=\ srs\_constants::max\_nof\_tx\_ports,}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ transmit\ ports\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_tx\_ports,}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_tx\_ports);}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \ \ data.resize(\{nof\_rx\_ports,\ nof\_tx\_ports\});}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{///\ Internal\ data\ storage.}}
+\DoxyCodeLine{00238\ \ \ static\_tensor<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(\mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_abd71f21a1af16656e3685f4c4e0f0de4}{dims}}::all),}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cf\_t,}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srs\_constants::max\_nof\_rx\_ports\ *\ srs\_constants::max\_nof\_tx\_ports,}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__channel__matrix_abd71f21a1af16656e3685f4c4e0f0de4}{dims}}>}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ data;}
+\DoxyCodeLine{00243\ \};}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

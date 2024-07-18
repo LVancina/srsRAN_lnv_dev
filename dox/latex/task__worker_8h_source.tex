@@ -1,0 +1,156 @@
+\doxysection{task\+\_\+worker.\+h}
+\hypertarget{task__worker_8h_source}{}\label{task__worker_8h_source}\index{include/srsran/support/executors/task\_worker.h@{include/srsran/support/executors/task\_worker.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/concurrent\_queue.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/unique\_function.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{compiler_8h}{srsran/support/compiler.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/unique\_thread.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\mbox{\hyperlink{namespacesrsran_a08f31ae01c088c535705650443feec0c}{concurrent\_queue\_policy}}\ \ \ \ \ \ QueuePolicy\ =\ concurrent\_queue\_policy::locking\_mpsc,}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1aa5b9ae2fbb3e003686513bd761c0a4}{concurrent\_queue\_wait\_policy}}\ WaitPolicy\ \ =\ concurrent\_queue\_wait\_policy::condition\_variable>}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1general__task__worker}{general\_task\_worker}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1unique__function}{task\_t}}\ =\ \mbox{\hyperlink{namespacesrsran_ae4f0a84d474968b3437093240d943c33}{unique\_task}};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{template}\ <\mbox{\hyperlink{namespacesrsran_a1aa5b9ae2fbb3e003686513bd761c0a4}{concurrent\_queue\_wait\_policy}}\ W\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ WaitPolicy,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<W\ ==\ concurrent\_queue\_wait\_policy::condition\_variable,\ int>\ =\ 0>}
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}(std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thread\_name,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ queue\_size,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority}{os\_thread\_realtime\_priority}}\ \ \ \ \ \ prio\ =\ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority_af2cf72da038c74badffd988ce6a08e46}{os\_thread\_realtime\_priority::no\_realtime}}(),}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1os__sched__affinity__bitmask}{os\_sched\_affinity\_bitmask}}\&\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}\ =\ \{\})\ :}
+\DoxyCodeLine{00055\ \ \ \ \ pending\_tasks(queue\_size),\ t\_handle(thread\_name,\ prio,\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ make\_blocking\_pop\_task())}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{template}\ <\mbox{\hyperlink{namespacesrsran_a1aa5b9ae2fbb3e003686513bd761c0a4}{concurrent\_queue\_wait\_policy}}\ W\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ WaitPolicy,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<W\ ==\ concurrent\_queue\_wait\_policy::sleep,\ int>\ =\ 0>}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_aabf92a2ad956c95166e3f6589bd7150b}{general\_task\_worker}}(std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thread\_name,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ queue\_size,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::chrono::microseconds\ \ \ \ \ \ \ \ wait\_sleep\_time,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority}{os\_thread\_realtime\_priority}}\ \ \ \ \ \ prio\ =\ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority_af2cf72da038c74badffd988ce6a08e46}{os\_thread\_realtime\_priority::no\_realtime}}(),}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1os__sched__affinity__bitmask}{os\_sched\_affinity\_bitmask}}\&\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}\ =\ \{\})\ :}
+\DoxyCodeLine{00072\ \ \ \ \ pending\_tasks(queue\_size,\ wait\_sleep\_time),\ t\_handle(thread\_name,\ prio,\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ make\_blocking\_pop\_task())}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}(\mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1general__task__worker_afe8228780fee476a55d205a20d60f797}{general\_task\_worker}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00079\ \ \ \string~general\_task\_worker();}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_a5854f9ea03b5592f87f3bbdfbba17edc}{stop}}();}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_ad8a2f53181eee17a52f231f1cd73eed8}{push\_task}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{task\_t}}\&\&\ task)\ \{\ \textcolor{keywordflow}{return}\ pending\_tasks.try\_push(std::move(task));\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_a4234eab02e6d076ed51c3ae4debed0cb}{push\_task\_blocking}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{task\_t}}\&\&\ task)}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ pending\_tasks.push\_blocking(std::move(task)))\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).debug(\textcolor{stringliteral}{"{}Cannot\ push\ more\ tasks\ into\ the\ \{\}\ worker\ queue\ because\ it\ was\ closed"{}},}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t\_handle.\mbox{\hyperlink{classsrsran_1_1unique__thread_a61a0f14b7d89b7af324f7f61d5093101}{get\_name}}());}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00096\ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_a4be630c0aab42c483e48056b2866258f}{wait\_pending\_tasks}}();}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_a33f90259b8bbfcd0480d6abcb5e5c677}{nof\_pending\_tasks}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ pending\_tasks.size();\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_adb079942b2c16d3e2a657556a406b71a}{max\_pending\_tasks}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ pending\_tasks.capacity();\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00109\ \ \ std::thread::id\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_aef133f3f020336d759d68bb4a51e2149}{get\_id}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ t\_handle.\mbox{\hyperlink{classsrsran_1_1unique__thread_a506b32d60dea751b50dc4dba41d71e6e}{get\_id}}();\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classsrsran_1_1general__task__worker_aa2ef57fd194c6abad6a1e95a30089850}{worker\_name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ t\_handle.\mbox{\hyperlink{classsrsran_1_1unique__thread_a61a0f14b7d89b7af324f7f61d5093101}{get\_name}}();\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_function}}<void()>\ make\_blocking\_pop\_task();}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{//\ Queue\ of\ tasks.}}
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__queue}{concurrent\_queue<task\_t,\ QueuePolicy,\ WaitPolicy>}}\ pending\_tasks;}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{//\ Thread\ that\ runs\ the\ enqueued\ tasks.}}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__thread}{unique\_thread}}\ t\_handle;}
+\DoxyCodeLine{00122\ \};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }general\_task\_worker<concurrent\_queue\_policy::locking\_mpsc,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concurrent\_queue\_wait\_policy::condition\_variable>;}
+\DoxyCodeLine{00126\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }general\_task\_worker<concurrent\_queue\_policy::locking\_mpsc,\ concurrent\_queue\_wait\_policy::sleep>;}
+\DoxyCodeLine{00127\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }general\_task\_worker<concurrent\_queue\_policy::locking\_mpmc,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ concurrent\_queue\_wait\_policy::condition\_variable>;}
+\DoxyCodeLine{00129\ \textcolor{keyword}{extern}\ \textcolor{keyword}{template}\ \textcolor{keyword}{class\ }general\_task\_worker<concurrent\_queue\_policy::lockfree\_spsc,\ concurrent\_queue\_wait\_policy::sleep>;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00132\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1general__task__worker}{task\_worker}}\ =\ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{general\_task\_worker<>}};}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{template}\ <\mbox{\hyperlink{namespacesrsran_a08f31ae01c088c535705650443feec0c}{concurrent\_queue\_policy}}\ \ \ \ \ \ QueuePolicy\ =\ concurrent\_queue\_policy::locking\_mpsc,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1aa5b9ae2fbb3e003686513bd761c0a4}{concurrent\_queue\_wait\_policy}}\ WaitPolicy\ \ =\ concurrent\_queue\_wait\_policy::condition\_variable>}
+\DoxyCodeLine{00137\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1general__task__worker__executor}{general\_task\_worker\_executor}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}}
+\DoxyCodeLine{00138\ \{}
+\DoxyCodeLine{00139\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor}{general\_task\_worker\_executor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor}{general\_task\_worker\_executor}}(\mbox{\hyperlink{classsrsran_1_1general__task__worker}{general\_task\_worker<QueuePolicy,\ WaitPolicy>}}\&\ worker\_)\ :\ worker(\&worker\_)\ \{\}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor_ae38ec01790f8f185964a9b98bbb9576f}{execute}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00145\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1general__task__worker__executor_ab2c4c7b7c95059568da4d92012c2bcfa}{can\_run\_task\_inline}}())\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \textcolor{comment}{//\ Same\ thread.\ Run\ task\ right\ away.}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ task();}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00150\ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor_a42c1537a905e1bd88d3b6a5d34fd786c}{defer}}(std::move(task));}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor_a42c1537a905e1bd88d3b6a5d34fd786c}{defer}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ worker-\/>push\_task(std::move(task));\ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1general__task__worker__executor_ab2c4c7b7c95059568da4d92012c2bcfa}{can\_run\_task\_inline}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ worker-\/>get\_id()\ ==\ std::this\_thread::get\_id();\ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1general__task__worker}{general\_task\_worker<QueuePolicy,\ WaitPolicy>}}*\ worker\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00161\ \};}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \textcolor{keyword}{using\ }task\_worker\_executor\ =\ general\_task\_worker\_executor<>;}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{keyword}{template}\ <concurrent\_queue\_policy\ QueuePolicy,\ concurrent\_queue\_wait\_policy\ WaitPolicy>}
+\DoxyCodeLine{00166\ \textcolor{keyword}{inline}\ general\_task\_worker\_executor<QueuePolicy,\ WaitPolicy>}
+\DoxyCodeLine{00167\ make\_task\_executor(general\_task\_worker<QueuePolicy,\ WaitPolicy>\&\ w)}
+\DoxyCodeLine{00168\ \{}
+\DoxyCodeLine{00169\ \ \ \textcolor{keywordflow}{return}\ general\_task\_worker\_executor<QueuePolicy,\ WaitPolicy>(w);}
+\DoxyCodeLine{00170\ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{template}\ <concurrent\_queue\_policy\ QueuePolicy,\ concurrent\_queue\_wait\_policy\ WaitPolicy>}
+\DoxyCodeLine{00173\ \textcolor{keyword}{inline}\ std::unique\_ptr<task\_executor>\ make\_task\_executor\_ptr(general\_task\_worker<QueuePolicy,\ WaitPolicy>\&\ w)}
+\DoxyCodeLine{00174\ \{}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<general\_task\_worker\_executor<QueuePolicy,\ WaitPolicy>>(w);}
+\DoxyCodeLine{00176\ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,130 @@
+\doxysection{cu\+\_\+cp\+\_\+configuration\+\_\+helpers.\+h}
+\hypertarget{cu__cp__configuration__helpers_8h_source}{}\label{cu__cp__configuration__helpers_8h_source}\index{include/srsran/cu\_cp/cu\_cp\_configuration\_helpers.h@{include/srsran/cu\_cp/cu\_cp\_configuration\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}cu\_cp\_configuration.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/ngap/ngap\_configuration\_helpers.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }config\_helpers\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{inline}\ srs\_cu\_cp::cu\_cp\_configuration\ make\_default\_cu\_cp\_config()}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ srs\_cu\_cp::cu\_cp\_configuration\ cfg\{\};}
+\DoxyCodeLine{00035\ \ \ cfg.\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__configuration_a0ae22fd78811abee12562f43272e2eda}{ngap\_config}}\ =\ make\_default\_ngap\_config();}
+\DoxyCodeLine{00036\ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00037\ \}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{inline}\ std::map<five\_qi\_t,\ srs\_cu\_cp::cu\_cp\_qos\_config>\ make\_default\_cu\_cp\_qos\_config\_list()}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ std::map<five\_qi\_t,\ srs\_cu\_cp::cu\_cp\_qos\_config>\ qos\_list\ =\ \{\};}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ 5QI=7}}
+\DoxyCodeLine{00050\ \ \ \ \ srs\_cu\_cp::cu\_cp\_qos\_config\ cfg\{\};}
+\DoxyCodeLine{00051\ \ \ \ \ pdcp\_config\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_cfg\{\};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ pdcp\_cfg.rb\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rb\_type::drb;}
+\DoxyCodeLine{00054\ \ \ \ \ pdcp\_cfg.rlc\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rlc\_mode::um;}
+\DoxyCodeLine{00055\ \ \ \ \ pdcp\_cfg.ciphering\_required\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00056\ \ \ \ \ pdcp\_cfg.integrity\_protection\_required\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ >\ Tx}}
+\DoxyCodeLine{00059\ \ \ \ \ pdcp\_cfg.tx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00060\ \ \ \ \ pdcp\_cfg.tx.discard\_timer\ \ \ \ \ \ \ \ \ \ =\ pdcp\_discard\_timer::infinity;}
+\DoxyCodeLine{00061\ \ \ \ \ pdcp\_cfg.tx.status\_report\_required\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ >\ Rx}}
+\DoxyCodeLine{00064\ \ \ \ \ pdcp\_cfg.rx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00065\ \ \ \ \ pdcp\_cfg.rx.out\_of\_order\_delivery\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00066\ \ \ \ \ pdcp\_cfg.rx.t\_reordering\ \ \ \ \ \ \ \ \ \ =\ pdcp\_t\_reordering::ms220;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ cfg.pdcp\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_cfg;}
+\DoxyCodeLine{00069\ \ \ \ \ qos\_list[\mbox{\hyperlink{namespacesrsran_aa51855bbb3afd2d1d6462b70f3466b45}{uint\_to\_five\_qi}}(7)]\ =\ cfg;}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ 5QI=9}}
+\DoxyCodeLine{00073\ \ \ \ \ srs\_cu\_cp::cu\_cp\_qos\_config\ cfg\{\};}
+\DoxyCodeLine{00074\ \ \ \ \ pdcp\_config\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_cfg\{\};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ pdcp\_cfg.rb\_type\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rb\_type::drb;}
+\DoxyCodeLine{00077\ \ \ \ \ pdcp\_cfg.rlc\_mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_rlc\_mode::am;}
+\DoxyCodeLine{00078\ \ \ \ \ pdcp\_cfg.ciphering\_required\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00079\ \ \ \ \ pdcp\_cfg.integrity\_protection\_required\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ >\ Tx}}
+\DoxyCodeLine{00082\ \ \ \ \ pdcp\_cfg.tx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00083\ \ \ \ \ pdcp\_cfg.tx.discard\_timer\ \ \ \ \ \ \ \ \ \ =\ pdcp\_discard\_timer::infinity;}
+\DoxyCodeLine{00084\ \ \ \ \ pdcp\_cfg.tx.status\_report\_required\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ >\ Rx}}
+\DoxyCodeLine{00087\ \ \ \ \ pdcp\_cfg.rx.sn\_size\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_sn\_size::size18bits;}
+\DoxyCodeLine{00088\ \ \ \ \ pdcp\_cfg.rx.out\_of\_order\_delivery\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00089\ \ \ \ \ pdcp\_cfg.rx.t\_reordering\ \ \ \ \ \ \ \ \ \ =\ pdcp\_t\_reordering::ms220;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ cfg.pdcp\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ pdcp\_cfg;}
+\DoxyCodeLine{00092\ \ \ \ \ qos\_list[\mbox{\hyperlink{namespacesrsran_aa51855bbb3afd2d1d6462b70f3466b45}{uint\_to\_five\_qi}}(9)]\ =\ cfg;}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordflow}{return}\ qos\_list;}
+\DoxyCodeLine{00095\ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{keyword}{inline}\ srs\_cu\_cp::mobility\_configuration\ make\_default\_mobility\_config()}
+\DoxyCodeLine{00098\ \{}
+\DoxyCodeLine{00099\ \ \ srs\_cu\_cp::mobility\_configuration\ cfg\{\};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00102\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ is\_valid\_configuration(\textcolor{keyword}{const}\ srs\_cu\_cp::mobility\_configuration\&\ config)}
+\DoxyCodeLine{00105\ \{}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordflow}{if}\ (!is\_valid\_configuration(config.meas\_manager\_config))\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}Invalid\ meas\ manager\ configuration.\(\backslash\)n"{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00112\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00115\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ is\_valid\_configuration(\textcolor{keyword}{const}\ srs\_cu\_cp::cu\_cp\_configuration\&\ config)}
+\DoxyCodeLine{00116\ \{}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{//\ Notifiers\ aren't\ checked\ here.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordflow}{if}\ (!is\_valid\_configuration(config.ngap\_config))\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}Invalid\ NGAP\ configuration.\(\backslash\)n"{}});}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordflow}{if}\ (!is\_valid\_configuration(config.mobility\_config))\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}Invalid\ mobility\ configuration.\(\backslash\)n"{}});}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00126\ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00129\ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \}\ \textcolor{comment}{//\ namespace\ config\_helpers}}
+\DoxyCodeLine{00132\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

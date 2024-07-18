@@ -1,0 +1,206 @@
+\doxysection{e1ap\+\_\+cu\+\_\+up\+\_\+ue\+\_\+context.\+h}
+\hypertarget{e1ap__cu__up__ue__context_8h_source}{}\label{e1ap__cu__up__ue__context_8h_source}\index{lib/e1ap/cu\_up/ue\_context/e1ap\_cu\_up\_ue\_context.h@{lib/e1ap/cu\_up/ue\_context/e1ap\_cu\_up\_ue\_context.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{cu__up_2ue__context_2e1ap__ue__logger_8h}{"{}e1ap\_ue\_logger.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/cu\_up/cu\_up\_types.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e1ap/common/e1ap\_types.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{unordered\_map}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ srs\_cu\_up\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__ids}{e1ap\_ue\_ids}}\ \{}
+\DoxyCodeLine{00035\ \ \ ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\ \ \ \ \ \ \ \ \ =\ INVALID\_UE\_INDEX;}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{const}\ gnb\_cu\_up\_ue\_e1ap\_id\_t\ cu\_up\_ue\_e1ap\_id\ =\ gnb\_cu\_up\_ue\_e1ap\_id\_t::invalid;}
+\DoxyCodeLine{00037\ \ \ gnb\_cu\_cp\_ue\_e1ap\_id\_t\ \ \ \ \ \ \ cu\_cp\_ue\_e1ap\_id\ =\ gnb\_cu\_cp\_ue\_e1ap\_id\_t::invalid;}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__context}{e1ap\_ue\_context}}\ \{}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__ids}{e1ap\_ue\_ids}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_ids;}
+\DoxyCodeLine{00042\ \ \ activity\_notification\_level\_t\ activity\_notification\_level\ =\ activity\_notification\_level\_t::invalid;}
+\DoxyCodeLine{00043\ \ \ e1ap\_ue\_logger\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ e1ap\_ue\_context(ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ \ \ \ \ \ \ \ cu\_up\_ue\_e1ap\_id\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gnb\_cu\_cp\_ue\_e1ap\_id\_t\ \ \ \ \ \ \ \ cu\_cp\_ue\_e1ap\_id\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ activity\_notification\_level\_t\ activity\_notification\_level\_)\ :}
+\DoxyCodeLine{00049\ \ \ \ \ ue\_ids(\{ue\_index\_,\ cu\_up\_ue\_e1ap\_id\_,\ cu\_cp\_ue\_e1ap\_id\_\}),}
+\DoxyCodeLine{00050\ \ \ \ \ activity\_notification\_level(activity\_notification\_level\_),}
+\DoxyCodeLine{00051\ \ \ \ \ logger(\textcolor{stringliteral}{"{}CU-\/UP-\/E1"{}},\ \{ue\_index\_,\ cu\_up\_ue\_e1ap\_id\_,\ cu\_cp\_ue\_e1ap\_id\_\})}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__ue__context__list}{e1ap\_ue\_context\_list}}}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ e1ap\_ue\_context\_list(srslog::basic\_logger\&\ logger\_)\ :\ logger(logger\_)\ \{\}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{bool}\ contains(gnb\_cu\_up\_ue\_e1ap\_id\_t\ cu\_up\_ue\_e1ap\_id)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ues.find(cu\_up\_ue\_e1ap\_id)\ !=\ ues.end();\ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ a\ UE\ with\ the\ given\ UE\ index\ exists.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ ue\_index\ The\ UE\ index\ used\ to\ find\ the\ UE.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ UE\ Index.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__ue__context__list_a57ce63c587c02ad2be3e7031e93fd871}{contains}}(ue\_index\_t\ ue\_index)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\_to\_ue\_e1ap\_id.find(ue\_index)\ ==\ ue\_index\_to\_ue\_e1ap\_id.end())\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues.find(ue\_index\_to\_ue\_e1ap\_id.at(ue\_index))\ ==\ ues.end())\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ logger.warning(\textcolor{stringliteral}{"{}No\ UE\ context\ found\ for\ cu\_up\_ue\_e1ap\_id=\{\}."{}},\ ue\_index\_to\_ue\_e1ap\_id.at(ue\_index));}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00076\ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__context}{e1ap\_ue\_context}}\&\ operator[](gnb\_cu\_up\_ue\_e1ap\_id\_t\ cu\_up\_ue\_e1ap\_id)}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ ues.find(cu\_up\_ue\_e1ap\_id)\ !=\ ues.end(),\ \textcolor{stringliteral}{"{}cu\_up\_ue\_e1ap\_id=\{\}:\ E1AP\ UE\ context\ not\ found"{}},\ cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ ues.at(cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__context}{e1ap\_ue\_context}}\&\ operator[](ue\_index\_t\ ue\_index)}
+\DoxyCodeLine{00085\ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ue\_index\_to\_ue\_e1ap\_id.find(ue\_index)\ !=\ ue\_index\_to\_ue\_e1ap\_id.end(),}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ue=\{\}\ gNB-\/CU-\/UP-\/UE-\/E1AP-\/ID\ not\ found"{}},}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index);}
+\DoxyCodeLine{00089\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ues.find(ue\_index\_to\_ue\_e1ap\_id.at(ue\_index))\ !=\ ues.end(),}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}cu\_up\_ue\_e1ap\_id=\{\}:\ E1AP\ UE\ context\ not\ found"{}},}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\_to\_ue\_e1ap\_id.at(ue\_index));}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{return}\ ues.at(ue\_index\_to\_ue\_e1ap\_id.at(ue\_index));}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__ue__context}{e1ap\_ue\_context}}\&\ add\_ue(ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ \ \ \ \ \ \ \ cu\_up\_ue\_e1ap\_id,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gnb\_cu\_cp\_ue\_e1ap\_id\_t\ \ \ \ \ \ \ \ cu\_cp\_ue\_e1ap\_id,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ activity\_notification\_level\_t\ activity\_notification\_level)}
+\DoxyCodeLine{00099\ \ \ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ue\_index\ !=\ INVALID\_UE\_INDEX,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cu\_up\_ue\_e1ap\_id\ !=\ gnb\_cu\_up\_ue\_e1ap\_id\_t::invalid,\ \textcolor{stringliteral}{"{}Invalid\ cu\_up\_ue\_e1ap\_id=\{\}"{}},\ cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00102\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cu\_cp\_ue\_e1ap\_id\ !=\ gnb\_cu\_cp\_ue\_e1ap\_id\_t::invalid,\ \textcolor{stringliteral}{"{}Invalid\ cu\_cp\_ue\_e1ap\_id=\{\}"{}},\ cu\_cp\_ue\_e1ap\_id);}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ logger.debug(\textcolor{stringliteral}{"{}ue=\{\}\ cu\_up\_ue\_e1ap\_id=\{\}\ cu\_cp\_ue\_e1ap\_id=\{\}:\ Adding\ E1AP\ UE\ context"{}},}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_up\_ue\_e1ap\_id,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_ue\_e1ap\_id);}
+\DoxyCodeLine{00108\ \ \ \ \ ues.emplace(std::piecewise\_construct,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::forward\_as\_tuple(cu\_up\_ue\_e1ap\_id),}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::forward\_as\_tuple(ue\_index,\ cu\_up\_ue\_e1ap\_id,\ cu\_cp\_ue\_e1ap\_id,\ activity\_notification\_level));}
+\DoxyCodeLine{00111\ \ \ \ \ ue\_index\_to\_ue\_e1ap\_id.emplace(ue\_index,\ cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{return}\ ues.at(cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00113\ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{void}\ remove\_ue(ue\_index\_t\ ue\_index)}
+\DoxyCodeLine{00116\ \ \ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ue\_index\ !=\ INVALID\_UE\_INDEX,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\_to\_ue\_e1ap\_id.find(ue\_index)\ ==\ ue\_index\_to\_ue\_e1ap\_id.end())\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ logger.warning(\textcolor{stringliteral}{"{}ue=\{\}:\ GNB-\/CU-\/UP-\/UE-\/E1AP-\/ID\ not\ found"{}},\ ue\_index);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{comment}{//\ Remove\ UE\ from\ lookup}}
+\DoxyCodeLine{00125\ \ \ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ cu\_up\_ue\_e1ap\_id\ =\ ue\_index\_to\_ue\_e1ap\_id.at(ue\_index);}
+\DoxyCodeLine{00126\ \ \ \ \ ue\_index\_to\_ue\_e1ap\_id.erase(ue\_index);}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues.find(cu\_up\_ue\_e1ap\_id)\ ==\ ues.end())\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ logger.warning(\textcolor{stringliteral}{"{}cu\_up\_ue\_e1ap\_id=\{\}:\ UE\ context\ not\ found"{}},\ cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ ues.at(cu\_up\_ue\_e1ap\_id).logger.log\_debug(\textcolor{stringliteral}{"{}Removing\ UE\ context"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ ues.erase(cu\_up\_ue\_e1ap\_id);}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ size\_t\ size()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ues.size();\ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ the\ next\ available\ GNB-\/CU-\/UP-\/E1AP-\/UE-\/ID.}}
+\DoxyCodeLine{00140\ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__ue__context__list_a4e0ddd320afbd5a034ecd070efee186e}{next\_gnb\_cu\_up\_ue\_e1ap\_id}}()}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\_to\_ue\_e1ap\_id.size()\ ==\ MAX\_NOF\_UES)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_cu\_up\_ue\_e1ap\_id\_t::invalid;}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ next\_cu\_up\_ue\_e1ap\_id\ is\ available}}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues.find(next\_cu\_up\_ue\_e1ap\_id)\ ==\ ues.end())\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ ret\ =\ next\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \textcolor{comment}{//\ increase\ the\ next\ cu-\/up\ ue\ e1ap\ id}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ increase\_next\_cu\_up\_ue\_e1ap\_id();}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{comment}{//\ Find\ holes\ in\ the\ allocated\ IDs\ by\ iterating\ over\ all\ ids\ starting\ with\ the\ next\_cu\_up\_ue\_e1ap\_id\ to\ find\ the}}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{comment}{//\ available\ id}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{comment}{//\ Only\ iterate\ over\ ue\_index\_to\_ue\_e1ap\_id\ (size=MAX\ NOF\ CU\ UEs)}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{comment}{//\ to\ avoid\ iterating\ over\ all\ possible\ values\ of\ gnb\_cu\_up\_ue\_e1ap\_id\_t\ (size=2\string^32-\/1)}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::find\_if(ue\_index\_to\_ue\_e1ap\_id.begin(),\ ue\_index\_to\_ue\_e1ap\_id.end(),\ [\textcolor{keyword}{this}](\textcolor{keyword}{auto}\&\ u)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ u.second\ ==\ next\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{comment}{//\ return\ the\ id\ if\ it\ is\ not\ already\ used}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ ue\_index\_to\_ue\_e1ap\_id.end())\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ ret\ =\ next\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ increase\ the\ next\ cu-\/up\ ue\ e1ap\ id}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ increase\_next\_cu\_up\_ue\_e1ap\_id();}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \textcolor{comment}{//\ increase\ the\ next\ cu-\/up\ ue\ e1ap\ id\ and\ try\ again}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ increase\_next\_cu\_up\_ue\_e1ap\_id();}
+\DoxyCodeLine{00173\ \ \ \ \ \}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{return}\ gnb\_cu\_up\_ue\_e1ap\_id\_t::invalid;}
+\DoxyCodeLine{00176\ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00179\ \ \ gnb\_cu\_up\_ue\_e1ap\_id\_t\ next\_cu\_up\_ue\_e1ap\_id\ =\ gnb\_cu\_up\_ue\_e1ap\_id\_t::min;}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00182\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ increase\_next\_cu\_up\_ue\_e1ap\_id()}
+\DoxyCodeLine{00185\ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordflow}{if}\ (next\_cu\_up\_ue\_e1ap\_id\ ==\ gnb\_cu\_up\_ue\_e1ap\_id\_t::max)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ cu-\/up\ ue\ e1ap\ id\ counter}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ next\_cu\_up\_ue\_e1ap\_id\ =\ gnb\_cu\_up\_ue\_e1ap\_id\_t::min;}
+\DoxyCodeLine{00189\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \textcolor{comment}{//\ increase\ cu-\/up\ ue\ e1ap\ id\ counter}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ next\_cu\_up\_ue\_e1ap\_id\ =\ \mbox{\hyperlink{namespacesrsran_a6bee843af8ebdc86e8c4506ad3b82b9f}{int\_to\_gnb\_cu\_up\_ue\_e1ap\_id}}\mbox{\hyperlink{namespacesrsran_a6bee843af8ebdc86e8c4506ad3b82b9f}{(}}gnb\_cu\_up\_ue\_e1ap\_id\_to\_uint(next\_cu\_up\_ue\_e1ap\_id)\ +\ 1\mbox{\hyperlink{namespacesrsran_a6bee843af8ebdc86e8c4506ad3b82b9f}{)}};}
+\DoxyCodeLine{00192\ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \}}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \ \ std::unordered\_map<gnb\_cu\_up\_ue\_e1ap\_id\_t,\ e1ap\_ue\_context>\ ues;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ indexed\ by\ gnb\_cu\_up\_ue\_e1ap\_id}}
+\DoxyCodeLine{00196\ \ \ std::unordered\_map<ue\_index\_t,\ gnb\_cu\_up\_ue\_e1ap\_id\_t>\ \ \ \ \ \ ue\_index\_to\_ue\_e1ap\_id;\ \textcolor{comment}{//\ indexed\ by\ ue\_index}}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00200\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

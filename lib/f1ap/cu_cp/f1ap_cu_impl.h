@@ -22,10 +22,8 @@
 
 #pragma once
 
-#include "du_context.h"
 #include "ue_context/f1ap_cu_ue_context.h"
 #include "srsran/asn1/f1ap/f1ap.h"
-#include "srsran/f1ap/cu_cp/f1ap_configuration.h"
 #include "srsran/f1ap/cu_cp/f1ap_cu.h"
 #include "srsran/support/executors/task_executor.h"
 #include <memory>
@@ -33,18 +31,18 @@
 namespace srsran {
 namespace srs_cu_cp {
 
+class f1ap_ue_transaction_manager;
+
 class f1ap_cu_impl final : public f1ap_cu
 {
 public:
-  f1ap_cu_impl(const f1ap_configuration&    f1ap_cfg_,
-               f1ap_message_notifier&       tx_pdu_notifier_,
+  f1ap_cu_impl(f1ap_message_notifier&       f1ap_pdu_notifier_,
                f1ap_du_processor_notifier&  f1ap_du_processor_notifier_,
                f1ap_du_management_notifier& f1ap_du_management_notifier_,
+               f1ap_ue_removal_notifier&    f1ap_cu_cp_notifier_,
                timer_manager&               timers_,
                task_executor&               ctrl_exec_);
   ~f1ap_cu_impl();
-
-  async_task<void> stop() override;
 
   // f1ap rrc message transfer procedure functions
   void handle_dl_rrc_message_transfer(const f1ap_dl_rrc_message& msg) override;
@@ -77,7 +75,7 @@ public:
 
   // f1ap_cu_interface
   f1ap_message_handler&            get_f1ap_message_handler() override { return *this; }
-  f1ap_event_handler&              get_event_handler() override { return *this; }
+  f1ap_event_handler&              get_f1ap_event_handler() override { return *this; }
   f1ap_rrc_message_handler&        get_f1ap_rrc_message_handler() override { return *this; }
   f1ap_ue_context_manager&         get_f1ap_ue_context_manager() override { return *this; }
   f1ap_statistics_handler&         get_f1ap_statistics_handler() override { return *this; }
@@ -85,21 +83,6 @@ public:
   f1ap_ue_context_removal_handler& get_f1ap_ue_context_removal_handler() override { return *this; }
 
 private:
-  class tx_pdu_notifier_with_logging final : public f1ap_message_notifier
-  {
-  public:
-    tx_pdu_notifier_with_logging(f1ap_cu_impl& parent_, f1ap_message_notifier& decorated_) :
-      parent(parent_), decorated(decorated_)
-    {
-    }
-
-    void on_new_message(const f1ap_message& msg) override;
-
-  private:
-    f1ap_cu_impl&          parent;
-    f1ap_message_notifier& decorated;
-  };
-
   /// \brief Handle the reception of an initiating message.
   /// \param[in] msg The received initiating message.
   void handle_initiating_message(const asn1::f1ap::init_msg_s& msg);
@@ -126,27 +109,24 @@ private:
   /// \param[in] msg The received unsuccessful outcome message.
   void handle_unsuccessful_outcome(const asn1::f1ap::unsuccessful_outcome_s& outcome);
 
+  /// \brief Handle the reception of an F1 Removal Request.
+  /// \param[in] msg The F1 Removal Request message.
+  void handle_f1_removal_request(const asn1::f1ap::f1_removal_request_s& msg);
+
   /// \brief Handle the reception of an UE Context Release Request.
   /// \param[in] msg The UE Context Release Request message.
   void handle_ue_context_release_request(const asn1::f1ap::ue_context_release_request_s& msg);
 
-  /// \brief Log F1AP PDU.
-  void log_pdu(bool is_rx, const f1ap_message& pdu);
+  srslog::basic_logger& logger;
 
-  const f1ap_configuration cfg;
-  srslog::basic_logger&    logger;
-
-  // DU context.
-  du_context du_ctxt;
-
-  // Repository of UE Contexts.
+  /// Repository of UE Contexts.
   f1ap_ue_context_list ue_ctxt_list;
 
   // nofifiers and handles
-  f1ap_du_processor_notifier& du_processor_notifier;
-  task_executor&              ctrl_exec;
-
-  tx_pdu_notifier_with_logging tx_pdu_notifier;
+  f1ap_message_notifier&       pdu_notifier;
+  f1ap_du_processor_notifier&  du_processor_notifier;
+  f1ap_du_management_notifier& du_management_notifier;
+  task_executor&               ctrl_exec;
 
   unsigned current_transaction_id = 0; // store current F1AP transaction id
 };

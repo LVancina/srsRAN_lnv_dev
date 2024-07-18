@@ -29,7 +29,6 @@
 #include "srsran/phy/upper/channel_processors/prach_detector.h"
 #include "srsran/phy/upper/channel_processors/pucch_processor.h"
 #include "srsran/phy/upper/channel_processors/ssb_processor.h"
-#include "srsran/phy/upper/channel_state_information_formatters.h"
 #include "srsran/ran/pdcch/pdcch_context_formatter.h"
 #include "srsran/ran/pdsch/pdsch_context_formatter.h"
 #include "srsran/ran/pucch/pucch_context_formatter.h"
@@ -216,7 +215,7 @@ struct formatter<srsran::prach_detector::configuration> {
   auto format(const srsran::prach_detector::configuration& config, FormatContext& ctx)
       -> decltype(std::declval<FormatContext>().out())
   {
-    helper.format_always(ctx, "rsi={}", config.root_sequence_index);
+    helper.format_if_verbose(ctx, "rsi={}", config.root_sequence_index);
     helper.format_if_verbose(ctx,
                              "preambles=[{}, {})",
                              config.start_preamble_index,
@@ -488,7 +487,12 @@ struct formatter<srsran::pucch_processor_result> {
       helper.format_if_verbose(ctx, "detection_metric={:.1f}", result.detection_metric.value());
     }
 
-    helper.format_if_verbose(ctx, result.csi);
+    // Channel State Information.
+    helper.format_if_verbose(ctx, "epre={:+.1f}dB", result.csi.get_epre_dB());
+    helper.format_if_verbose(ctx, "rsrp={:+.1f}dB", result.csi.get_rsrp_dB());
+    helper.format_if_verbose(ctx, "sinr={:+.1f}dB", result.csi.get_sinr_dB());
+    helper.format_if_verbose(ctx, "t_align={:.1f}us", result.csi.get_time_alignment().to_seconds() * 1e6);
+
     return ctx.out();
   }
 };

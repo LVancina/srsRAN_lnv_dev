@@ -1,0 +1,74 @@
+\doxysection{srsran\+::rx\+\_\+payload\+\_\+buffer\+\_\+pool Class Reference}
+\hypertarget{classsrsran_1_1rx__payload__buffer__pool}{}\label{classsrsran_1_1rx__payload__buffer__pool}\index{srsran::rx\_payload\_buffer\_pool@{srsran::rx\_payload\_buffer\_pool}}
+
+
+Represents a pool of payload buffers.  
+
+
+
+
+{\ttfamily \#include $<$upper\+\_\+phy\+\_\+rx\+\_\+symbol\+\_\+handler\+\_\+impl.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::rx\+\_\+payload\+\_\+buffer\+\_\+pool\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=223pt]{dc/d8a/classsrsran_1_1rx__payload__buffer__pool__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$ \mbox{\hyperlink{classsrsran_1_1rx__payload__buffer__pool_a41c63793ba16f8551c81d822d6af342a}{acquire\+\_\+payload\+\_\+buffer}} (\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units\+::bytes}} size)
+\begin{DoxyCompactList}\small\item\em Returns the next available portion of the pool. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a pool of payload buffers. 
+
+The pool comprises a circular byte array, and this class provides functionality to assign a specified number of bytes from the pool. When the array is exhausted, the payload view is started from the beginning again. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1rx__payload__buffer__pool_a41c63793ba16f8551c81d822d6af342a}\label{classsrsran_1_1rx__payload__buffer__pool_a41c63793ba16f8551c81d822d6af342a} 
+\index{srsran::rx\_payload\_buffer\_pool@{srsran::rx\_payload\_buffer\_pool}!acquire\_payload\_buffer@{acquire\_payload\_buffer}}
+\index{acquire\_payload\_buffer@{acquire\_payload\_buffer}!srsran::rx\_payload\_buffer\_pool@{srsran::rx\_payload\_buffer\_pool}}
+\doxysubsubsection{\texorpdfstring{acquire\_payload\_buffer()}{acquire\_payload\_buffer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$ srsran\+::rx\+\_\+payload\+\_\+buffer\+\_\+pool\+::acquire\+\_\+payload\+\_\+buffer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units\+::bytes}}}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the next available portion of the pool. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Convert\ the\ maximum\ buffer\ size\ from\ bits\ to\ bytes\ for\ comparison\ and\ allocation.}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ units::bytes\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{max\_buffer\_size\_bytes}}\ =\ max\_buffer\_size.\mbox{\hyperlink{classsrsran_1_1units_1_1bits_a240778dc7ade6085090b094fafd45aa5}{truncate\_to\_bytes}}();}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ srsran\_assert(size\ <=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{max\_buffer\_size\_bytes}},\ \textcolor{stringliteral}{"{}Buffer\ size\ (i.e.,\ \{\})\ exceeds\ maximum\ \{\}."{}},\ size,\ pool.size());}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ Round\ the\ number\ of\ consumed\ bytes\ to\ the\ next\ block.}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\ =\ \mbox{\hyperlink{namespacesrsran_a6e5aee1d553dc6e825017842e4059adb}{divide\_ceil}}(size.value(),\ min\_block\_size)\ *\ min\_block\_size;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ Reset\ the\ available\ bytes\ if\ the\ pool\ is\ exhausted.}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{if}\ (available.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ <\ count)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ available\ =\ pool;}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{//\ Select\ the\ first\ bytes\ as\ the\ payload\ for\ the\ transmission.}}
+\DoxyCodeLine{00070\ \ \ \ \ span<uint8\_t>\ payload\ =\ available.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(size.value());}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ Advance\ available\ bytes.}}
+\DoxyCodeLine{00073\ \ \ \ \ available\ =\ available.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(available.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ count);}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{return}\ payload;}
+\DoxyCodeLine{00075\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+lib/phy/upper/upper\+\_\+phy\+\_\+rx\+\_\+symbol\+\_\+handler\+\_\+impl.\+h\end{DoxyCompactItemize}

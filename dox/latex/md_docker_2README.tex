@@ -1,0 +1,187 @@
+\chapter{srs\+RAN Project Multi-\/\+Container Solution}
+\hypertarget{md_docker_2README}{}\label{md_docker_2README}\index{srsRAN Project Multi-\/Container Solution@{srsRAN Project Multi-\/Container Solution}}
+\label{md_docker_2README_autotoc_md10}%
+\Hypertarget{md_docker_2README_autotoc_md10}%
+ This folder contains a multi-\/container application, composed of\+:
+
+
+\begin{DoxyItemize}
+\item srs\+RAN gnb\+: it will build and launch the gnb.
+\item Open5g core\+: an open source core to use with srs\+RAN gnb.
+\item Grafana (+ Influx\+DB + srs\+RAN metrics server)\+: a UI solution to monitor metrics from srs\+RAN gnb.
+\end{DoxyItemize}
+
+To launch the full multi-\/container solution, please run\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ -\/f\ docker/docker-\/compose.yml\ up}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyItemize}
+\item To force a new build of the containers (including a new build of srs\+RAN gnb), please add a {\ttfamily -\/-\/build} flag at the end of the previous command.
+\item To run it in background, please add a {\ttfamily -\/d} flag at the end of the previous command.
+\item For more options, check {\ttfamily docker compose up -\/-\/help}
+\end{DoxyItemize}
+
+To see services\textquotesingle{} output, you can run\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ logs\ [OPTIONS]\ [SERVICE...]}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyItemize}
+\item For more options, check {\ttfamily docker compose logs -\/-\/help}
+\end{DoxyItemize}
+
+To stop it\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ -\/f\ docker/docker-\/compose.yml\ down}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyItemize}
+\item If you also want to remove all internal data except the setup, you can add {\ttfamily -\/-\/volumes} flag at the end of the previous command.
+\item For more options, check {\ttfamily docker compose down -\/-\/help}
+\end{DoxyItemize}
+
+If you\textquotesingle{}re not familiarized with {\ttfamily docker compose} tool, it will be recommended to check its \href{https://docs.docker.com/compose/}{\texttt{ website}} and {\ttfamily docker compose -\/-\/help} output.\hypertarget{md_docker_2README_autotoc_md11}{}\doxysection{\texorpdfstring{Enabling metrics reporting in the gnb}{Enabling metrics reporting in the gnb}}\label{md_docker_2README_autotoc_md11}
+To be able to see gnb\textquotesingle{}s metric in the UI solution (grafana + influxdb + metrics-\/server) it\textquotesingle{}s required to enable metrics reporting in the gnb config. For example\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{metrics:}
+\DoxyCodeLine{\ \ enable\_json\_metrics:\ true}
+\DoxyCodeLine{\ \ addr:\ 172.19.1.4\ \ \#\ Metrics-\/server\ IP}
+\DoxyCodeLine{\ \ port:\ 55555\ \ \ \ \ \ \ \#\ Metrics-\/server\ Port}
+
+\end{DoxyCode}
+\hypertarget{md_docker_2README_autotoc_md12}{}\doxysection{\texorpdfstring{Run some services}{Run some services}}\label{md_docker_2README_autotoc_md12}
+Instead of running all services provided, a partial run is allowed by doing\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ -\/f\ docker/docker-\/compose.yml\ up\ <service\_to\_run>}
+
+\end{DoxyCode}
+
+
+Main options are\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily gnb}\+: It will start the srs\+RAN Project g\+NB + Open5G core, without UI stack.
+\item {\ttfamily grafana}\+: It will start the full Grafana + Influx\+DB + metrics-\/server stack, without srs\+RAN Project gnb and Open5g services.
+\end{DoxyItemize}
+
+However, any service declared in the docker-\/compose.\+yml can be started standalone, like {\ttfamily 5gc} or {\ttfamily influxdb}.\hypertarget{md_docker_2README_autotoc_md13}{}\doxysection{\texorpdfstring{Customizations}{Customizations}}\label{md_docker_2README_autotoc_md13}
+
+\begin{DoxyItemize}
+\item Default docker compose uses {\ttfamily configs/gnb\+\_\+rf\+\_\+b200\+\_\+tdd\+\_\+n78\+\_\+20mhz.\+yml} config file. You can change it by setting the variable {\ttfamily \$\{GNB\+\_\+\+CONFIG\+\_\+\+PATH\}} in the shell, in the {\ttfamily docker compose up} command line or using the existing env-\/file {\ttfamily .env}. More info about how to do it in docker documentation here\+: \href{https://docs.docker.com/compose/environment-variables/set-environment-variables/}{\texttt{ https\+://docs.\+docker.\+com/compose/environment-\/variables/set-\/environment-\/variables/}}
+\item Network\+: If you are using an existing core-\/network on same machine, then you can comment the {\ttfamily 5gc} service section and also link your srsran container to some existing AMF N1/\+N2 subnet, doing something like this\+:
+\end{DoxyItemize}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ gnb:\ ...}
+\DoxyCodeLine{\ \ \ \ networks:}
+\DoxyCodeLine{\ \ \ \ \ \ network1:}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ ipv4\_address:\ 192.168.70.163\ \#\ Setting\ a\ fixed\ IP\ in\ the\ "{}network1"{}\ net}
+\DoxyCodeLine{}
+\DoxyCodeLine{networks:}
+\DoxyCodeLine{\ \ network1:}
+\DoxyCodeLine{\ \ \ \ name:\ my-\/pre-\/existing-\/network}
+\DoxyCodeLine{\ \ \ \ external:\ true}
+
+\end{DoxyCode}
+
+
+More info here\+: \href{https://docs.docker.com/compose/networking/}{\texttt{ https\+://docs.\+docker.\+com/compose/networking/}}\hypertarget{md_docker_2README_autotoc_md14}{}\doxysection{\texorpdfstring{Advanced Usage}{Advanced Usage}}\label{md_docker_2README_autotoc_md14}
+\hypertarget{md_docker_2README_autotoc_md15}{}\doxysubsection{\texorpdfstring{Open5\+GS Container Parameters}{Open5\+GS Container Parameters}}\label{md_docker_2README_autotoc_md15}
+Advanced parameters for the Open5\+GS container are stored in \href{open5gs/open5gs.env}{\texttt{ open5gs.\+env}} file. You can modify it or use a totally different file by setting {\ttfamily OPEN\+\_\+5\+GS\+\_\+\+ENV\+\_\+\+FILE} variable like in\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{OPEN\_5GS\_ENV\_FILE=/my/open5gs.env\ docker\ compose\ -\/f\ docker/docker-\/compose.yml\ up\ 5gc}
+
+\end{DoxyCode}
+
+
+The following parameters can be set\+:
+
+
+\begin{DoxyItemize}
+\item MONGODB\+\_\+\+IP (default\+: 127.\+0.\+0.\+1)\+: This is the IP of the mongodb to use. 127.\+0.\+0.\+1 is the mongodb that runs inside this container.
+\item SUBSCRIBER\+\_\+\+DB (default\+: "{}001010123456780,00112233445566778899aabbccddeeff,opc,63bfa50ee6523365ff14c1f45f88737d,8000,10.\+45.\+1.\+2"{})\+: This adds subscriber data for a single or multiple users to the Open5\+GS mongodb. It contains either\+:
+\begin{DoxyItemize}
+\item Comma separated string with information to define a subscriber
+\item {\ttfamily subscriber\+\_\+db.\+csv}. This is a csv file that contains entries to add to open5gs mongodb. Each entry will represent a subscriber. It must be stored in {\ttfamily srsgnb/docker/open5gs/}
+\end{DoxyItemize}
+\item OPEN5\+GS\+\_\+\+IP\+: This must be set to the IP of the container (here\+: 10.\+53.\+1.\+2).
+\item UE\+\_\+\+IP\+\_\+\+BASE\+: Defines the IP base used for connected UEs (here\+: 10.\+45.\+0).
+\item DEBUG (default\+: false)\+: This can be set to true to run Open5\+GS in debug mode.
+\end{DoxyItemize}
+
+For more info, please check it\textquotesingle{}s own \doxysectlink{md_docker_2open5gs_2README}{README.md}{0}.\hypertarget{md_docker_2README_autotoc_md16}{}\doxysubsection{\texorpdfstring{Open5\+GS Container Applications}{Open5\+GS Container Applications}}\label{md_docker_2README_autotoc_md16}
+Open5\+Gs container includes other binaries such as
+
+
+\begin{DoxyItemize}
+\item 5gc\+: 5G Core Only
+\item epc\+: EPC Only
+\item app\+: Both 5G Core and EPC
+\end{DoxyItemize}
+
+By default 5gc is launched. If you want to run another binary, remember you can use {\ttfamily docker compose run} to run any command inside the container. For example\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ -\/f\ docker/docker-\/compose.yml\ run\ 5gc\ epc\ -\/c\ open5gs-\/5gc.yml}
+
+\end{DoxyCode}
+
+
+If you need to use custom configuration files, remember you can share folder and files between your local PC (host) and the container\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ -\/f\ docker/docker-\/compose.yml\ run\ -\/v\ /tmp/my-\/open5gs-\/5gc.yml:/config/my-\/open5gs-\/5gc.yml\ 5gc\ epc\ -\/c\ /config/my-\/open5gs-\/5gc.yml}
+
+\end{DoxyCode}
+\hypertarget{md_docker_2README_autotoc_md17}{}\doxysubsection{\texorpdfstring{Metric UI Setup}{Metric UI Setup}}\label{md_docker_2README_autotoc_md17}
+Change the environment variables define in {\ttfamily .env} that are used to setup and deploy the stack
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{├──\ .env\ \ \ \ \ \ \ \ \ <-\/-\/-\/}
+\DoxyCodeLine{├──\ docker-\/compose.yml}
+\DoxyCodeLine{├──\ Dockerfile}
+\DoxyCodeLine{└──\ ...}
+
+\end{DoxyCode}
+
+
+You can access grafana in \href{http://localhost:3300}{\texttt{ http\+://localhost\+:3300}}. By default, you\textquotesingle{}ll be in view mode without needing to log in. If you want to modify anything, you need to log in using following credentials\+:
+
+
+\begin{DoxyItemize}
+\item username\+: {\ttfamily admin}
+\item password\+: {\ttfamily admin}
+\end{DoxyItemize}
+
+After your fist log, it will ask you to change the password for a new one, but it can be skipped.
+
+Provisioned Dashboards are into {\ttfamily Home \texorpdfstring{$>$}{>} Dashboards}. {\bfseries{They don\textquotesingle{}t support variable substitution}}, so if you change default values in {\ttfamily .env} file, you\textquotesingle{}ll need to go to {\ttfamily grafana/dashboards/} and manually search and replace values such as influxdb uid or bucket in every {\ttfamily .json} file.
+
+For more info about the metrics server, please check it\textquotesingle{}s own \doxysectlink{md_docker_2metrics__server_2README}{README.md}{0}. 

@@ -1,0 +1,99 @@
+\doxysection{task\+\_\+redispatcher.\+h}
+\hypertarget{task__redispatcher_8h_source}{}\label{task__redispatcher_8h_source}\index{include/srsran/support/executors/task\_redispatcher.h@{include/srsran/support/executors/task\_redispatcher.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/unique\_function.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/compiler.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ Executes\ a\ task\ n\ times,\ where\ "{}n"{}\ increases\ with\ the\ failures\ to\ dispatch\ the\ task.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Dispatches\ a\ task\ to\ an\ executor,\ and\ if\ it\ fails\ to\ dispatch\ (e.g.\ due\ to\ the\ task\ queue\ being\ full),\ it\ reattempts}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ on\ the\ next\ call.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Executor>}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1task__redispatcher}{task\_redispatcher}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Exec,\ \textcolor{keyword}{typename}\ CallToExec>}
+\DoxyCodeLine{00038\ \ \ task\_redispatcher(Exec\&\&\ executor\_,\ CallToExec\&\&\ task)\ :}
+\DoxyCodeLine{00039\ \ \ \ \ executor(std::forward<Exec>(executor\_)),\ dispatch\_task(get\_dispatch\_task(std::forward<CallToExec>(task)))}
+\DoxyCodeLine{00040\ \ \ \{}
+\DoxyCodeLine{00041\ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ execute()}
+\DoxyCodeLine{00044\ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ dispatch\_task(\textcolor{keyword}{true}))\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ dispatch\_fail\_count.fetch\_add(1U,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00050\ \ \ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ defer()}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ dispatch\_task(\textcolor{keyword}{false}))\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ dispatch\_fail\_count.fetch\_add(1U,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00059\ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ CallToExec>}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ run\_task\_n\_times(CallToExec\&\ task)}
+\DoxyCodeLine{00064\ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ we\ invoke\ the\ "{}task"{}\ a\ number\ of\ times\ equal\ to\ "{}1\ +\ failed\ dispatches"{}}}
+\DoxyCodeLine{00066\ \ \ \ \ task();}
+\DoxyCodeLine{00067\ \ \ \ \ uint32\_t\ remaining\_calls\ =\ dispatch\_fail\_count.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{while}\ (remaining\_calls\ >\ 0)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ remaining\_calls;\ ++i)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ task();}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ remaining\_calls\ =\ dispatch\_fail\_count.fetch\_sub(remaining\_calls,\ std::memory\_order\_acq\_rel)\ -\/\ remaining\_calls;}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ CallToExec>}
+\DoxyCodeLine{00077\ \ \ unique\_function<\textcolor{keywordtype}{bool}(\textcolor{keywordtype}{bool})>\ get\_dispatch\_task(CallToExec\&\&\ task)}
+\DoxyCodeLine{00078\ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{return}\ [\textcolor{keyword}{this},\ t\ =\ std::forward<CallToExec>(task)](\textcolor{keywordtype}{bool}\ is\_execute)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (is\_execute)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ executor.execute([\textcolor{keyword}{this},\ \&t]()\ \{\ run\_task\_n\_times(t);\ \});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ executor.defer([\textcolor{keyword}{this},\ \&t]()\ \{\ run\_task\_n\_times(t);\ \});}
+\DoxyCodeLine{00084\ \ \ \ \ \};}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ Executor\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ executor;}
+\DoxyCodeLine{00088\ \ \ unique\_function<\textcolor{keywordtype}{bool}(\textcolor{keywordtype}{bool})>\ dispatch\_task;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ std::atomic<uint32\_t>\ dispatch\_fail\_count\{0\};}
+\DoxyCodeLine{00091\ \};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

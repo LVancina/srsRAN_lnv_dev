@@ -1,0 +1,119 @@
+\doxysection{support\+\_\+factories.\+h}
+\hypertarget{support__factories_8h_source}{}\label{support__factories_8h_source}\index{include/srsran/phy/support/support\_factories.h@{include/srsran/phy/support/support\_factories.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{interpolator_8h}{"{}interpolator.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/generic\_functions/precoding/precoding\_factories.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer\_pool.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_pool.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Factory\ that\ builds\ resource\ grids.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ resource\_grid\_factory}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{virtual}\ \string~resource\_grid\_factory()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Creates\ and\ returns\ an\ instance\ of\ a\ resource\ grid.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{virtual}\ std::unique\_ptr<resource\_grid>\ create(\textcolor{keywordtype}{unsigned}\ nof\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_symbols,\ \textcolor{keywordtype}{unsigned}\ nof\_subc)\ =\ 0;}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ and\ returns\ a\ resource\ grid\ factory\ that\ instantiates\ resource\ grids.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)param[in]\ precoder\_factory\ Channel\ precoder\ factory.}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ \(\backslash\)return\ A\ pointer\ to\ a\ resource\ grid\ factory.}}
+\DoxyCodeLine{00051\ std::shared\_ptr<resource\_grid\_factory>}
+\DoxyCodeLine{00052\ create\_resource\_grid\_factory(std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1channel__precoder__factory}{channel\_precoder\_factory}}>\ precoder\_factory);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ Creates\ a\ resource\ grid\ mapper\ with\ an\ ideal\ precoding.}}
+\DoxyCodeLine{00055\ std::unique\_ptr<resource\_grid\_mapper>}
+\DoxyCodeLine{00056\ create\_resource\_grid\_mapper(\textcolor{keywordtype}{unsigned}\ nof\_ports,\ \textcolor{keywordtype}{unsigned}\ nof\_subc,\ resource\_grid\_writer\&\ writer);}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ generic\ resource\ grid\ pool.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ It\ selects\ a\ different\ resource\ grid\ every\ time\ a\ resource\ grid\ is\ requested.\ The\ resource\ grid\ is\ repeated\ every}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)c\ grids.size()\ requests.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)param[in]\ grids\ Resource\ grids,\ ownerships\ are\ transferred\ to\ the\ pool.}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ \(\backslash\)return\ A\ generic\ resource\ grid\ pool.}}
+\DoxyCodeLine{00065\ std::unique\_ptr<resource\_grid\_pool>}
+\DoxyCodeLine{00066\ create\_generic\_resource\_grid\_pool(std::vector<std::unique\_ptr<resource\_grid>>\ grids);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ an\ asynchronous\ resource\ grid\ pool.}}
+\DoxyCodeLine{00069\ \textcolor{comment}{///}}
+\DoxyCodeLine{00070\ \textcolor{comment}{///\ It\ selects\ a\ different\ resource\ grid\ every\ time\ a\ resource\ grid\ is\ requested.\ The\ resource\ grid\ expires}}
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \(\backslash\)c\ expire\_timeout\_slots\ after\ it\ is\ requested.\ When\ a\ resource\ grid\ expires,\ it\ is\ asynchronously\ set\ to\ zero.}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ The\ resource\ grid\ repetition\ is\ not\ deterministic\ but\ it\ is\ guaranteed\ that\ it\ is\ repeated\ after}}
+\DoxyCodeLine{00074\ \textcolor{comment}{///\ \(\backslash\)c\ expire\_timeout\_slots.}}
+\DoxyCodeLine{00075\ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \textcolor{comment}{///\ \(\backslash\)param[in]\ expire\_timeout\_slots\ Number\ of\ slots\ after\ which\ resource\ grids\ are\ expired.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)param[in]\ async\_executor\ \ \ \ \ \ \ Asynchronous\ task\ executor\ for\ setting\ the\ grid\ to\ zero.}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ \(\backslash\)param[in]\ grids\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Resource\ grids,\ ownerships\ are\ transferred\ to\ the\ pool.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ \(\backslash\)return\ An\ asynchronous\ resource\ grid\ pool.}}
+\DoxyCodeLine{00080\ std::unique\_ptr<resource\_grid\_pool>}
+\DoxyCodeLine{00081\ create\_asynchronous\_resource\_grid\_pool(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expire\_timeout\_slots,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ task\_executor\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_executor,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<std::unique\_ptr<resource\_grid>>\ grids);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ long\ PRACH\ sequence\ buffer.}}
+\DoxyCodeLine{00086\ \textcolor{comment}{///}}
+\DoxyCodeLine{00087\ \textcolor{comment}{///\ Long\ buffers\ contain\ 839-\/element\ PRACH\ sequences\ for\ up\ to\ 4\ OFDM\ symbols\ and\ a\ given\ maximum\ number\ of}}
+\DoxyCodeLine{00088\ \textcolor{comment}{///\ frequency-\/domain\ occasions.}}
+\DoxyCodeLine{00089\ \textcolor{comment}{///}}
+\DoxyCodeLine{00090\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_antennas\ \ \ \ \ Maximum\ number\ of\ antennas.}}
+\DoxyCodeLine{00091\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_fd\_occasions\ Maximum\ number\ of\ frequency-\/domain\ occasions.}}
+\DoxyCodeLine{00092\ \textcolor{comment}{///\ \(\backslash\)return\ A\ long\ preamble\ sequence\ buffer.}}
+\DoxyCodeLine{00093\ std::unique\_ptr<prach\_buffer>\ create\_prach\_buffer\_long(\textcolor{keywordtype}{unsigned}\ max\_nof\_antennas,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_fd\_occasions);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ short\ PRACH\ sequence\ buffer.}}
+\DoxyCodeLine{00096\ \textcolor{comment}{///}}
+\DoxyCodeLine{00097\ \textcolor{comment}{///\ Short\ buffers\ contain\ 139-\/element\ PRACH\ sequences\ for\ up\ to\ \(\backslash\)ref\ prach\_constants::SHORT\_SEQUENCE\_MAX\_NOF\_SYMBOLS}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///\ symbols\ per\ occasion.}}
+\DoxyCodeLine{00099\ \textcolor{comment}{///}}
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_antennas\ \ \ \ \ Maximum\ number\ of\ antennas.}}
+\DoxyCodeLine{00101\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_td\_occasions\ Maximum\ number\ of\ time-\/domain\ occasions.}}
+\DoxyCodeLine{00102\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_fd\_occasions\ Maximum\ number\ of\ frequency-\/domain\ occasions.}}
+\DoxyCodeLine{00103\ \textcolor{comment}{///\ \(\backslash\)return\ A\ short\ preamble\ sequence\ buffer\ containing\ PRACH\ sequence\ buffers\ for\ the\ number\ of\ selected\ occasions.}}
+\DoxyCodeLine{00104\ std::unique\_ptr<prach\_buffer>}
+\DoxyCodeLine{00105\ create\_prach\_buffer\_short(\textcolor{keywordtype}{unsigned}\ max\_nof\_antennas,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_td\_occasions,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_fd\_occasions);}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ a\ pool\ for\ the\ given\ PRACH\ buffers.}}
+\DoxyCodeLine{00108\ std::unique\_ptr<prach\_buffer\_pool>\ create\_prach\_buffer\_pool(std::vector<std::unique\_ptr<prach\_buffer>>\&\&\ elements);}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ an\ interpolator.}}
+\DoxyCodeLine{00111\ std::unique\_ptr<srsran::interpolator>\ create\_interpolator();}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

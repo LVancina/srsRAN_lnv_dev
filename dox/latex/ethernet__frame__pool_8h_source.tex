@@ -1,0 +1,461 @@
+\doxysection{ethernet\+\_\+frame\+\_\+pool.\+h}
+\hypertarget{ethernet__frame__pool_8h_source}{}\label{ethernet__frame__pool_8h_source}\index{include/srsran/ofh/ethernet/ethernet\_frame\_pool.h@{include/srsran/ofh/ethernet/ethernet\_frame\_pool.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ofh/ethernet/ethernet\_properties.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ofh/ofh\_constants.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ofh/serdes/ofh\_message\_properties.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ofh/timing/slot\_symbol\_point.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/frame\_types.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/support/units.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }ether\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{class\ }frame\_buffer\_array;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{enum\ class}\ frame\_buffer\_status\ \{\ free,\ reserved,\ used,\ marked\_to\_send\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sz\ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00048\ \ \ frame\_buffer\_status\ \ status\ =\ frame\_buffer\_status::free;}
+\DoxyCodeLine{00049\ \ \ std::vector<uint8\_t>\ buffer;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer_a00c66618b5088b0ed160d5c2e479f357}{frame\_buffer}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer_a00c66618b5088b0ed160d5c2e479f357}{frame\_buffer}}(\textcolor{keywordtype}{unsigned}\ size)\ :\ buffer(size,\ 0)\ \{\}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ empty()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ sz\ ==\ 0;\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ size()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ sz;\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ set\_size(\textcolor{keywordtype}{size\_t}\ new\_size)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ srsran\_assert(new\_size\ <=\ MAX\_ETH\_FRAME\_LENGTH,\ \textcolor{stringliteral}{"{}Can't\ set\_size:\ new\ size\ if\ out-\/of-\/bounds"{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ written\_size\ =\ (new\_size\ <\ MIN\_ETH\_FRAME\_LENGTH)\ ?\ MIN\_ETH\_FRAME\_LENGTH\ :\ new\_size;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{if}\ (new\_size\ <\ MIN\_ETH\_FRAME\_LENGTH)\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ std::fill(buffer.begin()\ +\ new\_size,\ buffer.begin()\ +\ MIN\_ETH\_FRAME\_LENGTH,\ 0);}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ sz\ =\ written\_size;}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ clear()\ noexcept\ \{\ sz\ =\ 0;\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ span<uint8\_t>\ \ \ \ \ \ \ data()\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \{buffer\};\ \}}
+\DoxyCodeLine{00075\ \ \ span<const\ uint8\_t>\ data()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \{buffer.data(),\ sz\};\ \}}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\ \{}
+\DoxyCodeLine{00080\ \ \ ofh::message\_type\ \ \ type;}
+\DoxyCodeLine{00081\ \ \ ofh::data\_direction\ direction;}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\ \{}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\ \ type;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ symbol\_point;}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00092\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__interval}{frame\_pool\_interval}}\ \{}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\ \ type;}
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ start;}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ end;}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00101\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}}
+\DoxyCodeLine{00102\ \{}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{using\ }storage\_array\_type\ =\ std::vector<frame\_buffer>;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ NUM\_OF\_ENTRIES\ =\ 2;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{struct\ }rd\_wr\_counter\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\ \ \ \ =\ 0;}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ boundary\ =\ 0;}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ Constructor\ receives\ upper\ boundary.}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{explicit}\ rd\_wr\_counter(\textcolor{keywordtype}{unsigned}\ b)\ :\ boundary(b)\ \{\}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Increment\ by\ N\ positions\ and\ wrap-\/around\ if\ needed}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{void}\ increment(\textcolor{keywordtype}{unsigned}\ n\ =\ 1)\ \{\ count\ +=\ n;\ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Return\ counter\ value.}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ value()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ count\ \%\ boundary;\ \}}
+\DoxyCodeLine{00120\ \ \ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1ether_1_1frame__buffer__array_1_1used__buffer}{used\_buffer}}\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}*\ \ \ \ \ \ \ \ \ \ buffer;}
+\DoxyCodeLine{00125\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ timestamp;}
+\DoxyCodeLine{00126\ \ \ \};}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{//\ Constructor\ receives\ number\ of\ buffers\ stored/read\ at\ a\ time,\ reserves\ storage\ for\ all\ eAxCs.}}
+\DoxyCodeLine{00129\ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}(\textcolor{keywordtype}{unsigned}\ nof\_buffers\_to\_return,\ \textcolor{keywordtype}{unsigned}\ buffer\_size,\ \textcolor{keywordtype}{unsigned}\ nof\_antennas)\ :}
+\DoxyCodeLine{00130\ \ \ \ \ increment\_quant(nof\_buffers\_to\_return),}
+\DoxyCodeLine{00131\ \ \ \ \ storage\_nof\_buffers(nof\_buffers\_to\_return\ *\ nof\_antennas\ *\ NUM\_OF\_ENTRIES),}
+\DoxyCodeLine{00132\ \ \ \ \ buffers\_array(storage\_nof\_buffers,\ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}\{buffer\_size\}),}
+\DoxyCodeLine{00133\ \ \ \ \ write\_position(storage\_nof\_buffers)}
+\DoxyCodeLine{00134\ \ \ \{}
+\DoxyCodeLine{00135\ \ \ \ \ aux\_array.reserve(storage\_nof\_buffers);}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{//\ Returns\ view\ over\ increment\_quant\ buffers\ for\ writing\ if\ they\ are\ free,\ returns\ empty\ span\ otherwise.}}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{//\ The\ state\ of\ returned\ buffers\ is\ changed\ to\ 'reserved'.}}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ reserve\_buffers()}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ wr\_buffers(\&buffers\_array[write\_position.value()],\ increment\_quant);}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordtype}{bool}\ free\ =\ std::all\_of(wr\_buffers.begin(),\ wr\_buffers.end(),\ [](\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer}{frame\_buffer}}\&\ buffer)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ return\ buffer.status\ ==\ frame\_buffer::frame\_buffer\_status::free;}
+\DoxyCodeLine{00146\ \ \ \ \ \});}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{if}\ (!free)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{comment}{//\ Mark\ buffers\ as\ reserved.}}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ buffer\ :\ wr\_buffers)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ buffer.status\ =\ frame\_buffer::frame\_buffer\_status::reserved;}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ \ \ \ \ write\_position.increment(increment\_quant);}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{return}\ wr\_buffers;}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{//\ Stores\ actually\ used\ buffers\ in\ a\ list\ of\ buffers\ ready\ for\ sending.}}
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{//\ Unused\ buffers\ state\ is\ changed\ to\ 'free'.}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordtype}{void}\ push\_buffers(span<frame\_buffer>\ prepared\_buffers,\ ofh::slot\_symbol\_point\ symbol\_point)}
+\DoxyCodeLine{00161\ \ \ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ buffer\ :\ prepared\_buffers)\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (buffer.empty())\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ buffer.status\ =\ frame\_buffer::frame\_buffer\_status::free;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ buffer.status\ =\ frame\_buffer::frame\_buffer\_status::used;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ used\_buffers.push\_back(\{\&buffer,\ symbol\_point\});}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \}}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{//\ Changed\ state\ of\ sent\ buffers\ to\ 'free'.}}
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordtype}{void}\ clear\_buffers()}
+\DoxyCodeLine{00174\ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ buffer\ :\ buffers\_array)\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (buffer.status\ ==\ frame\_buffer::frame\_buffer\_status::marked\_to\_send)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ buffer.status\ =\ frame\_buffer::frame\_buffer\_status::free;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{//\ Changed\ state\ of\ all\ 'used'\ buffers\ to\ 'free'.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{void}\ reset\_buffers()}
+\DoxyCodeLine{00184\ \ \ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ buffer\ :\ buffers\_array)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (buffer.status\ !=\ frame\_buffer::frame\_buffer\_status::marked\_to\_send)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ buffer.status\ =\ frame\_buffer::frame\_buffer\_status::free;}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00189\ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{//\ Returns\ a\ vector\ of\ pointers\ to\ the\ buffers\ ready\ for\ sending.}}
+\DoxyCodeLine{00193\ \ \ span<const\ frame\_buffer*>\ find\_buffers\_ready\_for\_sending()}
+\DoxyCodeLine{00194\ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ aux\_array.clear();}
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ used\_buf\ :\ used\_buffers)\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ used\_buf.buffer-\/>status\ =\ frame\_buffer::frame\_buffer\_status::marked\_to\_send;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ aux\_array.push\_back(used\_buf.buffer);}
+\DoxyCodeLine{00199\ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ used\_buffers.clear();}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{return}\ aux\_array;}
+\DoxyCodeLine{00202\ \ \ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ span<const\ used\_buffer>\ get\_prepared\_buffers()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ used\_buffers;\ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{//\ Number\ of\ buffers\ accessed\ at\ a\ time.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{keywordtype}{unsigned}\ increment\_quant;}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{//\ Maximum\ number\ of\ buffers\ stored\ in\ the\ pool.}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keywordtype}{unsigned}\ storage\_nof\_buffers;}
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{//\ Data\ buffers.}}
+\DoxyCodeLine{00212\ \ \ storage\_array\_type\ buffers\_array;}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{//\ Used\ buffers\ are\ added\ to\ this\ list.}}
+\DoxyCodeLine{00214\ \ \ static\_vector<used\_buffer,\ 128>\ used\_buffers;}
+\DoxyCodeLine{00215\ \ \ \textcolor{comment}{//\ Auxiliary\ array\ used\ as\ a\ list\ of\ ready-\/to-\/send\ buffers\ returned\ to\ a\ reader.}}
+\DoxyCodeLine{00216\ \ \ std::vector<const\ frame\_buffer*>\ aux\_array;}
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{//\ Keeps\ track\ of\ the\ current\ write\ position.}}
+\DoxyCodeLine{00218\ \ \ rd\_wr\_counter\ write\_position;}
+\DoxyCodeLine{00219\ \};}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00222\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}}
+\DoxyCodeLine{00223\ \{}
+\DoxyCodeLine{00225\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ NUM\_SLOTS\ =\ 20L;}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ NUM\_ENTRIES\ =\ \mbox{\hyperlink{namespacesrsran_a2ec632168c0292dc5fd78c9bd35f159b}{NOF\_OFDM\_SYM\_PER\_SLOT\_NORMAL\_CP}}\ *\ NUM\_SLOTS;}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00231\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ NUM\_INTERVAL\_SYMBOL\ =\ 14;}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00234\ \ \ \textcolor{keyword}{struct\ }pool\_entry\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ NUM\_CP\_MESSAGES\_TO\_RETURN\ =\ 1;}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00239\ \ \ \ \ std::vector<frame\_buffer\_array>\ buffers;}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \ \ pool\_entry(\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ mtu,\ \textcolor{keywordtype}{unsigned}\ num\_of\_frames)}
+\DoxyCodeLine{00242\ \ \ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \textcolor{comment}{//\ DL\ C-\/Plane\ storage.}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ buffers.emplace\_back(NUM\_CP\_MESSAGES\_TO\_RETURN,\ mtu.value(),\ ofh::MAX\_NOF\_SUPPORTED\_EAXC);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \textcolor{comment}{//\ UL\ C-\/Plane\ storage.}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ buffers.emplace\_back(NUM\_CP\_MESSAGES\_TO\_RETURN,\ mtu.value(),\ ofh::MAX\_NOF\_SUPPORTED\_EAXC\ *\ 2);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \textcolor{comment}{//\ U-\/Plane\ storage.}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ buffers.emplace\_back(num\_of\_frames,\ mtu.value(),\ ofh::MAX\_NOF\_SUPPORTED\_EAXC);}
+\DoxyCodeLine{00249\ \ \ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00252\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ get\_ofh\_type\_buffers(ofh::message\_type\ type,\ ofh::data\_direction\ dir)}
+\DoxyCodeLine{00253\ \ \ \ \ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ index\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(type)\ *\ 2;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dir\ ==\ ofh::data\_direction::uplink)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ index\ +=\ 1;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ buffers[index];}
+\DoxyCodeLine{00259\ \ \ \ \ \}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00262\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ get\_ofh\_type\_buffers(ofh::message\_type\ type,\ ofh::data\_direction\ dir)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00263\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ index\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(type)\ *\ 2;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dir\ ==\ ofh::data\_direction::uplink)\ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ index\ +=\ 1;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ buffers[index];}
+\DoxyCodeLine{00269\ \ \ \ \ \}}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00272\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ reserve\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\&\ context)}
+\DoxyCodeLine{00273\ \ \ \ \ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type,\ context.direction);}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ \ buffs\ \ \ \ \ =\ entry\_buf.reserve\_buffers();}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \textcolor{comment}{//\ Reset\ size\ of\ buffers\ before\ returning.}}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ buf\ :\ buffs)\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ buf.clear();}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ buffs;}
+\DoxyCodeLine{00281\ \ \ \ \ \}}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordtype}{void}\ push\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\&\ context,\ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ prepared\_buffers)}
+\DoxyCodeLine{00285\ \ \ \ \ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type.type,\ context.type.direction);}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ entry\_buf.push\_buffers(prepared\_buffers,\ context.symbol\_point);}
+\DoxyCodeLine{00288\ \ \ \ \ \}}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keywordtype}{void}\ clear\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\&\ context)}
+\DoxyCodeLine{00291\ \ \ \ \ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type,\ context.direction);}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ entry\_buf.clear\_buffers();}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordtype}{void}\ reset\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\&\ context)}
+\DoxyCodeLine{00297\ \ \ \ \ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type,\ context.direction);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ entry\_buf.reset\_buffers();}
+\DoxyCodeLine{00300\ \ \ \ \ \}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ frame\_buffer\_array::used\_buffer>}}\ get\_prepared\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\&\ context)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00303\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type,\ context.direction);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ entry\_buf.get\_prepared\_buffers();}
+\DoxyCodeLine{00306\ \ \ \ \ \}}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00309\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ frame\_buffer*>}}\ read\_buffers(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\&\ context)}
+\DoxyCodeLine{00310\ \ \ \ \ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1frame__buffer__array}{frame\_buffer\_array}}\&\ entry\_buf\ =\ get\_ofh\_type\_buffers(context.type,\ context.direction);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ entry\_buf.find\_buffers\_ready\_for\_sending();}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \};\ \textcolor{comment}{//\ End\ of\ pool\_entry\ class.}}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{const}\ pool\_entry\&\ get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \textcolor{keywordtype}{unsigned}\ symbol)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00318\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ slot\_index\ =\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}();}
+\DoxyCodeLine{00320\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ sym\_index\ \ =\ (slot\_index\ *\ \mbox{\hyperlink{namespacesrsran_a2ec632168c0292dc5fd78c9bd35f159b}{NOF\_OFDM\_SYM\_PER\_SLOT\_NORMAL\_CP}}\ +\ symbol)\ \%\ NUM\_ENTRIES;}
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keywordflow}{return}\ pool[sym\_index];}
+\DoxyCodeLine{00322\ \ \ \}}
+\DoxyCodeLine{00324\ \ \ pool\_entry\&\ get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \textcolor{keywordtype}{unsigned}\ symbol)}
+\DoxyCodeLine{00325\ \ \ \{}
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{const\_cast<}pool\_entry\&\textcolor{keyword}{>}(\textcolor{keyword}{const\_cast<}\textcolor{keyword}{const\ }\mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool}{eth\_frame\_pool}}*\textcolor{keyword}{>}(\textcolor{keyword}{this})-\/>get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ symbol));}
+\DoxyCodeLine{00327\ \ \ \}}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00331\ \ \ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_aa6658d6a70c1f67437d020f48174c6e9}{eth\_frame\_pool}}(\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{units::bytes}}\ mtu,\ \textcolor{keywordtype}{unsigned}\ num\_of\_frames)\ :\ pool(NUM\_ENTRIES,\ \{mtu,\ num\_of\_frames\})}
+\DoxyCodeLine{00332\ \ \ \{}
+\DoxyCodeLine{00333\ \ \ \ \ aux\_array.reserve(ofh::MAX\_NOF\_SUPPORTED\_EAXC\ *\ num\_of\_frames\ *\ NUM\_INTERVAL\_SYMBOL);}
+\DoxyCodeLine{00334\ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00337\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_ad3461819f6a9d5ae4e864e90796fa3ac}{get\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\&\ context)}
+\DoxyCodeLine{00338\ \ \ \{}
+\DoxyCodeLine{00339\ \ \ \ \ pool\_entry\&\ p\_entry\ =\ get\_pool\_entry(context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{comment}{//\ Acquire\ lock\ before\ accessing\ pool\ entry.}}
+\DoxyCodeLine{00341\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00342\ \ \ \ \ \textcolor{keywordflow}{return}\ p\_entry.reserve\_buffers(context.type);}
+\DoxyCodeLine{00343\ \ \ \}}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00346\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_af8a13e4fba87eb66c22795b5f6033a3f}{push\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\&\ context,\ \mbox{\hyperlink{classsrsran_1_1span}{span<frame\_buffer>}}\ prepared\_buffers)}
+\DoxyCodeLine{00347\ \ \ \{}
+\DoxyCodeLine{00348\ \ \ \ \ pool\_entry\&\ p\_entry\ =\ get\_pool\_entry(context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{comment}{//\ Lock\ and\ update\ the\ pool\ entry.}}
+\DoxyCodeLine{00350\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00351\ \ \ \ \ p\_entry.push\_buffers(context,\ prepared\_buffers);}
+\DoxyCodeLine{00352\ \ \ \}}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00355\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ frame\_buffer*>}}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_a98362db0dec39f1c9ed054e3c9dd7e63}{read\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\&\ context)}
+\DoxyCodeLine{00356\ \ \ \{}
+\DoxyCodeLine{00357\ \ \ \ \ pool\_entry\&\ p\_entry\ =\ get\_pool\_entry(context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00358\ \ \ \ \ \textcolor{comment}{//\ Acquire\ lock\ before\ accessing\ pool\ entry.}}
+\DoxyCodeLine{00359\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keywordflow}{return}\ p\_entry.read\_buffers(context.type);}
+\DoxyCodeLine{00361\ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00364\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ frame\_buffer*>}}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_ade98bca8c788d0383c9d79443203f7ef}{read\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__interval}{frame\_pool\_interval}}\&\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}})}
+\DoxyCodeLine{00365\ \ \ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start\ >\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.end)\ \{}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00368\ \ \ \ \ \}}
+\DoxyCodeLine{00369\ \ \ \ \ \textcolor{comment}{//\ Acquire\ lock\ before\ accessing\ pool\ entries.}}
+\DoxyCodeLine{00370\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \ \ aux\_array.clear();}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{comment}{//\ Extra\ 1\ is\ added\ to\ include\ the\ end\ symbol\ of\ the\ interval.}}
+\DoxyCodeLine{00375\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ distance\ =\ (\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.end\ -\/\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start)\ +\ 1;}
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ distance;\ ++i)\ \{}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ tmp\_symbol\ =\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start\ +\ i;}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00379\ \ \ \ \ \ \ pool\_entry\&\ p\_entry\ \ \ \ \ \ \ \ =\ get\_pool\_entry(tmp\_symbol.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ tmp\_symbol.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \ \ \ \ \ \ \ symbol\_buffers\ =\ p\_entry.read\_buffers(\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.type);}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buffer\ :\ symbol\_buffers)\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ aux\_array.push\_back(buffer);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00384\ \ \ \ \ \}}
+\DoxyCodeLine{00385\ \ \ \ \ \textcolor{keywordflow}{return}\ aux\_array;}
+\DoxyCodeLine{00386\ \ \ \}}
+\DoxyCodeLine{00387\ }
+\DoxyCodeLine{00389\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_a3827f6c93079bb14b582d05e96efd6f6}{clear\_sent\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__context}{frame\_pool\_context}}\&\ context)}
+\DoxyCodeLine{00390\ \ \ \{}
+\DoxyCodeLine{00391\ \ \ \ \ pool\_entry\&\ p\_entry\ =\ get\_pool\_entry(context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ context.symbol\_point.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{comment}{//\ Acquire\ lock\ before\ accessing\ pool\ entry.}}
+\DoxyCodeLine{00393\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00394\ \ \ \ \ p\_entry.clear\_buffers(context.type);}
+\DoxyCodeLine{00395\ \ \ \}}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00398\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_a95050244b6508ab3dd4fad4200b051fa}{clear\_sent\_frame\_buffers}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ether_1_1frame__pool__interval}{frame\_pool\_interval}}\&\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}})}
+\DoxyCodeLine{00399\ \ \ \{}
+\DoxyCodeLine{00400\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start\ >\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.end)\ \{}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00402\ \ \ \ \ \}}
+\DoxyCodeLine{00403\ \ \ \ \ \textcolor{comment}{//\ Acquire\ lock\ before\ accessing\ pool\ entries.}}
+\DoxyCodeLine{00404\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{comment}{//\ Extra\ 1\ is\ added\ to\ include\ the\ end\ symbol\ of\ the\ interval.}}
+\DoxyCodeLine{00407\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ distance\ =\ (\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.end\ -\/\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start)\ +\ 1;}
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ distance;\ ++i)\ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point}{ofh::slot\_symbol\_point}}\ tmp\_symbol\ =\ \mbox{\hyperlink{classsrsran_1_1interval}{interval}}.start\ +\ i;}
+\DoxyCodeLine{00410\ }
+\DoxyCodeLine{00411\ \ \ \ \ \ \ pool\_entry\&\ p\_entry\ =\ get\_pool\_entry(tmp\_symbol.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a6a6d6855238b72fde0b7ac5e5046132f}{get\_slot}}(),\ tmp\_symbol.\mbox{\hyperlink{classsrsran_1_1ofh_1_1slot__symbol__point_a9052a05dbd41f1a98438d65240685de3}{get\_symbol\_index}}());}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ p\_entry.clear\_buffers(\mbox{\hyperlink{classsrsran_1_1interval}{interval}}.type);}
+\DoxyCodeLine{00413\ \ \ \ \ \}}
+\DoxyCodeLine{00414\ \ \ \}}
+\DoxyCodeLine{00415\ }
+\DoxyCodeLine{00417\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_abd74166868322920277b4f713c807e1b}{clear\_downlink\_slot}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00418\ \ \ \{}
+\DoxyCodeLine{00419\ \ \ \ \ \textcolor{comment}{//\ Lock\ before\ changing\ the\ pool\ entries.}}
+\DoxyCodeLine{00420\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \ \ \ \ pool\_entry\&\ cp\_entry\ =\ get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ 0);}
+\DoxyCodeLine{00423\ \ \ \ \ \textcolor{comment}{//\ Clear\ buffers\ with\ DL\ Control-\/Plane\ messages.}}
+\DoxyCodeLine{00424\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\ msg\_type\{ofh::message\_type::control\_plane,\ ofh::data\_direction::downlink\};}
+\DoxyCodeLine{00425\ }
+\DoxyCodeLine{00426\ \ \ \ \ \textcolor{keyword}{auto}\ dl\_cp\_buffers\ =\ cp\_entry.get\_prepared\_buffers(msg\_type);}
+\DoxyCodeLine{00427\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ used\_buf\ :\ dl\_cp\_buffers)\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (used\_buf.timestamp.get\_slot()\ ==\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}})\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ logger.warning(\textcolor{stringliteral}{"{}Detected\ '\{\}'\ late\ downlink\ C-\/Plane\ messages\ in\ the\ transmitter\ queue\ for\ slot\ '\{\}'"{}},}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dl\_cp\_buffers.size(),}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ used\_buf.timestamp.get\_slot());}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ cp\_entry.reset\_buffers(msg\_type);}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00436\ \ \ \ \ \}}
+\DoxyCodeLine{00437\ }
+\DoxyCodeLine{00438\ \ \ \ \ \textcolor{comment}{//\ Clear\ buffers\ with\ User-\/Plane\ messages.}}
+\DoxyCodeLine{00439\ \ \ \ \ msg\_type.type\ \ \ \ \ \ =\ ofh::message\_type::user\_plane;}
+\DoxyCodeLine{00440\ \ \ \ \ msg\_type.direction\ =\ ofh::data\_direction::downlink;}
+\DoxyCodeLine{00441\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ symbol\ =\ 0;\ symbol\ !=\ \mbox{\hyperlink{namespacesrsran_a2ec632168c0292dc5fd78c9bd35f159b}{NOF\_OFDM\_SYM\_PER\_SLOT\_NORMAL\_CP}};\ ++symbol)\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ pool\_entry\&\ up\_entry\ =\ get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ symbol);}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \textcolor{keyword}{auto}\ dl\_up\_buffers\ =\ up\_entry.get\_prepared\_buffers(msg\_type);}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ used\_buf\ :\ dl\_up\_buffers)\ \{}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (used\_buf.timestamp.get\_slot()\ ==\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}})\ \{}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ logger.warning(}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Detected\ '\{\}'\ late\ downlink\ U-\/Plane\ messages\ in\ the\ transmitter\ queue\ for\ slot\ '\{\}',\ symbol\ '\{\}'"{}},}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ dl\_up\_buffers.size(),}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ used\_buf.timestamp.get\_slot(),}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ used\_buf.timestamp.get\_symbol\_index());}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ up\_entry.reset\_buffers(msg\_type);}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00457\ \ \ \ \ \}}
+\DoxyCodeLine{00458\ \ \ \}}
+\DoxyCodeLine{00459\ }
+\DoxyCodeLine{00461\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_a9b2a69ccee89c621193c915f23ed11f2}{clear\_uplink\_slot}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00462\ \ \ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \textcolor{comment}{//\ Lock\ before\ changing\ the\ pool\ entries.}}
+\DoxyCodeLine{00464\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \ \ pool\_entry\&\ cp\_entry\ =\ get\_pool\_entry(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}},\ 0);}
+\DoxyCodeLine{00467\ \ \ \ \ \textcolor{comment}{//\ Clear\ buffers\ with\ UL\ Control-\/Plane\ messages.}}
+\DoxyCodeLine{00468\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ether_1_1ofh__pool__message__type}{ofh\_pool\_message\_type}}\ msg\_type\{ofh::message\_type::control\_plane,\ ofh::data\_direction::uplink\};}
+\DoxyCodeLine{00469\ }
+\DoxyCodeLine{00470\ \ \ \ \ \textcolor{keyword}{auto}\ ul\_cp\_buffers\ =\ cp\_entry.get\_prepared\_buffers(msg\_type);}
+\DoxyCodeLine{00471\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ used\_buf\ :\ ul\_cp\_buffers)\ \{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (used\_buf.timestamp.get\_slot()\ ==\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}})\ \{}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ logger.warning(\textcolor{stringliteral}{"{}Detected\ '\{\}'\ late\ uplink\ C-\/Plane\ messages\ in\ the\ transmitter\ queue\ for\ slot\ '\{\}'"{}},}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ul\_cp\_buffers.size(),}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ used\_buf.timestamp.get\_slot());}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ cp\_entry.reset\_buffers(msg\_type);}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00480\ \ \ \ \ \}}
+\DoxyCodeLine{00481\ \ \ \}}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00484\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1ether_1_1eth__frame__pool_a09d4d3216b87479cead3b68455e2769b}{pool\_size\_in\_slots}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ NUM\_SLOTS;\ \}}
+\DoxyCodeLine{00485\ }
+\DoxyCodeLine{00486\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00488\ \ \ std::vector<pool\_entry>\ pool;}
+\DoxyCodeLine{00490\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ mutex;}
+\DoxyCodeLine{00492\ \ \ std::vector<const\ frame\_buffer*>\ aux\_array;}
+\DoxyCodeLine{00493\ \};}
+\DoxyCodeLine{00494\ }
+\DoxyCodeLine{00495\ \}\ \textcolor{comment}{//\ namespace\ ether}}
+\DoxyCodeLine{00496\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

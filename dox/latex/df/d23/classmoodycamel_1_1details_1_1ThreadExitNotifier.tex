@@ -1,0 +1,70 @@
+\doxysection{moodycamel\+::details\+::Thread\+Exit\+Notifier Class Reference}
+\hypertarget{classmoodycamel_1_1details_1_1ThreadExitNotifier}{}\label{classmoodycamel_1_1details_1_1ThreadExitNotifier}\index{moodycamel::details::ThreadExitNotifier@{moodycamel::details::ThreadExitNotifier}}
+
+
+Collaboration diagram for moodycamel\+::details\+::Thread\+Exit\+Notifier\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=193pt]{d2/d6a/classmoodycamel_1_1details_1_1ThreadExitNotifier__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classmoodycamel_1_1details_1_1ThreadExitNotifier_a65e7856cb1e4bda11c1cb8ac8ad3a9d2}{subscribe}} (\mbox{\hyperlink{structmoodycamel_1_1details_1_1ThreadExitListener}{Thread\+Exit\+Listener}} \texorpdfstring{$\ast$}{*}listener)
+\item 
+static void \mbox{\hyperlink{classmoodycamel_1_1details_1_1ThreadExitNotifier_a75d86f4f47adcf30091647566496ece9}{unsubscribe}} (\mbox{\hyperlink{structmoodycamel_1_1details_1_1ThreadExitListener}{Thread\+Exit\+Listener}} \texorpdfstring{$\ast$}{*}listener)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classmoodycamel_1_1details_1_1ThreadExitNotifier_a65e7856cb1e4bda11c1cb8ac8ad3a9d2}\label{classmoodycamel_1_1details_1_1ThreadExitNotifier_a65e7856cb1e4bda11c1cb8ac8ad3a9d2} 
+\index{moodycamel::details::ThreadExitNotifier@{moodycamel::details::ThreadExitNotifier}!subscribe@{subscribe}}
+\index{subscribe@{subscribe}!moodycamel::details::ThreadExitNotifier@{moodycamel::details::ThreadExitNotifier}}
+\doxysubsubsection{\texorpdfstring{subscribe()}{subscribe()}}
+{\footnotesize\ttfamily static void moodycamel\+::details\+::\+Thread\+Exit\+Notifier\+::subscribe (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structmoodycamel_1_1details_1_1ThreadExitListener}{Thread\+Exit\+Listener}} \texorpdfstring{$\ast$}{*}}]{listener }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ tlsInst\ =\ instance();}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ guard(mutex());}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ listener-\/>next\ =\ tlsInst.tail;}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ listener-\/>chain\ =\ \&tlsInst;}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ tlsInst.tail\ =\ listener;}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classmoodycamel_1_1details_1_1ThreadExitNotifier_a75d86f4f47adcf30091647566496ece9}\label{classmoodycamel_1_1details_1_1ThreadExitNotifier_a75d86f4f47adcf30091647566496ece9} 
+\index{moodycamel::details::ThreadExitNotifier@{moodycamel::details::ThreadExitNotifier}!unsubscribe@{unsubscribe}}
+\index{unsubscribe@{unsubscribe}!moodycamel::details::ThreadExitNotifier@{moodycamel::details::ThreadExitNotifier}}
+\doxysubsubsection{\texorpdfstring{unsubscribe()}{unsubscribe()}}
+{\footnotesize\ttfamily static void moodycamel\+::details\+::\+Thread\+Exit\+Notifier\+::unsubscribe (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structmoodycamel_1_1details_1_1ThreadExitListener}{Thread\+Exit\+Listener}} \texorpdfstring{$\ast$}{*}}]{listener }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ guard(mutex());}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!listener-\/>chain)\ \{}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};\ \ \textcolor{comment}{//\ race\ with\ \string~ThreadExitNotifier}}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ tlsInst\ =\ *listener-\/>chain;}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \ \ \ listener-\/>chain\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \ \ \ ThreadExitListener**\ prev\ =\ \&tlsInst.tail;}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ ptr\ =\ tlsInst.tail;\ ptr\ !=\ \textcolor{keyword}{nullptr};\ ptr\ =\ ptr-\/>next)\ \{}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ptr\ ==\ listener)\ \{}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *prev\ =\ ptr-\/>next;}
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev\ =\ \&ptr-\/>next;}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+external/cameron314/concurrentqueue.\+h\end{DoxyCompactItemize}

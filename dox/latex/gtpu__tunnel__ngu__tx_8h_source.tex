@@ -1,0 +1,98 @@
+\doxysection{gtpu\+\_\+tunnel\+\_\+ngu\+\_\+tx.\+h}
+\hypertarget{gtpu__tunnel__ngu__tx_8h_source}{}\label{gtpu__tunnel__ngu__tx_8h_source}\index{lib/gtpu/gtpu\_tunnel\_ngu\_tx.h@{lib/gtpu/gtpu\_tunnel\_ngu\_tx.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}gtpu\_pdu.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}gtpu\_tunnel\_base\_tx.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_config.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_tunnel\_tx.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/bit\_encoding.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <arpa/inet.h>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <netinet/in.h>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__tx}{gtpu\_tunnel\_ngu\_tx}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__base__tx}{gtpu\_tunnel\_base\_tx}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__tx__lower__layer__interface}{gtpu\_tunnel\_tx\_lower\_layer\_interface}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__tx}{gtpu\_tunnel\_ngu\_tx}}(srs\_cu\_up::ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1gtpu__config_1_1gtpu__tx__config}{gtpu\_config::gtpu\_tx\_config}}\ \ \ \ \ \ \ \ \ \ cfg\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__tx__upper__layer__notifier}{gtpu\_tunnel\_tx\_upper\_layer\_notifier}}\&\ upper\_dn\_)\ :}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__base__tx}{gtpu\_tunnel\_base\_tx}}(\mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__log__prefix}{gtpu\_tunnel\_log\_prefix}}\{ue\_index,\ cfg\_.peer\_teid,\ \textcolor{stringliteral}{"{}UL"{}}\},\ gtpu\_pcap\_,\ upper\_dn\_),\ cfg(cfg\_)}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ to\_sockaddr(peer\_sockaddr,\ cfg.peer\_addr.c\_str(),\ cfg.peer\_port);}
+\DoxyCodeLine{00048\ \ \ \ \ logger.log\_info(\textcolor{stringliteral}{"{}GTPU\ NGU\ Tx\ configured.\ \{\}"{}},\ cfg);}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00052\ \textcolor{comment}{\ \ \ *\ SDU/PDU\ handlers}}
+\DoxyCodeLine{00053\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__tx_a32862bc870b591d8148b58206002a68d}{handle\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ buf,\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qfi)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1gtpu__header}{gtpu\_header}}\ hdr\ \ \ \ \ \ \ \ \ =\ \{\};}
+\DoxyCodeLine{00058\ \ \ \ \ hdr.flags.version\ \ \ \ \ \ \ =\ GTPU\_FLAGS\_VERSION\_V1;}
+\DoxyCodeLine{00059\ \ \ \ \ hdr.flags.protocol\_type\ =\ GTPU\_FLAGS\_GTP\_PROTOCOL;}
+\DoxyCodeLine{00060\ \ \ \ \ hdr.flags.ext\_hdr\ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00061\ \ \ \ \ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_ade83a32d4789a2fd12fd116a62488feb}{message\_type}}\ \ \ \ \ \ \ \ =\ GTPU\_MSG\_DATA\_PDU;}
+\DoxyCodeLine{00062\ \ \ \ \ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_a39886826ab123b8baa2f8e513de6ace1}{length}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ buf.length()\ +\ 4\ +\ 4;}
+\DoxyCodeLine{00063\ \ \ \ \ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_ae3b4c852c6de6464163d17b94cbf2d93}{teid}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ cfg.peer\_teid;}
+\DoxyCodeLine{00064\ \ \ \ \ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_a576ab7133d7cedaa67467e491a265fb1}{next\_ext\_hdr\_type}}\ \ \ =\ gtpu\_extension\_header\_type::pdu\_session\_container;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ ext\_buf;}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__encoder}{bit\_encoder}}\ encoder\{ext\_buf\};}
+\DoxyCodeLine{00068\ \ \ \ \ encoder.pack(1,\ 4);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ PDU\ type}}
+\DoxyCodeLine{00069\ \ \ \ \ encoder.pack(0,\ 4);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ unused\ options}}
+\DoxyCodeLine{00070\ \ \ \ \ encoder.pack(0,\ 1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ spare}}
+\DoxyCodeLine{00071\ \ \ \ \ encoder.pack(\mbox{\hyperlink{namespacesrsran_a48b1287bbb0da3e8c545174a7483b7a7}{qos\_flow\_id\_to\_uint}}(qfi),\ 7);\ \textcolor{comment}{//\ QFI}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1gtpu__extension__header}{gtpu\_extension\_header}}\ ext;}
+\DoxyCodeLine{00074\ \ \ \ \ ext.extension\_header\_type\ =\ gtpu\_extension\_header\_type::pdu\_session\_container;}
+\DoxyCodeLine{00075\ \ \ \ \ ext.container\ \ \ \ \ \ \ \ \ \ \ \ \ =\ ext\_buf;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_a2dfe989911e7a17a673901a058d3144c}{ext\_list}}.push\_back(ext);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{bool}\ write\_ok\ =\ \mbox{\hyperlink{namespacesrsran_afd81a8c24d4de479c6bd3887e97d640e}{gtpu\_write\_header}}(buf,\ hdr,\ logger);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{if}\ (!write\_ok)\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ logger.log\_error(\textcolor{stringliteral}{"{}Dropped\ SDU,\ error\ writing\ GTP-\/U\ header.\ teid=\{\}"{}},\ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_ae3b4c852c6de6464163d17b94cbf2d93}{teid}});}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ logger.log\_info(buf.begin(),\ buf.end(),\ \textcolor{stringliteral}{"{}TX\ PDU.\ pdu\_len=\{\}\ teid=\{\}\ qfi=\{\}"{}},\ buf.length(),\ hdr.\mbox{\hyperlink{structsrsran_1_1gtpu__header_ae3b4c852c6de6464163d17b94cbf2d93}{teid}},\ qfi);}
+\DoxyCodeLine{00086\ \ \ \ \ send\_pdu(std::move(buf),\ peer\_sockaddr);}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1gtpu__config_1_1gtpu__tx__config}{gtpu\_config::gtpu\_tx\_config}}\ cfg;}
+\DoxyCodeLine{00091\ \ \ sockaddr\_storage\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ peer\_sockaddr;}
+\DoxyCodeLine{00092\ \};}
+\DoxyCodeLine{00093\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

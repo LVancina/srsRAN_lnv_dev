@@ -37,7 +37,7 @@ ue_context_release_procedure::ue_context_release_procedure(const f1ap_ue_context
 {
   command->gnb_cu_ue_f1ap_id = gnb_cu_ue_f1ap_id_to_uint(ue_ctxt.ue_ids.cu_ue_f1ap_id);
   command->gnb_du_ue_f1ap_id = gnb_du_ue_f1ap_id_to_uint(ue_ctxt.ue_ids.du_ue_f1ap_id);
-  command->cause             = cause_to_asn1(cmd_.cause);
+  command->cause             = cause_to_f1ap_asn1(cmd_.cause);
   if (!cmd_.rrc_release_pdu.empty()) {
     command->rrc_container_present = true;
     command->rrc_container         = cmd_.rrc_release_pdu.copy();
@@ -77,6 +77,13 @@ void ue_context_release_procedure::send_ue_context_release_command()
   f1ap_ue_ctxt_rel_msg.pdu.set_init_msg();
   f1ap_ue_ctxt_rel_msg.pdu.init_msg().load_info_obj(ASN1_F1AP_ID_UE_CONTEXT_RELEASE);
   f1ap_ue_ctxt_rel_msg.pdu.init_msg().value.ue_context_release_cmd() = command;
+
+  if (ue_ctxt.logger.get_basic_logger().debug.enabled()) {
+    asn1::json_writer js;
+    f1ap_ue_ctxt_rel_msg.pdu.to_json(js);
+    logger.debug(
+        "{}: Containerized UEContextReleaseCommand: {}", f1ap_ue_log_prefix{ue_ctxt.ue_ids, name()}, js.to_string());
+  }
 
   // send UE Context Release Command
   f1ap_notifier.on_new_message(f1ap_ue_ctxt_rel_msg);

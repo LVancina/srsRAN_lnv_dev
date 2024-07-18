@@ -1,0 +1,76 @@
+\doxysection{amplitude\+\_\+controller.\+h}
+\hypertarget{amplitude__controller_8h_source}{}\label{amplitude__controller_8h_source}\index{include/srsran/phy/lower/amplitude\_controller/amplitude\_controller.h@{include/srsran/phy/lower/amplitude\_controller/amplitude\_controller.h}}
+\mbox{\hyperlink{amplitude__controller_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Amplitude\ controller\ generic\ interface.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/types.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Power\ measurements\ and\ runtime\ metrics\ reported\ by\ the\ amplitude\ controller.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{struct}\ amplitude\_controller\_metrics\ \{}
+\DoxyCodeLine{00034\ \ \ \textcolor{comment}{///\ Average\ power\ after\ input\ gain\ and\ before\ clipping,\ normalized\ to\ full\ scale.}}
+\DoxyCodeLine{00035\ \ \ \textcolor{keywordtype}{float}\ avg\_power\_fs;}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Peak\ power\ after\ input\ gain\ and\ before\ clipping,\ normalized\ to\ full\ scale.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{float}\ peak\_power\_fs;}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ PAPR\ of\ the\ input\ signal.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{float}\ papr\_lin;}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Gain\ factor\ applied\ to\ the\ signal\ by\ the\ amplitude\ control\ after\ the\ measurements.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{float}\ gain\_dB;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Total\ number\ of\ samples\ processed\ by\ the\ clipping\ stage.}}
+\DoxyCodeLine{00043\ \ \ uint64\_t\ nof\_processed\_samples;}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Total\ number\ of\ samples\ clipped\ by\ the\ clipping\ stage.}}
+\DoxyCodeLine{00045\ \ \ uint64\_t\ nof\_clipped\_samples;}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Expected\ probability\ that\ an\ input\ sample\ is\ clipped,\ calculated\ as\ \(\backslash\)c\ nof\_clipped\_samples\ /}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)c\ nof\_processed\_samples.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{double}\ clipping\_probability;}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Indicates\ whether\ clipping\ is\ enabled\ in\ the\ amplitude\ controller.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{bool}\ clipping\_enabled;}
+\DoxyCodeLine{00051\ \};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ an\ amplitude\ controller\ interface.}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ The\ amplitude\ controller\ adapts\ the\ amplitude\ of\ the\ signal\ to\ be\ injected\ to\ the\ radio\ device.}}
+\DoxyCodeLine{00056\ \textcolor{keyword}{class}\ amplitude\_controller}
+\DoxyCodeLine{00057\ \{}
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{virtual}\ \string~amplitude\_controller()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Performs\ amplitude\ control\ and\ provides\ signal\ power\ measurements.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Output\ signal\ samples.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ input\ Input\ signal\ samples.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Amplitude\ controller\ metrics,\ including\ power\ measurements\ and\ clipping\ statistics.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ output\ size\ and\ the\ input\ size\ must\ be\ equal.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{virtual}\ amplitude\_controller\_metrics\ process(span<cf\_t>\ output,\ span<\textcolor{keyword}{const}\ cf\_t>\ input)\ =\ 0;}
+\DoxyCodeLine{00068\ \};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

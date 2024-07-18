@@ -1,0 +1,111 @@
+\doxysection{ue\+\_\+channel\+\_\+state\+\_\+manager.\+h}
+\hypertarget{ue__channel__state__manager_8h_source}{}\label{ue__channel__state__manager_8h_source}\index{lib/scheduler/ue\_scheduling/ue\_channel\_state\_manager.h@{lib/scheduler/ue\_scheduling/ue\_channel\_state\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/phr\_report.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/csi\_report/csi\_report\_data.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/scheduler\_expert\_config.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/serving\_cell\_config.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_slot\_handler.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)brief\ This\ classes\ manages\ all\ the\ information\ related\ with\ the\ channel\ state\ that\ has\ been\ received\ from\ the\ UE}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ via\ CSI\ (e.g.\ CQI)\ or\ via\ gNB\ PHY\ measurements\ (e.g.\ UL\ SINR).}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager}{ue\_channel\_state\_manager}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ ue\_channel\_state\_manager(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__ue__expert__config}{scheduler\_ue\_expert\_config}}\&\ expert\_cfg\_,\ \textcolor{keywordtype}{unsigned}\ nof\_dl\_ports\_);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1csi__report__data}{csi\_report\_data}}>\&\ get\_latest\_csi\_report()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ latest\_csi\_report;\ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ update\_pusch\_snr(\textcolor{keywordtype}{float}\ snr\_db)\ \{\ pusch\_snr\_db\ =\ snr\_db;\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ PUSCH\ SNR\ in\ dBs.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_a2620e82166533252aee7ea0c0157cf5d}{get\_pusch\_snr}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pusch\_snr\_db;\ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ csi\_report\_wideband\_cqi\_type\ get\_wideband\_cqi()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ wideband\_cqi;\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ number\ of\ recommended\ layers\ to\ be\ used\ in\ DL\ based\ on\ reported\ RI.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_ad467d27ce32b37f0bf7b293f55ab84d4}{get\_nof\_dl\_layers}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ recommended\_dl\_layers;\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Fetches\ the\ number\ of\ recommended\ layers\ to\ be\ used\ in\ UL.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_abf82a4f102d9f9b559edb435cbbfeb43}{get\_nof\_ul\_layers}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ 1;\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Fetches\ the\ precoding\ codebook\ to\ be\ used\ in\ DL\ based\ on\ reported\ PMI\ and\ the\ chosen\ nof\ layers.}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1pdsch__precoding__info}{pdsch\_precoding\_info}}>\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_a6d64118d790cba57bc23ede5513004f3}{get\_precoding}}(\textcolor{keywordtype}{unsigned}\ chosen\_nof\_layers,\ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ pdsch\_prbs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00057\ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(chosen\_nof\_layers\ <=\ nof\_dl\_ports,\ \textcolor{stringliteral}{"{}Invalid\ number\ of\ layers\ chosen"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1pdsch__precoding__info}{pdsch\_precoding\_info}}>\ precoding\_info;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_dl\_ports\ <=\ 1)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{comment}{//\ In\ case\ of\ 1\ DL\ port,\ no\ precoding\ is\ used.}}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ precoding\_info;}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ precoding\_info.emplace();}
+\DoxyCodeLine{00065\ \ \ \ \ precoding\_info-\/>nof\_rbs\_per\_prg\ =\ pdsch\_prbs.length();}
+\DoxyCodeLine{00066\ \ \ \ \ precoding\_info-\/>prg\_infos.emplace\_back(recommended\_prg\_info[nof\_layers\_to\_index(chosen\_nof\_layers)]);}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ precoding\_info;}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Update\ UE\ with\ the\ latest\ CSI\ report\ for\ a\ given\ cell.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_af981c726aeaa5655a04b7c9289545954}{handle\_csi\_report}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1csi__report__data}{csi\_report\_data}}\&\ csi\_report);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Update\ UE\ with\ the\ latest\ PHR\ for\ a\ given\ cell.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ue__channel__state__manager_acde5eb4d6eff78ed0a8ef5cca7096c5d}{handle\_phr}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}\&\ phr)\ \{\ latest\_phr\ =\ phr;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ indexes\ -\/>\ nof\_layers\ for\ precoding\ (Options:\ 1,\ 2,\ 3,\ 4\ layers).}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ NOF\_LAYER\_CHOICES\ =\ 4;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Mapping\ of\ number\ of\ layers\ to\ array\ index.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{static}\ size\_t\ nof\_layers\_to\_index(\textcolor{keywordtype}{unsigned}\ nof\_layers)\ \{\ \textcolor{keywordflow}{return}\ nof\_layers\ -\/\ 1U;\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ DL\ ports.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_dl\_ports;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Estimated\ PUSCH\ SNR,\ in\ dB.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{float}\ pusch\_snr\_db;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Recommended\ CQI\ to\ be\ used\ to\ derive\ the\ DL\ MCS.}}
+\DoxyCodeLine{00090\ \ \ csi\_report\_wideband\_cqi\_type\ wideband\_cqi;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Recommended\ nof\ layers\ based\ on\ reports.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{unsigned}\ recommended\_dl\_layers\ =\ 1;}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ List\ of\ Recommended\ PMIs\ for\ different\ number\ of\ active\ layers.\ Position\ n\ is\ for\ layer\ n+1.}}
+\DoxyCodeLine{00096\ \ \ static\_vector<pdsch\_precoding\_info::prg\_info,\ NOF\_LAYER\_CHOICES>\ recommended\_prg\_info;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Latest\ CSI\ report\ received\ from\ the\ UE.}}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1csi__report__data}{csi\_report\_data}}>\ latest\_csi\_report;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Latest\ PHR\ received\ from\ the\ UE.}}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}>\ latest\_phr;}
+\DoxyCodeLine{00103\ \};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

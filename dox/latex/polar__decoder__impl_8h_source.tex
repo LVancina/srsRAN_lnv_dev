@@ -1,0 +1,100 @@
+\doxysection{polar\+\_\+decoder\+\_\+impl.\+h}
+\hypertarget{polar__decoder__impl_8h_source}{}\label{polar__decoder__impl_8h_source}\index{lib/phy/upper/channel\_coding/polar/polar\_decoder\_impl.h@{lib/phy/upper/channel\_coding/polar/polar\_decoder\_impl.h}}
+\mbox{\hyperlink{polar__decoder__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{polar__decoder_8h}{srsran/phy/upper/channel\_coding/polar/polar\_decoder.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_coding/polar/polar\_encoder.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/aligned\_vec.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1polar__decoder__impl}{polar\_decoder\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1polar__decoder}{polar\_decoder}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{enum}\ node\_rate\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ RATE\_0\ =\ 0,}
+\DoxyCodeLine{00045\ \ \ \ \ RATE\_R\ =\ 2,}
+\DoxyCodeLine{00047\ \ \ \ \ RATE\_1\ =\ 3,}
+\DoxyCodeLine{00048\ \ \ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{struct\ }params\_s\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ uint8\_t\ code\_size\_log;}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint16\_t>}}\ code\_stage\_size;}
+\DoxyCodeLine{00057\ \ \ \ \ std::vector<node\_rate>\ node\_type\_alloc;}
+\DoxyCodeLine{00059\ \ \ \ \ std::vector<node\_rate*>\ node\_type;}
+\DoxyCodeLine{00060\ \ \ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{struct\ }state\_s\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ uint8\_t\ stage;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{bool}\ flag\_finished;}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint16\_t>}}\ active\_node\_per\_stage;}
+\DoxyCodeLine{00070\ \ \ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{struct\ }tmp\_node\_s\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint8\_t>}}\ is\_not\_rate\_0;}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ is\_rate\_1;}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint16\_t>}}\ i\_even;}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint16\_t>}}\ i\_odd;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{explicit}\ tmp\_node\_s(uint8\_t\ nMax);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{void}\ compute(std::vector<node\_rate*>\&\ node\_type,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint16\_t>}}\ frozen\_set,\ uint16\_t\ code\_size\_log);}
+\DoxyCodeLine{00094\ \ \ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<log\_likelihood\_ratio>}}\ llr\_alloc;}
+\DoxyCodeLine{00099\ \ \ std::vector<span<log\_likelihood\_ratio>>\ llr0;}
+\DoxyCodeLine{00101\ \ \ std::vector<span<log\_likelihood\_ratio>>\ llr1;}
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1srsvec_1_1aligned__vec}{srsvec::aligned\_vec<uint8\_t>}}\ est\_bit;}
+\DoxyCodeLine{00105\ \ \ params\_s\ param;}
+\DoxyCodeLine{00107\ \ \ state\_s\ state;}
+\DoxyCodeLine{00109\ \ \ tmp\_node\_s\ tmp\_node\_type;}
+\DoxyCodeLine{00111\ \ \ std::unique\_ptr<polar\_encoder>\ enc;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{void}\ init(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data\_decoded,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ input\_llr,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ code\_size\_log,}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint16\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ frozen\_set);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ rate\_0\_node();}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{void}\ rate\_1\_node(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ data\_decoded);}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{void}\ rate\_r\_node(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ data\_decoded);}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordtype}{void}\ simplified\_node(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ data\_decoded);}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1polar__decoder__impl_a2f82f18e4436729d2f0e8d022d965116}{polar\_decoder\_impl}}(std::unique\_ptr<polar\_encoder>\ enc\_,\ uint8\_t\ nMax);}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1polar__decoder__impl_a7dadaf8cd881d4da5802bcc78eb5324a}{decode}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ data\_decoded,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ input\_llr,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1polar__code}{polar\_code}}\&\ code)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,104 @@
+\doxysection{rx\+\_\+buffer\+\_\+pool\+\_\+impl.\+h}
+\hypertarget{rx__buffer__pool__impl_8h_source}{}\label{rx__buffer__pool__impl_8h_source}\index{lib/phy/upper/rx\_buffer\_pool\_impl.h@{lib/phy/upper/rx\_buffer\_pool\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rx__buffer__codeblock__pool_8h}{"{}rx\_buffer\_codeblock\_pool.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rx__buffer__impl_8h}{"{}rx\_buffer\_impl.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/rx\_buffer\_pool.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/unique\_rx\_buffer.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/logger.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{algorithm}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ Implements\ a\ PUSCH\ rate\ matcher\ buffer\ pool.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl}{rx\_buffer\_pool\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__controller}{rx\_buffer\_pool\_controller}},\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool}{rx\_buffer\_pool}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ No\ expiration\ time\ value.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ null\_expiration\ =\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{)}};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Set\ to\ true\ when\ the\ buffer\ pool\ stopped.}}
+\DoxyCodeLine{00046\ \ \ std::atomic<\textcolor{keywordtype}{bool}>\ stopped\ =\ \{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Codeblock\ buffer\ pool.}}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__codeblock__pool}{rx\_buffer\_codeblock\_pool}}\ codeblock\_pool;}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Actual\ buffer\ pool.}}
+\DoxyCodeLine{00050\ \ \ std::vector<rx\_buffer\_impl>\ buffers;}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ List\ of\ buffer\ identifiers.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ Maps\ buffer\ identifiers\ to\ buffers.\ Each\ position\ indicates\ the\ buffer\ identifier\ assign\ to\ each\ of\ the\ buffers.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Buffers\ with\ \(\backslash\)c\ trx\_buffer\_identifier::invalid()\ identifier\ are\ not\ reserved.}}
+\DoxyCodeLine{00055\ \ \ std::vector<trx\_buffer\_identifier>\ identifiers;}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Tracks\ expiration\ times.}}
+\DoxyCodeLine{00057\ \ \ std::vector<slot\_point>\ expirations;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Indicates\ the\ lifetime\ of\ a\ buffer\ reservation\ as\ a\ number\ of\ slots.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{unsigned}\ expire\_timeout\_slots;}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00062\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__rx__buffer}{unique\_rx\_buffer}}}
+\DoxyCodeLine{00066\ \ \ reserve(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ slot,\ \mbox{\hyperlink{classsrsran_1_1trx__buffer__identifier}{trx\_buffer\_identifier}}\ id,\ \textcolor{keywordtype}{unsigned}\ nof\_codeblocks,\ \textcolor{keywordtype}{bool}\ new\_data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ run\_slot(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\&\ slot)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ generic\ receiver\ buffer\ pool.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Provides\ the\ pool\ required\ parameters.}}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{rx\_buffer\_pool\_impl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rx__buffer__pool__config}{rx\_buffer\_pool\_config}}\&\ config)\ :}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{codeblock\_pool}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{nof\_codeblocks}},\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{max\_codeblock\_size}},\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{external\_soft\_bits}}),}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{buffers}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{nof\_buffers}},\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{rx\_buffer\_impl}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{codeblock\_pool}})),}
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{identifiers}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{nof\_buffers}},\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{trx\_buffer\_identifier}}::\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{invalid}}()),}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{expirations}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{config}}.\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{nof\_buffers}},\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{null\_expiration}}),}
+\DoxyCodeLine{00079\ \ \ \ \ expire\_timeout\_slots(config\mbox{\hyperlink{structsrsran_1_1rx__buffer__pool__config_a9b345234f1341198f7dd7fd26a9cc1f9}{.}}\mbox{\hyperlink{structsrsran_1_1rx__buffer__pool__config_a9b345234f1341198f7dd7fd26a9cc1f9}{expire\_timeout\_slots}}),}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{logger}}(\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{srslog}}::\mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a33e98201fd515b168a5221fcf0cf94fc}{fetch\_basic\_logger}}(\textcolor{stringliteral}{"{}PHY"{}},\ \textcolor{keyword}{true}))}
+\DoxyCodeLine{00081\ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{//\ See\ rx\_buffer\_pool\_controller\ interface\ for\ documentation.}}
+\DoxyCodeLine{00085\ \ \ \string~rx\_buffer\_pool\_impl()\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00086\ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(std::none\_of(buffers.begin(),\ buffers.end(),\ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ buffer)\ \{\ \textcolor{keywordflow}{return}\ buffer.is\_locked();\ \}),}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}A\ buffer\ is\ still\ locked."{}});}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{//\ See\ rx\_buffer\_pool\_controller\ interface\ for\ documentation.}}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool}{rx\_buffer\_pool}}\&\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a1ab2a0093ad639228145f4aeee2522d6}{get\_pool}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{//\ See\ rx\_buffer\_pool\_controller\ interface\ for\ documentation.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rx__buffer__pool__impl_a0c8f046a64e88e69bc64e98d754f8dd2}{stop}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

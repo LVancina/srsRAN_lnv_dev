@@ -1,0 +1,128 @@
+\doxysection{gnb\+\_\+worker\+\_\+manager.\+h}
+\hypertarget{gnb__worker__manager_8h_source}{}\label{gnb__worker__manager_8h_source}\index{apps/gnb/gnb\_worker\_manager.h@{apps/gnb/gnb\_worker\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}gnb\_appconfig.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}gnb\_os\_sched\_affinity\_manager.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_up/cu\_up\_executor\_pool.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/du\_high/du\_high\_executor\_mapper.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_execution\_manager.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1worker__manager}{worker\_manager}}\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1worker__manager}{worker\_manager}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1gnb__appconfig}{gnb\_appconfig}}\&\ appcfg);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1worker__manager_a2174a185a72c6f06501c531445532cf3}{cu\_cp\_exec}}\ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1worker__manager_a84b026a4ab7e02e069e85436d15318b5}{cu\_up\_ctrl\_exec}}\ =\ \textcolor{keyword}{nullptr};\ }
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1worker__manager_ac1205073928bb9af69a578cb51fab213}{cu\_up\_dl\_exec}}\ \ \ =\ \textcolor{keyword}{nullptr};\ }
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1worker__manager_a599d3fc5c79c8bdf3abf34fb0ce707d6}{cu\_up\_ul\_exec}}\ \ \ =\ \textcolor{keyword}{nullptr};\ }
+\DoxyCodeLine{00057\ \ \ std::vector<task\_executor*>\ lower\_phy\_tx\_exec;}
+\DoxyCodeLine{00058\ \ \ std::vector<task\_executor*>\ lower\_phy\_rx\_exec;}
+\DoxyCodeLine{00059\ \ \ std::vector<task\_executor*>\ lower\_phy\_dl\_exec;}
+\DoxyCodeLine{00060\ \ \ std::vector<task\_executor*>\ lower\_phy\_ul\_exec;}
+\DoxyCodeLine{00061\ \ \ std::vector<task\_executor*>\ lower\_prach\_exec;}
+\DoxyCodeLine{00062\ \ \ std::vector<task\_executor*>\ upper\_pusch\_exec;}
+\DoxyCodeLine{00063\ \ \ std::vector<task\_executor*>\ upper\_pusch\_decoder\_exec;}
+\DoxyCodeLine{00064\ \ \ std::vector<task\_executor*>\ upper\_pucch\_exec;}
+\DoxyCodeLine{00065\ \ \ std::vector<task\_executor*>\ upper\_prach\_exec;}
+\DoxyCodeLine{00066\ \ \ std::vector<task\_executor*>\ upper\_pdsch\_exec;}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ radio\_exec\ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_printer\_exec\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ ru\_timing\_exec\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00070\ \ \ std::vector<task\_executor*>\ ru\_dl\_exec;}
+\DoxyCodeLine{00071\ \ \ std::vector<task\_executor*>\ ru\_tx\_exec;}
+\DoxyCodeLine{00072\ \ \ std::vector<task\_executor*>\ ru\_rx\_exec;}
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_e2\_exec\ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_up\_e2\_exec\ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ metrics\_hub\_exec\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ std::unique\_ptr<cu\_up\_executor\_pool>\ cu\_up\_exec\_mapper;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper}{du\_high\_executor\_mapper}}\&\ get\_du\_high\_executor\_mapper(\textcolor{keywordtype}{unsigned}\ du\_index);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ Gets\ the\ DU-\/low\ downlink\ executors.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ get\_du\_low\_dl\_executors(std::vector<task\_executor*>\&\ executors,\ \textcolor{keywordtype}{unsigned}\ sector\_id)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \mbox{\hyperlink{structsrsran_1_1worker__manager_a4399fedbedd012c7f7bea1690717c4e7}{find\_executor}}(\textcolor{keyword}{const}\ std::string\&\ name)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00086\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ exec\_mng.\mbox{\hyperlink{classsrsran_1_1task__execution__manager_ac09624ab955690c7c69b7e176a5d21a9}{executors}}().find(name);}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ it\ !=\ exec\_mng.\mbox{\hyperlink{classsrsran_1_1task__execution__manager_ac09624ab955690c7c69b7e176a5d21a9}{executors}}().end()\ ?\ it-\/>second\ :\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ get\_executor(\textcolor{keyword}{const}\ std::string\&\ name)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *exec\_mng.\mbox{\hyperlink{classsrsran_1_1task__execution__manager_ac09624ab955690c7c69b7e176a5d21a9}{executors}}().at(name);\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{struct\ }du\_high\_executor\_storage\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ std::unique\_ptr<du\_high\_executor\_mapper>\ du\_high\_exec\_mapper;}
+\DoxyCodeLine{00095\ \ \ \};}
+\DoxyCodeLine{00096\ \ \ std::vector<du\_high\_executor\_storage>\ \ \ \ du\_high\_executors;}
+\DoxyCodeLine{00097\ \ \ std::vector<std::vector<task\_executor*>>\ du\_low\_dl\_executors;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00100\ \ \ task\_execution\_manager\ exec\_mng;}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ gnb\_os\_sched\_affinity\_manager\ low\_prio\_affinity\_mng;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00105\ \ \ std::vector<gnb\_os\_sched\_affinity\_manager>\ affinity\_mng;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordtype}{void}\ create\_prio\_worker(\textcolor{keyword}{const}\ std::string\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ queue\_size,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<execution\_config\_helper::executor>\&\ execs,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ os\_sched\_affinity\_bitmask\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\_thread\_realtime\_priority\ prio\ =\ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority_af2cf72da038c74badffd988ce6a08e46}{os\_thread\_realtime\_priority::no\_realtime}}());}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{void}\ create\_worker\_pool(\textcolor{keyword}{const}\ std::string\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_workers,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ queue\_size,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<execution\_config\_helper::executor>\&\ execs,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\_thread\_realtime\_priority\ \ \ \ \ \ \ \ \ \ \ prio\ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1os__thread__realtime__priority_af2cf72da038c74badffd988ce6a08e46}{os\_thread\_realtime\_priority::no\_realtime}}(),}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<const\ os\_sched\_affinity\_bitmask>\ cpu\_masks\ =\ \{\});}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{void}\ create\_du\_cu\_executors(\textcolor{keyword}{const}\ gnb\_appconfig\&\ appcfg);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{void}\ create\_du\_low\_executors(\textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_blocking\_mode\_active,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_ul\_workers,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_dl\_workers,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_pusch\_decoder\_workers,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<const\ cell\_appconfig>\ cells\_cfg,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pipeline\_depth);}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{void}\ create\_ru\_executors(\textcolor{keyword}{const}\ gnb\_appconfig\&\ appcfg);}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{keywordtype}{void}\ create\_lower\_phy\_executors(\mbox{\hyperlink{namespacesrsran_a579067488646cd0fc3bd3d23be0e4ccb}{lower\_phy\_thread\_profile}}\ lower\_phy\_profile,\ \textcolor{keywordtype}{unsigned}\ nof\_cells);}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{void}\ create\_ofh\_executors(span<const\ cell\_appconfig>\ cells,\ \textcolor{keywordtype}{bool}\ is\_downlink\_parallelized);}
+\DoxyCodeLine{00141\ \};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

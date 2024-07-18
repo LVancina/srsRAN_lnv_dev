@@ -1,0 +1,164 @@
+\doxysection{sockets.\+h}
+\hypertarget{sockets_8h_source}{}\label{sockets_8h_source}\index{include/srsran/support/sockets.h@{include/srsran/support/sockets.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/sctp\_network\_gateway.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <arpa/inet.h>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <netdb.h>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <netinet/sctp.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <sys/socket.h>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <sys/types.h>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <unistd.h>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_ae3bcbe55f5f8e956f8b0374168e3fc7c}{sctp\_set\_rto\_opts}}(\textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fd,}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int>}}\ \ \ \ \ \ \ \ \ rto\_initial,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int>}}\ \ \ \ \ \ \ \ \ rto\_min,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int>}}\ \ \ \ \ \ \ \ \ rto\_max,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordflow}{if}\ (not\ rto\_initial.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}()\ \&\&\ not\ rto\_min.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}()\ \&\&\ not\ rto\_max.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ no\ need\ to\ set\ RTO}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ Set\ RTO\_MAX\ to\ quickly\ detect\ broken\ links.}}
+\DoxyCodeLine{00049\ \ \ sctp\_rtoinfo\ rto\_opts\ \ =\ \{\};}
+\DoxyCodeLine{00050\ \ \ socklen\_t\ \ \ \ rto\_sz\ \ \ \ =\ \textcolor{keyword}{sizeof}(sctp\_rtoinfo);}
+\DoxyCodeLine{00051\ \ \ rto\_opts.srto\_assoc\_id\ =\ 0;}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{if}\ (getsockopt(fd,\ SOL\_SCTP,\ SCTP\_RTOINFO,\ \&rto\_opts,\ \&rto\_sz)\ <\ 0)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Error\ getting\ RTO\_INFO\ sockopts.\ errono=\{\}"{}},\ strerror(errno));}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ Responsibility\ of\ closing\ the\ socket\ is\ on\ the\ caller}}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{if}\ (rto\_initial.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ rto\_opts.srto\_initial\ =\ rto\_initial.value();}
+\DoxyCodeLine{00059\ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordflow}{if}\ (rto\_min.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ rto\_opts.srto\_min\ =\ rto\_min.value();}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordflow}{if}\ (rto\_max.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ rto\_opts.srto\_max\ =\ rto\_max.value();}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ logger.debug(}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Setting\ RTO\_INFO\ options\ on\ SCTP\ socket.\ Association\ \{\},\ Initial\ RTO\ \{\},\ Minimum\ RTO\ \{\},\ Maximum\ RTO\ \{\}"{}},}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ rto\_opts.srto\_assoc\_id,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ rto\_opts.srto\_initial,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ rto\_opts.srto\_min,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ rto\_opts.srto\_max);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordflow}{if}\ (::setsockopt(fd,\ SOL\_SCTP,\ SCTP\_RTOINFO,\ \&rto\_opts,\ rto\_sz)\ <\ 0)\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Error\ setting\ RTO\_INFO\ sockopts.\ errno=\{\}"{}},\ strerror(errno));}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ Responsibility\ of\ closing\ the\ socket\ is\ on\ the\ caller}}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00079\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00083\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_ae73743f563c0eb04a9f9f53385d7d81f}{sctp\_set\_init\_msg\_opts}}(\textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fd,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int>}}\ \ \ \ \ \ \ \ \ init\_max\_attempts,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<int>}}\ \ \ \ \ \ \ \ \ max\_init\_timeo,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00087\ \{}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordflow}{if}\ (not\ init\_max\_attempts.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}()\ \&\&\ not\ max\_init\_timeo.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{//\ No\ value\ set\ for\ init\ max\ attempts\ or\ max\ init\_timeo,}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{//\ no\ need\ to\ call\ set\_sockopts()}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{//\ Set\ SCTP\ INITMSG\ options\ to\ reduce\ blocking\ timeout\ of\ connect()}}
+\DoxyCodeLine{00095\ \ \ sctp\_initmsg\ init\_opts\ =\ \{\};}
+\DoxyCodeLine{00096\ \ \ socklen\_t\ \ \ \ init\_sz\ \ \ =\ \textcolor{keyword}{sizeof}(sctp\_initmsg);}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordflow}{if}\ (getsockopt(fd,\ SOL\_SCTP,\ SCTP\_INITMSG,\ \&init\_opts,\ \&init\_sz)\ <\ 0)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Error\ getting\ sockopts.\ errno=\{\}"{}},\ strerror(errno));}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ Responsibility\ of\ closing\ the\ socket\ is\ on\ the\ caller}}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordflow}{if}\ (init\_max\_attempts.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ init\_opts.sinit\_max\_attempts\ =\ init\_max\_attempts.value();}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordflow}{if}\ (max\_init\_timeo.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ init\_opts.sinit\_max\_init\_timeo\ =\ max\_init\_timeo.value();}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ logger.debug(\textcolor{stringliteral}{"{}Setting\ SCTP\_INITMSG\ options\ on\ SCTP\ socket.\ Max\ attempts\ \{\},\ Max\ init\ attempts\ timeout\ \{\}"{}},}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ init\_opts.sinit\_max\_attempts,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ init\_opts.sinit\_max\_init\_timeo);}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordflow}{if}\ (::setsockopt(fd,\ SOL\_SCTP,\ SCTP\_INITMSG,\ \&init\_opts,\ init\_sz)\ <\ 0)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Error\ setting\ SCTP\_INITMSG\ sockopts.\ errno=\{\}\(\backslash\)n"{}},\ strerror(errno));}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ Responsibility\ of\ closing\ the\ socket\ is\ on\ the\ caller}}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00117\ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ sockaddr\_to\_ip\_str(\textcolor{keyword}{const}\ sockaddr*\ addr,\ std::string\&\ ip\_address,\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger)}
+\DoxyCodeLine{00120\ \{}
+\DoxyCodeLine{00121\ \ \ \textcolor{keywordtype}{char}\ addr\_str[INET6\_ADDRSTRLEN]\ =\ \{\};}
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordflow}{if}\ (addr-\/>sa\_family\ ==\ AF\_INET)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{if}\ (inet\_ntop(AF\_INET,\ \&((sockaddr\_in*)addr)-\/>sin\_addr,\ addr\_str,\ INET6\_ADDRSTRLEN)\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Could\ not\ convert\ sockaddr\_in\ to\ string.\ errno=\{\}"{}},\ strerror(errno));}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (addr-\/>sa\_family\ ==\ AF\_INET6)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{if}\ (inet\_ntop(AF\_INET6,\ \&((sockaddr\_in6*)addr)-\/>sin6\_addr,\ addr\_str,\ INET6\_ADDRSTRLEN)\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Could\ not\ convert\ sockaddr\_in6\ to\ string.\ errno=\{\}"{}},\ strerror(errno));}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ logger.error(\textcolor{stringliteral}{"{}Unhandled\ address\ family."{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ ip\_address\ =\ addr\_str;}
+\DoxyCodeLine{00138\ \ \ logger.debug(\textcolor{stringliteral}{"{}Read\ bind\ port\ of\ UDP\ network\ gateway:\ \{\}"{}},\ ip\_address);}
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00140\ \}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \textcolor{keyword}{inline}\ std::string\ sock\_type\_to\_str(\textcolor{keywordtype}{int}\ type)}
+\DoxyCodeLine{00143\ \{}
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordflow}{switch}\ (type)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_STREAM:}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_STREAM"{}};}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_DGRAM:}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_DGRAM"{}};}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_RAW:}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_RAW"{}};}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_RDM:}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_RDM"{}};}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_SEQPACKET:}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_SEQPACKET"{}};}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_DCCP:}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_DCCP"{}};}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{case}\ SOCK\_PACKET:}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SOCK\_PACKET"{}};}
+\DoxyCodeLine{00159\ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}unknown\ type"{}};}
+\DoxyCodeLine{00161\ \}}
+\DoxyCodeLine{00162\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

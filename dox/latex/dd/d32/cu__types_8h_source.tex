@@ -1,0 +1,337 @@
+\doxysection{cu\+\_\+types.\+h}
+\hypertarget{cu__types_8h_source}{}\label{cu__types_8h_source}\index{include/srsran/ran/cu\_types.h@{include/srsran/ran/cu\_types.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{five__qi_8h}{"{}five\_qi.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{nr__cgi_8h}{"{}nr\_cgi.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{qos__prio__level_8h}{"{}qos\_prio\_level.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{s__nssai_8h}{"{}s\_nssai.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/sdap/sdap\_config.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ See\ TS\ 38.463\ Section\ 9.3.1.21:\ PDU\ Session\ ID\ valid\ values:\ (0..255)}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint16\_t\ MAX\_NOF\_PDU\_SESSIONS\ =\ 256;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)brief\ PDU\ Session\ ID.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.463\ Section\ 9.3.1.21:\ PDU\ Session\ ID\ valid\ values:\ (0..255)}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ :\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{uint16\_t}}\ \{\ min\ =\ 0,\ max\ =\ MAX\_NOF\_PDU\_SESSIONS\ -\/\ 1,\ invalid\ =\ MAX\_NOF\_PDU\_SESSIONS\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ Convert\ PDU\ Session\ ID\ type\ to\ integer.}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint16\_t\ \mbox{\hyperlink{namespacesrsran_a32e059b1e9034758c27b5f5772845f72}{pdu\_session\_id\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ id)}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint16\_t>(id);}
+\DoxyCodeLine{00046\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ Convert\ integer\ to\ PDU\ Session\ ID\ type.}}
+\DoxyCodeLine{00049\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{uint\_to\_pdu\_session\_id}}(uint16\_t\ idx)}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}>(idx);}
+\DoxyCodeLine{00052\ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{//\ See\ TS\ 38.463\ Section\ 9.3.1.24:\ QoS\ Flow\ ID\ valid\ values:\ (0..63)}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint8\_t\ MAX\_NOF\_QOS\_FLOWS\ =\ 64;}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \(\backslash\)brief\ QoS\ Flow\ ID.}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.463\ Section\ 9.3.1.21:\ QoS\ Flow\ ID\ valid\ values:\ (0..63)}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ :\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{uint8\_t}}\ \{\ min\ =\ 0,\ max\ =\ MAX\_NOF\_QOS\_FLOWS\ -\/\ 1,\ invalid\ =\ MAX\_NOF\_QOS\_FLOWS\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ Convert\ QoS\ Flow\ ID\ type\ to\ integer.}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint8\_t\ \mbox{\hyperlink{namespacesrsran_a48b1287bbb0da3e8c545174a7483b7a7}{qos\_flow\_id\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ id)}
+\DoxyCodeLine{00063\ \{}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(id);}
+\DoxyCodeLine{00065\ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ Convert\ integer\ to\ QoS\ Flow\ ID\ type.}}
+\DoxyCodeLine{00068\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \mbox{\hyperlink{namespacesrsran_a95c3d401b19b2f13c1635740d6737492}{uint\_to\_qos\_flow\_id}}(uint8\_t\ idx)}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}>(idx);}
+\DoxyCodeLine{00071\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ \(\backslash\)brief\ RAN\_UE\_ID\ (non\ ASN1\ type\ of\ RAN\_UE\_NGAP\_ID).}}
+\DoxyCodeLine{00074\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.413\ Section\ 9.3.3.2:\ RAN\_UE\_NGAP\_ID\ valid\ values:\ (0..2\string^32-\/1)}}
+\DoxyCodeLine{00075\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint64\_t\ MAX\_NOF\_RAN\_UES\ =\ ((uint64\_t)1\ <<\ 32);}
+\DoxyCodeLine{00076\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ ran\_ue\_id\_t\ :\ uint64\_t\ \{\ min\ =\ 0,\ max\ =\ MAX\_NOF\_RAN\_UES\ -\/\ 1,\ invalid\ =\ 0x1ffffffff\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ Convert\ RAN\_UE\_ID\ type\ to\ integer.}}
+\DoxyCodeLine{00079\ \textcolor{keyword}{inline}\ uint64\_t\ \mbox{\hyperlink{namespacesrsran_a4a6741932aa4119fb71bbf31ccde77ca}{ran\_ue\_id\_to\_uint}}(ran\_ue\_id\_t\ id)}
+\DoxyCodeLine{00080\ \{}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint64\_t>(id);}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ Convert\ integer\ to\ RAN\_UE\_ID\ type.}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{inline}\ ran\_ue\_id\_t\ \mbox{\hyperlink{namespacesrsran_a914c249441eec29074a29051f6cdd13b}{uint\_to\_ran\_ue\_id}}(std::underlying\_type\_t<ran\_ue\_id\_t>\ id)}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<ran\_ue\_id\_t>(id);}
+\DoxyCodeLine{00088\ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1slice__support__item__t}{slice\_support\_item\_t}}\ \{}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{structsrsran_1_1s__nssai__t}{s\_nssai\_t}}\ s\_nssai;}
+\DoxyCodeLine{00092\ \};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1nr__cgi__support__item__t}{nr\_cgi\_support\_item\_t}}\ \{}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{structsrsran_1_1nr__cell__global__id__t}{nr\_cell\_global\_id\_t}}\ nr\_cgi;}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1packet__error__rate__t}{packet\_error\_rate\_t}}\ \{}
+\DoxyCodeLine{00099\ \ \ uint8\_t\ per\_scalar;}
+\DoxyCodeLine{00100\ \ \ uint8\_t\ per\_exponent;}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1dyn__5qi__descriptor__t}{dyn\_5qi\_descriptor\_t}}\ \{}
+\DoxyCodeLine{00104\ \ \ \mbox{\hyperlink{namespacesrsran_ab8b9da35cb38392501fc0a6b1ec55dff}{qos\_prio\_level\_t}}\ \ \ \ \ \ qos\_prio\_level;}
+\DoxyCodeLine{00105\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ packet\_delay\_budget;}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{structsrsran_1_1packet__error__rate__t}{packet\_error\_rate\_t}}\ \ \ packet\_error\_rate;}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}>\ \ \ five\_qi;}
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ delay\_crit;}
+\DoxyCodeLine{00109\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ averaging\_win;}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ max\_data\_burst\_volume;}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1non__dyn__5qi__descriptor__t}{non\_dyn\_5qi\_descriptor\_t}}\ \{}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ five\_qi;}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_ab8b9da35cb38392501fc0a6b1ec55dff}{qos\_prio\_level\_t}}>\ qos\_prio\_level;}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ averaging\_win;}
+\DoxyCodeLine{00117\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ max\_data\_burst\_volume;}
+\DoxyCodeLine{00118\ \};}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1qos__characteristics__t}{qos\_characteristics\_t}}\ \{}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}\ get\_five\_qi()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00122\ \ \ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{if}\ (non\_dyn\_5qi.has\_value())\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ non\_dyn\_5qi.value().five\_qi;}
+\DoxyCodeLine{00125\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dyn\_5qi.has\_value())\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dyn\_5qi.value().five\_qi.has\_value())\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dyn\_5qi.value().five\_qi.value();}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Invalid\ QoS\ characteristics.\ Either\ dynamic\ or\ non-\/dynamic\ 5QI\ must\ be\ set"{}});}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a861f1531e77730335ec8e75c4b2eec2e}{five\_qi\_t}}::invalid;}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1dyn__5qi__descriptor__t}{dyn\_5qi\_descriptor\_t}}>\ \ \ \ \ dyn\_5qi;}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1non__dyn__5qi__descriptor__t}{non\_dyn\_5qi\_descriptor\_t}}>\ non\_dyn\_5qi;}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ng__ran__qos__support__item__t}{ng\_ran\_qos\_support\_item\_t}}\ \{}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{structsrsran_1_1non__dyn__5qi__descriptor__t}{non\_dyn\_5qi\_descriptor\_t}}\ non\_dyn\_5qi\_descriptor;}
+\DoxyCodeLine{00141\ \};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1supported__plmns__item__t}{supported\_plmns\_item\_t}}\ \{}
+\DoxyCodeLine{00144\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ plmn\_id;}
+\DoxyCodeLine{00145\ \ \ std::vector<slice\_support\_item\_t>\ \ \ \ \ \ slice\_support\_list;}
+\DoxyCodeLine{00146\ \ \ std::vector<nr\_cgi\_support\_item\_t>\ \ \ \ \ nr\_cgi\_support\_list;}
+\DoxyCodeLine{00147\ \ \ std::vector<ng\_ran\_qos\_support\_item\_t>\ ng\_ran\_qos\_support\_list;}
+\DoxyCodeLine{00148\ \};}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1sdap__config__t}{sdap\_config\_t}}\ \{}
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ pdu\_session\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00152\ \ \ \mbox{\hyperlink{namespacesrsran_a3e7011c1548ca127da67aeeea5949e08}{sdap\_hdr\_dl\_cfg}}\ \ \ \ \ \ \ \ \ \ \ \ sdap\_hdr\_dl\ =\ \mbox{\hyperlink{namespacesrsran_a3e7011c1548ca127da67aeeea5949e08}{sdap\_hdr\_dl\_cfg}}::absent;}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{namespacesrsran_aacb935d1ebff86bce976734f736cc44f}{sdap\_hdr\_ul\_cfg}}\ \ \ \ \ \ \ \ \ \ \ \ sdap\_hdr\_ul\ =\ \mbox{\hyperlink{namespacesrsran_aacb935d1ebff86bce976734f736cc44f}{sdap\_hdr\_ul\_cfg}}::absent;}
+\DoxyCodeLine{00154\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_drb\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00155\ \ \ std::vector<qos\_flow\_id\_t>\ mapped\_qos\_flows\_to\_add;}
+\DoxyCodeLine{00156\ \ \ std::vector<qos\_flow\_id\_t>\ mapped\_qos\_flows\_to\_release;}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ integrity\_protection\_result\_t\ \{\ performed,\ not\_performed\ \};}
+\DoxyCodeLine{00160\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ confidentiality\_protection\_result\_t\ \{\ performed,\ not\_performed\ \};}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security__result__t}{security\_result\_t}}\ \{}
+\DoxyCodeLine{00163\ \ \ integrity\_protection\_result\_t\ \ \ \ \ \ \ integrity\_protection\_result;}
+\DoxyCodeLine{00164\ \ \ confidentiality\_protection\_result\_t\ confidentiality\_protection\_result;}
+\DoxyCodeLine{00165\ \};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ integrity\_protection\_indication\_t\ \{\ required,\ preferred,\ not\_needed\ \};}
+\DoxyCodeLine{00168\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ from\_string(integrity\_protection\_indication\_t\&\ integrity\_protection\_ind,\ \textcolor{keyword}{const}\ std::string\&\ str)}
+\DoxyCodeLine{00169\ \{}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}required"{}})\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ integrity\_protection\_ind\ =\ integrity\_protection\_indication\_t::required;}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00173\ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}preferred"{}})\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ integrity\_protection\_ind\ =\ integrity\_protection\_indication\_t::preferred;}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00177\ \ \ \}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}not\_needed"{}})\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ integrity\_protection\_ind\ =\ integrity\_protection\_indication\_t::not\_needed;}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00183\ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ confidentiality\_protection\_indication\_t\ \{\ required,\ preferred,\ not\_needed\ \};}
+\DoxyCodeLine{00186\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ from\_string(confidentiality\_protection\_indication\_t\&\ confidentiality\_protection\_ind,\ \textcolor{keyword}{const}\ std::string\&\ str)}
+\DoxyCodeLine{00187\ \{}
+\DoxyCodeLine{00188\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}required"{}})\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ confidentiality\_protection\_ind\ =\ confidentiality\_protection\_indication\_t::required;}
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}preferred"{}})\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ confidentiality\_protection\_ind\ =\ confidentiality\_protection\_indication\_t::preferred;}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordflow}{if}\ (str\ ==\ \textcolor{stringliteral}{"{}not\_needed"{}})\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ confidentiality\_protection\_ind\ =\ confidentiality\_protection\_indication\_t::not\_needed;}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00201\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\ \{}
+\DoxyCodeLine{00204\ \ \ integrity\_protection\_indication\_t\ \ \ \ \ \ \ integrity\_protection\_ind;}
+\DoxyCodeLine{00205\ \ \ confidentiality\_protection\_indication\_t\ confidentiality\_protection\_ind;}
+\DoxyCodeLine{00206\ \};}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ a\ \(\backslash\)c\ security\_result\ shall\ be\ sent.}}
+\DoxyCodeLine{00209\ \textcolor{comment}{///}}
+\DoxyCodeLine{00210\ \textcolor{comment}{///\ Helper\ function\ to\ determine\ whether\ the\ \(\backslash\)c\ security\_indication\ shall\ be\ replied\ with\ a\ \(\backslash\)c\ security\_result\ by\ the}}
+\DoxyCodeLine{00211\ \textcolor{comment}{///\ peer\ entity,\ i.e.\ if\ either\ integrity\ or\ confidentiality\ are\ set\ to\ 'preferred'\ so\ the\ peer\ entity\ can\ decide}}
+\DoxyCodeLine{00212\ \textcolor{comment}{///\ according\ to\ its\ capabilities.}}
+\DoxyCodeLine{00213\ \textcolor{comment}{///\ Ref:\ TS\ 38.413\ Sec.\ 8.2.1.2,\ TS\ 38.463\ Sec.\ 8.3.1.2}}
+\DoxyCodeLine{00214\ \textcolor{comment}{///}}
+\DoxyCodeLine{00215\ \textcolor{comment}{///\ \(\backslash\)param\ security\_indication\ The\ security\_indication\ to\ be\ checked.}}
+\DoxyCodeLine{00216\ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ either\ integrity\ or\ confidentiality\ are\ set\ to\ 'preferred';\ False\ otherwise.}}
+\DoxyCodeLine{00217\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a1457adcc871374605b251b4de2e772de}{security\_result\_required}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\&\ security\_indication)}
+\DoxyCodeLine{00218\ \{}
+\DoxyCodeLine{00219\ \ \ \textcolor{keywordflow}{return}\ security\_indication.integrity\_protection\_ind\ ==\ integrity\_protection\_indication\_t::preferred\ ||}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ security\_indication.confidentiality\_protection\_ind\ ==\ confidentiality\_protection\_indication\_t::preferred;}
+\DoxyCodeLine{00221\ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ activity\_notification\_level\_t\ :\ uint8\_t\ \{\ ue\ =\ 0,\ pdu\_session\ =\ 1,\ drb\ =\ 2,\ invalid\ =\ 3\ \};}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \textcolor{comment}{//\ Formatters}}
+\DoxyCodeLine{00228\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00229\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00230\ \textcolor{keyword}{struct}\ formatter<srsran::pdu\_session\_id\_t>\ \{}
+\DoxyCodeLine{00231\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00232\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00233\ \ \ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00238\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::pdu\_session\_id\_t\&\ sid,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00239\ \ \ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}psi=\{:\#\}"{}},\ pdu\_session\_id\_to\_uint(sid));}
+\DoxyCodeLine{00241\ \ \ \}}
+\DoxyCodeLine{00242\ \};}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00245\ \textcolor{keyword}{struct}\ formatter<srsran::qos\_flow\_id\_t>\ \{}
+\DoxyCodeLine{00246\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00247\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00248\ \ \ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00250\ \ \ \}}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00253\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::qos\_flow\_id\_t\&\ qfi,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00254\ \ \ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keywordflow}{switch}\ (qfi)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::qos\_flow\_id\_t::invalid:}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}invalid\ QFI"{}});}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}QFI=\{:\#\}"{}},\ qos\_flow\_id\_to\_uint(qfi));}
+\DoxyCodeLine{00260\ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \}}
+\DoxyCodeLine{00262\ \};}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00265\ \textcolor{keyword}{struct}\ formatter<srsran::integrity\_protection\_indication\_t>\ \{}
+\DoxyCodeLine{00266\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00267\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00268\ \ \ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00270\ \ \ \}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00273\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::integrity\_protection\_indication\_t\&\ ind,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00275\ \ \ \{}
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keywordflow}{switch}\ (ind)\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::integrity\_protection\_indication\_t::not\_needed:}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}not\_needed"{}});}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::integrity\_protection\_indication\_t::preferred:}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}preferred"{}});}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::integrity\_protection\_indication\_t::required:}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}required"{}});}
+\DoxyCodeLine{00283\ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}invalid"{}});}
+\DoxyCodeLine{00285\ \ \ \}}
+\DoxyCodeLine{00286\ \};}
+\DoxyCodeLine{00287\ }
+\DoxyCodeLine{00288\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00289\ \textcolor{keyword}{struct}\ formatter<srsran::confidentiality\_protection\_indication\_t>\ \{}
+\DoxyCodeLine{00290\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00291\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00292\ \ \ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00294\ \ \ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00297\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::confidentiality\_protection\_indication\_t\&\ ind,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00299\ \ \ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{keywordflow}{switch}\ (ind)\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::confidentiality\_protection\_indication\_t::not\_needed:}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}not\_needed"{}});}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::confidentiality\_protection\_indication\_t::preferred:}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}preferred"{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ srsran::confidentiality\_protection\_indication\_t::required:}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}required"{}});}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}invalid"{}});}
+\DoxyCodeLine{00309\ \ \ \}}
+\DoxyCodeLine{00310\ \};}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00313\ \textcolor{keyword}{struct}\ formatter<srsran::security\_indication\_t>\ \{}
+\DoxyCodeLine{00314\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00315\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00316\ \ \ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00318\ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00321\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::security\_indication\_t\&\ security\_ind,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00323\ \ \ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}integrity\_ind=\{\}\ confidentiality\_ind=\{\}"{}},}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_ind.integrity\_protection\_ind,}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_ind.confidentiality\_protection\_ind);}
+\DoxyCodeLine{00328\ \ \ \}}
+\DoxyCodeLine{00329\ \};}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

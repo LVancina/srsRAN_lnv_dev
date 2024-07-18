@@ -52,8 +52,9 @@ public:
     gw(create_sctp_network_gateway({nw_config, *this, *this})),
     packer(*gw, *this, pcap)
   {
-    report_fatal_error_if_not(gw->create_and_connect(), "Failed to connect E2 GW");
-    if (!gw->subscribe_to(*epoll_broker)) {
+    gw->create_and_connect();
+    bool success = epoll_broker->register_fd(gw->get_socket_fd(), [this](int fd) { gw->receive(); });
+    if (!success) {
       report_fatal_error("Failed to register E2 (SCTP) network gateway at IO broker. socket_fd={}",
                          gw->get_socket_fd());
     }
@@ -158,15 +159,15 @@ TEST_F(e2ap_integration_test, when_e2_setup_response_received_then_ric_connected
   ASSERT_FALSE(t.ready());
 
   // Status: received E2 Setup Request.
-  ASSERT_EQ(adapter->last_e2_msg.pdu.type().value, asn1::e2ap::e2ap_pdu_c::types_opts::init_msg);
+  ASSERT_EQ(adapter->last_e2_msg.pdu.type().value, asn1::e2ap::e2_ap_pdu_c::types_opts::init_msg);
   ASSERT_EQ(adapter->last_e2_msg.pdu.init_msg().value.type().value,
-            asn1::e2ap::e2ap_elem_procs_o::init_msg_c::types_opts::e2setup_request);
+            asn1::e2ap::e2_ap_elem_procs_o::init_msg_c::types_opts::e2setup_request);
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
 
-  ASSERT_EQ(adapter->last_e2_msg.pdu.type().value, asn1::e2ap::e2ap_pdu_c::types_opts::successful_outcome);
+  ASSERT_EQ(adapter->last_e2_msg.pdu.type().value, asn1::e2ap::e2_ap_pdu_c::types_opts::successful_outcome);
   ASSERT_EQ(adapter->last_e2_msg.pdu.init_msg().value.type().value,
-            asn1::e2ap::e2ap_elem_procs_o::successful_outcome_c::types_opts::e2setup_resp);
+            asn1::e2ap::e2_ap_elem_procs_o::successful_outcome_c::types_opts::e2setup_resp);
 }
 
 class e2ap_gw_connector_integration_test : public ::testing::Test
@@ -185,7 +186,7 @@ protected:
 
     cfg                  = srsran::config_helpers::make_default_e2ap_config();
     cfg.e2sm_kpm_enabled = true;
-    cfg.gnb_id           = {123, 22};
+    cfg.gnb_id           = 123;
 
     sctp_network_gateway_config nw_config;
     nw_config.connection_name = "NearRT-RIC";

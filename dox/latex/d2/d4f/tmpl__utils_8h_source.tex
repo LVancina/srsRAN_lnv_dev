@@ -1,0 +1,104 @@
+\doxysection{tmpl\+\_\+utils.\+h}
+\hypertarget{tmpl__utils_8h_source}{}\label{tmpl__utils_8h_source}\index{include/srsran/srslog/detail/support/tmpl\_utils.h@{include/srsran/srslog/detail/support/tmpl\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstddef}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{tuple}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ srslog\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Implementation\ of\ the\ std::index\_sequence\ C++14\ library\ utility.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <std::size\_t...>}
+\DoxyCodeLine{00039\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence}{index\_sequence}}\ \{}
+\DoxyCodeLine{00040\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{template}\ <std::size\_t\ N,\ std::size\_t...\ Next>}
+\DoxyCodeLine{00043\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence__helper}{index\_sequence\_helper}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence__helper}{index\_sequence\_helper}}<N\ -\/\ 1U,\ N\ -\/\ 1U,\ Next...>\ \{}
+\DoxyCodeLine{00044\ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{template}\ <std::size\_t...\ Next>}
+\DoxyCodeLine{00047\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence__helper}{index\_sequence\_helper}}<0U,\ Next...>\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{using}\ type\ =\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence}{index\_sequence}}<Next...>;}
+\DoxyCodeLine{00049\ \};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{template}\ <std::size\_t\ N>}
+\DoxyCodeLine{00052\ \textcolor{keyword}{using}\ make\_index\_sequence\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1index__sequence__helper}{index\_sequence\_helper}}<N>::type;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ Implementation\ of\ the\ std::get<T>\ C++14\ library\ utility.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Tuple>}
+\DoxyCodeLine{00059\ \textcolor{keyword}{struct}\ tuple\_index;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct}\ tuple\_index<T,\ std::tuple<T,\ Ts...>>\ \{}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::size\_t\ value\ =\ 0;}
+\DoxyCodeLine{00064\ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00067\ \textcolor{keyword}{struct}\ tuple\_index<T,\ std::tuple<U,\ Ts...>>\ \{}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::size\_t\ value\ =\ 1\ +\ tuple\_index<T,\ std::tuple<Ts...>>::value;}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00072\ \textcolor{keyword}{constexpr}\ std::size\_t\ get\_type\_index\_in\_tuple()}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordflow}{return}\ tuple\_index<T,\ std::tuple<Ts...>>::value;}
+\DoxyCodeLine{00075\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ Traits\ to\ restrict\ template\ parameter\ to\ iterators\ over\ uint8\_t,\ e.g.\ for\ byte\_buffer\ and\ friends.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...>}
+\DoxyCodeLine{00082\ \textcolor{keyword}{using}\ void\_t\ =\ \textcolor{keywordtype}{void};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename},\ \textcolor{keyword}{typename}\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00085\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1is__byte__iterable}{is\_byte\_iterable}}\ :\ \textcolor{keyword}{public}\ std::false\_type\ \{}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{T}}>}
+\DoxyCodeLine{00089\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{is\_byte\_iterable}}<}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{namespacesrslog_1_1detail}{T}},}
+\DoxyCodeLine{00091\ \ \ \ \ \mbox{\hyperlink{namespacesrslog_1_1detail}{void\_t}}<\textcolor{keyword}{decltype}(++\mbox{\hyperlink{namespacesrslog_1_1detail}{std}}::\mbox{\hyperlink{namespacesrslog_1_1detail}{declval}}<\mbox{\hyperlink{namespacesrslog_1_1detail}{T}}>()),}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{std}}::\mbox{\hyperlink{namespacesrslog_1_1detail}{enable\_if}}<\mbox{\hyperlink{namespacesrslog_1_1detail}{std}}::\mbox{\hyperlink{namespacesrslog_1_1detail}{is\_same}}<\textcolor{keyword}{typename}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{T}}::\mbox{\hyperlink{namespacesrslog_1_1detail}{value\_type}},\ \mbox{\hyperlink{namespacesrslog_1_1detail}{uint8\_t}}>::\mbox{\hyperlink{namespacesrslog_1_1detail}{value}},\ \textcolor{keywordtype}{int}>::\mbox{\hyperlink{namespacesrslog_1_1detail}{type}}>>}
+\DoxyCodeLine{00093\ \ \ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{std}}::\mbox{\hyperlink{namespacesrslog_1_1detail}{true\_type}}\ \{}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

@@ -1,0 +1,137 @@
+\doxysection{compression\+\_\+params.\+h}
+\hypertarget{compression__params_8h_source}{}\label{compression__params_8h_source}\index{include/srsran/ofh/compression/compression\_params.h@{include/srsran/ofh/compression/compression\_params.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Maximum\ allowed\ bit\ width\ of\ compressed\ IQ\ data.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_IQ\_WIDTH\ =\ 16U;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Bit\ width\ used\ by\ quantization\ of\ input\ complex\ IQ\ samples.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ Q\_BIT\_WIDTH\ =\ MAX\_IQ\_WIDTH;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Number\ of\ compression\ types\ supported.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_COMPRESSION\_TYPES\_SUPPORTED\ =\ 7U;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Compression\ type\ used\ to\ (de)compress\ IQ\ samples.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ compression\_type\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ No\ compression.}}
+\DoxyCodeLine{00043\ \ \ none,}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Block\ floating\ point\ compression\ (BFP).}}
+\DoxyCodeLine{00045\ \ \ BFP,}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Block\ scaling\ compression.}}
+\DoxyCodeLine{00047\ \ \ block\_scaling,}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Mu-\/law\ compression.}}
+\DoxyCodeLine{00049\ \ \ mu\_law,}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Modulation\ compression.}}
+\DoxyCodeLine{00051\ \ \ modulation,}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ BFP\ +\ selective\ RE\ sending.}}
+\DoxyCodeLine{00053\ \ \ bfp\_selective,}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Modulation\ compression\ +\ selective\ RE\ sending.}}
+\DoxyCodeLine{00055\ \ \ mod\_selective}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ Converts\ and\ returns\ the\ given\ compression\ type\ into\ an\ integer.}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ to\_value(compression\_type\ c)}
+\DoxyCodeLine{00060\ \{}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(c);}
+\DoxyCodeLine{00062\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ IQ\ data\ compression\ parameters.}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{struct}\ ru\_compression\_params\ \{}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ IQ\ data\ compression\ used\ in\ the\ packet.}}
+\DoxyCodeLine{00067\ \ \ compression\_type\ type;}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ Width\ of\ I\ and\ Q\ sample\ in\ the\ packet.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{unsigned}\ data\_width;}
+\DoxyCodeLine{00070\ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{inline}\ compression\_type\ to\_compression\_type(\textcolor{keywordtype}{unsigned}\ compr\_value)}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(compr\_value\ <\ NOF\_COMPRESSION\_TYPES\_SUPPORTED,\ \textcolor{stringliteral}{"{}Unsupported\ compression\ type=\{\}"{}},\ compr\_value);}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<compression\_type>(compr\_value);}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{inline}\ compression\_type\ to\_compression\_type(\textcolor{keyword}{const}\ std::string\&\ compr)}
+\DoxyCodeLine{00080\ \{}
+\DoxyCodeLine{00081\ \ \ std::string\ compr\_lower\ =\ compr;}
+\DoxyCodeLine{00082\ \ \ std::transform(compr.begin(),\ compr.end(),\ compr\_lower.begin(),\ [](\textcolor{keywordtype}{char}\ c)\ \{\ \textcolor{keywordflow}{return}\ std::tolower(c);\ \});}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}none"{}})\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::none;}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}bfp"{}})\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::BFP;}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}bfp\ selective"{}})\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::bfp\_selective;}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}block\ scaling"{}})\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::block\_scaling;}
+\DoxyCodeLine{00095\ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}mu\ law"{}})\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::mu\_law;}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}modulation"{}})\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::modulation;}
+\DoxyCodeLine{00101\ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordflow}{if}\ (compr\_lower\ ==\ \textcolor{stringliteral}{"{}modulation\ selective"{}})\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ compression\_type::mod\_selective;}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(0,\ \textcolor{stringliteral}{"{}Unknown\ compression\ method=\{\}"{}},\ compr);}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordflow}{return}\ ofh::compression\_type::none;}
+\DoxyCodeLine{00108\ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{inline}\ std::string\ to\_string(ofh::compression\_type\ c)}
+\DoxyCodeLine{00111\ \{}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordflow}{switch}\ (c)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::none:}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}none"{}};}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::BFP:}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BFP"{}};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::bfp\_selective:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BFP\ selective"{}};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::block\_scaling:}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Block\ scaling"{}};}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::mu\_law:}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Mu\ law"{}};}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{case}\ compression\_type::modulation:}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Modulation"{}};}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}Modulation\ selective"{}};}
+\DoxyCodeLine{00127\ \ \ \}}
+\DoxyCodeLine{00128\ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00131\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

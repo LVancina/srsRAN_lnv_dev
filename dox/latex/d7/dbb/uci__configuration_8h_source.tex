@@ -1,0 +1,109 @@
+\doxysection{uci\+\_\+configuration.\+h}
+\hypertarget{uci__configuration_8h_source}{}\label{uci__configuration_8h_source}\index{include/srsran/ran/uci/uci\_configuration.h@{include/srsran/ran/uci/uci\_configuration.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/tiny\_optional.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/variant.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)c\ scaling\ values\ options,\ part\ of\ \(\backslash\)c\ UCI-\/OnPUSCH,\ part\ of\ \(\backslash\)c\ PUSCH-\/Config,\ as\ per\ TS\ 38.331.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}\ \{\ f0p5,\ f0p65,\ f0p8,\ f1\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{float}\ alpha\_scaling\_to\_float(\mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}\ val)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordflow}{switch}\ (val)\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}::f0p5:}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.5f;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}::f0p65:}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.65f;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}::f0p8:}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.8f;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}::f1:}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1.0f;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ This\ is\ not\ in\ the\ specs,\ but\ it\ is\ to\ prevent\ the\ compiler\ from\ flagging\ a\ warning\ for\ reaching\ the\ end}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{comment}{//\ of\ a\ non-\/void\ function\ without\ return\ statement.}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(val\ >\ alpha\_scaling\_opt::f1,\ \textcolor{stringliteral}{"{}Invalid\ Alpha\ scaling\ option"{}});}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1.0f;}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ \(\backslash\)c\ BetaOffsets,\ as\ per\ TS\ 38.331.\ These\ values\ are\ mapped\ into\ floats\ as\ per\ Tables\ in\ Section\ 9.3,\ TS\ 38.213.}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{beta\_offsets}}\ \{}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Apply\ to\ all\ members.\ For\ values\ larger\ than\ 31\ mean,\ treat\ the\ parameter\ as\ "{}not\ present"{}.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1beta__offsets_a5a819fbc7dd25d429e2d44da743aed06}{invalid\_beta\_offset}}\ =\ 32;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{uint\_opt}}\ =\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{tiny\_optional}}<\mbox{\hyperlink{structsrsran_1_1beta__offsets}{uint8\_t}},\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{invalid\_beta\_offset}}>;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Values\ \{0,...,15\},\ as\ per\ Table\ 9.3-\/1,\ TS\ 38.213.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ As\ per\ \(\backslash\)c\ BetaOffsets,\ TS\ 38.331,\ \{16,...,31\}\ are\ accepted\ but\ treated\ as\ "{}reserved"{}.}}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{structsrsran_1_1beta__offsets_a52c5aa1272744f91a46f22871708bde4}{uint\_opt}}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets_a52c5aa1272744f91a46f22871708bde4}{beta\_offset\_ack\_idx\_1}};}
+\DoxyCodeLine{00064\ \ \ uint\_opt\ beta\_offset\_ack\_idx\_2;}
+\DoxyCodeLine{00065\ \ \ uint\_opt\ beta\_offset\_ack\_idx\_3;}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Values\ \{0,...,18\},\ as\ per\ Table\ 9.3-\/2,\ TS\ 38.213.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ As\ per\ \(\backslash\)c\ BetaOffsets,\ TS\ 38.331,\ \{19,...,31\}\ are\ accepted\ but\ treated\ as\ "{}reserved"{}.}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{structsrsran_1_1beta__offsets_ae30213af375d8d7ea32255aafe14f65c}{uint\_opt}}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets_ae30213af375d8d7ea32255aafe14f65c}{beta\_offset\_csi\_p1\_idx\_1}};}
+\DoxyCodeLine{00069\ \ \ uint\_opt\ beta\_offset\_csi\_p1\_idx\_2;}
+\DoxyCodeLine{00070\ \ \ uint\_opt\ beta\_offset\_csi\_p2\_idx\_1;}
+\DoxyCodeLine{00071\ \ \ uint\_opt\ beta\_offset\_csi\_p2\_idx\_2;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{beta\_offsets}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00074\ \ \ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{return}\ beta\_offset\_ack\_idx\_1\ ==\ rhs.beta\_offset\_ack\_idx\_1\ \textcolor{keyword}{and}\ beta\_offset\_ack\_idx\_2\ ==\ rhs.beta\_offset\_ack\_idx\_2\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ beta\_offset\_ack\_idx\_3\ ==\ rhs.beta\_offset\_ack\_idx\_3\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ beta\_offset\_csi\_p1\_idx\_1\ ==\ rhs.beta\_offset\_csi\_p1\_idx\_1\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ beta\_offset\_csi\_p1\_idx\_2\ ==\ rhs.beta\_offset\_csi\_p1\_idx\_2\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ beta\_offset\_csi\_p2\_idx\_1\ ==\ rhs.beta\_offset\_csi\_p2\_idx\_1\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ beta\_offset\_csi\_p2\_idx\_2\ ==\ rhs.beta\_offset\_csi\_p2\_idx\_2;}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{beta\_offsets}}\&\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(rhs\ ==\ *\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00083\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ \(\backslash\)c\ UCI-\/OnPUSCH,\ part\ of\ \(\backslash\)c\ PUSCH-\/Config,\ as\ per\ TS\ 38.331.}}
+\DoxyCodeLine{00086\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{uci\_on\_pusch}}\ \{}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ max\_nof\_beta\_offsets\ =\ 4;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{using}\ beta\_offsets\_semi\_static\ =\ \mbox{\hyperlink{structsrsran_1_1beta__offsets}{beta\_offsets}};}
+\DoxyCodeLine{00090\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{beta\_offsets\_dynamic}}\ \ \ \ \ =\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{beta\_offsets}},\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{max\_nof\_beta\_offsets}}>;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ optional<variant<beta\_offsets\_dynamic,\ beta\_offsets\_semi\_static>>\ beta\_offsets\_cfg;}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{namespacesrsran_a95f59e94fb260388ff0dc2f1767c64dc}{alpha\_scaling\_opt}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaling;}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{uci\_on\_pusch}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00096\ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{return}\ beta\_offsets\_cfg\ ==\ rhs.beta\_offsets\_cfg\ \textcolor{keyword}{and}\ scaling\ ==\ rhs.scaling;}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1uci__on__pusch}{uci\_on\_pusch}}\&\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(rhs\ ==\ *\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

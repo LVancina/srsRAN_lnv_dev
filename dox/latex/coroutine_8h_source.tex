@@ -1,0 +1,371 @@
+\doxysection{coroutine.\+h}
+\hypertarget{coroutine_8h_source}{}\label{coroutine_8h_source}\index{include/srsran/support/async/coroutine.h@{include/srsran/support/async/coroutine.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}awaiter\_memory\_storage.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/detail/function\_signature.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{enum}\ coro\_state\_tag\_t\ :\ int32\_t\ \{\ tag\_cancelled\ =\ -\/3,\ tag\_final\_suspend\ =\ -\/2,\ tag\_destroyed\ =\ -\/1,\ tag\_init\ =\ 0\ \};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00038\ \textcolor{keyword}{using\ }awaiter\_t\ =\ \textcolor{keyword}{decltype}(std::declval<Awaitable>().get\_awaiter());}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00042\ \textcolor{keyword}{using\ }awaitable\_result\_t\ =\ \textcolor{keyword}{decltype}(std::declval<awaiter\_t<Awaitable>>().await\_resume());}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Result,\ \textcolor{keyword}{typename}\ FunctionReturn\ =\ Result>}
+\DoxyCodeLine{00046\ \textcolor{keyword}{using\ }enable\_if\_void\ =\ std::enable\_if\_t<std::is\_same<Result,\ void>::value,\ FunctionReturn>;}
+\DoxyCodeLine{00047\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Result,\ \textcolor{keyword}{typename}\ FunctionReturn\ =\ Result>}
+\DoxyCodeLine{00048\ \textcolor{keyword}{using\ }enable\_if\_nonvoid\ =\ std::enable\_if\_t<not\ std::is\_same<Result,\ void>::value,\ FunctionReturn>;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ F>}
+\DoxyCodeLine{00052\ \textcolor{keyword}{using\ }promise\_of\ =\ \textcolor{keyword}{typename}\ std::decay\_t<get\_type\_from\_index\_t<0,\ decltype(callable\_arguments<F>())>>::promise\_type;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ F>}
+\DoxyCodeLine{00056\ \textcolor{keyword}{using\ }future\_of\ =\ \textcolor{keyword}{typename}\ std::decay\_t<get\_type\_from\_index\_t<0,\ decltype(callable\_arguments<F>())>>::future\_type;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Promise>}
+\DoxyCodeLine{00060\ \textcolor{keyword}{struct\ }base\_coro\_frame;}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00065\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame}}<void>\ \{}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<void>}}\&\&)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00071\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{\string~base\_coro\_frame}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_aba7d4222144a32c2d635ad1ced54aa4f}{resume}}()\ =\ 0;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_ab70432f8aa2dbe65d69cf99b51dc57dd}{destroy}}()\ =\ 0;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_a43a3fa645da1484f93486530172e8e1f}{on\_return}}()\ =\ 0;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ int32\_t\ state\_index\ =\ (int32\_t)detail::tag\_init;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::size\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ default\_mem\_buffer\_storage\ =\ 32;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t}{detail::awaiter\_memory\_storage\_t<default\_mem\_buffer\_storage>}}\ mem\_buffer;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_acae9df0e8846e9025d0f7de5941600fb}{is\_suspended}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ not\ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_ac2737e2703d4c00e100a571953a54959}{empty}}();\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable,\ \textcolor{keyword}{typename}\ EventType\ =\ detail::awaitable\_result\_t<Awaitable>>}
+\DoxyCodeLine{00094\ \ \ detail::enable\_if\_nonvoid<EventType>\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_aff468bfd39e449d0efc6978b1514ad14}{on\_await\_resume}}()}
+\DoxyCodeLine{00095\ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{using\ }ForwardedAwaitable\ =}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ std::conditional\_t<std::is\_rvalue\_reference<Awaitable>::value,\ std::decay\_t<Awaitable>,\ Awaitable>;}
+\DoxyCodeLine{00098\ \ \ \ \ srsran\_assert(is\_suspended(),\ \textcolor{stringliteral}{"{}Trying\ to\ resume\ non-\/suspended\ coroutine"{}});}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//\ Extract\ result\ from\ awaiter\ and\ clear\ awaiter\ from\ memory\ buffer}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{auto}\&\ \ \ \ \ awaiter\ =\ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a3a09164cdf114a5023a0cd3c09fe1f43}{get\_awaiter}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00102\ \ \ \ \ EventType\ ev\ \ \ \ \ \ =\ awaiter.await\_resume();}
+\DoxyCodeLine{00103\ \ \ \ \ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a9b622d8ca117a939d37a7823b4f84b08}{clear}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{return}\ ev;}
+\DoxyCodeLine{00105\ \ \ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable,\ \textcolor{keyword}{typename}\ EventType\ =\ detail::awaitable\_result\_t<Awaitable>>}
+\DoxyCodeLine{00109\ \ \ detail::enable\_if\_void<EventType>\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_3_01void_01_4_a97cf06dbc29a939df652167a0e7fc234}{on\_await\_resume}}()}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{using\ }ForwardedAwaitable\ =}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ std::conditional\_t<std::is\_rvalue\_reference<Awaitable>::value,\ std::decay\_t<Awaitable>,\ Awaitable>;}
+\DoxyCodeLine{00113\ \ \ \ \ srsran\_assert(is\_suspended(),\ \textcolor{stringliteral}{"{}Trying\ to\ resume\ non-\/suspended\ coroutine"{}});}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ Clear\ awaiter\ from\ memory\ buffer}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{auto}\&\ a\ =\ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a3a09164cdf114a5023a0cd3c09fe1f43}{get\_awaiter}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00117\ \ \ \ \ a.await\_resume();}
+\DoxyCodeLine{00118\ \ \ \ \ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a9b622d8ca117a939d37a7823b4f84b08}{clear}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordtype}{void}\ on\_await\_cancel()}
+\DoxyCodeLine{00123\ \ \ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keyword}{using\ }ForwardedAwaitable\ =}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ std::conditional\_t<std::is\_rvalue\_reference<Awaitable>::value,\ std::decay\_t<Awaitable>,\ Awaitable>;}
+\DoxyCodeLine{00126\ \ \ \ \ srsran\_assert(is\_suspended(),\ \textcolor{stringliteral}{"{}Trying\ to\ cancel\ non-\/suspended\ coroutine"{}});}
+\DoxyCodeLine{00127\ \ \ \ \ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a9b622d8ca117a939d37a7823b4f84b08}{clear}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ \};}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00132\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Promise>}
+\DoxyCodeLine{00133\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame}}<void>,\ \textcolor{keyword}{private}\ Promise\ \{}
+\DoxyCodeLine{00134\ \ \ \textcolor{keyword}{using\ }promise\_type\ =\ Promise;}
+\DoxyCodeLine{00135\ \ \ \textcolor{keyword}{using\ }future\_type\ \ =\ \textcolor{keyword}{decltype}(std::declval<promise\_type>().get\_return\_object());}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00138\ \ \ Promise\&\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aba31882f71cf0cc8c5357313b4425aff}{promise}}()\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{const}\ Promise\&\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aba31882f71cf0cc8c5357313b4425aff}{promise}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<Promise>}}*\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_a73700d8b57a1d513588ba973be683265}{from\_promise}}(Promise*\ p)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame<Promise>}}*\textcolor{keyword}{>}(p);\ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable>}
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aa8cad528feb1aa1a1b0ea106949932eb}{on\_await\_call}}(Awaitable\&\&\ awaitable\_obj)}
+\DoxyCodeLine{00149\ \ \ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keyword}{using\ }ForwardedAwaitable\ =}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ std::conditional\_t<std::is\_rvalue\_reference<Awaitable>::value,\ std::decay\_t<Awaitable>,\ Awaitable>;}
+\DoxyCodeLine{00152\ \ \ \ \ srsran\_assert(not\ is\_suspended(),\ \textcolor{stringliteral}{"{}Trying\ to\ suspend\ already\ suspended\ coroutine"{}});}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{comment}{//\ store\ awaitable/awaiter\ in\ memory\ buffer}}
+\DoxyCodeLine{00155\ \ \ \ \ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a736d29f38f5e05d5fada6752f8f11057}{emplace}}(std::forward<Awaitable>(awaitable\_obj));}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{comment}{//\ check\ if\ awaiter\ is\ ready.\ If\ not,\ suspend\ coroutine}}
+\DoxyCodeLine{00158\ \ \ \ \ awaiter\_t<ForwardedAwaitable>\&\ awaiter\_obj\ =\ mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_a3a09164cdf114a5023a0cd3c09fe1f43}{get\_awaiter}}<ForwardedAwaitable>();}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ awaiter\_obj.await\_ready())\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \textcolor{comment}{//\ Tag-\/based\ dispatch\ -\/\ Check\ whether\ awaiter\ uses\ symmetric\ transfer\ /\ tail-\/resume\ on\ await\_suspend.}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \textcolor{keyword}{using\ }suspend\_sig\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{decltype}(\&std::decay\_t<awaiter\_t<ForwardedAwaitable>>::await\_suspend);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \textcolor{keyword}{using\ }suspend\_return\_t\ \ \ =\ function\_return\_t<suspend\_sig>;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{keyword}{using\ }no\_tail\_resume\_tag\ =\ std::is\_same<void,\ suspend\_return\_t>;}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ on\_await\_suspend<awaiter\_t<ForwardedAwaitable>>(awaiter\_obj,\ no\_tail\_resume\_tag\{\});}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00167\ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaiter>}
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordtype}{void}\ on\_await\_suspend(Awaiter\&\ awaiter\_obj,\ std::false\_type)}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{comment}{//\ Store\ current\ caller/suspending\ coroutine\ as\ a\ continuation\ in\ the\ awaiter\ object.\ "{}This"{}\ coroutine\ will\ be}}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{comment}{//\ called\ at\ final\_suspend.}}
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keyword}{auto}\ ch\ =\ awaiter\_obj.await\_suspend(\textcolor{keyword}{this});}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{comment}{//\ Tail\ resume\ returned\ coroutine.}}
+\DoxyCodeLine{00181\ \ \ \ \ ch.resume();}
+\DoxyCodeLine{00182\ \ \ \}}
+\DoxyCodeLine{00183\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaiter>}
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordtype}{void}\ on\_await\_suspend(Awaiter\&\ awaiter\_obj,\ std::true\_type)}
+\DoxyCodeLine{00185\ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ awaiter\_obj.await\_suspend(\textcolor{keyword}{this});}
+\DoxyCodeLine{00187\ \ \ \}}
+\DoxyCodeLine{00188\ \};}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00191\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FunT>}
+\DoxyCodeLine{00192\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame}{coro\_frame}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{base\_coro\_frame}}<detail::promise\_of<FunT>>\ \{}
+\DoxyCodeLine{00193\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00194\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame}{coro\_frame}}(Args\&\&...\ args)}
+\DoxyCodeLine{00195\ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{comment}{//\ Create\ coroutine\ object\ in\ embedded\ memory\ buffer}}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keyword}{new}\ (\&task\_storage)\ FunT(std::forward<Args>(args)...);}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00201\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame_aa519d98a7b582482a3f0c9aa00d8324c}{resume}}()\ final\ \{\ (*get\_impl())(*\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame_a96e971abe1f36a873c54a278d8972114}{destroy}}()\ noexcept\ final}
+\DoxyCodeLine{00206\ \ \ \{}
+\DoxyCodeLine{00207\ \ \ \ \ srsran\_sanity\_check(not\ this-\/>mem\_buffer.\mbox{\hyperlink{structsrsran_1_1detail_1_1awaiter__memory__storage__t_ac2737e2703d4c00e100a571953a54959}{empty}}(),\ \textcolor{stringliteral}{"{}coroutine\ that\ is\ not\ suspended\ should\ not\ be\ destroyed"{}});}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \ \ \textcolor{comment}{//\ resume\ via\ cancel\ path\ until\ final\ suspension\ point}}
+\DoxyCodeLine{00210\ \ \ \ \ cancel();}
+\DoxyCodeLine{00211\ \ \ \ \ srsran\_sanity\_check(this-\/>state\_index\ ==\ coro\_state\_tag\_t::tag\_cancelled,\ \textcolor{stringliteral}{"{}Invalid\ coroutine\ state"{}});}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{comment}{//\ called\ after\ final\ suspension\ in\ order\ to\ destroy\ \&\ deallocate\ coroutine\ frame}}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keyword}{delete}\ \textcolor{keyword}{this};}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00218\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame_a884b3737c317c87e6cd04f71f39460c1}{on\_return}}()\ final\ \{\ get\_impl()-\/>\string~FunT();\ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00221\ \ \ FunT*\ get\_impl()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{reinterpret\_cast<}FunT*\textcolor{keyword}{>}(\&task\_storage);\ \}}
+\DoxyCodeLine{00222\ \ \ \textcolor{keywordtype}{void}\ \ cancel()}
+\DoxyCodeLine{00223\ \ \ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>state\_index\ <\ 0)\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \textcolor{comment}{//\ already\ cancelled\ or\ finished}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>state\_index\ ==\ coro\_state\_tag\_t::tag\_final\_suspend)\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ this-\/>\textcolor{keyword}{template}\ on\_await\_cancel<\textcolor{keyword}{decltype}(this-\/>\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aba31882f71cf0cc8c5357313b4425aff}{promise}}().final\_suspend())>();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ this-\/>state\_index\ =\ coro\_state\_tag\_t::tag\_cancelled;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00231\ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \ \ this-\/>state\_index\ =\ -\/this-\/>state\_index;}
+\DoxyCodeLine{00233\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame_aa519d98a7b582482a3f0c9aa00d8324c}{resume}}();}
+\DoxyCodeLine{00234\ \ \ \}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ std::aligned\_storage\_t<\textcolor{keyword}{sizeof}(FunT),\ \textcolor{keyword}{alignof}(FunT)>\ task\_storage;}
+\DoxyCodeLine{00237\ \};}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00242\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Promise\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00243\ \textcolor{keyword}{struct\ }coro\_handle;}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00246\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00247\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<void>}}\ \{}
+\DoxyCodeLine{00248\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00249\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<void>}}*\ frame\_ptr\_)\ :\ frame\_ptr(frame\_ptr\_)\ \{\}}
+\DoxyCodeLine{00250\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<void>}}*\ frame\_ptr\_)}
+\DoxyCodeLine{00251\ \ \ \{}
+\DoxyCodeLine{00252\ \ \ \ \ frame\_ptr\ =\ frame\_ptr\_;}
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00254\ \ \ \}}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \ \ \textcolor{keywordtype}{void}\ resume()\ \{\ frame\_ptr-\/>resume();\ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \textcolor{keywordtype}{bool}\ empty()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ frame\_ptr\ ==\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<>}}\&\ h)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ frame\_ptr\ ==\ h.frame\_ptr;\ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00263\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<void>}}*\ frame\_ptr\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00264\ \};}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00267\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Promise>}
+\DoxyCodeLine{00268\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<>}}\ \{}
+\DoxyCodeLine{00269\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00270\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle}}(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<Promise>}}*\ frame\_ptr\_)\ :\ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<void>}}(frame\_ptr\_)\ \{\}}
+\DoxyCodeLine{00271\ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<Promise>}}\&\ operator=(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<Promise>}}*\ frame\_ptr\_)}
+\DoxyCodeLine{00272\ \ \ \{}
+\DoxyCodeLine{00273\ \ \ \ \ this-\/>frame\_ptr\ =\ frame\_ptr\_;}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00275\ \ \ \}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00278\ \ \ Promise\&\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1coro__handle_a1acbcb8d8f1b688b130d426c10cd6525}{promise}}()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<Promise>}}*\textcolor{keyword}{>}(frame\_ptr)-\/>\mbox{\hyperlink{structsrsran_1_1coro__handle_a1acbcb8d8f1b688b130d426c10cd6525}{promise}}();\ \}}
+\DoxyCodeLine{00279\ \ \ \textcolor{keyword}{const}\ Promise\&\ promise()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<Promise>}}*\textcolor{keyword}{>}(frame\_ptr)-\/>promise();\ \}}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00282\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<Promise>}}\ \mbox{\hyperlink{structsrsran_1_1coro__handle_a278db91a807532e3b21aeeae026e6ae7}{from\_promise}}(Promise*\ p)}
+\DoxyCodeLine{00283\ \ \ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<Promise>}}\{\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_a73700d8b57a1d513588ba973be683265}{detail::base\_coro\_frame<Promise>::from\_promise}}(p)\};}
+\DoxyCodeLine{00285\ \ \ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00288\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1coro__handle_a16e2ba8d3cc9a758ce219522ef62befd}{destroy}}()}
+\DoxyCodeLine{00289\ \ \ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keywordflow}{if}\ (frame\_ptr\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \textcolor{comment}{//\ destroy\ coroutine\ frame}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ frame\_ptr-\/>destroy();}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ frame\_ptr\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00298\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1coro__handle_aeb6f7bd0a641e4f6591c0543bd7a503d}{done}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ promise().ready();\ \}}
+\DoxyCodeLine{00299\ \};}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00302\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1suspend__never}{suspend\_never}}\ \{}
+\DoxyCodeLine{00303\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ await\_ready()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00304\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ await\_suspend(\mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<>}}\ cb)\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{00305\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ await\_resume()\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{00306\ \ \ \mbox{\hyperlink{structsrsran_1_1suspend__never}{suspend\_never}}\&\ get\_awaiter()\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00307\ \};}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00310\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1suspend__always}{suspend\_always}}\ \{}
+\DoxyCodeLine{00311\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ await\_ready()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00312\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ await\_suspend(\mbox{\hyperlink{structsrsran_1_1coro__handle}{coro\_handle<>}}\ cb)\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{00313\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ await\_resume()\textcolor{keyword}{\ const\ }\{\}}
+\DoxyCodeLine{00314\ \ \ \mbox{\hyperlink{structsrsran_1_1suspend__always}{suspend\_always}}\&\ get\_awaiter()\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00315\ \};}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00318\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1noop__coroutine__promise}{noop\_coroutine\_promise}}\ \{}
+\DoxyCodeLine{00319\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1noop__coroutine__promise_1_1future__type}{future\_type}}\ \{\};}
+\DoxyCodeLine{00320\ \ \ \mbox{\hyperlink{structsrsran_1_1noop__coroutine__promise_1_1future__type}{future\_type}}\ get\_return\_object()\ \{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
+\DoxyCodeLine{00321\ \};}
+\DoxyCodeLine{00322\ \textcolor{keyword}{inline}\ coro\_handle<noop\_coroutine\_promise>\ noop\_coroutine()\ noexcept}
+\DoxyCodeLine{00323\ \{}
+\DoxyCodeLine{00324\ \ \ \textcolor{keyword}{class\ }noop\_frame\ final\ :\ \textcolor{keyword}{public}\ detail::base\_coro\_frame<noop\_coroutine\_promise>}
+\DoxyCodeLine{00325\ \ \ \{}
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keywordtype}{void}\ resume()\ final\ \{\}}
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keywordtype}{void}\ destroy()\ final\ \{\}}
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{keywordtype}{void}\ on\_return()\ final\ \{\}}
+\DoxyCodeLine{00329\ \ \ \};}
+\DoxyCodeLine{00330\ \ \ \textcolor{keyword}{static}\ noop\_frame\ frame;}
+\DoxyCodeLine{00331\ \ \ \textcolor{keywordflow}{return}\ coro\_handle<noop\_coroutine\_promise>\{\&frame\};}
+\DoxyCodeLine{00332\ \}}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00335\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FunT,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00336\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}(Args\&\&...\ args)\ -\/>\ \textcolor{keyword}{typename}\ detail::future\_of<FunT>}
+\DoxyCodeLine{00337\ \{}
+\DoxyCodeLine{00338\ \ \ \textcolor{keyword}{auto}*\ frame\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame}{detail::coro\_frame<FunT>}}(std::forward<Args>(args)...);}
+\DoxyCodeLine{00339\ \ \ \textcolor{keywordflow}{return}\ frame-\/>promise().get\_return\_object();}
+\DoxyCodeLine{00340\ \}}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00343\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FunT>}
+\DoxyCodeLine{00344\ \textcolor{keyword}{auto}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}(FunT\&\&\ f)\ -\/>\ \textcolor{keyword}{typename}\ detail::future\_of<FunT>}
+\DoxyCodeLine{00345\ \{}
+\DoxyCodeLine{00346\ \ \ \textcolor{keyword}{auto}*\ frame\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1coro__frame}{detail::coro\_frame<FunT>}}(std::forward<FunT>(f));}
+\DoxyCodeLine{00347\ \ \ \textcolor{keywordflow}{return}\ frame-\/>promise().get\_return\_object();}
+\DoxyCodeLine{00348\ \}}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00351\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FutureType>}
+\DoxyCodeLine{00352\ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}\ =\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<typename\ FutureType::promise\_type>}};}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00355\ \textcolor{preprocessor}{\#define\ \_CORO\_MARK\_SUSPENSION\_POINT()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00356\ \textcolor{preprocessor}{\ \ coro\_context\_\_.state\_index\ =\ \_\_LINE\_\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00357\ \textcolor{preprocessor}{\ \ case\ \_\_LINE\_\_:}}
+\DoxyCodeLine{00358\ }
+\DoxyCodeLine{00361\ \textcolor{preprocessor}{\#define\ \_CORO\_AWAIT\_SUSPEND(awaitable\_var)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00362\ \textcolor{preprocessor}{\ \ coro\_context\_\_.state\_index\ =\ \_\_LINE\_\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00363\ \textcolor{preprocessor}{\ \ if\ (not\ coro\_context\_\_.on\_await\_call(awaitable\_var))\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00364\ \textcolor{preprocessor}{\ \ \ \ return;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00365\ \textcolor{preprocessor}{\ \ \ \ case\ -\/\_\_LINE\_\_:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00366\ \textcolor{preprocessor}{\ \ \ \ \ \ coro\_context\_\_.template\ on\_await\_cancel<decltype((awaitable\_var))>();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00367\ \textcolor{preprocessor}{\ \ \ \ \ \ coro\_context\_\_.state\_index\ =\ detail::coro\_state\_tag\_t::tag\_cancelled;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00368\ \textcolor{preprocessor}{\ \ \ \ \ \ coro\_context\_\_.on\_return();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00369\ \textcolor{preprocessor}{\ \ \ \ \ \ return;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00370\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00371\ \textcolor{preprocessor}{\ \ case\ \_\_LINE\_\_:}}
+\DoxyCodeLine{00372\ }
+\DoxyCodeLine{00374\ \textcolor{preprocessor}{\#define\ \_CORO\_ENTER\_FINAL\_SUSPEND()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00375\ \textcolor{preprocessor}{\ \ coro\_context\_\_.state\_index\ =\ detail::coro\_state\_tag\_t::tag\_final\_suspend;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00376\ \textcolor{preprocessor}{\ \ coro\_context\_\_.on\_return();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00377\ \textcolor{preprocessor}{\ \ if\ (coro\_context\_\_.on\_await\_call(coro\_context\_\_.promise().final\_suspend()))\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00378\ \textcolor{preprocessor}{\ \ \ \ goto\ final\_cleanup;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00379\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00380\ \textcolor{preprocessor}{\ \ return}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00383\ \textcolor{preprocessor}{\#define\ CORO\_AWAIT(awaitable\_var)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00384\ \textcolor{preprocessor}{\ \ \_CORO\_AWAIT\_SUSPEND(awaitable\_var)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00385\ \textcolor{preprocessor}{\ \ coro\_context\_\_.template\ on\_await\_resume<decltype((awaitable\_var))>()}}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00388\ \textcolor{preprocessor}{\#define\ CORO\_AWAIT\_VALUE(result,\ awaitable\_var)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00389\ \textcolor{preprocessor}{\ \ \_CORO\_AWAIT\_SUSPEND(awaitable\_var)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00390\ \textcolor{preprocessor}{\ \ result\ =\ coro\_context\_\_.template\ on\_await\_resume<decltype((awaitable\_var))>()}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00394\ \textcolor{preprocessor}{\#define\ CORO\_BEGIN(x)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00395\ \textcolor{preprocessor}{\ \ auto\&\ coro\_context\_\_\ =\ x;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00396\ \textcolor{preprocessor}{\ \ switch\ (coro\_context\_\_.state\_index)\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00397\ \textcolor{preprocessor}{\ \ \ \ default:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00398\ \textcolor{preprocessor}{\ \ \ \ \ \ printf("{}Jumping\ to\ invalid\ label\ \%d\(\backslash\)n"{},\ (coro\_context\_\_).state\_index);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00399\ \textcolor{preprocessor}{\ \ \ \ \ \ return;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00400\ \textcolor{preprocessor}{\ \ \ \ case\ detail::tag\_init:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00401\ \textcolor{preprocessor}{\ \ \ \ \ \ CORO\_AWAIT(coro\_context\_\_.promise().initial\_suspend())}}
+\DoxyCodeLine{00402\ }
+\DoxyCodeLine{00408\ \textcolor{preprocessor}{\#define\ CORO\_RETURN(...)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00409\ \textcolor{preprocessor}{\ \ CORO\_EARLY\_RETURN(\_\_VA\_ARGS\_\_);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00410\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00411\ \textcolor{preprocessor}{\ \ final\_cleanup:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00412\ \textcolor{preprocessor}{\ \ coro\_context\_\_.template\ on\_await\_resume<decltype(coro\_context\_\_.promise().final\_suspend())>();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00413\ \textcolor{preprocessor}{\ \ coro\_context\_\_.state\_index\ =\ detail::tag\_destroyed;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00414\ \textcolor{preprocessor}{\ \ coro\_context\_\_.destroy();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00415\ \textcolor{preprocessor}{\ \ return}}
+\DoxyCodeLine{00416\ \textcolor{preprocessor}{\#define\ CORO\_EARLY\_RETURN(...)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00417\ \textcolor{preprocessor}{\ \ coro\_context\_\_.promise().return\_value(\_\_VA\_ARGS\_\_);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00418\ \textcolor{preprocessor}{\ \ \_CORO\_ENTER\_FINAL\_SUSPEND();}}
+\DoxyCodeLine{00419\ }
+\DoxyCodeLine{00420\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

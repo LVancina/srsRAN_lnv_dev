@@ -30,13 +30,10 @@ using namespace srsran;
 std::unique_ptr<srs_cu_up::f1u_bearer>
 f1u_local_connector::create_cu_bearer(uint32_t                             ue_index,
                                       drb_id_t                             drb_id,
-                                      const srs_cu_up::f1u_config&         config,
                                       const up_transport_layer_info&       ul_up_tnl_info,
                                       srs_cu_up::f1u_rx_delivery_notifier& rx_delivery_notifier,
                                       srs_cu_up::f1u_rx_sdu_notifier&      rx_sdu_notifier,
-                                      task_executor&                       ul_exec,
-                                      timer_factory                        ue_dl_timer_factory,
-                                      unique_timer&                        ue_inactivity_timer)
+                                      timer_factory                        timers)
 {
   logger_cu.info("Creating CU F1-U bearer with UL GTP Tunnel={}", ul_up_tnl_info);
   std::unique_lock<std::mutex> lock(map_mutex);
@@ -45,18 +42,9 @@ f1u_local_connector::create_cu_bearer(uint32_t                             ue_in
                 ul_up_tnl_info);
   std::unique_ptr<f1u_dl_local_adapter> cu_tx =
       std::make_unique<f1u_dl_local_adapter>(ue_index, drb_id, ul_up_tnl_info);
-  std::unique_ptr<srs_cu_up::f1u_bearer> f1u_bearer = srs_cu_up::create_f1u_bearer(ue_index,
-                                                                                   drb_id,
-                                                                                   ul_up_tnl_info,
-                                                                                   config,
-                                                                                   *cu_tx,
-                                                                                   rx_delivery_notifier,
-                                                                                   rx_sdu_notifier,
-                                                                                   ue_dl_timer_factory,
-                                                                                   ue_inactivity_timer,
-                                                                                   ul_exec,
-                                                                                   *this);
-  f1u_cu_bearer                          cu_bearer(std::move(cu_tx), f1u_bearer.get());
+  std::unique_ptr<srs_cu_up::f1u_bearer> f1u_bearer = srs_cu_up::create_f1u_bearer(
+      ue_index, drb_id, ul_up_tnl_info, *cu_tx, rx_delivery_notifier, rx_sdu_notifier, timers, *this);
+  f1u_cu_bearer cu_bearer(std::move(cu_tx), f1u_bearer.get());
   cu_map.insert({ul_up_tnl_info, std::move(cu_bearer)});
   return f1u_bearer;
 }
@@ -122,14 +110,13 @@ void f1u_local_connector::disconnect_cu_bearer(const up_transport_layer_info& ul
   cu_map.erase(bearer_it);
 }
 
-std::unique_ptr<srs_du::f1u_bearer> f1u_local_connector::create_du_bearer(uint32_t                       ue_index,
-                                                                          drb_id_t                       drb_id,
-                                                                          srs_du::f1u_config             config,
-                                                                          const up_transport_layer_info& dl_up_tnl_info,
-                                                                          const up_transport_layer_info& ul_up_tnl_info,
-                                                                          srs_du::f1u_rx_sdu_notifier&   du_rx,
-                                                                          timer_factory                  timers,
-                                                                          task_executor&                 ue_executor)
+srs_du::f1u_bearer* f1u_local_connector::create_du_bearer(uint32_t                       ue_index,
+                                                          drb_id_t                       drb_id,
+                                                          srs_du::f1u_config             config,
+                                                          const up_transport_layer_info& dl_up_tnl_info,
+                                                          const up_transport_layer_info& ul_up_tnl_info,
+                                                          srs_du::f1u_rx_sdu_notifier&   du_rx,
+                                                          timer_factory                  timers)
 {
   std::unique_lock<std::mutex> lock(map_mutex);
   if (cu_map.find(ul_up_tnl_info) == cu_map.end()) {
@@ -146,22 +133,20 @@ std::unique_ptr<srs_du::f1u_bearer> f1u_local_connector::create_du_bearer(uint32
   srs_du::f1u_bearer_creation_message f1u_msg = {};
   f1u_msg.ue_index                            = ue_index;
   f1u_msg.drb_id                              = drb_id;
-  f1u_msg.dl_tnl_info                         = dl_up_tnl_info;
   f1u_msg.config                              = config;
   f1u_msg.rx_sdu_notifier                     = &du_rx;
   f1u_msg.tx_pdu_notifier                     = du_tx.get();
   f1u_msg.timers                              = timers;
-  f1u_msg.ue_executor                         = &ue_executor;
-  f1u_msg.disconnector                        = this;
 
   std::unique_ptr<srs_du::f1u_bearer> f1u_bearer = srs_du::create_f1u_bearer(f1u_msg);
+  srs_du::f1u_bearer*                 ptr        = f1u_bearer.get();
   auto&                               cu_tun     = cu_map.at(ul_up_tnl_info);
 
   du_tx->attach_cu_handler(cu_tun.f1u_bearer->get_rx_pdu_handler());
 
-  f1u_du_bearer du_bearer(std::move(du_tx), f1u_bearer.get(), ul_up_tnl_info);
+  f1u_du_bearer du_bearer(std::move(du_tx), std::move(f1u_bearer), ul_up_tnl_info);
   du_map.insert({dl_up_tnl_info, std::move(du_bearer)});
-  return f1u_bearer;
+  return ptr;
 }
 
 void f1u_local_connector::remove_du_bearer(const up_transport_layer_info& dl_up_tnl_info)

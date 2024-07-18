@@ -1,0 +1,340 @@
+\doxysection{channel\+\_\+estimation.\+h}
+\hypertarget{channel__estimation_8h_source}{}\label{channel__estimation_8h_source}\index{include/srsran/phy/upper/channel\_estimation.h@{include/srsran/phy/upper/channel\_estimation.h}}
+\mbox{\hyperlink{channel__estimation_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensor_8h}{srsran/adt/tensor.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_state\_information.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cyclic__prefix_8h}{srsran/ran/cyclic\_prefix.h}}"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pusch__constants_8h}{srsran/ran/pusch/pusch\_constants.h}}"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_RX\_PORTS\ =\ 16;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_TX\_LAYERS\ =\ pusch\_constants::MAX\_NOF\_LAYERS;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_TX\_RX\_PATHS\ =\ MAX\_TX\_LAYERS\ *\ MAX\_RX\_PORTS;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_BUFFER\_SIZE\ =\ MAX\_TX\_RX\_PATHS\ *\ MAX\_RB\ *\ NRE\ *\ MAX\_NSYMB\_PER\_SLOT;}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a24df3f37b165eafa20372fb1a6d92593}{nof\_prb}}\ =\ 0;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a759f9917bb054394d9c63c6d200a5da0}{nof\_symbols}}\ =\ 0;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_ac6d21f6cff9ce01f2e5371cad1874fcd}{nof\_rx\_ports}}\ =\ 0;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_adf05f48ebdec3324019177430f92f5a7}{nof\_tx\_layers}}\ =\ 0;}
+\DoxyCodeLine{00068\ \ \ \};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a987af8585951357deb842ea4dc4aeef5}{channel\_estimate}}()\ :\ max\_dims(),\ nof\_subcarriers(0),\ nof\_symbols(0),\ nof\_rx\_ports(0),\ nof\_tx\_layers(0)}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ ce.\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a05e261813b67240280a1d27961730352}{reserve}}(\{MAX\_RB\ *\ NRE,\ MAX\_NSYMB\_PER\_SLOT,\ MAX\_RX\_PORTS,\ MAX\_TX\_LAYERS\});}
+\DoxyCodeLine{00074\ \ \ \ \ noise\_variance.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00075\ \ \ \ \ epre.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00076\ \ \ \ \ rsrp.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00077\ \ \ \ \ snr.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00078\ \ \ \ \ time\_alignment.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00079\ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_aac323778ffe13af85d3a18a6ab8db0af}{channel\_estimate}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\&\ dims)\ :}
+\DoxyCodeLine{00083\ \ \ \ \ max\_dims(dims),}
+\DoxyCodeLine{00084\ \ \ \ \ nof\_subcarriers(dims.nof\_prb\ *\ NRE),}
+\DoxyCodeLine{00085\ \ \ \ \ nof\_symbols(dims.nof\_symbols),}
+\DoxyCodeLine{00086\ \ \ \ \ nof\_rx\_ports(dims.nof\_rx\_ports),}
+\DoxyCodeLine{00087\ \ \ \ \ nof\_tx\_layers(dims.nof\_tx\_layers),}
+\DoxyCodeLine{00088\ \ \ \ \ ce(\{nof\_subcarriers,\ nof\_symbols,\ nof\_rx\_ports,\ nof\_tx\_layers\})}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ srsran\_assert(dims.nof\_prb\ <=\ MAX\_RB,\ \textcolor{stringliteral}{"{}Requested\ \{\}\ RBs,\ but\ at\ most\ \{\}\ are\ allowed."{}},\ dims.nof\_prb,\ MAX\_RB);}
+\DoxyCodeLine{00091\ \ \ \ \ srsran\_assert(dims.nof\_symbols\ <=\ MAX\_NSYMB\_PER\_SLOT,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Requested\ \{\}\ OFDM\ symbols,\ but\ at\ most\ \{\}\ are\ allowed."{}},}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dims.nof\_symbols,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MAX\_NSYMB\_PER\_SLOT);}
+\DoxyCodeLine{00095\ \ \ \ \ srsran\_assert(dims.nof\_rx\_ports\ <=\ MAX\_RX\_PORTS,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Requested\ \{\}\ receive\ ports,\ but\ at\ most\ \{\}\ are\ supported."{}},}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dims.nof\_rx\_ports,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(MAX\_RX\_PORTS));}
+\DoxyCodeLine{00099\ \ \ \ \ srsran\_assert(dims.nof\_tx\_layers\ <=\ MAX\_TX\_LAYERS,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Requested\ \{\}\ transmission\ layers,\ but\ at\ most\ \{\}\ are\ supported."{}},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dims.nof\_tx\_layers,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(MAX\_TX\_LAYERS));}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_paths\ =\ dims.nof\_tx\_layers\ *\ dims.nof\_rx\_ports;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ Reserve\ memory\ for\ channel\ estimates\ and\ initialize\ with\ 1.0.}}
+\DoxyCodeLine{00107\ \ \ \ \ ce.\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_ae3e54a1f77b2ec66b9bd75ca28ad87df}{resize}}(\{dims.nof\_prb\ *\ NRE,\ dims.nof\_symbols,\ dims.nof\_rx\_ports,\ dims.nof\_tx\_layers\});}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ Set\ all\ reserved\ data\ to\ one.}}
+\DoxyCodeLine{00110\ \ \ \ \ span<cf\_t>\ data\ =\ ce.\mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}<4>(\{\});}
+\DoxyCodeLine{00111\ \ \ \ \ std::fill(data.begin(),\ data.end(),\ 1.0F);}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{comment}{//\ Reserve\ memory\ for\ the\ rest\ of\ channel\ statistics.}}
+\DoxyCodeLine{00114\ \ \ \ \ noise\_variance.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00115\ \ \ \ \ noise\_variance.resize(nof\_paths);}
+\DoxyCodeLine{00116\ \ \ \ \ epre.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00117\ \ \ \ \ epre.resize(nof\_paths);}
+\DoxyCodeLine{00118\ \ \ \ \ rsrp.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00119\ \ \ \ \ rsrp.resize(nof\_paths);}
+\DoxyCodeLine{00120\ \ \ \ \ snr.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00121\ \ \ \ \ snr.resize(nof\_paths);}
+\DoxyCodeLine{00122\ \ \ \ \ time\_alignment.reserve(MAX\_TX\_RX\_PATHS);}
+\DoxyCodeLine{00123\ \ \ \ \ time\_alignment.resize(nof\_paths);}
+\DoxyCodeLine{00124\ \ \ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a5dd672958e59050004cb5370e21c096d}{\string~channel\_estimate}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{float}\ get\_noise\_variance(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00133\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ noise\_variance[path\_to\_index(rx\_port,\ tx\_layer)];}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a4df8212cd8e8e48539034bddff87ddfe}{get\_noise\_variance\_dB}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00139\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(get\_noise\_variance(rx\_port,\ tx\_layer));}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_af2d50dc846b4644fee4261cee2933b36}{get\_rsrp}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ rsrp[path\_to\_index(rx\_port,\ tx\_layer)];\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_ab3eb21230f548ef0d8d1e54ed503a0c2}{get\_rsrp\_dB}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00148\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate_af2d50dc846b4644fee4261cee2933b36}{get\_rsrp}}(rx\_port,\ tx\_layer));}
+\DoxyCodeLine{00150\ \ \ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a0d76e156fb2b403eaa36b155a634d0a2}{get\_epre}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ epre[path\_to\_index(rx\_port,\ tx\_layer)];\ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a3b39fe5830a307ab802fe2d74a8b250c}{get\_epre\_dB}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00161\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate_a0d76e156fb2b403eaa36b155a634d0a2}{get\_epre}}(rx\_port,\ tx\_layer));}
+\DoxyCodeLine{00163\ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a0a05225c30d3662ee04424e8c94f5cd5}{get\_snr}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ snr[path\_to\_index(rx\_port,\ tx\_layer)];\ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00169\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a1cf2e6277ec4f9f8c898f13b7bff0205}{get\_layer\_average\_snr}}(\textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00170\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keywordtype}{float}\ noise\_var\_all\_ports\ =\ 0.0F;}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordtype}{float}\ rsrp\_all\_ports\ \ \ \ \ \ =\ 0.0F;}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{comment}{//\ Add\ the\ noise\ and\ signal\ power\ contributions\ of\ all\ Rx\ ports.}}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_rx\_port\ =\ 0;\ i\_rx\_port\ !=\ nof\_rx\_ports;\ ++i\_rx\_port)\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ noise\_var\_all\_ports\ +=\ noise\_variance[path\_to\_index(i\_rx\_port,\ tx\_layer)];}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ rsrp\_all\_ports\ +=\ rsrp[path\_to\_index(i\_rx\_port,\ tx\_layer)];}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{if}\ (std::isnormal(noise\_var\_all\_ports))\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rsrp\_all\_ports\ /\ noise\_var\_all\_ports;}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{comment}{//\ If\ noise\ variance\ is\ 0,\ report\ and\ SNR\ of\ 60\ dB.}}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{return}\ 1e6;}
+\DoxyCodeLine{00186\ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_ad5c9c4968dd562340b822c2bd1303749}{get\_snr\_dB}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00190\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate_a0a05225c30d3662ee04424e8c94f5cd5}{get\_snr}}(rx\_port,\ tx\_layer));}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00195\ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a7eb9897e2d7c4ffc57d3704d23d032e2}{get\_time\_alignment}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00196\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ time\_alignment[path\_to\_index(rx\_port,\ tx\_layer)];}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00203\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a49d2f719fa739df2e255de85087274dd}{get\_path\_ch\_estimate}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00204\ \ \ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keywordflow}{return}\ ce.\mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}<2>(\{rx\_port,\ tx\_layer\});}
+\DoxyCodeLine{00206\ \ \ \}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00211\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_aa6d2e35fa44de014b2851eb9163ec849}{get\_path\_ch\_estimate}}(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00212\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keywordflow}{return}\ ce.\mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}<2>(\{rx\_port,\ tx\_layer\});}
+\DoxyCodeLine{00214\ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00219\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a3e3110c08719e66b65cd7c6bc81cb01d}{get\_symbol\_ch\_estimate}}(\textcolor{keywordtype}{unsigned}\ i\_symbol,\ \textcolor{keywordtype}{unsigned}\ rx\_port\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00220\ \ \ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keywordflow}{return}\ ce.\mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}<1>(\{i\_symbol,\ rx\_port,\ tx\_layer\});}
+\DoxyCodeLine{00222\ \ \ \}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00227\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_ab5160d76828b10078c49590d1b5b5d9e}{get\_symbol\_ch\_estimate}}(\textcolor{keywordtype}{unsigned}\ i\_symbol,\ \textcolor{keywordtype}{unsigned}\ rx\_port\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00228\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordflow}{return}\ ce.\mbox{\hyperlink{classsrsran_1_1tensor_aa4379387498edc2307a09f6a60b85c8a}{get\_view}}<1>(\{i\_symbol,\ rx\_port,\ tx\_layer\});}
+\DoxyCodeLine{00230\ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00235\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_aebf521cf0e150b8ff4d67e528aba82bc}{get\_channel\_state\_information}}(\mbox{\hyperlink{classsrsran_1_1channel__state__information}{channel\_state\_information}}\&\ csi)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00236\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{comment}{//\ EPRE,\ RSRP\ and\ time\ alignment\ are\ reported\ as\ a\ linear\ average\ of\ the\ results\ for\ all\ Rx\ ports.}}
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ epre\_lin\ \ \ \ \ \ =\ 0.0F;}
+\DoxyCodeLine{00239\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ rsrp\_lin\ \ \ \ \ \ =\ 0.0F;}
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ best\_rx\_port\ \ =\ 0;}
+\DoxyCodeLine{00241\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \ best\_path\_snr\ =\ 0.0F;}
+\DoxyCodeLine{00242\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_rx\_port\ =\ 0;\ i\_rx\_port\ !=\ nof\_rx\_ports;\ ++i\_rx\_port)\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \textcolor{comment}{//\ Accumulate\ EPRE\ and\ RSRP\ values.}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ epre\_lin\ +=\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a0d76e156fb2b403eaa36b155a634d0a2}{get\_epre}}(i\_rx\_port,\ 0);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ rsrp\_lin\ +=\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_af2d50dc846b4644fee4261cee2933b36}{get\_rsrp}}(i\_rx\_port,\ 0);}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \textcolor{comment}{//\ Determine\ the\ Rx\ port\ with\ better\ SNR.}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ port\_snr\ =\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a0a05225c30d3662ee04424e8c94f5cd5}{get\_snr}}(i\_rx\_port,\ 0);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (port\_snr\ >\ best\_path\_snr)\ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ best\_path\_snr\ =\ port\_snr;}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ best\_rx\_port\ \ =\ i\_rx\_port;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ \ \ \ \ \}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ epre\_lin\ /=\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(nof\_rx\_ports);}
+\DoxyCodeLine{00256\ \ \ \ \ rsrp\_lin\ /=\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(nof\_rx\_ports);}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \ \ csi.\mbox{\hyperlink{classsrsran_1_1channel__state__information_ae966ddcce80a0c01f0c2454365f09a7d}{set\_epre}}(\mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(epre\_lin));}
+\DoxyCodeLine{00259\ \ \ \ \ csi.\mbox{\hyperlink{classsrsran_1_1channel__state__information_ab78214dfa616735298098c8b9e7add24}{set\_rsrp}}(\mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(rsrp\_lin));}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \ \ \ \ \textcolor{comment}{//\ Use\ the\ time\ alignment\ of\ the\ channel\ path\ with\ better\ SNR.}}
+\DoxyCodeLine{00262\ \ \ \ \ csi.\mbox{\hyperlink{classsrsran_1_1channel__state__information_a098a5cab18109423b8c5bf0343afb1e4}{set\_time\_alignment}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate_a7eb9897e2d7c4ffc57d3704d23d032e2}{get\_time\_alignment}}(best\_rx\_port,\ 0));}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{comment}{//\ SINR\ is\ reported\ by\ averaging\ the\ signal\ and\ noise\ power\ contributions\ of\ all\ Rx\ ports.}}
+\DoxyCodeLine{00265\ \ \ \ \ csi.\mbox{\hyperlink{classsrsran_1_1channel__state__information_a1878876bb21fc1442dc11d07fe42e528}{set\_sinr\_dB}}(\mbox{\hyperlink{classsrsran_1_1channel__state__information_ae4af4a403b69bef37ac9173fa7428286aa677b907ee90f2fda4e01b241f1859bc}{channel\_state\_information::sinr\_type::channel\_estimator}},}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5756a255042b67673f46c371665d04ec}{convert\_power\_to\_dB}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate_a1cf2e6277ec4f9f8c898f13b7bff0205}{get\_layer\_average\_snr}}(0)));}
+\DoxyCodeLine{00267\ \ \ \}}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00274\ \ \ \textcolor{keywordtype}{void}\ set\_noise\_variance(\textcolor{keywordtype}{float}\ var\_val,\ \textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00275\ \ \ \{}
+\DoxyCodeLine{00276\ \ \ \ \ noise\_variance[path\_to\_index(rx\_port,\ tx\_layer)]\ =\ var\_val;}
+\DoxyCodeLine{00277\ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00280\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a55e6505cc49f3e689487f38a8c5e920f}{set\_rsrp}}(\textcolor{keywordtype}{float}\ rsrp\_val,\ \textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00281\ \ \ \{}
+\DoxyCodeLine{00282\ \ \ \ \ rsrp[path\_to\_index(rx\_port,\ tx\_layer)]\ =\ rsrp\_val;}
+\DoxyCodeLine{00283\ \ \ \}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00286\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a7123bed76e9d5dd8b4fb3e94419cc29e}{set\_epre}}(\textcolor{keywordtype}{float}\ epre\_val,\ \textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00287\ \ \ \{}
+\DoxyCodeLine{00288\ \ \ \ \ epre[path\_to\_index(rx\_port,\ tx\_layer)]\ =\ epre\_val;}
+\DoxyCodeLine{00289\ \ \ \}}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00292\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_af996cdabe49e1189a339ed552ceb239f}{set\_snr}}(\textcolor{keywordtype}{float}\ snr\_val,\ \textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00293\ \ \ \{}
+\DoxyCodeLine{00294\ \ \ \ \ snr[path\_to\_index(rx\_port,\ tx\_layer)]\ =\ snr\_val;}
+\DoxyCodeLine{00295\ \ \ \}}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00298\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a40afb0a66b8057048879c250294ba0e9}{set\_time\_alignment}}(\mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ ta,\ \textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00299\ \ \ \{}
+\DoxyCodeLine{00300\ \ \ \ \ time\_alignment[path\_to\_index(rx\_port,\ tx\_layer)]\ =\ ta;}
+\DoxyCodeLine{00301\ \ \ \}}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00304\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a128e90778ec194e5d88d31e952752f78}{set\_ch\_estimate}}(\mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ ce\_val,\ \textcolor{keywordtype}{unsigned}\ subcarrier,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keywordtype}{unsigned}\ rx\_port\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)}
+\DoxyCodeLine{00305\ \ \ \{}
+\DoxyCodeLine{00306\ \ \ \ \ ce[\{subcarrier,\ symbol,\ rx\_port,\ tx\_layer\}]\ =\ ce\_val;}
+\DoxyCodeLine{00307\ \ \ \}}
+\DoxyCodeLine{00309\ }
+\DoxyCodeLine{00311\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a866476ab3a67570fa83ee5ab42a892d6}{resize}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\&\ dims)}
+\DoxyCodeLine{00312\ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ nof\_subcarriers\ =\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a24df3f37b165eafa20372fb1a6d92593}{nof\_prb}}\ *\ NRE;}
+\DoxyCodeLine{00314\ \ \ \ \ nof\_symbols\ \ \ \ \ =\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a759f9917bb054394d9c63c6d200a5da0}{nof\_symbols}};}
+\DoxyCodeLine{00315\ \ \ \ \ nof\_rx\_ports\ \ \ \ =\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_ac6d21f6cff9ce01f2e5371cad1874fcd}{nof\_rx\_ports}};}
+\DoxyCodeLine{00316\ \ \ \ \ nof\_tx\_layers\ \ \ =\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_adf05f48ebdec3324019177430f92f5a7}{nof\_tx\_layers}};}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_paths\ =\ nof\_rx\_ports\ *\ nof\_tx\_layers;}
+\DoxyCodeLine{00319\ \ \ \ \ srsran\_assert(nof\_paths\ <=\ MAX\_TX\_RX\_PATHS,}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Total\ requested\ paths\ (\{\})\ exceed\ maximum\ available\ (\{\})."{}},}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_paths,}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(MAX\_TX\_RX\_PATHS));}
+\DoxyCodeLine{00323\ \ \ \ \ noise\_variance.resize(nof\_paths);}
+\DoxyCodeLine{00324\ \ \ \ \ epre.resize(nof\_paths);}
+\DoxyCodeLine{00325\ \ \ \ \ rsrp.resize(nof\_paths);}
+\DoxyCodeLine{00326\ \ \ \ \ snr.resize(nof\_paths);}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_res\ =\ nof\_paths\ *\ nof\_subcarriers\ *\ nof\_symbols;}
+\DoxyCodeLine{00329\ \ \ \ \ srsran\_assert(nof\_res\ <=\ MAX\_BUFFER\_SIZE,}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Total\ requested\ REs\ (\{\})\ exceed\ maximum\ available\ (\{\})."{}},}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_res,}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(MAX\_BUFFER\_SIZE));}
+\DoxyCodeLine{00333\ \ \ \ \ ce.\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_ae3e54a1f77b2ec66b9bd75ca28ad87df}{resize}}(\{NRE\ *\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a24df3f37b165eafa20372fb1a6d92593}{nof\_prb}},\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a759f9917bb054394d9c63c6d200a5da0}{nof\_symbols}},\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_ac6d21f6cff9ce01f2e5371cad1874fcd}{nof\_rx\_ports}},\ dims.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_adf05f48ebdec3324019177430f92f5a7}{nof\_tx\_layers}}\});}
+\DoxyCodeLine{00334\ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00337\ \ \ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_a0370b4ff4d9e9692f0e1d05c415721b6}{size}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00338\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00339\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\ tmp;}
+\DoxyCodeLine{00340\ \ \ \ \ tmp.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a24df3f37b165eafa20372fb1a6d92593}{nof\_prb}}\ \ \ \ \ \ \ =\ nof\_subcarriers\ /\ NRE;}
+\DoxyCodeLine{00341\ \ \ \ \ tmp.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_a759f9917bb054394d9c63c6d200a5da0}{nof\_symbols}}\ \ \ =\ nof\_symbols;}
+\DoxyCodeLine{00342\ \ \ \ \ tmp.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_ac6d21f6cff9ce01f2e5371cad1874fcd}{nof\_rx\_ports}}\ \ =\ nof\_rx\_ports;}
+\DoxyCodeLine{00343\ \ \ \ \ tmp.\mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions_adf05f48ebdec3324019177430f92f5a7}{nof\_tx\_layers}}\ =\ nof\_tx\_layers;}
+\DoxyCodeLine{00344\ \ \ \ \ \textcolor{keywordflow}{return}\ tmp;}
+\DoxyCodeLine{00345\ \ \ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00348\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1channel__estimate_1_1channel__estimate__dimensions}{channel\_estimate\_dimensions}}\&\ \mbox{\hyperlink{classsrsran_1_1channel__estimate_ace94b383d49f212dc263724746f55e0a}{capacity}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ max\_dims;\ \}}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00352\ \ \ \textcolor{keyword}{const}\ channel\_estimate\_dimensions\ max\_dims;}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00355\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_subcarriers;}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00358\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols;}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00361\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports;}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00364\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_tx\_layers;}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00372\ \ \ std::vector<float>\ noise\_variance;}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00375\ \ \ std::vector<float>\ rsrp;}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00378\ \ \ std::vector<float>\ epre;}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00381\ \ \ std::vector<float>\ snr;}
+\DoxyCodeLine{00382\ }
+\DoxyCodeLine{00384\ \ \ std::vector<phy\_time\_unit>\ time\_alignment;}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00392\ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor}{dynamic\_tensor<4,\ cf\_t>}}\ ce;}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00395\ \ \ \textcolor{keywordtype}{unsigned}\ path\_to\_index(\textcolor{keywordtype}{unsigned}\ rx\_port,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00396\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00397\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ rx\_port\ <\ nof\_rx\_ports,\ \textcolor{stringliteral}{"{}Requested\ Rx\ antenna\ port\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ rx\_port,\ nof\_rx\_ports);}
+\DoxyCodeLine{00399\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ tx\_layer\ <\ nof\_tx\_layers,\ \textcolor{stringliteral}{"{}Requested\ Rx\ antenna\ port\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ rx\_port,\ nof\_tx\_layers);}
+\DoxyCodeLine{00401\ \ \ \ \ \textcolor{keywordflow}{return}\ rx\_port\ +\ nof\_rx\_ports\ *\ tx\_layer;}
+\DoxyCodeLine{00402\ \ \ \}}
+\DoxyCodeLine{00403\ }
+\DoxyCodeLine{00405\ \ \ \textcolor{keywordtype}{unsigned}\ coords\_to\_index(\textcolor{keywordtype}{unsigned}\ subcarrier,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keywordtype}{unsigned}\ rx\_port\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ tx\_layer\ =\ 0)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00406\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00407\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ subcarrier\ <\ nof\_subcarriers,\ \textcolor{stringliteral}{"{}Requested\ subcarrier\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ subcarrier,\ nof\_subcarriers);}
+\DoxyCodeLine{00409\ \ \ \ \ srsran\_assert(symbol\ <\ nof\_symbols,\ \textcolor{stringliteral}{"{}Requested\ OFDM\ symbol\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ symbol,\ nof\_symbols);}
+\DoxyCodeLine{00410\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ rx\_port\ <\ nof\_rx\_ports,\ \textcolor{stringliteral}{"{}Requested\ Rx\ antenna\ port\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ rx\_port,\ nof\_rx\_ports);}
+\DoxyCodeLine{00412\ \ \ \ \ srsran\_assert(tx\_layer\ <\ nof\_tx\_layers,\ \textcolor{stringliteral}{"{}Requested\ Tx\ layer\ \{\}\ is\ out\ of\ bound\ (max.\ \{\})"{}},\ tx\_layer,\ nof\_tx\_layers);}
+\DoxyCodeLine{00413\ \ \ \ \ \textcolor{keywordflow}{return}\ subcarrier\ +\ nof\_subcarriers\ *\ (symbol\ +\ nof\_symbols\ *\ (rx\_port\ +\ nof\_rx\_ports\ *\ tx\_layer));}
+\DoxyCodeLine{00414\ \ \ \}}
+\DoxyCodeLine{00415\ \};}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

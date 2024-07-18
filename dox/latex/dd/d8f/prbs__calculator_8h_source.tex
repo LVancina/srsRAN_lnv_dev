@@ -1,0 +1,105 @@
+\doxysection{prbs\+\_\+calculator.\+h}
+\hypertarget{prbs__calculator_8h_source}{}\label{prbs__calculator_8h_source}\index{lib/scheduler/support/prbs\_calculator.h@{lib/scheduler/support/prbs\_calculator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/resource\_block.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/modulation\_scheme.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/sch\_mcs.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/math\_utils.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Collects\ the\ parameters\ to\ calculate\ the\ num.\ of\ PRBS\ given\ the\ payload\ size,\ for\ a\ PDSCH\ transmission.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)remark\ For\ the\ definition\ of\ the\ parameters\ within\ this\ struct,\ refer\ to\ TS\ 38.214,\ Section\ 5.1.3.2.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config}{prbs\_calculator\_sch\_config}}\ \{}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Size\ (in\ bytes)\ of\ payload\ that\ has\ to\ fit\ within\ the\ TBS.\ Maximum\ value\ is\ 478\ bytes\ (3824\ bits).}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a46aa498368648dab6c5494375584a9f6}{payload\_size\_bytes}};}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ OFDM\ symbols\ of\ the\ PDSCH\ allocation\ within\ the\ slot,\ parameter\ \(\backslash\)f\$N\_\{symb\}\string^\{sh\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a5d558a3e4cc3a7798c966d81bdb09caf}{nof\_symb\_sh}};}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ RE\ for\ DMRS\ per\ PRB\ in\ the\ PDSCH\ transmission,\ parameter\ \(\backslash\)f\$N\_\{DMRS\}\string^\{PRB\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a2d4ba7b5110d967033e111617f217fe3}{nof\_dmrs\_prb}};}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ RE\ configured\ as\ overhead,\ parameter\ \(\backslash\)f\$N\_\{oh\}\string^\{PRB\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Possible\ values\ are\ \{0,\ 6,\ 12,\ 18\}.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ It\ must\ be\ set\ to\ zero\ if:}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ -\/\ the\ PDSCH\ is\ scheduled\ by\ PDCCH\ with\ a\ CRC\ scrambled\ by\ SI-\/RNTI,\ RA-\/RNTI\ or\ P-\/RNTI,\ or}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ -\/\ the\ higher\ layer\ parameter\ \(\backslash\)c\ xOverhead\ in\ \(\backslash\)c\ PDSCH-\/ServingCellconfig\ is\ not\ present.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Otherwise,\ it\ must\ be\ set\ to\ the\ higher\ layer\ parameter\ \(\backslash\)c\ xOverhead\ in\ \(\backslash\)c\ PDSCH-\/ServingCellconfig.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a748dc8694254f5b870ee297a63452a6b}{nof\_oh\_prb}};}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Modulation\ and\ coding\ scheme.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ The\ modulation\ scheme\ translates\ to\ the\ number\ of\ bits\ per\ RE,\ parameter\ \(\backslash\)f\$Q\_m\(\backslash\)f\$,\ as\ per\ TS38.214,}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Tables\ 5.1.3.1-\/1,\ 5.1.3.1-\/2,\ 5.1.3.1-\/3.\ Possible\ values\ are\ \{QPSK,\ QAM-\/16,\ QAM-\/64,\ QAM-\/256\}.}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{structsrsran_1_1sch__mcs__description}{sch\_mcs\_description}}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a40b32813434cce02a31a2dd59ea87fb0}{mcs\_descr}};}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ layers,\ parameter\ \(\backslash\)f\$\(\backslash\)nu\(\backslash\)f\$.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Possible\ values\ are:}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ -\/\ \{1...4\}\ for\ one\ codeword,\ and}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ -\/\ \{5...8\}\ for\ two\ codewords.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_ae33a2f003d80f975defece881c7ed18b}{nof\_layers}};}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ TB\ scaling\ field\ as\ per\ TS38.214\ Table\ 5.1.3.2-\/2,\ it\ is\ used\ to\ derive\ parameter\ \(\backslash\)f\$S\(\backslash\)f\$.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ Possible\ values\ are\ \{0,1,2\}.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config_a06852e3ff625479e70307e703f1363b0}{tb\_scaling\_field}}\{0\};}
+\DoxyCodeLine{00067\ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ \(\backslash\)brief\ Collects\ the\ outputs\ of\ the\ helper\ that\ returns\ the\ num.\ of\ PRBs\ and\ TBS,\ for\ a\ PDSCH\ transmission.}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1sch__prbs__tbs}{sch\_prbs\_tbs}}\ \{}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Number\ of\ PRBs\ required\ for\ a\ given\ PDSCH\ transmission.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1sch__prbs__tbs_af99cfe21d7626ad11efeea40fdb51e09}{nof\_prbs}};}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ TBS\ in\ bytes\ corresponding\ to\ the\ PRBs\ required\ for\ a\ given\ PDSCH\ transmission.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1sch__prbs__tbs_a5e8e33fdd8ea283d7beca25fe474dc56}{tbs\_bytes}};}
+\DoxyCodeLine{00075\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ required\ number\ of\ PRBs\ necessary\ to\ transmit\ a\ given\ payload\ size.}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///}}
+\DoxyCodeLine{00079\ \textcolor{comment}{///\ This\ function\ implements\ the\ inverse\ procedure\ of\ the\ TBS\ calculation\ procedure\ (as\ per\ TS38.214\ Section\ 5.1.3.2)\ to}}
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ derive\ the\ number\ of\ PRBs\ from\ a\ given\ payload\ in\ bytes.}}
+\DoxyCodeLine{00081\ \textcolor{comment}{///}}
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ \(\backslash\)param[in]\ sch\_config\ is\ a\ struct\ with\ the\ PDSCH\ configuration\ to\ compute\ the\ num.\ of\ PRBs.}}
+\DoxyCodeLine{00083\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_available\_rbs\ is\ the\ maximum\ number\ or\ available\ of\ PRBs\ within\ the\ BWP.\ By\ default,\ this\ is\ set}}
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ to\ the\ maximum\ number\ of\ RBs\ for\ FR1,\ as\ per\ Table\ 5.3.2-\/1,\ TS\ 38.104.}}
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ \(\backslash\)return\ Returns\ a\ struct\ with\ the\ number\ of\ PRBs\ and\ the\ corresponding\ TBS.\ If\ the\ payload\_size\ is\ greater\ than\ 478}}
+\DoxyCodeLine{00086\ \textcolor{comment}{///\ bytes\ (3824\ bits),\ it\ returns\ the\ number\ of\ PRBs\ and\ TBS\ corresponding\ to\ maximum\ allowed\ payload\ size\ of\ 478\ bytes.}}
+\DoxyCodeLine{00087\ \mbox{\hyperlink{structsrsran_1_1sch__prbs__tbs}{sch\_prbs\_tbs}}\ \mbox{\hyperlink{namespacesrsran_a70b8a26545adce623448955edfe349c3}{get\_nof\_prbs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config}{prbs\_calculator\_sch\_config}}\&\ sch\_config,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_available\_rbs\ =\ 273U);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ a\ coarse\ estimate\ of\ the\ number\ of\ required\ PRBs\ to\ transmit\ a\ given\ payload\ size.\ This\ estimate}}
+\DoxyCodeLine{00090\ \textcolor{comment}{///\ might\ lead\ to\ a\ TBS\ that\ is\ smaller\ or\ larger\ than\ the\ given\ payload\ size.}}
+\DoxyCodeLine{00091\ \textcolor{comment}{///}}
+\DoxyCodeLine{00092\ \textcolor{comment}{///\ \(\backslash\)param[in]\ sch\_config\ is\ a\ struct\ with\ the\ PDSCH\ configuration\ to\ compute\ the\ num.\ of\ PRBs.}}
+\DoxyCodeLine{00093\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\_nof\_available\_rbs\ is\ the\ maximum\ number\ or\ available\ of\ PRBs\ within\ the\ BWP.\ By\ default,\ this\ is\ set}}
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ to\ the\ maximum\ number\ of\ RBs\ for\ FR1,\ as\ per\ Table\ 5.3.2-\/1,\ TS\ 38.104.}}
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ \(\backslash\)return\ estimate\ of\ the\ number\ of\ PRBs.}}
+\DoxyCodeLine{00096\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a54482a5d39b6db2b075eef7aaf3c319e}{estimate\_required\_nof\_prbs}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prbs__calculator__sch__config}{prbs\_calculator\_sch\_config}}\&\ sch\_config,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_nof\_available\_rbs\ =\ 273U);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -149,8 +149,8 @@ int main(int argc, char** argv)
 
   pdcp_tx_gen_frame frame = {};
   // Create RLC entities
-  std::unique_ptr<pdcp_entity_tx> pdcp_tx = std::make_unique<pdcp_entity_tx>(
-      0, drb_id_t::drb1, config, frame, frame, timer_factory{timers, worker}, worker, worker);
+  std::unique_ptr<pdcp_entity_tx> pdcp_tx =
+      std::make_unique<pdcp_entity_tx>(0, drb_id_t::drb1, config, frame, frame, timer_factory{timers, worker});
   pdcp_tx_state st = {args.count, args.count};
   pdcp_tx->set_state(st);
   pdcp_tx->configure_security(sec_cfg);
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
   pdcp_tx->set_ciphering(security::ciphering_enabled::on);
 
   // Write SDU
-  byte_buffer sdu = byte_buffer::create(sdu1).value();
+  byte_buffer sdu = {sdu1};
   pdcp_tx->handle_sdu(std::move(sdu));
   logger.info(frame.pdu_queue.front().buf.begin(),
               frame.pdu_queue.front().buf.end(),

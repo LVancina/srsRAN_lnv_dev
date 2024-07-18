@@ -35,7 +35,7 @@
 
 namespace srsran {
 
-/// CRC indication PDU.
+/// \brief CRC indication for a given PDU.
 struct mac_crc_pdu {
   /// RNTI value corresponding to the UE that generated this PDU.
   rnti_t rnti;
@@ -43,27 +43,23 @@ struct mac_crc_pdu {
   uint8_t harq_id;
   /// True if transport block is successfully decoded, otherwise false.
   bool tb_crc_success;
-  /// PUSCH SINR value in dB.
-  optional<float> ul_sinr_dB;
-  /// PUSCH RSRP value in dBFS.
-  optional<float> ul_rsrp_dBFS;
+  /// PUSCH SINR, in dBs.
+  optional<float> ul_sinr_metric;
   /// Time alignment.
-  optional<phy_time_unit> time_advance_offset;
+  phy_time_unit time_advance_offset;
 };
 
-/// List of Uplink CRC indication PDUs for a given slot.
+/// \brief List of Uplink CRC indications for a given slot.
 struct mac_crc_indication_message {
-  /// Slot point corresponding to the reception of this indication.
-  slot_point sl_rx;
-  /// List of CRC PDUs carried in this indication.
+  slot_point                                          sl_rx;
   static_vector<mac_crc_pdu, MAX_PUSCH_PDUS_PER_SLOT> crcs;
 };
 
-/// UCI indication PDU.
+/// \brief UCI indication for a given PDU.
 struct mac_uci_pdu {
-  /// UCI multiplexed in the PUSCH.
+  /// \brief UCI multiplexed in the PUSCH.
   struct pusch_type {
-    /// HARQ related information.
+    /// \brief HARQ related information.
     struct harq_information {
       /// Creates an HARQ information object when the HARQ was not detected by the underlying layers.
       static harq_information create_undetected_harq_info(unsigned expected_nof_bits)
@@ -99,7 +95,7 @@ struct mac_uci_pdu {
       bounded_bitset<uci_constants::MAX_NOF_HARQ_BITS> payload;
     };
 
-    /// CSI report related information.
+    /// \brief CSI report related information.
     struct csi_information {
       /// Indicates detection outcome.
       bool is_valid;
@@ -110,14 +106,14 @@ struct mac_uci_pdu {
       bounded_bitset<uci_constants::MAX_NOF_CSI_PART1_OR_PART2_BITS> payload;
     };
 
-    /// Metric of channel quality in dB.
-    optional<float> ul_sinr_dB;
-    /// Timing Advance Offset measured for the UE.
+    /// Metric of channel quality that ranges from -65.534 to 65.534 dBs.
+    optional<float> ul_sinr;
+    /// \brief Timing Advance Offset measured for the UE.
     optional<phy_time_unit> time_advance_offset;
-    /// RSSI report in dBFS.
-    optional<float> rssi_dBFS;
-    /// RSRP report in dBFS.
-    optional<float> rsrp_dBFS;
+    /// RSSI report in dBs.
+    optional<float> rssi;
+    /// RSRP report in dBs.
+    optional<float> rsrp;
     /// HARQ information.
     optional<harq_information> harq_info;
     /// CSI Part 1 report information.
@@ -126,42 +122,42 @@ struct mac_uci_pdu {
     optional<csi_information> csi_part2_info;
   };
 
-  /// UCI carried in PUCCH Format0 or Format1.
+  /// \brief UCI carried in PUCCH Format0 or Format1.
   struct pucch_f0_or_f1_type {
-    /// Scheduling Request related information.
+    /// \brief Scheduling Request related information.
     struct sr_information {
       /// Set to true if a SR is detected, otherwise false.
       bool detected;
     };
 
-    /// HARQ related information.
+    /// \brief HARQ related information.
     struct harq_information {
       static constexpr size_t NOF_HARQS_PER_UCI = 2;
       /// HARQ bits.
       static_vector<uci_pucch_f0_or_f1_harq_values, NOF_HARQS_PER_UCI> harqs;
     };
 
-    /// Metric of channel quality in dB.
-    optional<float> ul_sinr_dB;
+    /// Metric of channel quality that ranges from -65.534 to 65.534 dBs.
+    optional<float> ul_sinr;
     /// Timing Advance Offset measured for the UE.
     optional<phy_time_unit> time_advance_offset;
-    /// RSSI report in dBFS.
-    optional<float> rssi_dBFS;
-    /// RSRP report in dBFS.
-    optional<float> rsrp_dBFS;
+    /// RSSI report in dBs.
+    optional<float> rssi;
+    /// RSRP report in dBs.
+    optional<float> rsrp;
     /// SR information.
     optional<sr_information> sr_info;
     /// HARQ information.
     optional<harq_information> harq_info;
   };
 
-  /// UCI carried in PUCCH Format2, Format3 or Format4.
+  /// \brief UCI carried in PUCCH Format2, Format3 or Format4.
   struct pucch_f2_or_f3_or_f4_type {
     /// Maximum number of SR bits expected on the PUCCH transmission.
     static constexpr size_t MAX_SR_PAYLOAD_SIZE_BITS = 4;
     using sr_information                             = bounded_bitset<MAX_SR_PAYLOAD_SIZE_BITS>;
 
-    /// HARQ related information.
+    /// \brief HARQ related information.
     struct harq_information {
       /// Creates an HARQ information object when the HARQ was not detected by the underlying layers.
       static harq_information create_undetected_harq_info(unsigned expected_nof_bits)
@@ -197,7 +193,7 @@ struct mac_uci_pdu {
       bounded_bitset<uci_constants::MAX_NOF_HARQ_BITS> payload;
     };
 
-    /// CSI report related information.
+    /// \brief CSI report related information.
     struct csi_information {
       /// Indicates detection outcome.
       bool is_valid;
@@ -208,14 +204,14 @@ struct mac_uci_pdu {
       bounded_bitset<uci_constants::MAX_NOF_CSI_PART1_OR_PART2_BITS> payload;
     };
 
-    /// Metric of channel quality in dB.
-    optional<float> ul_sinr_dB;
+    /// Metric of channel quality that ranges from -65.534 to 65.534 dBs.
+    optional<float> ul_sinr;
     /// Timing Advance Offset measured for the UE.
     optional<phy_time_unit> time_advance_offset;
-    /// RSSI report in dBFS.
-    optional<float> rssi_dBFS;
-    /// RSRP report in dBFS.
-    optional<float> rsrp_dBFS;
+    /// RSSI report in dBs.
+    optional<float> rssi;
+    /// RSRP report in dBs.
+    optional<float> rsrp;
     /// SR information.
     optional<sr_information> sr_info;
     /// HARQ information.
@@ -232,15 +228,13 @@ struct mac_uci_pdu {
   variant<pusch_type, pucch_f0_or_f1_type, pucch_f2_or_f3_or_f4_type> pdu;
 };
 
-/// List of UCI indication PDUs for a given slot.
+/// \brief UCI indication that may contain multiple UCI PDUs.
 struct mac_uci_indication_message {
-  /// Slot point corresponding to the reception of this indication.
-  slot_point sl_rx;
-  /// List of UCI PDUs carried in this indication.
+  slot_point                                           sl_rx;
   static_vector<mac_uci_pdu, MAX_UCI_PDUS_PER_UCI_IND> ucis;
 };
 
-/// Interface to handle feedback information from the PHY.
+/// \brief Interface to handle feedback information from the PHY.
 class mac_cell_control_information_handler
 {
 public:

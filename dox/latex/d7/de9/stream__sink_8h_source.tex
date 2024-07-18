@@ -1,0 +1,69 @@
+\doxysection{stream\+\_\+sink.\+h}
+\hypertarget{stream__sink_8h_source}{}\label{stream__sink_8h_source}\index{lib/srslog/sinks/stream\_sink.h@{lib/srslog/sinks/stream\_sink.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/sink.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ srslog\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ Standard\ stream\ types.}}
+\DoxyCodeLine{00030\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ sink\_stream\_type\ \{\ stdout,\ stderr\ \};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ This\ sink\ implementation\ writes\ to\ either\ stdout\ or\ stderr\ streams.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrslog_1_1stream__sink}{stream\_sink}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrslog_1_1sink}{sink}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ stream\_sink(sink\_stream\_type\ s,\ std::unique\_ptr<log\_formatter>\ f)\ :}
+\DoxyCodeLine{00037\ \ \ \ \ sink(std::move(f)),\ handle((s\ ==\ sink\_stream\_type::stdout)\ ?\ stdout\ :\ stderr)}
+\DoxyCodeLine{00038\ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ stream\_sink(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1stream__sink}{stream\_sink}}\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrslog_1_1stream__sink}{stream\_sink}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1stream__sink}{stream\_sink}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::\mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{error\_string}}\ \mbox{\hyperlink{classsrslog_1_1stream__sink_a9834566b48c0f8246149e885052a210f}{write}}(\mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer}{memory\_buffer}}\ buffer)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00045\ \ \ \{}
+\DoxyCodeLine{00046\ \ \ \ \ assert(handle\ \&\&\ \textcolor{stringliteral}{"{}Invalid\ stream\ handle"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ std::fwrite(buffer.data(),\ \textcolor{keyword}{sizeof}(\textcolor{keywordtype}{char}),\ buffer.size(),\ handle);}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ We\ want\ to\ see\ the\ output\ instantly.}}
+\DoxyCodeLine{00049\ \ \ \ \ std::fflush(handle);}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::\mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{error\_string}}\ \mbox{\hyperlink{classsrslog_1_1stream__sink_a650c42b2a42800a837ce397198f277dc}{flush}}()\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00054\ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ std::fflush(handle);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00060\ \ \ std::FILE*\ handle;}
+\DoxyCodeLine{00061\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

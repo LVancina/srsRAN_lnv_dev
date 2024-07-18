@@ -1,0 +1,88 @@
+\doxysection{ofh\+\_\+sector\+\_\+impl.\+h}
+\hypertarget{ofh__sector__impl_8h_source}{}\label{ofh__sector__impl_8h_source}\index{lib/ofh/ofh\_sector\_impl.h@{lib/ofh/ofh\_sector\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__sector__controller_8h}{"{}ofh\_sector\_controller.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}support/prach\_context\_repository.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}support/uplink\_context\_repository.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}support/uplink\_cplane\_context\_repository.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ethernet/ethernet\_receiver.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ofh\_sector.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/receiver/ofh\_receiver.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/transmitter/ofh\_transmitter.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Open\ Fronthaul\ sector\ implementation.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__impl}{sector\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector}{sector}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ sector\_impl(std::unique\_ptr<receiver>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ receiver\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<transmitter>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transmitter\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__cplane__context__repository}{uplink\_cplane\_context\_repository}}>\ cp\_repo\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository}{prach\_context\_repository}}>\ \ \ \ \ \ \ \ \ prach\_repo\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__context__repository}{uplink\_context\_repository}}>\ \ \ \ \ \ \ \ slot\_repo\_)\ :}
+\DoxyCodeLine{00046\ \ \ \ \ cp\_repo(std::move(cp\_repo\_)),}
+\DoxyCodeLine{00047\ \ \ \ \ prach\_repo(std::move(prach\_repo\_)),}
+\DoxyCodeLine{00048\ \ \ \ \ slot\_repo(std::move(slot\_repo\_)),}
+\DoxyCodeLine{00049\ \ \ \ \ ofh\_receiver(std::move(receiver\_)),}
+\DoxyCodeLine{00050\ \ \ \ \ ofh\_transmitter(std::move(transmitter\_)),}
+\DoxyCodeLine{00051\ \ \ \ \ ofh\_sector\_controller(*ofh\_receiver)}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ofh\_receiver,\ \textcolor{stringliteral}{"{}Invalid\ Open\ Fronthaul\ receiver"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ofh\_transmitter,\ \textcolor{stringliteral}{"{}Invalid\ Open\ Fronthaul\ transmitter"{}});}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cp\_repo,\ \textcolor{stringliteral}{"{}Invalid\ Control-\/Plane\ context\ repository"{}});}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(prach\_repo,\ \textcolor{stringliteral}{"{}Invalid\ PRACH\ context\ repository"{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(slot\_repo,\ \textcolor{stringliteral}{"{}Invalid\ UL\ slot\ context\ repository"{}});}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1receiver}{receiver}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__impl_ab1bd22055736c959886dfe603bec2bef}{get\_receiver}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1transmitter}{transmitter}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__impl_ad1f1dabf8f0c9ee93776d7d463ce9600}{get\_transmitter}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1controller}{controller}}\&\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__impl_a416e81f8df9331433427cc2610d6cdc2}{get\_controller}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__impl_ae50e09d660f1b2f219f226a63d0ab6b3}{set\_error\_notifier}}(\mbox{\hyperlink{classsrsran_1_1ofh_1_1error__notifier}{error\_notifier}}\&\ notifier)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00073\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__cplane__context__repository}{uplink\_cplane\_context\_repository}}>\ cp\_repo;}
+\DoxyCodeLine{00074\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository}{prach\_context\_repository}}>\ \ \ \ \ \ \ \ \ prach\_repo;}
+\DoxyCodeLine{00075\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__context__repository}{uplink\_context\_repository}}>\ \ \ \ \ \ \ \ slot\_repo;}
+\DoxyCodeLine{00076\ \ \ std::unique\_ptr<receiver>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ofh\_receiver;}
+\DoxyCodeLine{00077\ \ \ std::unique\_ptr<transmitter>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ofh\_transmitter;}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1sector__controller}{sector\_controller}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ofh\_sector\_controller;}
+\DoxyCodeLine{00079\ \};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00082\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

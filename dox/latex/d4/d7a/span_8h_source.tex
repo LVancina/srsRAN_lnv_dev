@@ -1,0 +1,391 @@
+\doxysection{span.\+h}
+\hypertarget{span_8h_source}{}\label{span_8h_source}\index{include/srsran/adt/span.h@{include/srsran/adt/span.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{algorithm}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cassert}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{iterator}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ span;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ Helper\ traits\ used\ by\ SFINAE\ expressions\ in\ constructors.}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00044\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1make__void}{make\_void}}\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{void}\ type;}
+\DoxyCodeLine{00046\ \};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00049\ \textcolor{keyword}{using}\ void\_t\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1make__void}{make\_void}}<Ts...>::type;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00052\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__span}{is\_span}}\ :\ std::false\_type\ \{}
+\DoxyCodeLine{00053\ \};}
+\DoxyCodeLine{00054\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00055\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__span}{is\_span}}<span<U>>\ :\ std::true\_type\ \{}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00059\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__std__array}{is\_std\_array}}\ :\ std::false\_type\ \{}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ std::size\_t\ N>}
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__std__array}{is\_std\_array}}<std::array<U,\ N>>\ :\ std::true\_type\ \{}
+\DoxyCodeLine{00063\ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00066\ \textcolor{keyword}{using}\ remove\_cvref\_t\ =\ \textcolor{keyword}{typename}\ std::remove\_cv<\textcolor{keyword}{typename}\ std::remove\_reference<U>::type>::type;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Container,\ \textcolor{keyword}{class}\ U,\ \textcolor{keyword}{class}\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00069\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1is__container__compatible}{is\_container\_compatible}}\ :\ \textcolor{keyword}{public}\ std::false\_type\ \{}
+\DoxyCodeLine{00070\ \};}
+\DoxyCodeLine{00071\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Container,\ \textcolor{keyword}{class}\ U>}
+\DoxyCodeLine{00072\ \textcolor{keyword}{struct}\ is\_container\_compatible<}
+\DoxyCodeLine{00073\ \ \ \ \ Container,}
+\DoxyCodeLine{00074\ \ \ \ \ U,}
+\DoxyCodeLine{00075\ \ \ \ \ void\_t<}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ container\ type\ has\ data\ and\ size\ members.}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{decltype}(std::declval<Container>().data()),}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{decltype}(std::declval<Container>().size()),}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Container\ should\ not\ be\ a\ span.}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<!is\_span<remove\_cvref\_t<Container>>::value,\ \textcolor{keywordtype}{int}>::type,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Container\ should\ not\ be\ a\ std::array.}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<!is\_std\_array<remove\_cvref\_t<Container>>::value,\ \textcolor{keywordtype}{int}>::type,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Container\ should\ not\ be\ an\ array.}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<!std::is\_array<remove\_cvref\_t<Container>>::value,\ \textcolor{keywordtype}{int}>::type,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ type\ compatibility\ between\ the\ contained\ type\ and\ the\ span\ type.}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_convertible<\textcolor{keyword}{typename}\ std::remove\_pointer<\textcolor{keyword}{decltype}(std::declval<Container>().data())>::type\ (*)[],}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ U\ (*)[]>::value,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}>::type>>\ :\ \textcolor{keyword}{public}\ std::true\_type\ \{}
+\DoxyCodeLine{00090\ \};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ The\ class\ template\ span\ describes\ an\ object\ that\ can\ refer\ to\ a\ contiguous\ sequence\ of\ objects\ with\ the\ first}}
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ element\ of\ the\ sequence\ at\ position\ zero.}}
+\DoxyCodeLine{00096\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00097\ \textcolor{keyword}{class}\ span}
+\DoxyCodeLine{00098\ \{}
+\DoxyCodeLine{00099\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ Member\ types.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{using}\ element\_type\ \ \ \ \ =\ T;}
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ =\ \textcolor{keyword}{typename}\ std::remove\_cv<T>::type;}
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{using}\ size\_type\ \ \ \ \ \ \ \ =\ std::size\_t;}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{using}\ difference\_type\ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ =\ element\_type*;}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{using}\ const\_pointer\ \ \ \ =\ \textcolor{keyword}{const}\ element\_type*;}
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ =\ element\_type\&;}
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{using}\ const\_reference\ \ =\ \textcolor{keyword}{const}\ element\_type\&;}
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{using}\ iterator\ \ \ \ \ \ \ \ \ =\ pointer;}
+\DoxyCodeLine{00110\ \ \ \textcolor{keyword}{using}\ reverse\_iterator\ =\ std::reverse\_iterator<iterator>;}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Constructs\ an\ empty\ span\ with\ data()\ ==\ nullptr\ and\ size()\ ==\ 0.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a11050b5d708840787734632bed4be143}{span}}()\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ range\ [ptr,\ ptr\ +\ len).}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a8cc4494a244e6ce17dee51aa1b66bda6}{span}}(pointer\ ptr\_,\ size\_type\ len\_)\ \textcolor{keyword}{noexcept}\ :\ ptr(ptr\_),\ len(len\_)\ \{\}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ range\ [first,\ last).}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a021cab0dd024ae76eae1ca5c34a85353}{span}}(pointer\ first,\ pointer\ last)\ \textcolor{keyword}{noexcept}\ :\ ptr(first),\ len(last\ -\/\ first)\ \{\}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ array\ arr.}}
+\DoxyCodeLine{00122\ \ \ \textcolor{keyword}{template}\ <std::size\_t\ N>}
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a2862f5f94df172d837992046b653a635}{span}}(element\_type\ (\&arr)[N])\ \textcolor{keyword}{noexcept}\ :\ ptr(arr),\ len(N)}
+\DoxyCodeLine{00124\ \ \ \{}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ array\ arr.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ N,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<std::is\_convertible<U\ (*)[],\ element\_type\ (*)[]>::value,\ \textcolor{keywordtype}{int}>::type\ =\ 0>}
+\DoxyCodeLine{00131\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a2983852dbeb878b2363d745cc510568a}{span}}(std::array<U,\ N>\&\ arr)\ \textcolor{keyword}{noexcept}\ :\ ptr(arr.data()),\ len(N)}
+\DoxyCodeLine{00132\ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ array\ arr.}}
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ N,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<std::is\_convertible<\textcolor{keyword}{const}\ U\ (*)[],\ element\_type\ (*)[]>::value,\ \textcolor{keywordtype}{int}>::type\ =\ 0>}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_afafa2a592b6dbfec9a8efcdd4244721a}{span}}(\textcolor{keyword}{const}\ std::array<U,\ N>\&\ arr)\ \textcolor{keyword}{noexcept}\ :\ ptr(arr.data()),\ len(N)}
+\DoxyCodeLine{00140\ \ \ \{}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ container\ c.}}
+\DoxyCodeLine{00144\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Container,}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<detail::is\_container\_compatible<Container,\ element\_type>::value,\ \textcolor{keywordtype}{int}>::type\ =\ 0>}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_ab38a2c6752461eeccf442a65dc29f726}{span}}(Container\&\ container)\ \textcolor{keyword}{noexcept}\ :\ ptr(container.data()),\ len(container.size())}
+\DoxyCodeLine{00147\ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \textcolor{comment}{///\ Constructs\ a\ span\ that\ is\ a\ view\ over\ the\ container\ c.}}
+\DoxyCodeLine{00151\ \ \ \textcolor{keyword}{template}\ <}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Container,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::enable\_if<detail::is\_container\_compatible<\textcolor{keyword}{const}\ Container,\ element\_type>::value,\ \textcolor{keywordtype}{int}>::type\ =\ 0>}
+\DoxyCodeLine{00154\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1span_a7ac74ef9133db001a60ac0000b2d13e4}{span}}(\textcolor{keyword}{const}\ Container\&\ container)\ \textcolor{keyword}{noexcept}\ :\ ptr(container.data()),\ len(container.size())}
+\DoxyCodeLine{00155\ \ \ \{}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ std::enable\_if<std::is\_convertible<U\ (*)[],\ element\_type\ (*)[]>::value,\ \textcolor{keywordtype}{int}>::type\ =\ 0>}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{constexpr}\ span(\textcolor{keyword}{const}\ span<U>\&\ other)\ \textcolor{keyword}{noexcept}\ :\ ptr(other.data()),\ len(other.size())}
+\DoxyCodeLine{00160\ \ \ \{}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ span\&\ operator=(\textcolor{keyword}{const}\ span\&\ other)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \string~span()\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ Returns\ the\ number\ of\ elements\ in\ the\ span.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{keyword}{constexpr}\ size\_type\ \mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ len;\ \}}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ Returns\ the\ size\ of\ the\ sequence\ in\ bytes.}}
+\DoxyCodeLine{00171\ \ \ \textcolor{keyword}{constexpr}\ size\_type\ \mbox{\hyperlink{classsrsran_1_1span_a251574a211e02a8fea2684eac784fb73}{size\_bytes}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ len\ *\ \textcolor{keyword}{sizeof}(element\_type);\ \}}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ Checks\ if\ the\ span\ is\ empty.}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1span_a06f3393981b96d556095d9023b894a8f}{empty}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{(}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{)}}\ ==\ 0;\ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///\ Returns\ a\ reference\ to\ the\ first\ element\ in\ the\ span.}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ NOTE:\ Calling\ front\ on\ an\ empty\ span\ results\ in\ undefined\ behavior.}}
+\DoxyCodeLine{00178\ \ \ reference\ \mbox{\hyperlink{classsrsran_1_1span_aba246e5b3823bd74386f72c2b8586cc6}{front}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00179\ \ \ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!empty(),\ \textcolor{stringliteral}{"{}Called\ front()\ with\ empty\ span"{}});}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{(}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{)}};}
+\DoxyCodeLine{00182\ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{///\ Returns\ a\ reference\ to\ the\ last\ element\ in\ the\ span.}}
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{///\ NOTE:\ Calling\ back\ on\ an\ empty\ span\ results\ in\ undefined\ behavior.}}
+\DoxyCodeLine{00186\ \ \ reference\ \mbox{\hyperlink{classsrsran_1_1span_a275bf60e0eb7c7c8f6784617b3294da6}{back}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!empty(),\ \textcolor{stringliteral}{"{}called\ back\ with\ empty\ span"{}});}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{return}\ *(\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{(}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{)}}\ +\ \mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{(}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{)}}\ -\/\ 1);}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{///\ Returns\ a\ reference\ to\ the\ idx-\/th\ element\ of\ the\ sequence.}}
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ NOTE:\ The\ behavior\ is\ undefined\ if\ idx\ is\ out\ of\ range.}}
+\DoxyCodeLine{00194\ \ \ reference\ \mbox{\hyperlink{classsrsran_1_1span_a9d0831d2410b340980ed1976cdf852e6}{operator}}[](size\_type\ idx)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00195\ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(idx\ <\ len,\ \textcolor{stringliteral}{"{}Index\ out\ of\ bounds!"{}});}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ ptr[idx];}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{///\ Returns\ a\ pointer\ to\ the\ beginning\ of\ the\ sequence.}}
+\DoxyCodeLine{00201\ \ \ \textcolor{keyword}{constexpr}\ pointer\ \mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ ptr;\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///\ Returns\ an\ iterator\ to\ the\ first\ element\ of\ the\ span.}}
+\DoxyCodeLine{00204\ \ \ \textcolor{keyword}{constexpr}\ iterator\ \mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{(}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{)}};\ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ Returns\ an\ iterator\ to\ the\ element\ following\ the\ last\ element\ of\ the\ span.}}
+\DoxyCodeLine{00207\ \ \ \textcolor{keyword}{constexpr}\ iterator\ \mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{(}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{)}}\ +\ \mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{(}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{)}};\ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ Returns\ a\ reverse\ iterator\ to\ the\ first\ element\ of\ the\ reversed\ span.}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keyword}{constexpr}\ reverse\_iterator\ \mbox{\hyperlink{classsrsran_1_1span_a361b82b09ac8f37a3657a1326707c3a2}{rbegin}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ reverse\_iterator(\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{(}}\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{)}});\ \}}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///\ Returns\ a\ reverse\ iterator\ to\ the\ element\ following\ the\ last\ element\ of\ the\ reversed\ span.}}
+\DoxyCodeLine{00213\ \ \ \textcolor{keyword}{constexpr}\ reverse\_iterator\ \mbox{\hyperlink{classsrsran_1_1span_a72dbbfc8baa69fba16b7f2462882d8af}{rend}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ reverse\_iterator(\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{(}}\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{)}});\ \}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \textcolor{comment}{///\ Obtains\ a\ span\ that\ is\ a\ view\ over\ the\ first\ count\ elements\ of\ this\ span.}}
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{///\ NOTE:\ The\ behavior\ is\ undefined\ if\ count\ >\ size().}}
+\DoxyCodeLine{00217\ \ \ span<element\_type>\ \mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(size\_type\ count)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00218\ \ \ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(count\ <=\ size(),\ \textcolor{stringliteral}{"{}Count\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{(}}0\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{,}}\ count\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{)}};}
+\DoxyCodeLine{00221\ \ \ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ Obtains\ a\ span\ that\ is\ a\ view\ over\ the\ last\ count\ elements\ of\ this\ span.}}
+\DoxyCodeLine{00224\ \ \ \textcolor{comment}{///\ NOTE:\ The\ behavior\ is\ undefined\ if\ count\ >\ size().}}
+\DoxyCodeLine{00225\ \ \ span<element\_type>\ \mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(size\_type\ count)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(count\ <=\ size(),\ \textcolor{stringliteral}{"{}Count\ is\ out\ of\ range"{}});}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{(}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{(}}\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{)}}\ -\/\ count\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{,}}\ count\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{)}};}
+\DoxyCodeLine{00229\ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{///\ Obtains\ a\ span\ that\ is\ a\ view\ over\ the\ count\ elements\ of\ this\ span\ starting\ at\ offset\ offset.}}
+\DoxyCodeLine{00232\ \ \ span<element\_type>\ \mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}(size\_type\ offset,\ size\_type\ count)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00233\ \ \ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(count\ <=\ size()\ -\/\ offset,\ \textcolor{stringliteral}{"{}Size\ out\ of\ bounds!"{}});}
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{(}}\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{)}}\ +\ offset,\ count\};}
+\DoxyCodeLine{00236\ \ \ \}}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \textcolor{comment}{///\ Returns\ true\ if\ the\ input\ span\ has\ the\ same\ elements\ as\ this.}}
+\DoxyCodeLine{00239\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1span_a0046a5f32c93b55dd349839e23b0b4b7}{equals}}(span\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ std::equal(\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{(}}\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{)}},\ \mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{(}}\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{)}},\ rhs.begin(),\ rhs.end());\ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00242\ \ \ pointer\ \ \ ptr\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00243\ \ \ size\_type\ len\ =\ 0;}
+\DoxyCodeLine{00244\ \};}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00247\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ operator==(span<T>\ lhs,\ span<T>\ rhs)}
+\DoxyCodeLine{00248\ \{}
+\DoxyCodeLine{00249\ \ \ \textcolor{keywordflow}{return}\ lhs.equals(rhs);}
+\DoxyCodeLine{00250\ \}}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00253\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ operator!=(span<T>\ lhs,\ span<T>\ rhs)}
+\DoxyCodeLine{00254\ \{}
+\DoxyCodeLine{00255\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}\ lhs.equals(rhs);}
+\DoxyCodeLine{00256\ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00259\ \textcolor{keyword}{using}\ const\_span\ =\ span<\textcolor{keyword}{const}\ T>;}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \textcolor{comment}{///\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ span<T>.}}
+\DoxyCodeLine{00266\ \textcolor{comment}{///}}
+\DoxyCodeLine{00267\ \textcolor{comment}{///\ By\ default,\ the\ elements\ within\ the\ span\ are\ separated\ by\ a\ space\ character.\ A\ comma\ delimiter\ is\ available\ and\ can}}
+\DoxyCodeLine{00268\ \textcolor{comment}{///\ be\ selected\ by\ formatting\ with\ <tt>\{:,\}</tt>.\ The\ delimiter\ can\ be\ disabled\ by\ formatting\ with\ <tt>\{:\#\}</tt>.}}
+\DoxyCodeLine{00269\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00270\ \textcolor{keyword}{struct}\ formatter<srsran::span<T>>\ \{}
+\DoxyCodeLine{00271\ \ \ \textcolor{comment}{//\ Stores\ parsed\ format\ string.}}
+\DoxyCodeLine{00272\ \ \ memory\_buffer\ format\_buffer;}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \textcolor{comment}{//\ Stores\ parsed\ delimiter\ string.}}
+\DoxyCodeLine{00275\ \ \ memory\_buffer\ delimiter\_buffer;}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ formatter()}
+\DoxyCodeLine{00278\ \ \ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ string\_view\ DEFAULT\_FORMAT\ \ \ \ =\ \textcolor{stringliteral}{"{}\{\}"{}};}
+\DoxyCodeLine{00280\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ string\_view\ DEFAULT\_DELIMITER\ =\ \textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{00281\ \ \ \ \ format\_buffer.append(DEFAULT\_FORMAT.begin(),\ DEFAULT\_FORMAT.end());}
+\DoxyCodeLine{00282\ \ \ \ \ delimiter\_buffer.append(DEFAULT\_DELIMITER.begin(),\ DEFAULT\_DELIMITER.end());}
+\DoxyCodeLine{00283\ \ \ \}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00286\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00287\ \ \ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ string\_view\ PREAMBLE\_FORMAT\ =\ \textcolor{stringliteral}{"{}\{:"{}};}
+\DoxyCodeLine{00289\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ string\_view\ COMMA\_DELIMITER\ =\ \textcolor{stringliteral}{"{},\ "{}};}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{comment}{//\ Skip\ if\ context\ is\ empty\ and\ use\ default\ format.}}
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{keywordflow}{if}\ (ctx.begin()\ ==\ ctx.end())\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.end();}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{comment}{//\ Store\ the\ format\ string.}}
+\DoxyCodeLine{00297\ \ \ \ \ format\_buffer.clear();}
+\DoxyCodeLine{00298\ \ \ \ \ format\_buffer.append(PREAMBLE\_FORMAT.begin(),\ PREAMBLE\_FORMAT.end());}
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ it\ :\ ctx)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \textcolor{comment}{//\ Detect\ if\ comma\ is\ in\ the\ context.}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ \textcolor{stringliteral}{','})\ \{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ delimiter\_buffer.clear();}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ delimiter\_buffer.append(COMMA\_DELIMITER.begin(),\ COMMA\_DELIMITER.end());}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \textcolor{comment}{//\ Detect\ if\ the\ hash\ sign\ is\ in\ the\ context.\ This\ indicates\ no\ delimiter\ between\ entries.}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ \textcolor{stringliteral}{'\#'})\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ delimiter\_buffer.clear();}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \ \ \ \ format\_buffer.push\_back(it);}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \textcolor{comment}{//\ Found\ the\ end\ of\ the\ context.}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ \textcolor{stringliteral}{'\}'})\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&it;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ \}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{comment}{//\ No\ end\ of\ context\ was\ found.}}
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.end();}
+\DoxyCodeLine{00323\ \ \ \}}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00325\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00326\ \ \ \textcolor{keyword}{auto}\ format(srsran::span<T>\ buf,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00327\ \ \ \{}
+\DoxyCodeLine{00328\ \ \ \ \ string\_view\ format\_str\ \ \ \ =\ string\_view(format\_buffer.data(),\ format\_buffer.size());}
+\DoxyCodeLine{00329\ \ \ \ \ string\_view\ delimiter\_str\ =\ string\_view(delimiter\_buffer.data(),\ delimiter\_buffer.size());}
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ format\_str,\ fmt::join(buf.begin(),\ buf.end(),\ delimiter\_str));}
+\DoxyCodeLine{00331\ \ \ \}}
+\DoxyCodeLine{00332\ \};}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00334\ \textcolor{comment}{///\ Custom\ formatter\ used\ by\ the\ \(\backslash\)c\ copy\_loggable\_type\ defined\ below.}}
+\DoxyCodeLine{00335\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00336\ \textcolor{keyword}{struct}\ formatter<std::vector<T>>\ :\ \textcolor{keyword}{public}\ formatter<srsran::span<T>>\ \{}
+\DoxyCodeLine{00337\ \ \ \textcolor{keyword}{using}\ formatter<srsran::span<T>>::delimiter\_buffer;}
+\DoxyCodeLine{00338\ \ \ \textcolor{keyword}{using}\ formatter<srsran::span<T>>::format\_buffer;}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00341\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ std::vector<T>\&\ buf,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00342\ \ \ \{}
+\DoxyCodeLine{00343\ \ \ \ \ string\_view\ format\_str\ \ \ \ =\ string\_view(format\_buffer.data(),\ format\_buffer.size());}
+\DoxyCodeLine{00344\ \ \ \ \ string\_view\ delimiter\_str\ =\ string\_view(delimiter\_buffer.data(),\ delimiter\_buffer.size());}
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ format\_str,\ fmt::join(buf.begin(),\ buf.end(),\ delimiter\_str));}
+\DoxyCodeLine{00346\ \ \ \}}
+\DoxyCodeLine{00347\ \};}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \textcolor{comment}{///\ Custom\ formatter\ used\ by\ the\ \(\backslash\)c\ copy\_loggable\_type\ defined\ below.}}
+\DoxyCodeLine{00350\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ size\_t\ N>}
+\DoxyCodeLine{00351\ \textcolor{keyword}{struct}\ formatter<srsran::static\_vector<T,\ N>>\ :\ \textcolor{keyword}{public}\ formatter<srsran::span<T>>\ \{}
+\DoxyCodeLine{00352\ \ \ \textcolor{keyword}{using}\ formatter<srsran::span<T>>::delimiter\_buffer;}
+\DoxyCodeLine{00353\ \ \ \textcolor{keyword}{using}\ formatter<srsran::span<T>>::format\_buffer;}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00356\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::static\_vector<T,\ N>\&\ buf,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00357\ \ \ \{}
+\DoxyCodeLine{00358\ \ \ \ \ string\_view\ format\_str\ \ \ \ =\ string\_view(format\_buffer.data(),\ format\_buffer.size());}
+\DoxyCodeLine{00359\ \ \ \ \ string\_view\ delimiter\_str\ =\ string\_view(delimiter\_buffer.data(),\ delimiter\_buffer.size());}
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ format\_str,\ fmt::join(buf.begin(),\ buf.end(),\ delimiter\_str));}
+\DoxyCodeLine{00361\ \ \ \}}
+\DoxyCodeLine{00362\ \};}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00364\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00366\ \textcolor{keyword}{namespace}\ srslog\ \{}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \textcolor{comment}{///\ Type\ trait\ specialization\ to\ instruct\ the\ logger\ to\ use\ a\ user\ defined\ copy\ implementation\ as\ it\ is\ unsafe\ to}}
+\DoxyCodeLine{00369\ \textcolor{comment}{///\ directly\ copy\ the\ contents\ of\ a\ span.}}
+\DoxyCodeLine{00370\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00371\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrslog_1_1copy__loggable__type}{copy\_loggable\_type}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::span<T>>\ \{}
+\DoxyCodeLine{00372\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ is\_copyable\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ copy(fmt::dynamic\_format\_arg\_store<fmt::format\_context>*\ store,\ \mbox{\hyperlink{namespacesrsran}{srsran}}::span<T>\ s)}
+\DoxyCodeLine{00375\ \ \ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_ELEMENTS\ =\ 128;}
+\DoxyCodeLine{00377\ \ \ \ \ \textcolor{keywordflow}{if}\ (s.size()\ <\ MAX\_NOF\_ELEMENTS)\ \{}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ store-\/>push\_back(srsran::static\_vector<\textcolor{keyword}{typename}\ std::remove\_cv\_t<T>,\ MAX\_NOF\_ELEMENTS>(s.begin(),\ s.end()));}
+\DoxyCodeLine{00379\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ store-\/>push\_back(std::vector<\textcolor{keyword}{typename}\ std::remove\_cv\_t<T>>(s.begin(),\ s.end()));}
+\DoxyCodeLine{00381\ \ \ \ \ \}}
+\DoxyCodeLine{00382\ \ \ \}}
+\DoxyCodeLine{00383\ \};}
+\DoxyCodeLine{00384\ }
+\DoxyCodeLine{00385\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

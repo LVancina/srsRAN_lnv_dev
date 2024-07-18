@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const test_case_t& test_case)
              "nof_tx_layers={} rx_ports={}",
              test_case.context.config.rnti,
              test_case.context.config.rb_mask,
-             to_string(test_case.context.config.modulation),
+             test_case.context.config.modulation,
              test_case.context.config.start_symbol_index,
              test_case.context.config.nof_symbols,
              test_case.context.config.dmrs_symb_pos,
@@ -145,14 +145,12 @@ TEST_P(PuschDemodulatorFixture, PuschDemodulatorUnittest)
 
   // Populate channel estimate.
   for (unsigned i_rx_port = 0; i_rx_port != ce_dims.nof_rx_ports; ++i_rx_port) {
-    for (unsigned i_layer = 0; i_layer != ce_dims.nof_tx_layers; ++i_layer) {
-      // Set noise variance.
-      chan_estimates.set_noise_variance(test_case.context.noise_var, config.rx_ports[i_rx_port], i_layer);
+    // Set noise variance.
+    chan_estimates.set_noise_variance(test_case.context.noise_var, config.rx_ports[i_rx_port], 0);
 
-      // Copy port channel estimates.
-      srsvec::copy(chan_estimates.get_path_ch_estimate(config.rx_ports[i_rx_port], i_layer),
-                   estimates.get_view<static_cast<unsigned>(ch_dims::rx_port)>({i_rx_port, i_layer}));
-    }
+    // Copy port channel estimates.
+    srsvec::copy(chan_estimates.get_path_ch_estimate(config.rx_ports[i_rx_port], 0),
+                 estimates.get_view<static_cast<unsigned>(ch_dims::rx_port)>({i_rx_port, 0}));
   }
 
   // Create a codeword buffer temporally. This will become a spy.

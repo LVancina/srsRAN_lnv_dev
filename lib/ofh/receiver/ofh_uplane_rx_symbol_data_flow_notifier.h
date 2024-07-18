@@ -35,10 +35,13 @@ public:
   uplane_rx_symbol_data_flow_notifier(srslog::basic_logger&                      logger_,
                                       std::shared_ptr<uplink_context_repository> ul_context_repo_,
                                       std::shared_ptr<uplane_rx_symbol_notifier> notifier_) :
-    logger(logger_), ul_context_repo(std::move(ul_context_repo_)), notifier(std::move(notifier_))
+    logger(logger_),
+    ul_context_repo_ptr(ul_context_repo_),
+    ul_context_repo(*ul_context_repo_ptr),
+    notifier_ptr(notifier_),
+    notifier(*notifier_ptr)
   {
-    srsran_assert(ul_context_repo, "Invalid uplink context repository");
-    srsran_assert(notifier, "Invalid notifier pointer");
+    srsran_assert(ul_context_repo_ptr, "Invalid uplink context repository");
   }
 
   /// Notifies the received symbol for the given slot and symbol when all the PRBs for all the ports of the grid
@@ -47,8 +50,10 @@ public:
 
 private:
   srslog::basic_logger&                      logger;
-  std::shared_ptr<uplink_context_repository> ul_context_repo;
-  std::shared_ptr<uplane_rx_symbol_notifier> notifier;
+  std::shared_ptr<uplink_context_repository> ul_context_repo_ptr;
+  uplink_context_repository&                 ul_context_repo;
+  std::shared_ptr<uplane_rx_symbol_notifier> notifier_ptr;
+  uplane_rx_symbol_notifier&                 notifier;
 };
 
 } // namespace ofh

@@ -1,0 +1,134 @@
+\doxysection{pdcp\+\_\+entity\+\_\+tx\+\_\+rx\+\_\+base.\+h}
+\hypertarget{pdcp__entity__tx__rx__base_8h_source}{}\label{pdcp__entity__tx__rx__base_8h_source}\index{lib/pdcp/pdcp\_entity\_tx\_rx\_base.h@{lib/pdcp/pdcp\_entity\_tx\_rx\_base.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{pdcp__bearer__logger_8h}{"{}pdcp\_bearer\_logger.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{pdcp__sn_8h}{"{}pdcp\_sn.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer\_chain.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pdcp/pdcp\_config.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pdcp/pdcp\_rx.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/security/security.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ Header\ length}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_data\_pdu\_header\_size\_12bit\ =\ 2;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_data\_pdu\_header\_size\_18bit\ =\ 3;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_data\_pdu\_header\_size\_max\ \ \ =\ pdcp\_data\_pdu\_header\_size\_18bit;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{constexpr}\ size\_t\ pdcp\_data\_pdu\_header\_size(pdcp\_sn\_size\ sn\_size)}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordflow}{switch}\ (sn\_size)\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{case}\ pdcp\_sn\_size::size12bits:}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdcp\_data\_pdu\_header\_size\_12bit;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{case}\ pdcp\_sn\_size::size18bits:}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdcp\_data\_pdu\_header\_size\_18bit;}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Cannot\ determine\ PDCP\ data\ PDU\ header\ size:\ unsupported\ sn\_size=\{\}"{}},}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_size\_to\_uint(sn\_size));}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordflow}{return}\ pdcp\_data\_pdu\_header\_size\_12bit;}
+\DoxyCodeLine{00050\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{//\ Window\ size}}
+\DoxyCodeLine{00053\ \textcolor{keyword}{constexpr}\ size\_t\ \ \ pdcp\_window\_size\_12bit\ =\ 2048;}
+\DoxyCodeLine{00054\ \textcolor{keyword}{constexpr}\ size\_t\ \ \ pdcp\_window\_size\_18bit\ =\ 131072;}
+\DoxyCodeLine{00055\ \textcolor{keyword}{constexpr}\ uint32\_t\ pdcp\_window\_size(pdcp\_sn\_size\ sn\_size)}
+\DoxyCodeLine{00056\ \{}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{switch}\ (sn\_size)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{case}\ pdcp\_sn\_size::size12bits:}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdcp\_window\_size\_12bit;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{case}\ pdcp\_sn\_size::size18bits:}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdcp\_window\_size\_18bit;}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Cannot\ determine\ PDCP\ window\ size:\ unsupported\ sn\_size=\{\}"{}},\ pdcp\_sn\_size\_to\_uint(sn\_size));}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordflow}{return}\ pdcp\_window\_size\_12bit;}
+\DoxyCodeLine{00065\ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ Base\ class\ used\ for\ both\ TX\ and\ RX\ PDCP\ entities.}}
+\DoxyCodeLine{00068\ \textcolor{comment}{///\ Stores\ common\ header\ and\ SN/HFN\ helpers}}
+\DoxyCodeLine{00069\ \textcolor{keyword}{class}\ pdcp\_entity\_tx\_rx\_base}
+\DoxyCodeLine{00070\ \{}
+\DoxyCodeLine{00071\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{explicit}\ pdcp\_entity\_tx\_rx\_base(rb\_id\_t\ \ \ \ \ \ \ rb\_id\_,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_rb\_type\ \ rb\_type\_,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_rlc\_mode\ rlc\_mode\_,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_size\ \ sn\_size\_)\ :}
+\DoxyCodeLine{00076\ \ \ \ \ rb\_id(rb\_id\_),}
+\DoxyCodeLine{00077\ \ \ \ \ rb\_type(rb\_type\_),}
+\DoxyCodeLine{00078\ \ \ \ \ rlc\_mode(rlc\_mode\_),}
+\DoxyCodeLine{00079\ \ \ \ \ hdr\_len\_bytes((pdcp\_data\_pdu\_header\_size(sn\_size\_))),}
+\DoxyCodeLine{00080\ \ \ \ \ window\_size(pdcp\_window\_size(sn\_size\_)),}
+\DoxyCodeLine{00081\ \ \ \ \ sn\_size(sn\_size\_)}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{if}\ (rb\_id\_.is\_drb())\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ bearer\_id\ =\ drb\_id\_to\_uint(rb\_id\_.get\_drb\_id())\ -\/\ 1;}
+\DoxyCodeLine{00085\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (rb\_id.is\_srb())\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ bearer\_id\ =\ srb\_id\_to\_uint(rb\_id\_.get\_srb\_id())\ -\/\ 1;}
+\DoxyCodeLine{00087\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_a7fada60a52b2f3da380d22a753636c3d}{srsran\_assertion\_failure}}(\textcolor{stringliteral}{"{}Invalid\ RB\ identity:\ \{\}"{}},\ rb\_id\_);}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ BEARER\ (defined\ as\ the\ radio\ bearer\ identifier\ in\ TS\ 33.501.\ It\ will\ use\ the\ value\ RB\ identity\ –1\ as\ in\ TS\ 38.331)}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ Ref:\ TS\ 38.323\ Sec.\ 5.9\ Integrity\ protection\ and\ verification}}
+\DoxyCodeLine{00094\ \ \ uint8\_t\ bearer\_id;}
+\DoxyCodeLine{00095\ \ \ rb\_id\_t\ rb\_id;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00098\ \textcolor{comment}{\ \ \ *\ RB\ helpers}}
+\DoxyCodeLine{00099\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keyword}{const}\ pdcp\_rb\_type\ \ rb\_type;}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{const}\ pdcp\_rlc\_mode\ rlc\_mode;}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_srb()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ rb\_type\ ==\ pdcp\_rb\_type::srb;\ \}}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_drb()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ rb\_type\ ==\ pdcp\_rb\_type::drb;\ \}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_um()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ rlc\_mode\ ==\ pdcp\_rlc\_mode::um;\ \}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_am()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ rlc\_mode\ ==\ pdcp\_rlc\_mode::am;\ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00108\ \textcolor{comment}{\ \ \ *\ Header\ and\ window\ helpers}}
+\DoxyCodeLine{00109\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keyword}{const}\ uint32\_t\ hdr\_len\_bytes;}
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{const}\ uint32\_t\ window\_size;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00114\ \textcolor{comment}{\ \ \ *\ COUNT\ overflow\ helpers}}
+\DoxyCodeLine{00115\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{bool}\ max\_count\_notified\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{bool}\ max\_count\_overflow\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00120\ \textcolor{comment}{\ \ \ *\ SN,\ HFN\ and\ COUNT\ helpers}}
+\DoxyCodeLine{00121\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00122\ \ \ \textcolor{keyword}{const}\ pdcp\_sn\_size\ sn\_size;}
+\DoxyCodeLine{00123\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ SN(uint32\_t\ count)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdcp\_compute\_sn(count,\ sn\_size);\ \}}
+\DoxyCodeLine{00124\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ HFN(uint32\_t\ count)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdcp\_compute\_hfn(count,\ sn\_size);\ \}}
+\DoxyCodeLine{00125\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ COUNT(uint32\_t\ hfn,\ uint32\_t\ sn)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdcp\_compute\_count(hfn,\ sn,\ sn\_size);\ \}}
+\DoxyCodeLine{00126\ \};}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

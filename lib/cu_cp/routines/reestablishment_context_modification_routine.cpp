@@ -30,14 +30,14 @@ using namespace asn1::rrc_nr;
 
 reestablishment_context_modification_routine::reestablishment_context_modification_routine(
     ue_index_t                                    ue_index_,
-    e1ap_bearer_context_manager&                  e1ap_bearer_ctxt_mng_,
-    f1ap_ue_context_manager&                      f1ap_ue_ctxt_mng_,
+    du_processor_e1ap_control_notifier&           e1ap_ctrl_notif_,
+    du_processor_f1ap_ue_context_notifier&        f1ap_ue_ctxt_notif_,
     du_processor_rrc_ue_control_message_notifier& rrc_ue_notifier_,
     up_resource_manager&                          rrc_ue_up_resource_manager_,
     srslog::basic_logger&                         logger_) :
   ue_index(ue_index_),
-  e1ap_bearer_ctxt_mng(e1ap_bearer_ctxt_mng_),
-  f1ap_ue_ctxt_mng(f1ap_ue_ctxt_mng_),
+  e1ap_ctrl_notifier(e1ap_ctrl_notif_),
+  f1ap_ue_ctxt_notifier(f1ap_ue_ctxt_notif_),
   rrc_ue_notifier(rrc_ue_notifier_),
   rrc_ue_up_resource_manager(rrc_ue_up_resource_manager_),
   logger(logger_)
@@ -50,14 +50,17 @@ void reestablishment_context_modification_routine::operator()(coro_context<async
 
   logger.debug("ue={}: \"{}\" initialized", ue_index, name());
 
+  // prepare ue context release request in case of failure
+  ue_context_release_request.ue_index = ue_index;
+  ue_context_release_request.cause    = cause_radio_network_t::unspecified;
+
   {
     // prepare first BearerContextModificationRequest
     generate_bearer_context_modification_request_for_new_ul_tnl();
 
     // call E1AP procedure and wait for BearerContextModificationResponse
-    CORO_AWAIT_VALUE(
-        bearer_context_modification_response,
-        e1ap_bearer_ctxt_mng.handle_bearer_context_modification_request(bearer_context_modification_request));
+    CORO_AWAIT_VALUE(bearer_context_modification_response,
+                     e1ap_ctrl_notifier.on_bearer_context_modification_request(bearer_context_modification_request));
 
     // Handle BearerContextModificationResponse and fill subsequent UE context modification
     if (!generate_ue_context_modification_request(
@@ -74,14 +77,13 @@ void reestablishment_context_modification_routine::operator()(coro_context<async
     ue_context_mod_request.ue_index = ue_index;
 
     CORO_AWAIT_VALUE(ue_context_modification_response,
-                     f1ap_ue_ctxt_mng.handle_ue_context_modification_request(ue_context_mod_request));
+                     f1ap_ue_ctxt_notifier.on_ue_context_modification_request(ue_context_mod_request));
 
     // Handle UE Context Modification Response
     if (!generate_bearer_context_modification(bearer_context_modification_request,
                                               bearer_context_modification_response,
                                               ue_context_modification_response,
-                                              rrc_ue_up_resource_manager,
-                                              true)) {
+                                              rrc_ue_up_resource_manager)) {
       logger.warning("ue={}: \"{}\" failed to modify UE context at DU", ue_index, name());
       CORO_EARLY_RETURN(false);
     }
@@ -93,9 +95,8 @@ void reestablishment_context_modification_routine::operator()(coro_context<async
     bearer_context_modification_request.ue_index = ue_index;
 
     // call E1AP procedure and wait for BearerContextModificationResponse
-    CORO_AWAIT_VALUE(
-        bearer_context_modification_response,
-        e1ap_bearer_ctxt_mng.handle_bearer_context_modification_request(bearer_context_modification_request));
+    CORO_AWAIT_VALUE(bearer_context_modification_response,
+                     e1ap_ctrl_notifier.on_bearer_context_modification_request(bearer_context_modification_request));
 
     // Handle BearerContextModificationResponse
     if (!generate_ue_context_modification_request(
@@ -127,14 +128,12 @@ void reestablishment_context_modification_routine::operator()(coro_context<async
       if (!fill_rrc_reconfig_args(rrc_reconfig_args,
                                   srbs_to_setup_list,
                                   pdu_sessions_to_setup_list,
-                                  {} /* No DRB to be removed */,
                                   ue_context_modification_response.du_to_cu_rrc_info,
                                   {},
                                   {} /* TODO: include meas config in context*/,
                                   true /* Reestablish SRBs */,
                                   true /* Reestablish DRBs */,
                                   false /* don't update keys */,
-                                  {},
                                   logger)) {
         logger.warning("ue={}: \"{}\" Failed to fill RrcReconfiguration", ue_index, name());
         CORO_EARLY_RETURN(false);

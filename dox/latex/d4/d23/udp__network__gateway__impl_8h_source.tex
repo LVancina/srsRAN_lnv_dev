@@ -1,0 +1,96 @@
+\doxysection{udp\+\_\+network\+\_\+gateway\+\_\+impl.\+h}
+\hypertarget{udp__network__gateway__impl_8h_source}{}\label{udp__network__gateway__impl_8h_source}\index{lib/gateways/udp\_network\_gateway\_impl.h@{lib/gateways/udp\_network\_gateway\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/udp\_network\_gateway.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{netdb}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{netinet}\textcolor{preprocessor}{/}\textcolor{preprocessor}{in}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{sys}\textcolor{preprocessor}{/}\textcolor{preprocessor}{socket}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{sys}\textcolor{preprocessor}{/}\textcolor{preprocessor}{types}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{constexpr}\ uint32\_t\ network\_gateway\_udp\_max\_len\ =\ 9100;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ udp\_network\_gateway\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1udp__network__gateway}{udp\_network\_gateway}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{explicit}\ udp\_network\_gateway\_impl(\mbox{\hyperlink{structsrsran_1_1udp__network__gateway__config}{udp\_network\_gateway\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ config\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1network__gateway__data__notifier__with__src__addr}{network\_gateway\_data\_notifier\_with\_src\_addr}}\&\ data\_notifier\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ io\_executor\_);}
+\DoxyCodeLine{00042\ \ \ \string~udp\_network\_gateway\_impl()\ \textcolor{keyword}{override}\ \{\ close\_socket();\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{bool}\ is\_initialized();}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{bool}\ set\_sockopts();}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ udp\_network\_gateway\_data\_handler\ interface,\ called\ from\ CU-\/UP\ executor.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ dest\_addr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ Actual\ PDU\ handling,\ shall\ run\ in\ IO\ executor.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ dest\_addr);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ udp\_network\_gateway\_controller\ interface}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ create\_and\_bind()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ receive()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_socket\_fd()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ get\_bind\_port()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_bind\_address(std::string\&\ ip\_address)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{//\ socket\ helpers}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{bool}\ set\_non\_blocking();}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{bool}\ set\_receive\_timeout(\textcolor{keywordtype}{unsigned}\ rx\_timeout\_sec);}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{bool}\ set\_reuse\_addr();}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{bool}\ close\_socket();}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{structsrsran_1_1udp__network__gateway__config}{udp\_network\_gateway\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ config;\ \textcolor{comment}{//\ configuration}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1network__gateway__data__notifier__with__src__addr}{network\_gateway\_data\_notifier\_with\_src\_addr}}\&\ data\_notifier;}
+\DoxyCodeLine{00069\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ io\_tx\_executor;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{int}\ sock\_fd\ =\ -\/1;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ sockaddr\_storage\ local\_addr\ \ \ \ \ \ \ \ =\ \{\};\ \textcolor{comment}{//\ the\ local\ address}}
+\DoxyCodeLine{00075\ \ \ socklen\_t\ \ \ \ \ \ \ \ local\_addrlen\ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ local\_ai\_family\ \ \ =\ 0;}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ local\_ai\_socktype\ =\ 0;}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ local\_ai\_protocol\ =\ 0;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Temporary\ RX\ buffers\ for\ reception.}}
+\DoxyCodeLine{00081\ \ \ std::vector<std::vector<uint8\_t>>\ rx\_mem;}
+\DoxyCodeLine{00082\ \ \ std::vector<::sockaddr\_storage>\ \ \ rx\_srcaddr;}
+\DoxyCodeLine{00083\ \ \ std::vector<::mmsghdr>\ \ \ \ \ \ \ \ \ \ \ \ rx\_msghdr;}
+\DoxyCodeLine{00084\ \ \ std::vector<::iovec>\ \ \ \ \ \ \ \ \ \ \ \ \ \ rx\_iovecs;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ Temporary\ Tx\ buffer\ for\ transmission.}}
+\DoxyCodeLine{00087\ \ \ std::array<uint8\_t,\ network\_gateway\_udp\_max\_len>\ tx\_mem;}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

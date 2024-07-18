@@ -42,19 +42,15 @@ std::vector<byte_buffer_chain> mac_dummy::run_tx_tti(uint32_t tti)
 
     // Request data to transmit
     if (bsr.load(std::memory_order_relaxed) > 0) {
-      unsigned                    nwritten = rlc_tx_lower->pull_pdu(tx_pdu);
-      expected<byte_buffer_chain> pdu =
-          byte_buffer_chain::create(byte_buffer_slice::create(span<uint8_t>(tx_pdu.data(), nwritten)).value());
-      if (!pdu) {
-        report_fatal_error_if_not(pdu, "Failed to create PDU buffer");
-      }
+      unsigned          nwritten = rlc_tx_lower->pull_pdu(tx_pdu);
+      byte_buffer_chain pdu      = byte_buffer_slice{span<uint8_t>(tx_pdu.data(), nwritten)};
       logger.log_debug("Pulled PDU. PDU size={}, MAC opportunity={}, buffer_state={}",
-                       pdu.value().length(),
+                       pdu.length(),
                        opp_size,
                        bsr.load(std::memory_order_relaxed));
       // Push PDU in the list
-      if (pdu.value().length() > 0) {
-        pdu_list.push_back(std::move(pdu.value()));
+      if (pdu.length() > 0) {
+        pdu_list.push_back(std::move(pdu));
       }
     } else {
       logger.log_debug("Did not pull a PDU. No data to TX.");
@@ -85,7 +81,7 @@ void mac_dummy::run_rx_tti()
       }
 
       // Write PDU copy in RX
-      rlc_rx_lower->handle_pdu(byte_buffer::create(pdu_it->begin(), pdu_end).value());
+      rlc_rx_lower->handle_pdu(byte_buffer(pdu_it->begin(), pdu_end));
 
       // Write PCAP
       // TODO: write PCAP

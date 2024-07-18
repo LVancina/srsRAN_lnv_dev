@@ -30,16 +30,11 @@
 using namespace srsran;
 using namespace srs_cu_up;
 
-const network_interface_config net_config_default = {};
-
-/// Fixture base class for PDU session manager tests
-class pdu_session_manager_test_base
+/// Fixture class for UE manager tests
+class pdu_session_manager_test : public ::testing::Test
 {
 protected:
-  virtual ~pdu_session_manager_test_base()          = default;
-  virtual network_interface_config get_net_config() = 0;
-
-  void init()
+  void SetUp() override
   {
     srslog::fetch_basic_logger("TEST").set_level(srslog::basic_levels::debug);
     srslog::init();
@@ -57,9 +52,6 @@ protected:
     std::map<five_qi_t, srs_cu_up::cu_up_qos_config> qos;
     qos[uint_to_five_qi(9)] = {};
 
-    manual_task_worker teid_worker{128};
-
-    net_config      = get_net_config();
     pdu_session_mng = std::make_unique<pdu_session_manager_impl>(MIN_UE_INDEX,
                                                                  qos,
                                                                  security_info,
@@ -68,64 +60,34 @@ protected:
                                                                  logger,
                                                                  ue_inactivity_timer,
                                                                  timers_factory,
-                                                                 timers_factory,
-                                                                 timers_factory,
                                                                  *f1u_gw,
                                                                  *f1u_allocator,
                                                                  *gtpu_tx_notifier,
                                                                  *gtpu_rx_demux,
-                                                                 teid_worker,
-                                                                 teid_worker,
-                                                                 teid_worker,
-                                                                 teid_worker,
                                                                  gtpu_pcap);
   }
 
-  void finish()
+  void TearDown() override
   {
     // flush logger after each test
     srslog::flush();
   }
 
-  timer_manager                                               timers_manager;
-  manual_task_worker                                          worker{64};
-  timer_factory                                               timers_factory{timers_manager, worker};
-  unique_timer                                                ue_inactivity_timer;
-  std::unique_ptr<dummy_gtpu_demux_ctrl>                      gtpu_rx_demux;
-  std::unique_ptr<gtpu_tunnel_common_tx_upper_layer_notifier> gtpu_tx_notifier;
-  dummy_inner_f1u_bearer                                      f1u_bearer;
-  std::unique_ptr<dummy_f1u_gateway>                          f1u_gw;
-  std::unique_ptr<dummy_gtpu_teid_pool>                       f1u_allocator;
-  std::unique_ptr<pdu_session_manager_ctrl>                   pdu_session_mng;
-  null_dlt_pcap                                               gtpu_pcap;
-  security::sec_as_config                                     security_info;
-  network_interface_config                                    net_config;
-  n3_interface_config                                         n3_config = {};
-  cu_up_ue_logger                                             logger{"CU-UP", {MIN_UE_INDEX}};
-};
-
-/// Fixture class for PDU session manager tests with default network interface config
-class pdu_session_manager_test : public pdu_session_manager_test_base, public ::testing::Test
-{
-protected:
-  network_interface_config get_net_config() override { return net_config_default; }
-  void                     SetUp() override { init(); }
-  void                     TearDown() override { finish(); }
-};
-
-/// Fixture class for PDU session manager tests with configurable N3 ext addr
-class pdu_session_manager_test_set_n3_ext_addr : public pdu_session_manager_test_base,
-                                                 public ::testing::TestWithParam<const char*>
-{
-protected:
-  network_interface_config get_net_config() override
-  {
-    network_interface_config cfg = net_config_default;
-    cfg.n3_ext_addr              = GetParam();
-    return cfg;
-  }
-  void SetUp() override { init(); }
-  void TearDown() override { finish(); }
+  timer_manager                                        timers_manager;
+  manual_task_worker                                   worker{64};
+  timer_factory                                        timers_factory{timers_manager, worker};
+  unique_timer                                         ue_inactivity_timer;
+  std::unique_ptr<dummy_gtpu_demux_ctrl>               gtpu_rx_demux;
+  std::unique_ptr<gtpu_tunnel_tx_upper_layer_notifier> gtpu_tx_notifier;
+  dummy_inner_f1u_bearer                               f1u_bearer;
+  std::unique_ptr<dummy_f1u_gateway>                   f1u_gw;
+  std::unique_ptr<dummy_gtpu_teid_pool>                f1u_allocator;
+  std::unique_ptr<pdu_session_manager_ctrl>            pdu_session_mng;
+  null_dlt_pcap                                        gtpu_pcap;
+  security::sec_as_config                              security_info;
+  network_interface_config                             net_config;
+  n3_interface_config                                  n3_config = {};
+  cu_up_ue_logger                                      logger{"CU-UP", {MIN_UE_INDEX}};
 };
 
 inline e1ap_pdu_session_res_to_setup_item
@@ -141,11 +103,9 @@ generate_pdu_session_res_to_setup_item(pdu_session_id_t psi, drb_id_t drb_id, qo
   pdu_session_setup_item.security_ind.confidentiality_protection_ind =
       confidentiality_protection_indication_t::not_needed;
   pdu_session_setup_item.pdu_session_res_dl_ambr = 330000000;
-  pdu_session_setup_item.ng_ul_up_tnl_info.tp_address =
-      transport_layer_address::create_from_bitstring("01111111000000000000000000000001");
+  pdu_session_setup_item.ng_ul_up_tnl_info.tp_address.from_bitstring("01111111000000000000000000000001");
   pdu_session_setup_item.ng_ul_up_tnl_info.gtp_teid = int_to_gtpu_teid(0x12345678);
-  pdu_session_setup_item.ng_ul_up_tnl_info          = {transport_layer_address::create_from_string("0.0.0.0"),
-                                                       int_to_gtpu_teid(0)};
+  pdu_session_setup_item.ng_ul_up_tnl_info          = {transport_layer_address{"0.0.0.0"}, int_to_gtpu_teid(0)};
 
   e1ap_drb_to_setup_item_ng_ran drb_to_setup_item;
   drb_to_setup_item.drb_id                      = drb_id;

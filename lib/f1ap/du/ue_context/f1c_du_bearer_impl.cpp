@@ -77,16 +77,20 @@ void f1c_srb0_du_bearer::handle_sdu(byte_buffer_chain sdu)
 
         // Notify upper layers of the initial UL RRC Message Transfer.
         f1ap_notifier.on_new_message(msg);
+
+        logger.info("UL {} SRB0 Tx PDU: Initial UL RRC Message Transfer", ue_ctxt);
       })) {
-    logger.error("Tx PDU {}: Discarding SRB0 Tx PDU. Cause: The task executor queue is full.", ue_ctxt);
+    logger.error("UL {} SRB0: Discarding Tx PDU. Cause: The task executor queue is full.", ue_ctxt);
   }
 }
 
 void f1c_srb0_du_bearer::handle_pdu(byte_buffer pdu)
 {
+  logger.info("DL {} SRB0 Rx PDU: DL RRC Message Transfer", ue_ctxt);
+
   // Change to UE execution context before forwarding the SDU to lower layers.
   if (not ue_exec.execute([this, sdu = std::move(pdu)]() mutable { sdu_notifier.on_new_sdu(std::move(sdu), {}); })) {
-    logger.error("Rx {} PDU: Discarding SRB0 Rx PDU. Cause: The task executor queue is full.", ue_ctxt);
+    logger.error("DL {} SRB0 Rx PDU: Discarding Rx PDU. Cause: The task executor queue is full.", ue_ctxt);
   }
 }
 
@@ -94,14 +98,12 @@ f1c_other_srb_du_bearer::f1c_other_srb_du_bearer(f1ap_ue_context&       ue_ctxt_
                                                  srb_id_t               srb_id_,
                                                  f1ap_message_notifier& f1ap_notifier_,
                                                  f1c_rx_sdu_notifier&   f1c_sdu_notifier_,
-                                                 f1ap_du_configurator&  du_configurator_,
                                                  task_executor&         ctrl_exec_,
                                                  task_executor&         ue_exec_) :
   ue_ctxt(ue_ctxt_),
   srb_id(srb_id_),
   f1ap_notifier(f1ap_notifier_),
   sdu_notifier(f1c_sdu_notifier_),
-  du_configurator(du_configurator_),
   ctrl_exec(ctrl_exec_),
   ue_exec(ue_exec_),
   logger(srslog::fetch_basic_logger("DU-F1"))
@@ -114,11 +116,12 @@ void f1c_other_srb_du_bearer::handle_sdu(byte_buffer_chain sdu)
   if (not ctrl_exec.execute([this, sdu = std::move(sdu)]() {
         gnb_cu_ue_f1ap_id_t cu_ue_id = ue_ctxt.gnb_cu_ue_f1ap_id;
         if (cu_ue_id >= gnb_cu_ue_f1ap_id_t::max) {
-          logger.warning("ue={} rnti={} du_ue={} SRB={}: Discarding F1AP RX SDU. Cause: GNB-CU-UE-F1AP-ID is invalid.",
-                         ue_ctxt.ue_index,
-                         ue_ctxt.rnti,
-                         ue_ctxt.gnb_du_ue_f1ap_id,
-                         srb_id_to_uint(srb_id));
+          logger.warning(
+              "ue={} rnti={} GNB-DU-UE-F1AP-ID={} SRB={}: Discarding F1AP RX SDU. Cause: GNB-CU-UE-F1AP-ID is invalid.",
+              ue_ctxt.ue_index,
+              ue_ctxt.rnti,
+              ue_ctxt.gnb_du_ue_f1ap_id,
+              srb_id_to_uint(srb_id));
           return;
         }
 
@@ -131,7 +134,7 @@ void f1c_other_srb_du_bearer::handle_sdu(byte_buffer_chain sdu)
         ul_msg->gnb_cu_ue_f1ap_id                 = gnb_cu_ue_f1ap_id_to_uint(ue_ctxt.gnb_cu_ue_f1ap_id);
         ul_msg->srb_id                            = srb_id_to_uint(srb_id);
         if (not ul_msg->rrc_container.append(sdu.begin(), sdu.end())) {
-          logger.error("Tx PDU {}: Discarding SRB{} Tx PDU. Cause: Failed to append SDU to RRC container.",
+          logger.error("UL {} SRB{} Tx PDU: Discarding Tx PDU. Cause: Failed to append SDU to RRC container.",
                        ue_ctxt,
                        srb_id_to_uint(srb_id));
           return;
@@ -141,23 +144,18 @@ void f1c_other_srb_du_bearer::handle_sdu(byte_buffer_chain sdu)
 
         f1ap_notifier.on_new_message(msg);
 
-        // If a UE RRC config is pending, we consider the reception of a UL RRC message as the confirmation that the
-        // RRC config has been applied by the UE.
-        if (ue_ctxt.rrc_state == f1ap_ue_context::ue_rrc_state::config_pending) {
-          ue_ctxt.rrc_state = f1ap_ue_context::ue_rrc_state::config_applied;
-          du_configurator.on_ue_config_applied(ue_ctxt.ue_index);
-        }
+        logger.info("UL {} SRB{} Tx PDU: UL RRC Message Transfer", ue_ctxt, srb_id_to_uint(srb_id));
       })) {
-    logger.error(
-        "Tx PDU {}: Discarding SRB{} Tx PDU. Cause: The task executor queue is full.", ue_ctxt, srb_id_to_uint(srb_id));
+    logger.error("UL {} SRB{} Tx PDU: Discarding Tx PDU. Cause: The task executor queue is full.",
+                 ue_ctxt,
+                 srb_id_to_uint(srb_id));
   }
 }
 
 void f1c_other_srb_du_bearer::handle_pdu(srsran::byte_buffer pdu)
 {
   if (pdu.length() < 3) {
-    logger.warning(
-        "DL {} Rx SRB{} PDU: Dropping PDU. Cause: Invalid length={}.", ue_ctxt, srb_id_to_uint(srb_id), pdu.length());
+    logger.warning("DL {} SRB{} Rx PDU: Invalid PDU length. Dropping PDU.", ue_ctxt, srb_id_to_uint(srb_id));
     return;
   }
 
@@ -166,9 +164,10 @@ void f1c_other_srb_du_bearer::handle_pdu(srsran::byte_buffer pdu)
   // Change to UE execution context before forwarding the SDU to lower layers.
   if (not ue_exec.execute(
           [this, sdu = std::move(pdu), pdcp_sn]() mutable { sdu_notifier.on_new_sdu(std::move(sdu), pdcp_sn); })) {
-    logger.error("Rx PDU {}: Discarding  SRB{} Rx PDU. Cause: The task executor queue is full.",
-                 ue_ctxt,
-                 srb_id_to_uint(srb_id));
+    logger.error(
+        "{} SRB{} Rx PDU: Discarding Rx PDU. Cause: The task executor queue is full.", ue_ctxt, srb_id_to_uint(srb_id));
+  } else {
+    logger.info("DL {} SRB{} Rx PDU: DL RRC Message Transfer", ue_ctxt, srb_id_to_uint(srb_id));
   }
 }
 

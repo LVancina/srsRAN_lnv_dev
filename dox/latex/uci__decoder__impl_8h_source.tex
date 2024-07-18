@@ -1,0 +1,99 @@
+\doxysection{uci\+\_\+decoder\+\_\+impl.\+h}
+\hypertarget{uci__decoder__impl_8h_source}{}\label{uci__decoder__impl_8h_source}\index{lib/phy/upper/channel\_processors/uci/uci\_decoder\_impl.h@{lib/phy/upper/channel\_processors/uci/uci\_decoder\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_coding/crc\_calculator.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_coding/polar/polar\_deallocator.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{polar__decoder_8h}{srsran/phy/upper/channel\_coding/polar/polar\_decoder.h}}"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{polar__rate__dematcher_8h}{srsran/phy/upper/channel\_coding/polar/polar\_rate\_dematcher.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{short__block__detector_8h}{srsran/phy/upper/channel\_coding/short/short\_block\_detector.h}}"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_processors/uci/uci\_decoder.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1uci__decoder__impl}{uci\_decoder\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1uci__decoder}{uci\_decoder}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{classsrsran_1_1uci__decoder__impl_ad495a3976e4c048e9ee620a12d216544}{uci\_decoder\_impl}}(std::unique\_ptr<short\_block\_detector>\ block\_detector\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_code>\ \ \ \ \ \ \ \ \ \ \ code\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_rate\_dematcher>\ rate\_matcher\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_decoder>\ \ \ \ \ \ \ \ decoder\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_deallocator>\ \ \ \ deallocator\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<crc\_calculator>\ \ \ \ \ \ \ crc6\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<crc\_calculator>\ \ \ \ \ \ \ crc11\_)\ :}
+\DoxyCodeLine{00046\ \ \ \ \ block\_detector(std::move(block\_detector\_)),}
+\DoxyCodeLine{00047\ \ \ \ \ code(std::move(code\_)),}
+\DoxyCodeLine{00048\ \ \ \ \ rate\_dematcher(std::move(rate\_matcher\_)),}
+\DoxyCodeLine{00049\ \ \ \ \ decoder(std::move(decoder\_)),}
+\DoxyCodeLine{00050\ \ \ \ \ deallocator(std::move(deallocator\_)),}
+\DoxyCodeLine{00051\ \ \ \ \ crc6(std::move(crc6\_)),}
+\DoxyCodeLine{00052\ \ \ \ \ crc11(std::move(crc11\_))}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ srsran\_assert(block\_detector,\ \textcolor{stringliteral}{"{}Invalid\ short\ block\ detector."{}});}
+\DoxyCodeLine{00055\ \ \ \ \ srsran\_assert(code,\ \textcolor{stringliteral}{"{}Invalid\ polar\ code\ instance."{}});}
+\DoxyCodeLine{00056\ \ \ \ \ srsran\_assert(rate\_dematcher,\ \textcolor{stringliteral}{"{}Invalid\ polar\ rate\ dematcher."{}});}
+\DoxyCodeLine{00057\ \ \ \ \ srsran\_assert(decoder,\ \textcolor{stringliteral}{"{}Invalid\ polar\ decoder."{}});}
+\DoxyCodeLine{00058\ \ \ \ \ srsran\_assert(deallocator,\ \textcolor{stringliteral}{"{}Invalid\ polar\ deallocator."{}});}
+\DoxyCodeLine{00059\ \ \ \ \ srsran\_assert(crc6,\ \textcolor{stringliteral}{"{}Invalid\ CRC6\ calculator."{}});}
+\DoxyCodeLine{00060\ \ \ \ \ srsran\_assert(crc6-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC6,\ \textcolor{stringliteral}{"{}Invalid\ CRC6\ calculator."{}});}
+\DoxyCodeLine{00061\ \ \ \ \ srsran\_assert(crc11,\ \textcolor{stringliteral}{"{}Invalid\ CRC11\ calculator."{}});}
+\DoxyCodeLine{00062\ \ \ \ \ srsran\_assert(crc11-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC11,\ \textcolor{stringliteral}{"{}Invalid\ CRC11\ calculator."{}});}
+\DoxyCodeLine{00063\ \ \ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{namespacesrsran_ad0b3056a8f46434cbe4f350f2772d7af}{uci\_status}}\ \mbox{\hyperlink{classsrsran_1_1uci__decoder__impl_af38e6037aeb30fefd18806fdaa6a8989}{decode}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ message,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ llr,\ \textcolor{keyword}{const}\ configuration\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_RM\_BUFFER\_SIZE\ =\ \mbox{\hyperlink{classsrsran_1_1polar__code_ad5945de0e497b8e45b4336e8352575dc}{polar\_code::NMAX}};}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_POLAR\_BUFFER\_SIZE\ =\ \mbox{\hyperlink{classsrsran_1_1polar__code_ad5945de0e497b8e45b4336e8352575dc}{polar\_code::NMAX}};}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_CODEBLOCK\_SIZE\ =\ 1706;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{namespacesrsran_ad0b3056a8f46434cbe4f350f2772d7af}{uci\_status}}\ detect\_short\_block(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ output,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ \ input,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1uci__decoder_1_1configuration}{uci\_decoder::configuration}}\&\ config);}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{namespacesrsran_ad0b3056a8f46434cbe4f350f2772d7af}{uci\_status}}\ decode\_codeword\_polar(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ output,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ input);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{namespacesrsran_ad0b3056a8f46434cbe4f350f2772d7af}{uci\_status}}\ decode\_codeblock\_polar(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ output,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ log\_likelihood\_ratio>}}\ input,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_filler\_bits,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\_calculator}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crc);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00090\ \ \ std::unique\_ptr<short\_block\_detector>\ block\_detector;}
+\DoxyCodeLine{00092\ \ \ std::unique\_ptr<polar\_code>\ code;}
+\DoxyCodeLine{00094\ \ \ std::unique\_ptr<polar\_rate\_dematcher>\ rate\_dematcher;}
+\DoxyCodeLine{00096\ \ \ std::unique\_ptr<polar\_decoder>\ decoder;}
+\DoxyCodeLine{00098\ \ \ std::unique\_ptr<polar\_deallocator>\ deallocator;}
+\DoxyCodeLine{00100\ \ \ std::unique\_ptr<crc\_calculator>\ crc6;}
+\DoxyCodeLine{00102\ \ \ std::unique\_ptr<crc\_calculator>\ crc11;}
+\DoxyCodeLine{00104\ \ \ std::array<log\_likelihood\_ratio,\ MAX\_RM\_BUFFER\_SIZE>\ temp\_rm\_buffer;}
+\DoxyCodeLine{00106\ \ \ std::array<uint8\_t,\ MAX\_POLAR\_BUFFER\_SIZE>\ temp\_decoder\_buffer;}
+\DoxyCodeLine{00108\ \ \ std::array<uint8\_t,\ MAX\_CODEBLOCK\_SIZE>\ temp\_deallocator\_buffer;}
+\DoxyCodeLine{00109\ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

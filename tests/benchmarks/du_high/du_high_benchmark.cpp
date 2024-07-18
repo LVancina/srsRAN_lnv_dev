@@ -41,9 +41,8 @@
 
 #include "lib/du_high/du_high_executor_strategies.h"
 #include "lib/du_high/du_high_impl.h"
-#include "lib/mac/mac_ul/ul_bsr.h"
-#include "tests/test_doubles/f1ap/f1ap_test_messages.h"
 #include "tests/unittests/f1ap/du/f1ap_du_test_helpers.h"
+#include "tests/unittests/mac/mac_test_helpers.h"
 #include "srsran/asn1/f1ap/common.h"
 #include "srsran/du/du_cell_config_helpers.h"
 #include "srsran/du_high/du_high_configuration.h"
@@ -57,9 +56,6 @@
 
 using namespace srsran;
 using namespace srs_du;
-
-/// Constant used to bound the number of bytes pushed to the DU DL F1-U interface per slot.
-const unsigned MAX_F1U_DL_BITRATE_PER_PORT_BPS = 500e6;
 
 /// \brief Parameters of the benchmark.
 struct bench_params {
@@ -79,8 +75,6 @@ struct bench_params {
   unsigned ul_bsr_bytes = 0;
   /// \brief Maximum number of RBs per UE DL grant per slot.
   unsigned max_dl_rb_grant = MAX_NOF_PRBS;
-  /// \brief Size of the F1-U PDU used in bytes.
-  units::bytes pdu_size{1500};
   /// \brief Logical cores used by the "du_cell" thread.
   std::vector<unsigned> du_cell_cores = {};
 };
@@ -88,7 +82,7 @@ struct bench_params {
 static void usage(const char* prog, const bench_params& params)
 {
   fmt::print("Usage: {} [-R repetitions] [-U nof. ues] [-D Duplex mode] [-d DL bytes per slot] [-u UL BSR] [-r Max RBs "
-             "per UE DL grant] [-a CPU affinity] [-p F1-U PDU size]\n",
+             "per UE DL grant] [-a CPU affinity]\n",
              prog);
   fmt::print("\t-R Repetitions [Default {}]\n", params.nof_repetitions);
   fmt::print("\t-U Nof. DU UEs for each simulation (e.g. \"1,5,10\" would run three benchmarks with 1, 5 and 10 UEs) "
@@ -103,7 +97,6 @@ static void usage(const char* prog, const bench_params& params)
              params.ul_bsr_bytes);
   fmt::print("\t-r Max RBs per UE DL grant per slot [Default 275]\n");
   fmt::print("\t-a \"du_cell\" cores that the benchmark should use [Default \"no CPU affinity\"]\n");
-  fmt::print("\t-p F1-U PDU size used [Default {}]", params.pdu_size);
   fmt::print("\t-h Show this message\n");
 }
 
@@ -122,7 +115,7 @@ static std::vector<Ret> tokenize(const std::string& s, Func&& func)
 static void parse_args(int argc, char** argv, bench_params& params)
 {
   int opt = 0;
-  while ((opt = getopt(argc, argv, "R:U:D:d:u:r:a:p:h")) != -1) {
+  while ((opt = getopt(argc, argv, "R:U:D:d:u:r:a:h")) != -1) {
     switch (opt) {
       case 'R':
         params.nof_repetitions = std::strtol(optarg, nullptr, 10);
@@ -164,43 +157,12 @@ static void parse_args(int argc, char** argv, bench_params& params)
           params.du_cell_cores = {(unsigned)std::strtol(optstr.c_str(), nullptr, 10)};
         }
       } break;
-      case 'p':
-        params.pdu_size = units::bytes{(unsigned)std::strtol(optarg, nullptr, 10)};
-        break;
       case 'h':
       default:
         usage(argv[0], params);
         exit(0);
     }
   }
-
-  // apply limits.
-  subcarrier_spacing scs = params.dplx_mode == duplex_mode::FDD ? subcarrier_spacing::kHz15 : subcarrier_spacing::kHz30;
-  double             slot_dur              = 0.001 / get_nof_slots_per_subframe(scs);
-  unsigned           max_dl_bytes_per_slot = MAX_F1U_DL_BITRATE_PER_PORT_BPS * slot_dur / 8;
-  params.dl_bytes_per_slot                 = std::min(max_dl_bytes_per_slot, params.dl_bytes_per_slot);
-}
-
-static void print_args(const bench_params& params)
-{
-  unsigned nof_tests = params.nof_ues.size();
-
-  fmt::print("Arguments ({} tests):\n", nof_tests);
-  fmt::print("- Number of repetitions: {}\n", params.nof_repetitions);
-  fmt::print("- Duplex Mode: {}\n", params.dplx_mode == srsran::duplex_mode::FDD ? "FDD" : "TDD");
-  if (nof_tests == 1) {
-    fmt::print("- Number of UEs: {}\n", params.nof_ues[0]);
-  } else {
-    for (unsigned i = 0; i != nof_tests; ++i) {
-      fmt::print("- Test {}:\n", i);
-      fmt::print("  - Number of UEs: {}\n", params.nof_ues[i]);
-    }
-  }
-  const double slot_dur_sec = params.dplx_mode == srsran::duplex_mode::FDD ? 0.001 : 0.0005;
-  fmt::print("- F1-U DL Bitrate [Mbps]: {}\n", params.dl_bytes_per_slot * 8.0 * 1.0e-6 / slot_dur_sec);
-  fmt::print("- F1-U DL PDU size [bytes]: {}\n", params.pdu_size);
-  fmt::print("- BSR size [bytes]: {}\n", params.ul_bsr_bytes);
-  fmt::print("- Max DL RB grant size [RBs]: {}\n", params.max_dl_rb_grant);
 }
 
 class dummy_metrics_handler : public scheduler_ue_metrics_notifier
@@ -237,7 +199,6 @@ private:
   {
   public:
     f1ap_du_tx_pdu_notifier(cu_cp_simulator& parent_) : parent(parent_) {}
-    ~f1ap_du_tx_pdu_notifier() override { parent.du_rx_pdu_notifier.reset(); }
 
     void on_new_message(const f1ap_message& msg) override { parent.handle_message(msg); }
 
@@ -264,44 +225,44 @@ private:
   {
     switch (msg.pdu.type().value) {
       case asn1::f1ap::f1ap_pdu_c::types_opts::init_msg:
-        handle_init_msg(msg);
+        handle_init_msg(msg.pdu.init_msg());
         break;
       case asn1::f1ap::f1ap_pdu_c::types_opts::successful_outcome:
         handle_success_outcome(msg.pdu.successful_outcome());
         break;
       default:
-        report_fatal_error("Received invalid PDU type {} in this benchmark", msg.pdu.type().value);
+        report_fatal_error("Unreachable code in this benchmark");
     }
   }
 
-  void handle_init_msg(const f1ap_message& msg)
+  void handle_init_msg(const asn1::f1ap::init_msg_s& init_msg)
   {
-    const asn1::f1ap::init_msg_s& init_msg = msg.pdu.init_msg();
     switch (init_msg.value.type().value) {
       case asn1::f1ap::f1ap_elem_procs_o::init_msg_c::types_opts::f1_setup_request: {
-        du_rx_pdu_notifier->on_new_message(test_helpers::generate_f1_setup_response(msg));
-      } break;
-      case asn1::f1ap::f1ap_elem_procs_o::init_msg_c::types_opts::f1_removal_request: {
-        du_rx_pdu_notifier->on_new_message(test_helpers::generate_f1_removal_response(msg));
+        f1ap_message f1ap_msg;
+        f1ap_msg.pdu.set_successful_outcome().load_info_obj(ASN1_F1AP_ID_F1_SETUP);
+        f1ap_msg.pdu.successful_outcome().value.f1_setup_resp()->cells_to_be_activ_list_present = true;
+        f1ap_msg.pdu.successful_outcome().value.f1_setup_resp()->cells_to_be_activ_list.resize(1);
+        du_rx_pdu_notifier->on_new_message(f1ap_msg);
       } break;
       case asn1::f1ap::f1ap_elem_procs_o::init_msg_c::types_opts::init_ul_rrc_msg_transfer: {
         // Send UE Context Modification to create DRB1.
-        f1ap_message msg2 = generate_ue_context_modification_request({drb_id_t::drb1});
+        f1ap_message msg = generate_ue_context_modification_request({drb_id_t::drb1});
         // Note: Use UM because AM requires status PDUs.
-        auto& drb1 = msg2.pdu.init_msg()
+        auto& drb1 = msg.pdu.init_msg()
                          .value.ue_context_mod_request()
                          ->drbs_to_be_setup_mod_list[0]
                          ->drbs_to_be_setup_mod_item();
         drb1.rlc_mode.value = asn1::f1ap::rlc_mode_opts::rlc_um_bidirectional;
         drb1.qos_info.choice_ext()->drb_info().drb_qos.qos_characteristics.non_dyn_5qi().five_qi =
             7; // UM in default configs
-        msg2.pdu.init_msg().value.ue_context_mod_request()->gnb_cu_ue_f1ap_id = get_next_gnb_cu_ue_f1ap_id();
-        msg2.pdu.init_msg().value.ue_context_mod_request()->gnb_du_ue_f1ap_id =
+        msg.pdu.init_msg().value.ue_context_mod_request()->gnb_cu_ue_f1ap_id = get_next_gnb_cu_ue_f1ap_id();
+        msg.pdu.init_msg().value.ue_context_mod_request()->gnb_du_ue_f1ap_id =
             init_msg.value.init_ul_rrc_msg_transfer()->gnb_du_ue_f1ap_id;
-        du_rx_pdu_notifier->on_new_message(msg2);
+        du_rx_pdu_notifier->on_new_message(msg);
       } break;
       default:
-        report_fatal_error("Unhandled PDU type {} in this benchmark", init_msg.value.type().to_string());
+        report_fatal_error("Unreachable code in this benchmark");
     }
   }
 
@@ -328,7 +289,6 @@ public:
   f1u_rx_pdu_handler&      get_rx_pdu_handler() override { return *this; }
   f1u_tx_delivery_handler& get_tx_delivery_handler() override { return *this; }
   f1u_tx_sdu_handler&      get_tx_sdu_handler() override { return *this; }
-  void                     stop() override {}
 
   void handle_pdu(nru_dl_message msg) override {}
   void handle_transmit_notification(uint32_t highest_pdcp_sn) override {}
@@ -340,22 +300,20 @@ public:
 class cu_up_simulator : public f1u_du_gateway
 {
 public:
-  static_vector<f1u_dummy_bearer*, MAX_NOF_DU_UES>            bearer_list;
+  static_vector<f1u_dummy_bearer, MAX_NOF_DU_UES>             bearer_list;
   static_vector<srs_du::f1u_rx_sdu_notifier*, MAX_NOF_DU_UES> du_notif_list;
 
-  std::unique_ptr<f1u_bearer> create_du_bearer(uint32_t                       ue_index,
-                                               drb_id_t                       drb_id,
-                                               srs_du::f1u_config             config,
-                                               const up_transport_layer_info& dl_tnl,
-                                               const up_transport_layer_info& ul_tnl,
-                                               srs_du::f1u_rx_sdu_notifier&   du_rx,
-                                               timer_factory                  timers,
-                                               task_executor&                 ue_executor) override
+  f1u_bearer* create_du_bearer(uint32_t                       ue_index,
+                               drb_id_t                       drb_id,
+                               srs_du::f1u_config             config,
+                               const up_transport_layer_info& dl_tnl,
+                               const up_transport_layer_info& ul_tnl,
+                               srs_du::f1u_rx_sdu_notifier&   du_rx,
+                               timer_factory                  timers) override
   {
-    auto f1u_bearer = std::make_unique<f1u_dummy_bearer>();
     du_notif_list.push_back(&du_rx);
-    bearer_list.push_back(f1u_bearer.get());
-    return f1u_bearer;
+    bearer_list.emplace_back();
+    return &bearer_list.back();
   }
 
   void remove_du_bearer(const up_transport_layer_info& dl_tnl) override {}
@@ -363,8 +321,10 @@ public:
 
 /// \brief Instantiation of the DU-high workers and executors for the benchmark.
 struct du_high_single_cell_worker_manager {
-  using cell_worker_type                       = priority_task_worker;
-  using ue_worker_type                         = priority_task_worker;
+  using cell_worker_type =
+      priority_task_worker<concurrent_queue_policy::lockfree_spsc, concurrent_queue_policy::lockfree_mpmc>;
+  using ue_worker_type =
+      priority_task_worker<concurrent_queue_policy::lockfree_mpmc, concurrent_queue_policy::lockfree_mpmc>;
   static const uint32_t task_worker_queue_size = 100000;
 
   explicit du_high_single_cell_worker_manager(span<unsigned> du_cell_cores) :
@@ -372,24 +332,21 @@ struct du_high_single_cell_worker_manager {
                 task_worker_queue_size,
                 os_thread_realtime_priority::max() - 20,
                 get_other_affinity_mask(du_cell_cores)),
-    cell_worker(
-        "du_cell",
-        std::vector<concurrent_queue_params>({{concurrent_queue_policy::lockfree_spsc, 8},
-                                              {concurrent_queue_policy::lockfree_mpmc, task_worker_queue_size}}),
-        std::chrono::microseconds{10},
-        os_thread_realtime_priority::max() - 10,
-        get_du_cell_affinity_mask(du_cell_cores)),
+    cell_worker("du_cell",
+                {8, task_worker_queue_size},
+                std::chrono::microseconds{10},
+                os_thread_realtime_priority::max() - 10,
+                get_du_cell_affinity_mask(du_cell_cores)),
     ue_worker("du_ue",
-              std::vector<concurrent_queue_params>({{concurrent_queue_policy::lockfree_mpmc, task_worker_queue_size},
-                                                    {concurrent_queue_policy::lockfree_mpmc, task_worker_queue_size}}),
+              {task_worker_queue_size, task_worker_queue_size},
               std::chrono::microseconds{500},
               os_thread_realtime_priority::max() - 50,
               get_other_affinity_mask(du_cell_cores)),
-    slot_exec(make_priority_task_worker_executor(enqueue_priority::max, cell_worker)),
-    cell_exec(make_priority_task_worker_executor(enqueue_priority::max - 1, cell_worker)),
-    ue_ctrl_exec(make_priority_task_worker_executor(enqueue_priority::max, ue_worker)),
-    dl_exec(make_priority_task_worker_executor(enqueue_priority::max - 1, ue_worker)),
-    ul_exec(make_priority_task_worker_executor(enqueue_priority::max, ue_worker))
+    slot_exec(make_priority_task_worker_executor<enqueue_priority::max>(cell_worker)),
+    cell_exec(make_priority_task_worker_executor<enqueue_priority::max - 1>(cell_worker)),
+    ue_ctrl_exec(make_priority_task_worker_executor<enqueue_priority::max>(ue_worker)),
+    dl_exec(make_priority_task_worker_executor<enqueue_priority::max - 1>(ue_worker)),
+    ul_exec(make_priority_task_worker_executor<enqueue_priority::max>(ue_worker))
   {
   }
 
@@ -424,16 +381,16 @@ struct du_high_single_cell_worker_manager {
     return mask;
   }
 
-  task_worker                   ctrl_worker;
-  cell_worker_type              cell_worker;
-  ue_worker_type                ue_worker;
-  task_worker_executor          ctrl_exec{ctrl_worker};
-  priority_task_worker_executor slot_exec;
-  priority_task_worker_executor cell_exec;
-  priority_task_worker_executor ue_ctrl_exec;
-  priority_task_worker_executor dl_exec;
-  priority_task_worker_executor ul_exec;
-  du_high_executor_mapper_impl  du_high_exec_mapper{
+  task_worker                                                           ctrl_worker;
+  cell_worker_type                                                      cell_worker;
+  ue_worker_type                                                        ue_worker;
+  task_worker_executor                                                  ctrl_exec{ctrl_worker};
+  priority_task_worker_executor<concurrent_queue_policy::lockfree_spsc> slot_exec;
+  priority_task_worker_executor<concurrent_queue_policy::lockfree_mpmc> cell_exec;
+  priority_task_worker_executor<concurrent_queue_policy::lockfree_mpmc> ue_ctrl_exec;
+  priority_task_worker_executor<concurrent_queue_policy::lockfree_mpmc> dl_exec;
+  priority_task_worker_executor<concurrent_queue_policy::lockfree_mpmc> ul_exec;
+  du_high_executor_mapper_impl                                          du_high_exec_mapper{
       std::make_unique<cell_executor_mapper>(std::initializer_list<task_executor*>{&cell_exec},
                                              std::initializer_list<task_executor*>{&slot_exec}),
       std::make_unique<pcell_ue_executor_mapper>(std::initializer_list<task_executor*>{&ue_ctrl_exec},
@@ -564,18 +521,16 @@ private:
 /// \brief TestBench for the DU-high.
 class du_high_bench
 {
-  static const unsigned DEFAULT_DL_PDU_SIZE = 1500;
+  static const unsigned MAX_DL_PDU_SIZE = 1500;
 
 public:
   du_high_bench(unsigned                          dl_buffer_state_bytes_,
                 unsigned                          ul_bsr_bytes_,
                 unsigned                          max_nof_rbs_per_dl_grant,
-                units::bytes                      f1u_pdu_size_,
                 span<unsigned>                    du_cell_cores,
                 const cell_config_builder_params& builder_params = {}) :
     params(builder_params),
-    f1u_dl_pdu_bytes_per_slot(dl_buffer_state_bytes_),
-    f1u_pdu_size(f1u_pdu_size_),
+    dl_buffer_state_bytes(dl_buffer_state_bytes_),
     workers(du_cell_cores),
     ul_bsr_bytes(ul_bsr_bytes_)
   {
@@ -593,19 +548,19 @@ public:
     report_fatal_error_if_not(bsr_mac_subpdu.append(lbsr_buff_sz), "Failed to allocate PDU");
 
     // Instantiate a DU-high object.
-    cfg.gnb_du_id    = 1;
-    cfg.gnb_du_name  = fmt::format("srsgnb{}", cfg.gnb_du_id);
-    cfg.du_bind_addr = transport_layer_address::create_from_string(fmt::format("127.0.0.{}", cfg.gnb_du_id));
-    cfg.exec_mapper  = &workers.du_high_exec_mapper;
-    cfg.f1c_client   = &sim_cu_cp;
-    cfg.f1u_gw       = &sim_cu_up;
-    cfg.phy_adapter  = &sim_phy;
-    cfg.timers       = &timers;
-    cfg.cells        = {config_helpers::make_default_du_cell_config(params)};
-    cfg.sched_cfg    = config_helpers::make_default_scheduler_expert_config();
+    cfg.gnb_du_id                  = 1;
+    cfg.gnb_du_name                = fmt::format("srsgnb{}", cfg.gnb_du_id);
+    cfg.du_bind_addr               = fmt::format("127.0.0.{}", cfg.gnb_du_id);
+    cfg.exec_mapper                = &workers.du_high_exec_mapper;
+    cfg.f1c_client                 = &sim_cu_cp;
+    cfg.f1u_gw                     = &sim_cu_up;
+    cfg.phy_adapter                = &sim_phy;
+    cfg.timers                     = &timers;
+    cfg.cells                      = {config_helpers::make_default_du_cell_config(params)};
+    cfg.sched_cfg                  = config_helpers::make_default_scheduler_expert_config();
     cfg.sched_cfg.ue.pdsch_nof_rbs = {1, max_nof_rbs_per_dl_grant};
     cfg.mac_cfg                    = mac_expert_config{.configs = {{10000, 10000, 10000}}};
-    cfg.qos                        = config_helpers::make_default_du_qos_config_list(/* warn_on_drop */ true, 1000);
+    cfg.qos                        = config_helpers::make_default_du_qos_config_list(1000);
     cfg.mac_p                      = &mac_pcap;
     cfg.rlc_p                      = &rlc_pcap;
     cfg.sched_ue_metrics_notifier  = &metrics_handler;
@@ -625,7 +580,7 @@ public:
     du_hi = std::make_unique<du_high_impl>(cfg);
 
     // Create PDCP PDU.
-    report_fatal_error_if_not(pdcp_pdu.append(test_rgen::random_vector<uint8_t>(f1u_pdu_size.value())),
+    report_fatal_error_if_not(pdcp_pdu.append(test_rgen::random_vector<uint8_t>(MAX_DL_PDU_SIZE)),
                               "Unable to allocate PDU");
     // Create MAC PDU.
     report_fatal_error_if_not(mac_pdu.append(test_rgen::random_vector<uint8_t>(
@@ -743,11 +698,8 @@ public:
     mac_rx_data_indication rx_ind;
     rx_ind.sl_rx      = next_sl_tx - tx_rx_delay;
     rx_ind.cell_index = to_du_cell_index(0);
-    rx_ind.pdus.push_back(
-        mac_rx_pdu{du_ue_index_to_rnti(ue_idx),
-                   0,
-                   0,
-                   byte_buffer::create({0x34, 0x1e, 0x4f, 0xc0, 0x4f, 0xa6, 0x06, 0x3f, 0x00, 0x00, 0x00}).value()});
+    rx_ind.pdus.push_back(mac_rx_pdu{
+        du_ue_index_to_rnti(ue_idx), 0, 0, {0x34, 0x1e, 0x4f, 0xc0, 0x4f, 0xa6, 0x06, 0x3f, 0x00, 0x00, 0x00}});
     du_hi->get_pdu_handler().handle_rx_data_indication(std::move(rx_ind));
 
     // Wait for UE Context Modification Response to arrive to CU.
@@ -766,45 +718,38 @@ public:
     // more PDUs.
     static const size_t SATURATION_DL_BS_BYTES = 1e5;
 
-    if (f1u_dl_pdu_bytes_per_slot == 0) {
+    if (dl_buffer_state_bytes == 0) {
       // Early return.
       return;
     }
-    uint64_t bytes_to_sched = f1u_dl_total_bytes.load(std::memory_order_relaxed);
-    bytes_to_sched -= std::min(bytes_to_sched, sim_phy.metrics.nof_dl_bytes);
-    if (bytes_to_sched > SATURATION_DL_BS_BYTES) {
+    if (metrics_handler.tot_dl_bs > SATURATION_DL_BS_BYTES) {
       // Saturation of the DU DL detected. We throttle the F1-U interface to avoid depleting the byte buffer pool.
       return;
     }
-
     while (not workers.dl_exec.defer([this]() {
       static std::array<uint32_t, MAX_NOF_DU_UES> pdcp_sn_list{0};
-      const unsigned nof_dl_pdus_per_slot = divide_ceil(f1u_dl_pdu_bytes_per_slot, this->f1u_pdu_size.value());
-      const unsigned last_dl_pdu_size     = f1u_dl_pdu_bytes_per_slot % this->f1u_pdu_size.value();
+      const unsigned nof_dl_pdus_per_slot = divide_ceil(dl_buffer_state_bytes, MAX_DL_PDU_SIZE);
+      const unsigned last_dl_pdu_size     = dl_buffer_state_bytes % MAX_DL_PDU_SIZE;
 
-      // Forward DL buffer occupancy updates to all bearers in a Round-robin fashion.
-      for (unsigned i = 0; i != nof_dl_pdus_per_slot; ++i) {
-        unsigned    bearer_idx = f1u_dl_rr_count++ % sim_cu_up.du_notif_list.size();
-        const auto& du_notif   = sim_cu_up.du_notif_list[bearer_idx];
-
-        // Update PDCP SN.
-        pdcp_sn_list[bearer_idx] = (pdcp_sn_list[bearer_idx] + 1) % (1U << 18U);
-        // We perform a deep-copy of the byte buffer to better simulate a real deployment, where there is stress over
-        // the byte buffer pool.
-        auto pdu_copy = pdcp_pdu.deep_copy();
-        if (pdu_copy.is_error()) {
-          test_logger.warning("Byte buffer segment pool depleted");
-          return;
-        }
-        if (i == nof_dl_pdus_per_slot - 1 and last_dl_pdu_size != 0) {
-          // If it is last DL PDU.
-          if (!pdu_copy.value().resize(last_dl_pdu_size)) {
-            test_logger.warning("Unable to resize PDU to {} bytes", last_dl_pdu_size);
+      // Forward DL buffer occupancy updates to all bearers.
+      for (unsigned bearer_idx = 0; bearer_idx != sim_cu_up.du_notif_list.size(); ++bearer_idx) {
+        const auto& du_notif = sim_cu_up.du_notif_list[bearer_idx];
+        for (unsigned i = 0; i != nof_dl_pdus_per_slot; ++i) {
+          // Update PDCP SN.
+          pdcp_sn_list[bearer_idx] = (pdcp_sn_list[bearer_idx] + 1) % (1U << 18U);
+          // We perform a deep-copy of the byte buffer to better simulate a real deployment, where there is stress over
+          // the byte buffer pool.
+          byte_buffer pdu_copy = pdcp_pdu.deep_copy();
+          if (pdu_copy.empty()) {
+            test_logger.warning("Byte buffer segment pool depleted");
             return;
           }
+          if (i == nof_dl_pdus_per_slot - 1 and last_dl_pdu_size != 0) {
+            // If it is last DL PDU.
+            pdu_copy.resize(last_dl_pdu_size);
+          }
+          du_notif->on_new_sdu(pdcp_tx_pdu{.buf = std::move(pdu_copy), .pdcp_sn = pdcp_sn_list[bearer_idx]});
         }
-        f1u_dl_total_bytes.fetch_add(pdu_copy.value().length(), std::memory_order_relaxed);
-        du_notif->on_new_sdu(pdcp_tx_pdu{.buf = std::move(pdu_copy.value()), .pdcp_sn = pdcp_sn_list[bearer_idx]});
       }
     })) {
       // keep trying to push new PDUs.
@@ -1007,7 +952,7 @@ public:
       crc_pdu.rnti           = pusch.pusch_cfg.rnti;
       crc_pdu.harq_id        = pusch.pusch_cfg.harq_id;
       crc_pdu.tb_crc_success = true;
-      crc_pdu.ul_sinr_dB     = 21.0;
+      crc_pdu.ul_sinr_metric = 21.0;
     }
     if (not sim_phy.slot_ul_result.ul_res->puschs.empty()) {
       pending_crc.push_back(std::move(crc));
@@ -1018,8 +963,7 @@ public:
   cell_config_builder_params params;
   du_high_configuration      cfg{};
   /// Size of the DL buffer status to push for DL Tx.
-  unsigned     f1u_dl_pdu_bytes_per_slot;
-  units::bytes f1u_pdu_size{DEFAULT_DL_PDU_SIZE};
+  unsigned dl_buffer_state_bytes;
 
   srslog::basic_logger&              test_logger = srslog::fetch_basic_logger("TEST");
   dummy_metrics_handler              metrics_handler;
@@ -1054,15 +998,10 @@ public:
 
   // Construct LBSR MAC subPDU for LCG 1.
   // NOTE: LBSR buffer size is populated in the constructor.
-  byte_buffer bsr_mac_subpdu = byte_buffer::create({0x3e, 0x02, 0x02}).value();
+  byte_buffer bsr_mac_subpdu{0x3e, 0x02, 0x02};
 
   /// Size of the UL Buffer status report to push for UL Tx.
   unsigned ul_bsr_bytes;
-
-  // Round-robin indexer for pushing DL PDUs to attached UEs.
-  unsigned f1u_dl_rr_count = 0;
-  // Sum of total F1-U DL bytes pushed into DU.
-  std::atomic<uint64_t> f1u_dl_total_bytes{0};
 };
 
 /// \brief Generate custom cell configuration builder params based on duplex mode.
@@ -1111,7 +1050,6 @@ void benchmark_dl_ul_only_rlc_um(benchmarker&   bm,
                                  unsigned       dl_buffer_state_bytes,
                                  unsigned       ul_bsr_bytes,
                                  unsigned       max_nof_rbs_per_dl_grant,
-                                 units::bytes   dl_pdu_size,
                                  span<unsigned> du_cell_cores)
 {
   auto                benchname = fmt::format("{}{}{}, {} UEs, RLC UM",
@@ -1123,7 +1061,6 @@ void benchmark_dl_ul_only_rlc_um(benchmarker&   bm,
   du_high_bench       bench{dl_buffer_state_bytes,
                       ul_bsr_bytes,
                       max_nof_rbs_per_dl_grant,
-                      dl_pdu_size,
                       du_cell_cores,
                       generate_custom_cell_config_builder_params(dplx_mode)};
   for (unsigned ue_count = 0; ue_count < nof_ues; ++ue_count) {
@@ -1221,7 +1158,6 @@ int main(int argc, char** argv)
   // Parses benchmark parameters.
   bench_params params{};
   parse_args(argc, argv, params);
-  print_args(params);
 
   // Setup size of byte buffer pool.
   init_byte_buffer_segment_pool(byte_buffer_nof_segments, byte_buffer_segment_size);
@@ -1242,7 +1178,6 @@ int main(int argc, char** argv)
                                 params.dl_bytes_per_slot,
                                 params.ul_bsr_bytes,
                                 params.max_dl_rb_grant,
-                                params.pdu_size,
                                 params.du_cell_cores);
   }
 

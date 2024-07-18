@@ -26,6 +26,7 @@
 #include "srsran/rlc/rlc_factory.h"
 #include "srsran/rlc/rlc_rx.h"
 #include "srsran/rlc/rlc_srb_config_factory.h"
+#include "srsran/scheduler/config/logical_channel_config_factory.h"
 
 using namespace srsran;
 using namespace srsran::srs_du;

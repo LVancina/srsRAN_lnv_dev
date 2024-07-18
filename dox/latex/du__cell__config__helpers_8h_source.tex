@@ -1,0 +1,170 @@
+\doxysection{du\+\_\+cell\+\_\+config\+\_\+helpers.\+h}
+\hypertarget{du__cell__config__helpers_8h_source}{}\label{du__cell__config__helpers_8h_source}\index{include/srsran/du/du\_cell\_config\_helpers.h@{include/srsran/du/du\_cell\_config\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}du\_cell\_config.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/du/du\_qos\_config.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/config/mac\_config\_helpers.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/band\_helper.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/five\_qi.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/nr\_cgi\_helpers.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/pdcch/pdcch\_type0\_css\_coreset\_config.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/tdd/tdd\_ul\_dl\_config.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/cell\_config\_builder\_params.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scheduler__expert__config_8h}{srsran/scheduler/config/scheduler\_expert\_config.h}}"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/serving\_cell\_config\_factory.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{comment}{//\ TODO:\ This\ file\ is\ temporary.\ Eventually\ we\ will\ receive\ cell\ configurations\ from\ the\ DU\ config\ file.}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{namespace\ }config\_helpers\ \{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{inline}\ scheduler\_expert\_config\ make\_default\_scheduler\_expert\_config()}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ scheduler\_expert\_config\ cfg;}
+\DoxyCodeLine{00046\ \ \ cfg.ra.max\_nof\_msg3\_harq\_retxs\ =\ 4;}
+\DoxyCodeLine{00047\ \ \ cfg.ra.msg3\_mcs\_index\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00048\ \ \ cfg.ra.rar\_mcs\_index\ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ As\ per\ TS\ 38.214,\ Section\ 5.1.3.1,\ only\ an\ MCS\ with\ modulation\ order\ 2\ allowed\ for\ SIB1.}}
+\DoxyCodeLine{00051\ \ \ cfg.si.sib1\_mcs\_index\ \ \ \ =\ 5;}
+\DoxyCodeLine{00052\ \ \ cfg.si.sib1\_retx\_period\ \ =\ sib1\_rtx\_periodicity::ms160;}
+\DoxyCodeLine{00053\ \ \ cfg.si.sib1\_dci\_aggr\_lev\ =\ aggregation\_level::n4;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{//\ As\ per\ TS\ 38.214,\ Section\ 5.1.3.1,\ only\ an\ MCS\ with\ modulation\ order\ 2\ allowed\ for\ Paging.}}
+\DoxyCodeLine{00056\ \ \ cfg.pg.paging\_mcs\_index\ \ \ \ =\ 5;}
+\DoxyCodeLine{00057\ \ \ cfg.pg.paging\_dci\_aggr\_lev\ =\ aggregation\_level::n4;}
+\DoxyCodeLine{00058\ \ \ cfg.pg.max\_paging\_retries\ \ =\ 2;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ cfg.ue.dl\_mcs\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{0,\ 28\};}
+\DoxyCodeLine{00061\ \ \ cfg.ue.initial\_cqi\ \ \ \ \ \ \ \ =\ 3;}
+\DoxyCodeLine{00062\ \ \ cfg.ue.pdsch\_rv\_sequence\ \ =\ \{0\};}
+\DoxyCodeLine{00063\ \ \ cfg.ue.ul\_mcs\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \{0,\ 28\};}
+\DoxyCodeLine{00064\ \ \ cfg.ue.pusch\_rv\_sequence\ \ =\ \{0\};}
+\DoxyCodeLine{00065\ \ \ cfg.ue.max\_nof\_harq\_retxs\ =\ 4;}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ The\ UE\ is\ not\ expected\ to\ decode\ a\ PDSCH\ scheduled\ with\ P-\/RNTI,\ RA-\/RNTI,\ SI-\/RNTI\ and\ Qm\ >\ 2\ i.e.\ MCS\ index\ of\ 9\ in}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{//\ Table\ 5.1.3.1-\/1\ of\ TS\ 38.214.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{//\ Note:\ A\ MCS\ index\ of\ 7\ can\ handle\ Msg4\ of\ size\ 458\ bytes\ for\ PDSCH\ occupying\ symbols\ (2,..,14].}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ Note:\ A\ MCS\ index\ of\ 8\ can\ handle\ Msg4\ of\ size\ 325\ bytes\ for\ PDSCH\ occupying\ symbols\ (3,..,14].}}
+\DoxyCodeLine{00070\ \ \ cfg.ue.max\_msg4\_mcs\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 9;}
+\DoxyCodeLine{00071\ \ \ cfg.ue.initial\_ul\_sinr\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 5;}
+\DoxyCodeLine{00072\ \ \ cfg.ue.enable\_csi\_rs\_pdsch\_multiplexing\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00073\ \ \ cfg.ue.ta\_measurement\_slot\_period\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 80;}
+\DoxyCodeLine{00074\ \ \ cfg.ue.ta\_cmd\_offset\_threshold\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00075\ \ \ cfg.ue.ta\_update\_measurement\_ul\_sinr\_threshold\ =\ 0.0F;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ cfg.log\_broadcast\_messages\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00078\ \ \ cfg.metrics\_report\_period\ \ =\ std::chrono::milliseconds\{1000\};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00081\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{inline}\ du\_cell\_config\ make\_default\_du\_cell\_config(\textcolor{keyword}{const}\ cell\_config\_builder\_params\_extended\&\ \mbox{\hyperlink{structparams}{params}}\ =\ \{\})}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \ \ du\_cell\_config\ cfg\{\};}
+\DoxyCodeLine{00087\ \ \ cfg.pci\ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{structparams}{params}}.pci;}
+\DoxyCodeLine{00088\ \ \ cfg.tac\ \ \ \ \ \ \ \ \ =\ 1;}
+\DoxyCodeLine{00089\ \ \ cfg.nr\_cgi.plmn\ =\ \textcolor{stringliteral}{"{}00101"{}};}
+\DoxyCodeLine{00090\ \ \ cfg.nr\_cgi.nci\ \ =\ config\_helpers::make\_nr\_cell\_identity(411,\ 32,\ 1);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ cfg.dl\_carrier\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ make\_default\_dl\_carrier\_configuration(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00093\ \ \ cfg.ul\_carrier\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ make\_default\_ul\_carrier\_configuration(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00094\ \ \ cfg.coreset0\_idx\ \ \ \ \ \ \ \ \ \ \ \ =\ *\mbox{\hyperlink{structparams}{params}}.coreset0\_index;}
+\DoxyCodeLine{00095\ \ \ cfg.searchspace0\_idx\ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{structparams}{params}}.search\_space0\_index;}
+\DoxyCodeLine{00096\ \ \ cfg.dl\_cfg\_common\ \ \ \ \ \ \ \ \ \ \ =\ make\_default\_dl\_config\_common(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00097\ \ \ cfg.ul\_cfg\_common\ \ \ \ \ \ \ \ \ \ \ =\ make\_default\_ul\_config\_common(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00098\ \ \ cfg.scs\_common\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{structparams}{params}}.scs\_common;}
+\DoxyCodeLine{00099\ \ \ cfg.ssb\_cfg\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ make\_default\_ssb\_config(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00100\ \ \ cfg.cell\_barred\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00101\ \ \ cfg.intra\_freq\_resel\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00102\ \ \ cfg.ue\_timers\_and\_constants\ =\ make\_default\_ue\_timers\_and\_constants\_config();}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{//\ The\ CORESET\ duration\ of\ 3\ symbols\ is\ only\ permitted\ if\ dmrs-\/typeA-\/Position\ is\ set\ to\ 3.\ Refer\ TS\ 38.211,\ 7.3.2.2.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keyword}{const}\ pdcch\_type0\_css\_coreset\_description\ coreset0\_desc\ =\ \mbox{\hyperlink{namespacesrsran_af4b37e7542d5a0c2bc229c1495f1c642}{pdcch\_type0\_css\_coreset\_get}}(}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ cfg.dl\_carrier.band,\ \mbox{\hyperlink{structparams}{params}}.ssb\_scs,\ \mbox{\hyperlink{structparams}{params}}.scs\_common,\ *\mbox{\hyperlink{structparams}{params}}.coreset0\_index,\ \mbox{\hyperlink{structparams}{params}}.k\_ssb-\/>value());}
+\DoxyCodeLine{00107\ \ \ cfg.dmrs\_typeA\_pos\ =\ coreset0\_desc.nof\_symb\_coreset\ ==\ 3U\ ?\ dmrs\_typeA\_position::pos3\ :\ dmrs\_typeA\_position::pos2;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ cfg.tdd\_ul\_dl\_cfg\_common\ =\ \mbox{\hyperlink{structparams}{params}}.tdd\_ul\_dl\_cfg\_common;}
+\DoxyCodeLine{00110\ \ \ cfg.ue\_ded\_serv\_cell\_cfg\ =\ create\_default\_initial\_ue\_serving\_cell\_config(\mbox{\hyperlink{structparams}{params}});}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00113\ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{inline}\ std::map<five\_qi\_t,\ du\_qos\_config>\ make\_default\_du\_qos\_config\_list(\textcolor{keywordtype}{int}\ rlc\_metrics\_report)}
+\DoxyCodeLine{00136\ \{}
+\DoxyCodeLine{00137\ \ \ std::map<five\_qi\_t,\ du\_qos\_config>\ qos\_list\ =\ \{\};}
+\DoxyCodeLine{00138\ \ \ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{comment}{//\ 5QI=7}}
+\DoxyCodeLine{00140\ \ \ \ \ du\_qos\_config\ cfg\{\};}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{comment}{//\ RLC}}
+\DoxyCodeLine{00142\ \ \ \ \ cfg.rlc.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rlc\_mode::um\_bidir;}
+\DoxyCodeLine{00143\ \ \ \ \ cfg.rlc.um.tx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size12bits;}
+\DoxyCodeLine{00144\ \ \ \ \ cfg.rlc.um.rx.sn\_field\_length\ =\ rlc\_um\_sn\_size::size12bits;}
+\DoxyCodeLine{00145\ \ \ \ \ cfg.rlc.um.rx.t\_reassembly\ \ \ \ =\ 100;}
+\DoxyCodeLine{00146\ \ \ \ \ cfg.rlc.um.tx.queue\_size\ \ \ \ \ \ =\ 4096;}
+\DoxyCodeLine{00147\ \ \ \ \ cfg.rlc.metrics\_period\ \ \ \ \ \ \ \ =\ std::chrono::milliseconds(rlc\_metrics\_report);}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{comment}{//\ F1-\/U}}
+\DoxyCodeLine{00149\ \ \ \ \ cfg.f1u.t\_notify\ =\ 10;}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{comment}{//\ MAC}}
+\DoxyCodeLine{00151\ \ \ \ \ cfg.mac\ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a3868774b524c67bec5b9bd7538de9cea}{make\_default\_drb\_mac\_lc\_config}}();}
+\DoxyCodeLine{00152\ \ \ \ \ cfg.mac.priority\ =\ 4;}
+\DoxyCodeLine{00153\ \ \ \ \ cfg.mac.lcg\_id\ \ \ =\ uint\_to\_lcg\_id(1);}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ qos\_list[\mbox{\hyperlink{namespacesrsran_aa51855bbb3afd2d1d6462b70f3466b45}{uint\_to\_five\_qi}}(7)]\ =\ cfg;}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{comment}{//\ 5QI=9}}
+\DoxyCodeLine{00159\ \ \ \ \ du\_qos\_config\ cfg\{\};}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{comment}{//\ RLC}}
+\DoxyCodeLine{00161\ \ \ \ \ cfg.rlc.mode\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ rlc\_mode::am;}
+\DoxyCodeLine{00162\ \ \ \ \ cfg.rlc.am.tx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size18bits;}
+\DoxyCodeLine{00163\ \ \ \ \ cfg.rlc.am.tx.t\_poll\_retx\ \ \ \ \ \ \ =\ 20;}
+\DoxyCodeLine{00164\ \ \ \ \ cfg.rlc.am.tx.poll\_pdu\ \ \ \ \ \ \ \ \ \ =\ 16;}
+\DoxyCodeLine{00165\ \ \ \ \ cfg.rlc.am.tx.poll\_byte\ \ \ \ \ \ \ \ \ =\ -\/1;}
+\DoxyCodeLine{00166\ \ \ \ \ cfg.rlc.am.tx.max\_retx\_thresh\ \ \ =\ 32;}
+\DoxyCodeLine{00167\ \ \ \ \ cfg.rlc.am.tx.max\_window\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00168\ \ \ \ \ cfg.rlc.am.tx.queue\_size\ \ \ \ \ \ \ \ =\ 4096;}
+\DoxyCodeLine{00169\ \ \ \ \ cfg.rlc.am.rx.sn\_field\_length\ \ \ =\ rlc\_am\_sn\_size::size18bits;}
+\DoxyCodeLine{00170\ \ \ \ \ cfg.rlc.am.rx.t\_reassembly\ \ \ \ \ \ =\ 20;}
+\DoxyCodeLine{00171\ \ \ \ \ cfg.rlc.am.rx.t\_status\_prohibit\ =\ 10;}
+\DoxyCodeLine{00172\ \ \ \ \ cfg.rlc.am.rx.max\_sn\_per\_status\ =\ \{\};}
+\DoxyCodeLine{00173\ \ \ \ \ cfg.rlc.metrics\_period\ \ \ \ \ \ \ \ \ \ =\ std::chrono::milliseconds(rlc\_metrics\_report);}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{comment}{//\ F1-\/U}}
+\DoxyCodeLine{00175\ \ \ \ \ cfg.f1u.t\_notify\ =\ 10;}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{comment}{//\ MAC}}
+\DoxyCodeLine{00177\ \ \ \ \ cfg.mac\ =\ \mbox{\hyperlink{namespacesrsran_a3868774b524c67bec5b9bd7538de9cea}{make\_default\_drb\_mac\_lc\_config}}();}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ qos\_list[\mbox{\hyperlink{namespacesrsran_aa51855bbb3afd2d1d6462b70f3466b45}{uint\_to\_five\_qi}}(9)]\ =\ cfg;}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \textcolor{keywordflow}{return}\ qos\_list;}
+\DoxyCodeLine{00182\ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \}\ \textcolor{comment}{//\ namespace\ config\_helpers}}
+\DoxyCodeLine{00185\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

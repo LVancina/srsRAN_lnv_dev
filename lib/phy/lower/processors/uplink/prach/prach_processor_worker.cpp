@@ -137,8 +137,7 @@ void prach_processor_worker::accumulate_samples(const baseband_gateway_buffer_re
         // Transition to idle.
         state = states::idle;
       })) {
-    logger.warning(
-        prach_context.slot.sfn(), prach_context.slot.slot_index(), "Unable to dispatch PRACH demodulation task");
+    srslog::fetch_basic_logger("PHY").warning("Unable to dispatch PRACH demodulation task");
   }
 }
 

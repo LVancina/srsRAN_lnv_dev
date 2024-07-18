@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_up/pdu_session_manager_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_up/pdu_session_manager_test[1]_tests.cmake")
+else()
+  add_test(pdu_session_manager_test_NOT_BUILT pdu_session_manager_test_NOT_BUILT)
+endif()

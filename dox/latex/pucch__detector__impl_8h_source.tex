@@ -1,0 +1,108 @@
+\doxysection{pucch\+\_\+detector\+\_\+impl.\+h}
+\hypertarget{pucch__detector__impl_8h_source}{}\label{pucch__detector__impl_8h_source}\index{lib/phy/upper/channel\_processors/pucch\_detector\_impl.h@{lib/phy/upper/channel\_processors/pucch\_detector\_impl.h}}
+\mbox{\hyperlink{pucch__detector__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pucch__detector_8h}{srsran/phy/upper/channel\_processors/pucch\_detector.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{channel__equalizer_8h}{srsran/phy/upper/equalization/channel\_equalizer.h}}"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_collection.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pseudo__random__generator_8h}{srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h}}"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pucch__detector__impl}{pucch\_detector\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pucch__detector}{pucch\_detector}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a165b2499bb95e4fbc5a4a18b4eeb0b9c}{MAX\_ALLOCATED\_RE\_F1}}\ =\ NRE\ *\ MAX\_NSYMB\_PER\_SLOT;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a4d93b4aa4f2ef19340c1173b3731c31e}{MAX\_N\_DATA\_SYMBOLS}}\ =\ 7;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_afab5900016550a4e0ee21bc8d6cbdee9}{pucch\_detector\_impl}}(std::unique\_ptr<low\_papr\_sequence\_collection>\ lpsc,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pseudo\_random\_generator>\ \ \ \ \ \ prg,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<channel\_equalizer>\ \ \ \ \ \ \ \ \ \ \ \ eqzr)\ :}
+\DoxyCodeLine{00056\ \ \ \ \ low\_papr(std::move(lpsc)),\ pseudo\_random(std::move(prg)),\ equalizer(std::move(eqzr))}
+\DoxyCodeLine{00057\ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00061\ \ \ std::pair<pucch\_uci\_message,\ channel\_state\_information>\ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a5df755ee76979f9917b634aa2c7d35bd}{detect}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ \textcolor{comment}{/*grid*/},}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__detector_1_1format0__configuration}{format0\_configuration}}\&\ \textcolor{comment}{/*config*/})\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00063\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00064\ \ \ \ \ srsran\_assert(\textcolor{keyword}{false},\ \textcolor{stringliteral}{"{}PUCCH\ Format\ 0\ not\ implemented\ yet."{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00066\ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00069\ \ \ pucch\_detection\_result\ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a5df755ee76979f9917b634aa2c7d35bd}{detect}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ \ grid,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ \ \ \ \ \ estimates,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ format1\_configuration\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ extract\_data\_and\_estimates(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ grid,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ \ \ \ \ estimates,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ first\_symbol,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ first\_prb,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<unsigned>}}\ \ \ \ \ \ \ \ \ \ second\_prb,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ marginalize\_w\_and\_r\_out(\textcolor{keyword}{const}\ format1\_configuration\&\ config);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00092\ \ \ std::unique\_ptr<low\_papr\_sequence\_collection>\ low\_papr;}
+\DoxyCodeLine{00094\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ pseudo\_random;}
+\DoxyCodeLine{00096\ \ \ std::unique\_ptr<channel\_equalizer>\ equalizer;}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor<std::underlying\_type\_t<channel\_equalizer::re\_list::dims>}}(channel\_equalizer::re\_list::dims::nof\_dims),}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a165b2499bb95e4fbc5a4a18b4eeb0b9c}{MAX\_ALLOCATED\_RE\_F1}}\ /\ 2,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1tensor_a48d648c7dc514f12cc21cf6117ff9b58}{channel\_equalizer::re\_list::dims}}>}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ time\_spread\_sequence;}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor<std::underlying\_type\_t<channel\_equalizer::ch\_est\_list::dims>}}(}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ channel\_equalizer::ch\_est\_list::dims::nof\_dims),}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}},}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a165b2499bb95e4fbc5a4a18b4eeb0b9c}{MAX\_ALLOCATED\_RE\_F1}}\ /\ 2,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1tensor_a48d648c7dc514f12cc21cf6117ff9b58}{channel\_equalizer::ch\_est\_list::dims}}>}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ ch\_estimates;}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor<std::underlying\_type\_t<channel\_equalizer::re\_list::dims>}}(channel\_equalizer::re\_list::dims::nof\_dims),}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}},}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a165b2499bb95e4fbc5a4a18b4eeb0b9c}{MAX\_ALLOCATED\_RE\_F1}}\ /\ 2,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1tensor_a48d648c7dc514f12cc21cf6117ff9b58}{channel\_equalizer::re\_list::dims}}>}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ eq\_time\_spread\_sequence;}
+\DoxyCodeLine{00122\ \ \ \mbox{\hyperlink{classsrsran_1_1static__tensor}{static\_tensor<std::underlying\_type\_t<channel\_equalizer::re\_list::dims>}}(channel\_equalizer::re\_list::dims::nof\_dims),}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ float,}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__detector__impl_a165b2499bb95e4fbc5a4a18b4eeb0b9c}{MAX\_ALLOCATED\_RE\_F1}}\ /\ 2,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1tensor_a48d648c7dc514f12cc21cf6117ff9b58}{channel\_equalizer::re\_list::dims}}>}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ eq\_time\_spread\_noise\_var;}
+\DoxyCodeLine{00128\ \ \ std::array<unsigned,\ MAX\_NSYMB\_PER\_SLOT\ /\ 2>\ alpha\_buffer;}
+\DoxyCodeLine{00130\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<unsigned>}}\ alpha\_indices;}
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ detected\_symbol\ =\ 0;}
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{float}\ eq\_noise\_var\ =\ 0;}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_data\_symbols\ =\ 0;}
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_data\_symbols\_pre\_hop\ =\ 0;}
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,341 @@
+\doxysection{e1ap\+\_\+types.\+h}
+\hypertarget{e1ap__types_8h_source}{}\label{e1ap__types_8h_source}\index{include/srsran/e1ap/common/e1ap\_types.h@{include/srsran/e1ap/common/e1ap\_types.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pdcp/pdcp\_config.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cause.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cu\_types.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/lcid.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/up\_transport\_layer\_info.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/security/security.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{limits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)brief\ GNB-\/CU-\/CP-\/UE-\/E1AP-\/ID\ used\ to\ identify\ the\ UE\ in\ the\ CU-\/CP\ E1AP.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.463\ Section\ 9.3.1.4:\ GNB-\/CU-\/UE-\/E1AP-\/ID\ valid\ values:\ (0..2\string^32-\/1)}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint64\_t\ MAX\_NOF\_CU\_CP\_E1AP\_UES\ =\ ((uint64\_t)1\ <<\ 32);}
+\DoxyCodeLine{00043\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ gnb\_cu\_cp\_ue\_e1ap\_id\_t\ :\ uint64\_t\ \{\ min\ =\ 0,\ max\ =\ MAX\_NOF\_CU\_CP\_E1AP\_UES\ -\/\ 1,\ invalid\ =\ 0x1ffffffff\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint64\_t\ gnb\_cu\_cp\_ue\_e1ap\_id\_to\_uint(gnb\_cu\_cp\_ue\_e1ap\_id\_t\ id)}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint64\_t>(id);}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ Convert\ integer\ to\ GNB-\/CU-\/CP-\/UE-\/E1AP-\/ID\ type.}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ gnb\_cu\_cp\_ue\_e1ap\_id\_t\ \mbox{\hyperlink{namespacesrsran_a0cfb37dfa4ba9f34c709fda3a0a64c1e}{int\_to\_gnb\_cu\_cp\_ue\_e1ap\_id}}(uint64\_t\ idx)}
+\DoxyCodeLine{00052\ \{}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<gnb\_cu\_cp\_ue\_e1ap\_id\_t>(idx);}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ \(\backslash\)brief\ GNB-\/CU-\/UP-\/UE-\/E1AP-\/ID\ used\ to\ identify\ the\ UE\ in\ the\ CU-\/UP\ E1AP.}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.473\ Section\ 9.3.1.5:\ GNB-\/CU-\/UP-\/UE-\/E1AP-\/ID\ valid\ values:\ (0..2\string^32-\/1)}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint64\_t\ MAX\_NOF\_CU\_UP\_E1AP\_UES\ =\ ((uint64\_t)1\ <<\ 32);}
+\DoxyCodeLine{00059\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ gnb\_cu\_up\_ue\_e1ap\_id\_t\ :\ uint64\_t\ \{\ min\ =\ 0,\ max\ =\ MAX\_NOF\_CU\_CP\_E1AP\_UES\ -\/\ 1,\ invalid\ =\ 0x1ffffffff\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint64\_t\ gnb\_cu\_up\_ue\_e1ap\_id\_to\_uint(gnb\_cu\_up\_ue\_e1ap\_id\_t\ id)}
+\DoxyCodeLine{00062\ \{}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint64\_t>(id);}
+\DoxyCodeLine{00064\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{comment}{///\ Convert\ integer\ to\ GNB-\/DU-\/UE-\/E1AP-\/ID\ type.}}
+\DoxyCodeLine{00067\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ gnb\_cu\_up\_ue\_e1ap\_id\_t\ \mbox{\hyperlink{namespacesrsran_a6bee843af8ebdc86e8c4506ad3b82b9f}{int\_to\_gnb\_cu\_up\_ue\_e1ap\_id}}(uint64\_t\ idx)}
+\DoxyCodeLine{00068\ \{}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<gnb\_cu\_up\_ue\_e1ap\_id\_t>(idx);}
+\DoxyCodeLine{00070\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__cell__group__info__item}{e1ap\_cell\_group\_info\_item}}\ \{}
+\DoxyCodeLine{00073\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_id\ =\ 0;}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ ul\_cfg;}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ dl\_tx\_stop;}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ rat\_type;}
+\DoxyCodeLine{00077\ \};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__ng__ran__alloc__and__retention__prio}{e1ap\_ng\_ran\_alloc\_and\_retention\_prio}}\ \{}
+\DoxyCodeLine{00080\ \ \ uint8\_t\ \ \ \ \ prio\_level;}
+\DoxyCodeLine{00081\ \ \ std::string\ pre\_emption\_cap;}
+\DoxyCodeLine{00082\ \ \ std::string\ pre\_emption\_vulnerability;}
+\DoxyCodeLine{00083\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__gbr__qos__flow__info}{e1ap\_gbr\_qos\_flow\_info}}\ \{}
+\DoxyCodeLine{00086\ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ max\_flow\_bit\_rate\_dl;}
+\DoxyCodeLine{00087\ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ max\_flow\_bit\_rate\_ul;}
+\DoxyCodeLine{00088\ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ guaranteed\_flow\_bit\_rate\_dl;}
+\DoxyCodeLine{00089\ \ \ uint64\_t\ \ \ \ \ \ \ \ \ \ \ guaranteed\_flow\_bit\_rate\_ul;}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ max\_packet\_loss\_rate\_dl;}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ max\_packet\_loss\_rate\_ul;}
+\DoxyCodeLine{00092\ \};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__level__qos__params}{e1ap\_qos\_flow\_level\_qos\_params}}\ \{}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{structsrsran_1_1qos__characteristics__t}{qos\_characteristics\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ qos\_characteristics;}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__ng__ran__alloc__and__retention__prio}{e1ap\_ng\_ran\_alloc\_and\_retention\_prio}}\ ng\_ran\_alloc\_retention\_prio;}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__gbr__qos__flow__info}{e1ap\_gbr\_qos\_flow\_info}}>\ \ \ \ \ gbr\_qos\_flow\_info;}
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reflective\_qos\_attribute;}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add\_qos\_info;}
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ paging\_policy\_ind;}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reflective\_qos\_ind;}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__qos__param__item}{e1ap\_qos\_flow\_qos\_param\_item}}\ \{}
+\DoxyCodeLine{00105\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}::invalid;}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__level__qos__params}{e1ap\_qos\_flow\_level\_qos\_params}}\ qos\_flow\_level\_qos\_params;}
+\DoxyCodeLine{00107\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ \ \ \ \ \ \ \ \ \ qos\_flow\_map\_ind;}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__map__item}{e1ap\_qos\_flow\_map\_item}}\ \{}
+\DoxyCodeLine{00111\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \ \ \ \ \ \ \ \ qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}::invalid;}
+\DoxyCodeLine{00112\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ qos\_flow\_map\_ind;}
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info__request}{e1ap\_data\_forwarding\_info\_request}}\ \{}
+\DoxyCodeLine{00116\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data\_forwarding\_request;}
+\DoxyCodeLine{00117\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_map\_item>\ qos\_flows\_forwarded\_on\_fwd\_tunnels;}
+\DoxyCodeLine{00118\ \};}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__count}{e1ap\_pdcp\_count}}\ \{}
+\DoxyCodeLine{00121\ \ \ uint32\_t\ pdcp\_sn;}
+\DoxyCodeLine{00122\ \ \ uint64\_t\ hfn;}
+\DoxyCodeLine{00123\ \};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__status__transfer}{e1ap\_drb\_status\_transfer}}\ \{}
+\DoxyCodeLine{00126\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__count}{e1ap\_pdcp\_count}}\ \ \ \ count\_value;}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint64\_t>\ receive\_status\_of\_pdcp\_sdu;}
+\DoxyCodeLine{00128\ \};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__sn__status__info}{e1ap\_pdcp\_sn\_status\_info}}\ \{}
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__status__transfer}{e1ap\_drb\_status\_transfer}}\ pdcp\_status\_transfer\_ul;}
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__count}{e1ap\_pdcp\_count}}\ \ \ \ \ \ \ \ \ \ pdcp\_status\_transfer\_dl;}
+\DoxyCodeLine{00133\ \};}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__rohc}{e1ap\_rohc}}\ \{}
+\DoxyCodeLine{00136\ \ \ uint16\_t\ \ \ \ \ \ \ max\_cid;}
+\DoxyCodeLine{00137\ \ \ uint16\_t\ \ \ \ \ \ \ rohc\_profiles;}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ continue\_rohc;}
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__rohc__params}{e1ap\_rohc\_params}}\ \{}
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__rohc}{e1ap\_rohc}}>\ rohc;}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__rohc}{e1ap\_rohc}}>\ ul\_only\_rohc;}
+\DoxyCodeLine{00144\ \};}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__config}{e1ap\_pdcp\_config}}\ \{}
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_size\_ul;}
+\DoxyCodeLine{00148\ \ \ \mbox{\hyperlink{namespacesrsran_a6efd299a2e6b44aa7ae09878d4757fec}{pdcp\_sn\_size}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_size\_dl;}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{namespacesrsran}{srsran}}::\mbox{\hyperlink{namespacesrsran_a9e50d988260b31c9ea661e6ff525036f}{pdcp\_rlc\_mode}}\ \ \ \ \ \ \ \ rlc\_mod;}
+\DoxyCodeLine{00150\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__rohc__params}{e1ap\_rohc\_params}}>\ \ \ rohc\_params;}
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_acb9fad14a7bc4ce3f951b77b074533c2}{pdcp\_t\_reordering}}>\ \ t\_reordering\_timer;}
+\DoxyCodeLine{00152\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_ae05afbb657dc50e1097d9aaf6afd4e16}{pdcp\_discard\_timer}}>\ discard\_timer;}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<int32\_t>\ \ \ \ \ \ \ \ \ \ \ \ ul\_data\_split\_thres;}
+\DoxyCodeLine{00154\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_dupl;}
+\DoxyCodeLine{00155\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_reest;}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_data\_recovery;}
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ \ \ \ \ \ \ \ dupl\_activation;}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out\_of\_order\_delivery;}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__setup__item__ng__ran}{e1ap\_drb\_to\_setup\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00162\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00163\ \ \ \mbox{\hyperlink{structsrsran_1_1sdap__config__t}{sdap\_config\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdap\_cfg;}
+\DoxyCodeLine{00164\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__config}{e1ap\_pdcp\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_cfg;}
+\DoxyCodeLine{00165\ \ \ std::vector<e1ap\_cell\_group\_info\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_info;}
+\DoxyCodeLine{00166\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_qos\_param\_item>\ qos\_flow\_info\_to\_be\_setup;}
+\DoxyCodeLine{00167\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info__request}{e1ap\_data\_forwarding\_info\_request}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_data\_forwarding\_info\_request;}
+\DoxyCodeLine{00168\ \ \ optional<std::chrono::seconds>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_inactivity\_timer;}
+\DoxyCodeLine{00169\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__sn__status__info}{e1ap\_pdcp\_sn\_status\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_status\_info;}
+\DoxyCodeLine{00170\ \};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__setup__item}{e1ap\_pdu\_session\_res\_to\_setup\_item}}\ \{}
+\DoxyCodeLine{00173\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00174\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_type;}
+\DoxyCodeLine{00175\ \ \ \mbox{\hyperlink{structsrsran_1_1s__nssai__t}{s\_nssai\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ snssai;}
+\DoxyCodeLine{00176\ \ \ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ng\_ul\_up\_tnl\_info;}
+\DoxyCodeLine{00177\ \ \ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_ind;}
+\DoxyCodeLine{00178\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_to\_setup\_item\_ng\_ran>\ drb\_to\_setup\_list\_ng\_ran;}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint64\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_res\_dl\_ambr;}
+\DoxyCodeLine{00181\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info__request}{e1ap\_data\_forwarding\_info\_request}}>\ pdu\_session\_data\_forwarding\_info\_request;}
+\DoxyCodeLine{00182\ \ \ optional<std::chrono::seconds>\ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_inactivity\_timer;}
+\DoxyCodeLine{00183\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}>\ \ \ \ \ \ \ \ \ \ \ existing\_allocated\_ng\_dl\_up\_tnl\_info;}
+\DoxyCodeLine{00184\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ network\_instance;}
+\DoxyCodeLine{00185\ \};}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__security__algorithm}{e1ap\_security\_algorithm}}\ \{}
+\DoxyCodeLine{00188\ \ \ \mbox{\hyperlink{namespacesrsran}{srsran}}::security::ciphering\_algorithm\ \ \ \ \ \ \ \ \ \ \ ciphering\_algo;}
+\DoxyCodeLine{00189\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::security::integrity\_algorithm>\ integrity\_protection\_algorithm;\ \textcolor{comment}{//\ Optional,\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00190\ \};}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__up__security__key}{e1ap\_up\_security\_key}}\ \{}
+\DoxyCodeLine{00193\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__up__security__key}{e1ap\_up\_security\_key}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__up__security__key}{e1ap\_up\_security\_key}}\&\ other)}
+\DoxyCodeLine{00194\ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ encryption\_key\ \ \ \ \ \ \ \ \ \ \ =\ other.encryption\_key.copy();}
+\DoxyCodeLine{00196\ \ \ \ \ integrity\_protection\_key\ =\ other.integrity\_protection\_key.copy();}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00198\ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ encryption\_key;}
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ integrity\_protection\_key;\ \textcolor{comment}{//\ Optional,\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00201\ \};}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__security__info}{e1ap\_security\_info}}\ \{}
+\DoxyCodeLine{00204\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__security__algorithm}{e1ap\_security\_algorithm}}\ security\_algorithm;}
+\DoxyCodeLine{00205\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__up__security__key}{e1ap\_up\_security\_key}}\ \ \ \ up\_security\_key;}
+\DoxyCodeLine{00206\ \};}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__up__params__item}{e1ap\_up\_params\_item}}\ \{}
+\DoxyCodeLine{00209\ \ \ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\ up\_tnl\_info;}
+\DoxyCodeLine{00210\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_id;}
+\DoxyCodeLine{00211\ \};}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__item}{e1ap\_qos\_flow\_item}}\ \{}
+\DoxyCodeLine{00214\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}::invalid;}
+\DoxyCodeLine{00215\ \};}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__failed__item}{e1ap\_qos\_flow\_failed\_item}}\ \{}
+\DoxyCodeLine{00218\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}::invalid;}
+\DoxyCodeLine{00219\ \ \ cause\_t\ \ \ \ \ \ \ cause;}
+\DoxyCodeLine{00220\ \};}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}\ \{}
+\DoxyCodeLine{00223\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}>\ ul\_data\_forwarding;}
+\DoxyCodeLine{00224\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}>\ dl\_data\_forwarding;}
+\DoxyCodeLine{00225\ \};}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__setup__item__ng__ran}{e1ap\_drb\_setup\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00228\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00229\ \ \ std::vector<e1ap\_up\_params\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ul\_up\_transport\_params;}
+\DoxyCodeLine{00230\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_item>\ \ \ \ \ \ \ \ flow\_setup\_list;}
+\DoxyCodeLine{00231\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_failed\_item>\ flow\_failed\_list;}
+\DoxyCodeLine{00232\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_data\_forwarding\_info\_resp;}
+\DoxyCodeLine{00233\ \};}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__failed__item__ng__ran}{e1ap\_drb\_failed\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00236\ \ \ drb\_id\_t\ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00237\ \ \ cause\_t\ \ cause;}
+\DoxyCodeLine{00238\ \};}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__setup__modification__item}{e1ap\_pdu\_session\_resource\_setup\_modification\_item}}\ \{}
+\DoxyCodeLine{00241\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00242\ \ \ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ng\_dl\_up\_tnl\_info;}
+\DoxyCodeLine{00243\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_setup\_item\_ng\_ran>\ \ drb\_setup\_list\_ng\_ran;}
+\DoxyCodeLine{00244\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_failed\_item\_ng\_ran>\ drb\_failed\_list\_ng\_ran;}
+\DoxyCodeLine{00245\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1security__result__t}{security\_result\_t}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_result;}
+\DoxyCodeLine{00246\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_data\_forwarding\_info\_resp;}
+\DoxyCodeLine{00247\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ng\_dl\_up\_unchanged;}
+\DoxyCodeLine{00248\ \};}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__failed__item}{e1ap\_pdu\_session\_resource\_failed\_item}}\ \{}
+\DoxyCodeLine{00251\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00252\ \ \ cause\_t\ \ \ \ \ \ \ \ \ \ cause;}
+\DoxyCodeLine{00253\ \};}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__crit__diagnostics__item}{e1ap\_crit\_diagnostics\_item}}\ \{}
+\DoxyCodeLine{00256\ \ \ std::string\ iecrit;}
+\DoxyCodeLine{00257\ \ \ uint32\_t\ \ \ \ ie\_id;}
+\DoxyCodeLine{00258\ \ \ std::string\ type\_of\_error;}
+\DoxyCodeLine{00259\ \};}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__crit__diagnostics}{e1ap\_crit\_diagnostics}}\ \{}
+\DoxyCodeLine{00262\ \ \ std::vector<e1ap\_crit\_diagnostics\_item>\ ies\_crit\_diagnostics;}
+\DoxyCodeLine{00263\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ proc\_code;}
+\DoxyCodeLine{00264\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ trigger\_msg;}
+\DoxyCodeLine{00265\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<std::string>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ proc\_crit;}
+\DoxyCodeLine{00266\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction\_id;}
+\DoxyCodeLine{00267\ \};}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__setup__mod__item__ng__ran}{e1ap\_drb\_to\_setup\_mod\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00270\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00271\ \ \ \mbox{\hyperlink{structsrsran_1_1sdap__config__t}{sdap\_config\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdap\_cfg;}
+\DoxyCodeLine{00272\ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__config}{e1ap\_pdcp\_config}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_cfg;}
+\DoxyCodeLine{00273\ \ \ std::vector<e1ap\_cell\_group\_info\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_info;}
+\DoxyCodeLine{00274\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_qos\_param\_item>\ flow\_map\_info;}
+\DoxyCodeLine{00275\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info__request}{e1ap\_data\_forwarding\_info\_request}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_data\_forwarding\_info\_request;}
+\DoxyCodeLine{00276\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_inactivity\_timer;}
+\DoxyCodeLine{00277\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__sn__status__info}{e1ap\_pdcp\_sn\_status\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_status\_info;}
+\DoxyCodeLine{00278\ \};}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__to__modify__item__ng__ran}{e1ap\_drb\_to\_modify\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00281\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00282\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1sdap__config__t}{sdap\_config\_t}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdap\_cfg;}
+\DoxyCodeLine{00283\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__config}{e1ap\_pdcp\_config}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_cfg;}
+\DoxyCodeLine{00284\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_data\_forwarding\_info;}
+\DoxyCodeLine{00285\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{bool}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_status\_request;}
+\DoxyCodeLine{00286\ \ \ std::vector<e1ap\_up\_params\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dl\_up\_params;}
+\DoxyCodeLine{00287\ \ \ std::vector<e1ap\_cell\_group\_info\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_to\_add;}
+\DoxyCodeLine{00288\ \ \ std::vector<e1ap\_cell\_group\_info\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_to\_modify;}
+\DoxyCodeLine{00289\ \ \ std::vector<e1ap\_cell\_group\_info\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_group\_to\_rem;}
+\DoxyCodeLine{00290\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_qos\_param\_item>\ flow\_map\_info;}
+\DoxyCodeLine{00291\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_inactivity\_timer;}
+\DoxyCodeLine{00292\ \};}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__res__to__modify__item}{e1ap\_pdu\_session\_res\_to\_modify\_item}}\ \{}
+\DoxyCodeLine{00295\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00296\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_ind;}
+\DoxyCodeLine{00297\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint64\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_res\_dl\_ambr;}
+\DoxyCodeLine{00298\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ng\_ul\_up\_tnl\_info;}
+\DoxyCodeLine{00299\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info__request}{e1ap\_data\_forwarding\_info\_request}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_data\_forwarding\_info\_request;}
+\DoxyCodeLine{00300\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_data\_forwarding\_info;}
+\DoxyCodeLine{00301\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_inactivity\_timer;}
+\DoxyCodeLine{00302\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<uint16\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ network\_instance;}
+\DoxyCodeLine{00303\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_to\_setup\_item\_ng\_ran>\ \ drb\_to\_setup\_list\_ng\_ran;}
+\DoxyCodeLine{00304\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_to\_modify\_item\_ng\_ran>\ drb\_to\_modify\_list\_ng\_ran;}
+\DoxyCodeLine{00305\ \ \ std::vector<drb\_id\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_to\_rem\_list\_ng\_ran;}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_to\_setup\_mod\_item\_ng\_ran>\ drb\_to\_setup\_mod\_list\_ng\_ran;}
+\DoxyCodeLine{00308\ \};}
+\DoxyCodeLine{00309\ }
+\DoxyCodeLine{00310\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__ng__ran__bearer__context__mod__request}{e1ap\_ng\_ran\_bearer\_context\_mod\_request}}\ \{}
+\DoxyCodeLine{00311\ \ \ slotted\_id\_vector<pdu\_session\_id\_t,\ e1ap\_pdu\_session\_res\_to\_setup\_item>\ \ pdu\_session\_res\_to\_setup\_mod\_list;}
+\DoxyCodeLine{00312\ \ \ slotted\_id\_vector<pdu\_session\_id\_t,\ e1ap\_pdu\_session\_res\_to\_modify\_item>\ pdu\_session\_res\_to\_modify\_list;}
+\DoxyCodeLine{00313\ \ \ std::vector<pdu\_session\_id\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_res\_to\_rem\_list;}
+\DoxyCodeLine{00314\ \};}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__modified__item__ng__ran}{e1ap\_drb\_modified\_item\_ng\_ran}}\ \{}
+\DoxyCodeLine{00317\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ drb\_id\_t::invalid;}
+\DoxyCodeLine{00318\ \ \ std::vector<e1ap\_up\_params\_item>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ul\_up\_transport\_params;}
+\DoxyCodeLine{00319\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_item>\ \ \ \ \ \ \ \ flow\_setup\_list;}
+\DoxyCodeLine{00320\ \ \ slotted\_id\_vector<qos\_flow\_id\_t,\ e1ap\_qos\_flow\_failed\_item>\ flow\_failed\_list;}
+\DoxyCodeLine{00321\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__pdcp__sn__status__info}{e1ap\_pdcp\_sn\_status\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcp\_sn\_status\_info;}
+\DoxyCodeLine{00322\ \};}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__modified__item}{e1ap\_pdu\_session\_resource\_modified\_item}}\ \{}
+\DoxyCodeLine{00325\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}::invalid;}
+\DoxyCodeLine{00326\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ng\_dl\_up\_tnl\_info;}
+\DoxyCodeLine{00327\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_setup\_item\_ng\_ran>\ \ \ \ drb\_setup\_list\_ng\_ran;}
+\DoxyCodeLine{00328\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_failed\_item\_ng\_ran>\ \ \ drb\_failed\_list\_ng\_ran;}
+\DoxyCodeLine{00329\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_modified\_item\_ng\_ran>\ drb\_modified\_list\_ng\_ran;}
+\DoxyCodeLine{00330\ \ \ slotted\_id\_vector<drb\_id\_t,\ e1ap\_drb\_failed\_item\_ng\_ran>\ \ \ drb\_failed\_to\_modify\_list\_ng\_ran;}
+\DoxyCodeLine{00331\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1security__result__t}{security\_result\_t}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ security\_result;}
+\DoxyCodeLine{00332\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1e1ap__data__forwarding__info}{e1ap\_data\_forwarding\_info}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_data\_forwarding\_info\_resp;}
+\DoxyCodeLine{00333\ \};}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

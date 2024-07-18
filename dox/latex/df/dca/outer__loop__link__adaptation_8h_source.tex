@@ -1,0 +1,94 @@
+\doxysection{outer\+\_\+loop\+\_\+link\+\_\+adaptation.\+h}
+\hypertarget{outer__loop__link__adaptation_8h_source}{}\label{outer__loop__link__adaptation_8h_source}\index{lib/scheduler/support/outer\_loop\_link\_adaptation.h@{lib/scheduler/support/outer\_loop\_link\_adaptation.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}math.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/interval.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/sch\_mcs.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Outer-\/layer\ Link\ Adaptation\ (OLLA)\ algorithm,\ which\ modifies\ SNR\ thresholds\ used\ in\ the\ selection\ of\ MCS}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ to\ achieve\ a\ specified\ target\ BLER.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ This\ technique\ was\ first\ proposed\ by\ A\ Sampath,\ P\ Sarath\ Kumar,\ JM\ Holtzman,\ in\ IEEE\ Vehicular\ Technology}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Conference,\ vol.\ 2.\ On\ setting\ reverse\ link\ target\ sir\ in\ a\ cdma\ system,\ (1997).}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1olla__algorithm}{olla\_algorithm}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creats\ an\ OLLA\ algorithm\ instance.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ target\_bler\_\ Target\ BLER\ to\ achieve.\ Values:\ [0,\ 0.5).}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ snr\_inc\_step\_db\ Constant\ increment\ for\ the\ SNR\ offset,\ in\ decibels\ (dB).}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ max\_snr\_offset\_db\ Maximum\ SNR\ offset\ amplitude,\ in\ dB.}}
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{classsrsran_1_1olla__algorithm_a0dffbd56e949ab691cf0d6275efac3e6}{olla\_algorithm}}(\textcolor{keywordtype}{float}\ target\_bler\_,\ \textcolor{keywordtype}{float}\ snr\_inc\_step\_db,\ \textcolor{keywordtype}{float}\ max\_snr\_offset\_db)\ :}
+\DoxyCodeLine{00046\ \ \ \ \ target\_bler(target\_bler\_),}
+\DoxyCodeLine{00047\ \ \ \ \ delta\_down(snr\_inc\_step\_db),}
+\DoxyCodeLine{00048\ \ \ \ \ delta\_up((1\ -\/\ target\_bler)\ *\ snr\_inc\_step\_db\ /\ target\_bler),}
+\DoxyCodeLine{00049\ \ \ \ \ max\_snr\_offset(max\_snr\_offset\_db)}
+\DoxyCodeLine{00050\ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(target\_bler\ >\ 0\ \textcolor{keyword}{and}\ target\_bler\ <\ 0.5,\ \textcolor{stringliteral}{"{}Invalid\ target\ BLER"{}});}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ See\ Francisco\ Blanquez-\/Casado,\ Gerardo\ Gomez,\ Maria\ del\ Carmen\ Aguayo-\/Torres\ and\ Jose\ Tomas\ Entrambasaguas,}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ "{}eOLLA:\ an\ enhanced\ outer\ loop\ link\ adaptation\ for\ cellular\ networks"{},\ EURASIP\ Journal\ on\ Wireless}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//\ Communications\ and\ Networking,\ 2016.}}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(delta\_down\ <\ 2\ *\ std::exp(1)\ *\ target\_bler\ /\ 1.03,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Convergence\ guarantees\ of\ the\ OLLA\ algorithm\ have\ not\ been\ met"{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(max\_snr\_offset\_db\ >\ 0.0f,\ \textcolor{stringliteral}{"{}Invalid\ maximum\ SNR\ offset"{}});}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Update\ SNR\ offset\ with\ ACK/CRC\ feedback.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1olla__algorithm_abfd7f7e11de46d30e285bf0ff567640e}{update}}(\textcolor{keywordtype}{bool}\ ack,\ sch\_mcs\_index\ used\_mcs,\ interval<sch\_mcs\_index,\ \textcolor{keyword}{true}>\ mcs\_boundaries)}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ The\ OLLA\ algorithm\ does\ not\ account\ for\ the\ saturation\ points\ of\ the\ MCS.\ For\ instance,\ if\ we\ applied\ the\ OLLA}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ formula\ when\ MCS=28,\ and\ average\ BLER=0,\ the\ SNR\ offset\ would\ increase\ without\ bounds.\ As\ a\ workaround,\ we}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ forbid\ increases\ in\ the\ SNR\ offset\ for\ MCS=maxMCS,\ and\ decreases\ in\ the\ SNR\ offset\ when\ MCS=minMCS.}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{float}\ eff\_delta\_down\ =\ used\_mcs\ >=\ mcs\_boundaries.stop()\ ?\ 0\ :\ delta\_down;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ eff\_delta\_up\ \ \ =\ used\_mcs\ <=\ mcs\_boundaries.start()\ ?\ 0\ :\ delta\_up;}
+\DoxyCodeLine{00068\ \ \ \ \ current\_offset\ +=\ ack\ ?\ eff\_delta\_down\ :\ -\/eff\_delta\_up;}
+\DoxyCodeLine{00069\ \ \ \ \ current\_offset\ =\ std::max(std::min(current\_offset,\ max\_snr\_offset),\ -\/max\_snr\_offset);}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{return}\ current\_offset;}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Offset\ to\ apply\ to\ SNR\ estimate.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1olla__algorithm_a6f20b8c6e5f0e7de9d73616056eaa56e}{offset\_db}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ current\_offset;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Target\ BLER\ to\ achieve.\ Values:\ [0,\ 0.5).}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{float}\ target\_bler;}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ Delta\ down\ and\ up\ variables\ of\ the\ OLLA\ algorithm.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{float}\ delta\_down,\ delta\_up;}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Maximum\ SNR\ offset\ amplitude,\ in\ dB.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{float}\ max\_snr\_offset;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Current\ SNR\ offset\ in\ dB,\ to\ apply\ on\ top\ of\ the\ estimated\ SNR.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{float}\ current\_offset\ =\ 0;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

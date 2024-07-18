@@ -1,0 +1,83 @@
+\doxysection{srsran\+::polar\+\_\+interleaver\+\_\+impl Class Reference}
+\hypertarget{classsrsran_1_1polar__interleaver__impl}{}\label{classsrsran_1_1polar__interleaver__impl}\index{srsran::polar\_interleaver\_impl@{srsran::polar\_interleaver\_impl}}
+
+
+Inheritance diagram for srsran\+::polar\+\_\+interleaver\+\_\+impl\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=237pt]{dd/dd2/classsrsran_1_1polar__interleaver__impl__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for srsran\+::polar\+\_\+interleaver\+\_\+impl\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=237pt]{d2/da1/classsrsran_1_1polar__interleaver__impl__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1polar__interleaver__impl_aa710efeb13534f36c35ead60df52ac95}{interleave}} (\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$ out, \mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$ in, polar\+\_\+interleaver\+\_\+direction direction) \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{override}}
+\begin{DoxyCompactList}\small\item\em Implements Polar code interleaver as described in TS 38.\+212 V15.\+9.\+0 Section 5.\+3.\+1.\+1. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1polar__interleaver__impl_aa710efeb13534f36c35ead60df52ac95}\label{classsrsran_1_1polar__interleaver__impl_aa710efeb13534f36c35ead60df52ac95} 
+\index{srsran::polar\_interleaver\_impl@{srsran::polar\_interleaver\_impl}!interleave@{interleave}}
+\index{interleave@{interleave}!srsran::polar\_interleaver\_impl@{srsran::polar\_interleaver\_impl}}
+\doxysubsubsection{\texorpdfstring{interleave()}{interleave()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} polar\+\_\+interleaver\+\_\+impl\+::interleave (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$}]{out,  }\item[{\mbox{\hyperlink{classsrsran_1_1span}{span}}$<$ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} $>$}]{in,  }\item[{polar\+\_\+interleaver\+\_\+direction}]{direction }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements Polar code interleaver as described in TS 38.\+212 V15.\+9.\+0 Section 5.\+3.\+1.\+1. 
+
+\begin{DoxyAttention}{Attention}
+The input and output data cannot be the same.
+\end{DoxyAttention}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em in} & bit Input data \\
+\hline
+\mbox{\texttt{ out}}  & {\em out} & bit Output data \\
+\hline
+\mbox{\texttt{ in}}  & {\em dir} & Set to TX or RX for encoder or decoder \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{classsrsran_1_1polar__interleaver_a9b6bf25882cae6d2cf2c9b5ea5c5c196}{srsran\+::polar\+\_\+interleaver}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \ \ srsran\_assert(in.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ ==\ out.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),\ \textcolor{stringliteral}{"{}Input\ and\ output\ span\ sizes\ must\ be\ identical"{}});}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{unsigned}\ K\ =\ in.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ k\ =\ 0;}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{for}\ (\mbox{\hyperlink{classuint32__t}{uint32\_t}}\ m\ =\ 0;\ m\ <\ K\_MAX\_IL;\ m++)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{if}\ (pattern[m]\ >=\ K\_MAX\_IL\ -\/\ K)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pi\_k}}\ =\ pattern[m]\ -\/\ (K\_MAX\_IL\ -\/\ K);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (direction\ ==\ polar\_interleaver\_direction::tx)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ out[k]\ =\ in[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pi\_k}}];}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ out[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pi\_k}}]\ =\ in[k];}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/phy/upper/channel\+\_\+coding/polar/polar\+\_\+interleaver\+\_\+impl.\+h\item 
+lib/phy/upper/channel\+\_\+coding/polar/polar\+\_\+interleaver\+\_\+impl.\+cpp\end{DoxyCompactItemize}

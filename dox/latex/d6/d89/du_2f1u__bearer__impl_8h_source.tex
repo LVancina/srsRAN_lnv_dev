@@ -1,0 +1,99 @@
+\doxysection{f1u\+\_\+bearer\+\_\+impl.\+h}
+\hypertarget{du_2f1u__bearer__impl_8h_source}{}\label{du_2f1u__bearer__impl_8h_source}\index{lib/f1u/du/f1u\_bearer\_impl.h@{lib/f1u/du/f1u\_bearer\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1u/du/f1u\_bearer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1u/du/f1u\_bearer\_logger.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1u/du/f1u\_config.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1u/du/f1u\_rx\_sdu\_notifier.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/f1u/du/f1u\_tx\_pdu\_notifier.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/lcid.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/up\_transport\_layer\_info.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ srs\_du\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ f1u\_bearer\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer}{f1u\_bearer}},}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}},}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}},}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ f1u\_bearer\_impl(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1up__transport__layer__info}{up\_transport\_layer\_info}}\&\ dl\_tnl\_info\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1u__config}{f1u\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ config,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{f1u\_rx\_sdu\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ rx\_sdu\_notifier\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f1u\_tx\_pdu\_notifier\&\ \ \ \ \ \ \ \ \ \ \ tx\_pdu\_notifier\_,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}\&\ \ \ \ \ \ get\_tx\_sdu\_handler()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}}\&\ get\_tx\_delivery\_handler()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__pdu__handler}{f1u\_rx\_pdu\_handler}}\&\ \ \ \ \ \ get\_rx\_pdu\_handler()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ handle\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__impl_ad3e0041b669dc7cec24326f70a6f707e}{handle\_transmit\_notification}}(uint32\_t\ highest\_pdcp\_sn)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__bearer__impl_a0d59ea2781e0ad4e33bfc2d7c0652f1c}{handle\_delivery\_notification}}(uint32\_t\ highest\_pdcp\_sn)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu(\mbox{\hyperlink{structsrsran_1_1nru__dl__message}{nru\_dl\_message}}\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{void}\ on\_expired\_ul\_notif\_timer();}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00063\ \ \ f1u\_bearer\_logger\ logger;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ Config\ storage}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__du_1_1f1u__config}{f1u\_config}}\ cfg;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{f1u\_rx\_sdu\_notifier}}\&\ rx\_sdu\_notifier;}
+\DoxyCodeLine{00069\ \ \ f1u\_tx\_pdu\_notifier\&\ tx\_pdu\_notifier;}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Sentinel\ value\ representing\ a\ not-\/yet\ set\ PDCP\ SN}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint32\_t\ unset\_pdcp\_sn\ =\ UINT32\_MAX;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ Uplink\ notification\ timer\ that\ triggers\ periodic\ reports\ of\ highest\ delivered/transmitted\ PDCP\ SN\ towards\ upper}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ layers.\ The\ purpose\ of\ this\ timer\ is\ to\ avoid\ excessive\ uplink\ notifications\ for\ every\ PDCP\ SN\ that\ is\ notified\ by}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ lower\ layers.}}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ ul\_notif\_timer;}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Holds\ the\ most\ recent\ highest\ transmitted\ PDCP\ SN\ that\ is\ frequently\ updated\ by\ lower\ layers\ (i.e.\ by\ RLC\ AM/UM)}}
+\DoxyCodeLine{00079\ \ \ std::atomic<uint32\_t>\ highest\_transmitted\_pdcp\_sn\{unset\_pdcp\_sn\};}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Holds\ the\ most\ recent\ highest\ delivered\ PDCP\ SN\ that\ is\ frequently\ updated\ by\ lower\ layers\ (i.e.\ by\ RLC\ AM)}}
+\DoxyCodeLine{00081\ \ \ std::atomic<uint32\_t>\ highest\_delivered\_pdcp\_sn\{unset\_pdcp\_sn\};}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ Holds\ the\ last\ highest\ transmitted\ PDCP\ SN\ that\ was\ reported\ to\ upper\ layers\ (i.e.\ towards\ CU-\/UP)}}
+\DoxyCodeLine{00083\ \ \ uint32\_t\ notif\_highest\_transmitted\_pdcp\_sn\ =\ unset\_pdcp\_sn;}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Holds\ the\ last\ highest\ delivered\ PDCP\ SN\ that\ was\ reported\ to\ upper\ layers\ (i.e.\ towards\ CU-\/UP)}}
+\DoxyCodeLine{00085\ \ \ uint32\_t\ notif\_highest\_delivered\_pdcp\_sn\ =\ unset\_pdcp\_sn;}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{bool}\ fill\_highest\_transmitted\_pdcp\_sn(\mbox{\hyperlink{structsrsran_1_1nru__dl__data__delivery__status}{nru\_dl\_data\_delivery\_status}}\&\ status);}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{bool}\ fill\_highest\_delivered\_pdcp\_sn(\mbox{\hyperlink{structsrsran_1_1nru__dl__data__delivery__status}{nru\_dl\_data\_delivery\_status}}\&\ status);}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ fill\_data\_delivery\_status(\mbox{\hyperlink{structsrsran_1_1nru__ul__message}{nru\_ul\_message}}\&\ msg);}
+\DoxyCodeLine{00090\ \};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00093\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,125 @@
+\doxysection{pdsch\+\_\+processor\+\_\+lite\+\_\+impl.\+h}
+\hypertarget{pdsch__processor__lite__impl_8h_source}{}\label{pdsch__processor__lite__impl_8h_source}\index{lib/phy/upper/channel\_processors/pdsch\_processor\_lite\_impl.h@{lib/phy/upper/channel\_processors/pdsch\_processor\_lite\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_mapper.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ldpc__encoder_8h}{srsran/phy/upper/channel\_coding/ldpc/ldpc\_encoder.h}}"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ldpc__rate__matcher_8h}{srsran/phy/upper/channel\_coding/ldpc/ldpc\_rate\_matcher.h}}"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ldpc__segmenter__tx_8h}{srsran/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_tx.h}}"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_modulation/modulation\_mapper.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pdsch__encoder_8h}{srsran/phy/upper/channel\_processors/pdsch\_encoder.h}}"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_processors/pdsch\_processor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pseudo__random__generator_8h}{srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/signal\_processors/dmrs\_pdsch\_processor.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pdsch__constants_8h}{srsran/ran/pdsch/pdsch\_constants.h}}"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{bit_8h}{srsran/srsvec/bit.h}}"{}}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pdsch__block__processor}{pdsch\_block\_processor}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__mapper_1_1symbol__buffer}{resource\_grid\_mapper::symbol\_buffer}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor}{pdsch\_block\_processor}}(\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__tx}{ldpc\_segmenter\_tx}}\&\ \ \ \ \ \ \ segmenter\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder}{ldpc\_encoder}}\&\ \ \ \ \ \ \ \ \ \ \ \ encoder\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__rate__matcher}{ldpc\_rate\_matcher}}\&\ \ \ \ \ \ \ rate\_matcher\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pseudo__random__generator}{pseudo\_random\_generator}}\&\ scrambler\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1modulation__mapper}{modulation\_mapper}}\&\ \ \ \ \ \ \ modulator\_)\ :}
+\DoxyCodeLine{00047\ \ \ \ \ segmenter(segmenter\_),\ encoder(encoder\_),\ rate\_matcher(rate\_matcher\_),\ scrambler(scrambler\_),\ modulator(modulator\_)}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor_a0e819b1d5e93764fd00bb13eb33bb975}{configure\_new\_transmission}}(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}}\ data,\ \textcolor{keywordtype}{unsigned}\ i\_cw,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__processor_1_1pdu__t}{pdsch\_processor::pdu\_t}}\&\ pdu);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor_af41598bd487ac18fb2920c9f0102fde9}{get\_max\_block\_size}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor_a6bcbf0699921810f463fbc6bfdffa8e0}{empty}}()\ \textcolor{keyword}{const\ override};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ ci8\_t>}}\ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor_ad562ad229d0d1dbed2a289419cae653a}{pop\_symbols}}(\textcolor{keywordtype}{unsigned}\ block\_size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ max\_block\_size\ =\ 4096\ /\ \textcolor{keyword}{sizeof}(ci8\_t);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__tx}{ldpc\_segmenter\_tx}}\&\ segmenter;}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder}{ldpc\_encoder}}\&\ encoder;}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1ldpc__rate__matcher}{ldpc\_rate\_matcher}}\&\ rate\_matcher;}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1pseudo__random__generator}{pseudo\_random\_generator}}\&\ scrambler;}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{classsrsran_1_1modulation__mapper}{modulation\_mapper}}\&\ modulator;}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<described\_segment,\ MAX\_NOF\_SEGMENTS>}}\ d\_segments;}
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer}{static\_bit\_buffer<ldpc::MAX\_CODEBLOCK\_RM\_SIZE>}}\ temp\_codeblock;}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ modulation;}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{unsigned}\ next\_i\_cb\ =\ 0;}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer}{static\_bit\_buffer<ldpc::MAX\_CODEBLOCK\_RM\_SIZE>}}\ rm\_buffer;}
+\DoxyCodeLine{00093\ \ \ std::array<ci8\_t,\ ldpc::MAX\_CODEBLOCK\_RM\_SIZE>\ temp\_codeblock\_symbols;}
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<ci8\_t>}}\ codeblock\_symbols;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ new\_codeblock();}
+\DoxyCodeLine{00099\ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pdsch__processor__lite__impl}{pdsch\_processor\_lite\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor}{pdsch\_processor}}}
+\DoxyCodeLine{00103\ \{}
+\DoxyCodeLine{00104\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__lite__impl_aede8f3ec45712aafc16f3b274ae237f9}{pdsch\_processor\_lite\_impl}}(std::unique\_ptr<ldpc\_segmenter\_tx>\ \ \ \ \ \ \ segmenter\_,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<ldpc\_encoder>\ \ \ \ \ \ \ \ \ \ \ \ encoder\_,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<ldpc\_rate\_matcher>\ \ \ \ \ \ \ rate\_matcher\_,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pseudo\_random\_generator>\ scrambler\_,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<modulation\_mapper>\ \ \ \ \ \ \ modulator\_,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<dmrs\_pdsch\_processor>\ \ \ \ dmrs\_)\ :}
+\DoxyCodeLine{00112\ \ \ \ \ segmenter(std::move(segmenter\_)),}
+\DoxyCodeLine{00113\ \ \ \ \ encoder(std::move(encoder\_)),}
+\DoxyCodeLine{00114\ \ \ \ \ rate\_matcher(std::move(rate\_matcher\_)),}
+\DoxyCodeLine{00115\ \ \ \ \ scrambler(std::move(scrambler\_)),}
+\DoxyCodeLine{00116\ \ \ \ \ modulator(std::move(modulator\_)),}
+\DoxyCodeLine{00117\ \ \ \ \ dmrs(std::move(dmrs\_)),}
+\DoxyCodeLine{00118\ \ \ \ \ subprocessor(*segmenter,\ *encoder,\ *rate\_matcher,\ *scrambler,\ *modulator)}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ srsran\_assert(segmenter\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ segmenter\ pointer."{}});}
+\DoxyCodeLine{00121\ \ \ \ \ srsran\_assert(scrambler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ scrambler\ pointer."{}});}
+\DoxyCodeLine{00122\ \ \ \ \ srsran\_assert(dmrs\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ dmrs\ pointer."{}});}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__lite__impl_afa67eb9aff31265babc514d1b4a46a98}{process}}(\mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mapper,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__notifier}{pdsch\_processor\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notifier,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}},\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor_a6c6105b34bc5b25ffb234eddcbfe3f71}{MAX\_NOF\_TRANSPORT\_BLOCKS}}>\ data,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ pdu\_t\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{void}\ process\_dmrs(\mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}\&\ mapper,\ \textcolor{keyword}{const}\ pdu\_t\&\ pdu);}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00138\ \ \ std::unique\_ptr<ldpc\_segmenter\_tx>\ segmenter;}
+\DoxyCodeLine{00140\ \ \ std::unique\_ptr<ldpc\_encoder>\ encoder;}
+\DoxyCodeLine{00142\ \ \ std::unique\_ptr<ldpc\_rate\_matcher>\ rate\_matcher;}
+\DoxyCodeLine{00144\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ scrambler;}
+\DoxyCodeLine{00146\ \ \ std::unique\_ptr<modulation\_mapper>\ modulator;}
+\DoxyCodeLine{00148\ \ \ std::unique\_ptr<dmrs\_pdsch\_processor>\ dmrs;}
+\DoxyCodeLine{00150\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__block__processor}{pdsch\_block\_processor}}\ subprocessor;}
+\DoxyCodeLine{00151\ \};}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

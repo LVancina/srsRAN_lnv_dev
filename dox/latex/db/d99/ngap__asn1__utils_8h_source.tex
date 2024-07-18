@@ -1,0 +1,133 @@
+\doxysection{ngap\+\_\+asn1\+\_\+utils.\+h}
+\hypertarget{ngap__asn1__utils_8h_source}{}\label{ngap__asn1__utils_8h_source}\index{lib/ngap/ngap\_asn1\_utils.h@{lib/ngap/ngap\_asn1\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/ngap/ngap.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/ngap/ngap\_pdu\_contents.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/cu\_cp/cu\_cp\_types.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/security/security.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ srs\_cu\_cp\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ Get\ string\ with\ NGAP\ error\ cause.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ get\_cause\_str(\textcolor{keyword}{const}\ asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c}{cause\_c}}\&\ cause)}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::ngap;}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordflow}{switch}\ (cause.type())\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{case}\ cause\_c::types\_opts::radio\_network:}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.radio\_network().to\_string();}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c}{cause\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c_1_1types__opts}{types\_opts}}::transport:}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.transport().to\_string();}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{case}\ cause\_c::types\_opts::nas:}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.nas().to\_string();}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c}{cause\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c_1_1types__opts}{types\_opts}}::protocol:}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.protocol().to\_string();}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c}{cause\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1cause__c_1_1types__opts}{types\_opts}}::misc:}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.misc().to\_string();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}unknown"{}};}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ Extracts\ message\ type.}}
+\DoxyCodeLine{00057\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ get\_message\_type\_str(\textcolor{keyword}{const}\ asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c}{ngap\_pdu\_c}}\&\ pdu)}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::ngap;}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c}{ngap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c_1_1types__opts}{types\_opts}}::init\_msg:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.init\_msg().value.type().to\_string();}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c}{ngap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c_1_1types__opts}{types\_opts}}::successful\_outcome:}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.successful\_outcome().value.type().to\_string();}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c}{ngap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1ngap_1_1ngap__pdu__c_1_1types__opts}{types\_opts}}::unsuccessful\_outcome:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.unsuccessful\_outcome().value.type().to\_string();}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00069\ \ \ \}}
+\DoxyCodeLine{00070\ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ NGAP\ PDU\ type\ \(\backslash\)"{}\{\}\(\backslash\)"{}"{}},\ pdu.type().to\_string());}
+\DoxyCodeLine{00071\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{inline}\ expected<ran\_ue\_id\_t>\ get\_ran\_ue\_id(\textcolor{keyword}{const}\ asn1::ngap::init\_msg\_s\&\ init\_msg)}
+\DoxyCodeLine{00074\ \{}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordflow}{switch}\ (init\_msg.value.type())\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::ngap::ngap\_elem\_procs\_o::init\_msg\_c::types\_opts::init\_ue\_msg:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ uint\_to\_ran\_ue\_id(init\_msg.value.init\_ue\_msg()-\/>ran\_ue\_ngap\_id);}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{inline}\ expected<ran\_ue\_id\_t>\ get\_ran\_ue\_id(\textcolor{keyword}{const}\ asn1::ngap::successful\_outcome\_s\&\ success\_outcome)}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00087\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{inline}\ expected<ran\_ue\_id\_t>\ get\_ran\_ue\_id(\textcolor{keyword}{const}\ asn1::ngap::unsuccessful\_outcome\_s\&\ unsuccessful\_outcome)}
+\DoxyCodeLine{00090\ \{}
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00092\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{inline}\ expected<ran\_ue\_id\_t>\ get\_ran\_ue\_id(\textcolor{keyword}{const}\ asn1::ngap::ngap\_pdu\_c\&\ pdu)}
+\DoxyCodeLine{00095\ \{}
+\DoxyCodeLine{00096\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::ngap;}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{case}\ ngap\_pdu\_c::types\_opts::init\_msg:}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_ran\_ue\_id(pdu.init\_msg());}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{case}\ ngap\_pdu\_c::types\_opts::successful\_outcome:}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_ran\_ue\_id(pdu.successful\_outcome());}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{case}\ ngap\_pdu\_c::types\_opts::unsuccessful\_outcome:}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_ran\_ue\_id(pdu.unsuccessful\_outcome());}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00108\ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ copy\_asn1\_key(security::sec\_key\&\ key\_out,\ \textcolor{keyword}{const}\ asn1::fixed\_bitstring<256,\ \textcolor{keyword}{false},\ \textcolor{keyword}{true}>\&\ key\_in)}
+\DoxyCodeLine{00111\ \{}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordflow}{for}\ (uint32\_t\ i\ =\ 0;\ i\ <\ key\_in.nof\_octets();\ ++i)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ key\_out[i]\ =\ key\_in.data()[key\_in.nof\_octets()\ -\/\ 1\ -\/\ i];}
+\DoxyCodeLine{00114\ \ \ \}}
+\DoxyCodeLine{00115\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_supported\_algorithms(security::supported\_algorithms\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ supported\_algos\_out,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ asn1::fixed\_bitstring<16,\ \textcolor{keyword}{true},\ \textcolor{keyword}{true}>\&\ supported\_algos\_in)}
+\DoxyCodeLine{00119\ \{}
+\DoxyCodeLine{00120\ \ \ uint16\_t\ tmp\ =\ *\textcolor{keyword}{reinterpret\_cast}<\textcolor{keyword}{const}\ uint16\_t*>(supported\_algos\_in.data());}
+\DoxyCodeLine{00121\ \ \ \textcolor{keywordflow}{for}\ (uint16\_t\ i\ =\ 0;\ i\ <\ 3;\ ++i)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ supported\_algos\_out[i]\ =\ ((tmp\ >>\ (15\ -\/\ i))\ \&\ 0x01U)\ ==\ 1;\ \textcolor{comment}{//\ interesting\ bits\ are\ in\ the\ second\ byte}}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00127\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

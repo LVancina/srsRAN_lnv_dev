@@ -1,0 +1,66 @@
+\doxysection{pusch\+\_\+decoder\+\_\+buffer.\+h}
+\hypertarget{pusch__decoder__buffer_8h_source}{}\label{pusch__decoder__buffer_8h_source}\index{include/srsran/phy/upper/channel\_processors/pusch/pusch\_decoder\_buffer.h@{include/srsran/phy/upper/channel\_processors/pusch/pusch\_decoder\_buffer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ decoder\ buffer\ interface.}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Interfaces\ the\ UL-\/SCH\ demultiplexer\ with\ the\ different\ message\ decoders\ (SCH\ data,\ HARQ\ ACK,\ CSI\ Part\ 1,\ and\ CSI}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Part\ 2).\ The\ UL-\/SCH\ demultiplexer\ notifies\ processed\ continuous\ blocks\ of\ data\ using\ the\ method\ \(\backslash\)ref\ on\_new\_softbits}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ and\ notifies\ the\ end\ of\ data\ using\ the\ method\ \(\backslash\)ref\ on\_end\_softbits.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer_ad9423459430c63b722963eac3bdb3a6f}{pusch\_decoder\_buffer}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ view\ of\ the\ next\ block\ of\ demultiplexed\ soft\ bits.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ This\ method\ is\ temporal.\ It\ allows\ the\ UL-\/SCH\ demultiplexer\ to\ get\ a\ view\ of\ the\ soft\ bits\ storage\ in\ the\ decoder}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ to\ avoid\ to\ copy.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ block\_size\ Block\ size\ of\ continuous\ soft\ bits\ to\ write.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/write\ view\ of\ the\ next\ soft\ bits\ available\ for\ writing.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{virtual}\ span<\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer_a65f67a9163b2a094e2ea03d85ad8096c}{get\_next\_block\_view}}(\textcolor{keywordtype}{unsigned}\ block\_size)\ =\ 0;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ a\ new\ block\ of\ soft\ bits.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ softbits\ Soft\ bits\ belonging\ to\ a\ codeword.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ \(\backslash\)c\ demodulated\ and\ \(\backslash\)c\ scrambled\ must\ have\ the\ same\ size.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer_a27e4b32c91e8f3e13dff0928268ab653}{on\_new\_softbits}}(span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ softbits)\ =\ 0;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ the\ end\ of\ the\ softbits.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ It\ can\ be\ used\ by\ the\ decoder\ to\ start\ decoding.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer_a80f0303716f871142901de4bd295c2d4}{on\_end\_softbits}}()\ =\ 0;}
+\DoxyCodeLine{00058\ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

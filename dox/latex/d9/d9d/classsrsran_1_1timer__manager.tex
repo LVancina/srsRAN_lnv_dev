@@ -1,0 +1,211 @@
+\doxysection{srsran\+::timer\+\_\+manager Class Reference}
+\hypertarget{classsrsran_1_1timer__manager}{}\label{classsrsran_1_1timer__manager}\index{srsran::timer\_manager@{srsran::timer\_manager}}
+
+
+This class implements the service associated with the management of the timers of the application, including the allocation, destruction, starting/halting and timeout triggering of the registered timers. The user can check and control the state of an individual timer via the respective {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} handle object.  
+
+
+
+
+{\ttfamily \#include $<$timers.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::timer\+\_\+manager\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{d0/d1b/classsrsran_1_1timer__manager__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39}{timer\+\_\+manager}} (size\+\_\+t \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pre\+\_\+reserve\+\_\+capacity}}=64)
+\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}{tick}} ()
+\begin{DoxyCompactList}\small\item\em Advances one tick and triggers any running timer that just expired. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} \mbox{\hyperlink{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}{create\+\_\+unique\+\_\+timer}} (\mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&exec)
+\begin{DoxyCompactList}\small\item\em Creates a new instance of a unique timer. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8}{nof\+\_\+timers}} () \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Returns the number of timers handled by this instance. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classunsigned}{unsigned}} \mbox{\hyperlink{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8}{nof\+\_\+running\+\_\+timers}} () \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Returns the number of running timers handled by this instance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1timer__manager_abf15e4ba4b26bb5301fc9a93f615e81e}\label{classsrsran_1_1timer__manager_abf15e4ba4b26bb5301fc9a93f615e81e} 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{class}} {\bfseries unique\+\_\+timer}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class implements the service associated with the management of the timers of the application, including the allocation, destruction, starting/halting and timeout triggering of the registered timers. The user can check and control the state of an individual timer via the respective {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} handle object. 
+
+The {\ttfamily \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager}} and {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} classes follow a publisher/subscriber model. The {\ttfamily \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager}}, the publisher, receives periodic ticks from a clock source (e.\+g. RF front-\/end or system clock) that advance its internal clock. It also contains an internal list of subscribed {\ttfamily unique\+\_\+timers}. Once enough time has passed and a running timer time-\/outs, the respective timer gets notified via a callback. The user can control the timer starting time, duration until timeout and timeout callback function definition via the {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} interface.
+
+The implementation assumes that the "{}tick()"{} method is always called from the same thread and that an \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer} object is not accessed concurrently by different threads. However, separate unique\+\_\+timers can be safely used from separate threads. An \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer} object and the \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager} communicate with one another via thread-\/safe queues. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39}\label{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!timer\_manager@{timer\_manager}}
+\index{timer\_manager@{timer\_manager}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{timer\_manager()}{timer\_manager()}}
+{\footnotesize\ttfamily timer\+\_\+manager\+::timer\+\_\+manager (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{pre\+\_\+reserve\+\_\+capacity = {\ttfamily 64} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+Constructs a timer manager. 
+\begin{DoxyParams}{Parameters}
+{\em capacity} & Number of timers to pre-\/reserve and speed up timer construction. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}})),\ time\_wheel(WHEEL\_SIZE)}
+\DoxyCodeLine{00082\ \{}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ Pre-\/reserve\ timers.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordflow}{while}\ (timer\_list.size()\ <\ capacity)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ timer\_list.emplace\_back();}
+\DoxyCodeLine{00086\ \ \ \ \ timer\_list.back().frontend\ =\ std::make\_unique<timer\_frontend>(*\textcolor{keyword}{this},\ (\mbox{\hyperlink{namespacesrsran_aa72283f3567ebd1eb77b7dd882d6de33}{timer\_id\_t}})next\_timer\_id++);}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ Push\ to\ free\ list\ in\ reverse\ order\ to\ keep\ ascending\ ids.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ i\ =\ timer\_list.rbegin(),\ e\ =\ timer\_list.rend();\ i\ !=\ e;\ ++i)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ free\_list.push\_back(i-\/>frontend.get());}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}\label{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!create\_unique\_timer@{create\_unique\_timer}}
+\index{create\_unique\_timer@{create\_unique\_timer}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{create\_unique\_timer()}{create\_unique\_timer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} timer\+\_\+manager\+::create\+\_\+unique\+\_\+timer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&}]{exec }\end{DoxyParamCaption})}
+
+
+
+Creates a new instance of a unique timer. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00312\ \{}
+\DoxyCodeLine{00313\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}(create\_frontend\_timer(exec));}
+\DoxyCodeLine{00314\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8}\label{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!nof\_running\_timers@{nof\_running\_timers}}
+\index{nof\_running\_timers@{nof\_running\_timers}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{nof\_running\_timers()}{nof\_running\_timers()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classunsigned}{unsigned}} timer\+\_\+manager\+::nof\+\_\+running\+\_\+timers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the number of running timers handled by this instance. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00324\ \{}
+\DoxyCodeLine{00325\ \ \ \textcolor{keywordflow}{return}\ nof\_timers\_running;}
+\DoxyCodeLine{00326\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8}\label{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!nof\_timers@{nof\_timers}}
+\index{nof\_timers@{nof\_timers}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{nof\_timers()}{nof\_timers()}}
+{\footnotesize\ttfamily size\+\_\+t timer\+\_\+manager\+::nof\+\_\+timers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the number of timers handled by this instance. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00317\ \{}
+\DoxyCodeLine{00318\ \ \ std::lock\_guard<std::mutex>\ lock(free\_list\_mutex);}
+\DoxyCodeLine{00319\ \ \ \textcolor{keywordflow}{return}\ timer\_list.size()\ -\/\ free\_list.size();}
+\DoxyCodeLine{00320\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}\label{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!tick@{tick}}
+\index{tick@{tick}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{tick()}{tick()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} timer\+\_\+manager\+::tick (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Advances one tick and triggers any running timer that just expired. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{//\ Extract\ new\ commands\ from\ the\ timer\ front-\/ends\ to\ process\ in\ this\ tick.}}
+\DoxyCodeLine{00098\ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ cmds\_to\_process.clear();}
+\DoxyCodeLine{00100\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(cmd\_mutex);}
+\DoxyCodeLine{00101\ \ \ \ \ pending\_cmds.swap(cmds\_to\_process);}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{//\ Process\ new\ commands\ coming\ from\ the\ front-\/end.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordflow}{for}\ (variant<cmd\_t,\ std::unique\_ptr<timer\_frontend>>\&\ event\ :\ cmds\_to\_process)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a12933c7cf1b18b27c80ceb67779e099e}{variant\_holds\_alternative}}<std::unique\_ptr<timer\_frontend>>(event))\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{comment}{//\ New\ timer\ was\ created\ in\ the\ frontend.}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ create\_timer\_handle(std::move(\mbox{\hyperlink{namespacesrsran_aef4366ed0c38eeb652838a864fb0fcaf}{variant\_get}}<std::unique\_ptr<timer\_frontend>>(event)));}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ Existing\ timer.}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{const}\ cmd\_t\&\ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}\ \ \ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{variant\_get<cmd\_t>}}(event);}
+\DoxyCodeLine{00114\ \ \ \ \ timer\_handle\&\ timer\ =\ timer\_list[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}.id)];}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Update\ the\ timer\ backend\ cmd\_id\ to\ match\ frontend.}}
+\DoxyCodeLine{00117\ \ \ \ \ timer.backend.cmd\_id\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}.cmd\_id;}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{//\ Stop\ timer\ if\ it\ is\ currently\ running.}}
+\DoxyCodeLine{00120\ \ \ \ \ try\_stop\_timer\_backend(timer,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}.action\ ==\ cmd\_t::start)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ new\ timer\ run.}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ start\_timer\_backend(timer,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}.duration);}
+\DoxyCodeLine{00125\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cmd}}.action\ ==\ cmd\_t::destroy)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ destroy\_timer\_backend(timer);}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{//\ Re-\/trigger\ timeout\ for\ timers\ that\ failed\ to\ be\ triggered\ in\ the\ previous\ slot.}}
+\DoxyCodeLine{00131\ \ \ handle\_postponed\_timeouts();}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{//\ Advance\ time.}}
+\DoxyCodeLine{00134\ \ \ cur\_time++;}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{//\ Process\ the\ timer\ runs\ which\ expire\ in\ this\ tick.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{keyword}{auto}\&\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{wheel\_list}}\ =\ time\_wheel[cur\_time\ \&\ WHEEL\_MASK];}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{//\ >\ iterate\ intrusive\ linked\ list\ of\ running\ timers\ with\ same\ wheel\ index}}
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{wheel\_list}}.begin();\ it\ !=\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{wheel\_list}}.end();)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ srsran\_assert(it-\/>frontend\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}invalid\ state\ of\ timer\ in\ timer\ wheel"{}});}
+\DoxyCodeLine{00142\ \ \ \ \ timer\_handle\&\ timer\ =\ timer\_list[\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(it-\/>frontend-\/>id)];}
+\DoxyCodeLine{00143\ \ \ \ \ ++it;\ \textcolor{comment}{//\ we\ move\ iterator\ already,\ in\ case,\ the\ current\ timer\ gets\ removed\ from\ the\ linked\ list.}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{comment}{//\ If\ the\ timer\ doesnt\ expire\ yet,\ continue\ the\ iteration\ in\ the\ same\ wheel\ bucket.}}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{if}\ (cur\_time\ !=\ timer.backend.timeout)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00148\ \ \ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{comment}{//\ Stop\ timer.\ Note:\ callback\ has\ to\ see\ the\ timer\ has\ already\ expired.}}
+\DoxyCodeLine{00151\ \ \ \ \ stop\_timer\_backend(timer,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/srsran/support/timers.\+h\item 
+lib/support/timers.\+cpp\end{DoxyCompactItemize}

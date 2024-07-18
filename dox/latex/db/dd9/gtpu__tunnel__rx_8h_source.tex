@@ -1,0 +1,94 @@
+\doxysection{gtpu\+\_\+tunnel\+\_\+rx.\+h}
+\hypertarget{gtpu__tunnel__rx_8h_source}{}\label{gtpu__tunnel__rx_8h_source}\index{include/srsran/gtpu/gtpu\_tunnel\_rx.h@{include/srsran/gtpu/gtpu\_tunnel\_rx.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cu\_types.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{struct}\ sockaddr\_storage;}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00031\ \textcolor{comment}{\ *\ This\ file\ will\ hold\ the\ interfaces\ and\ notifiers\ for\ the\ GTP-\/U\ tunnel.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{\ *\ They\ follow\ the\ following\ nomenclature:}}
+\DoxyCodeLine{00033\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00034\ \textcolor{comment}{\ *\ \ \ gtpu\_tunnel[\_DOMAIN]\_\{tx/rx\}\_\{lower/upper\}\_layer\_\{interface/notifier\}}}
+\DoxyCodeLine{00035\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00036\ \textcolor{comment}{\ *\ 1.\ TX/RX\ indicates\ whether\ the\ interface\ is\ intended\ for\ the}}
+\DoxyCodeLine{00037\ \textcolor{comment}{\ *\ \ \ \ TX\ or\ RX\ side\ of\ the\ tunnel.\ TX/RX\ terminology\ is\ used\ from\ the}}
+\DoxyCodeLine{00038\ \textcolor{comment}{\ *\ \ \ \ perspective\ of\ the\ GTP-\/U,\ i.e.\ are\ we\ receiving\ or\ sending\ packets\ to}}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ *\ \ \ \ the\ socket\ gateway.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ *\ 2.\ Lower/Upper\ indicates\ whether\ the\ interface/notifier\ interacts}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ *\ \ \ \ with\ the\ upper\ or\ lower\ layers.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{\ *\ 3.\ Interface/Notifier:\ whether\ this\ is\ an\ interface\ the\ GTP-\/U\ tunnel\ will}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ *\ \ \ \ inherit\ or\ a\ notifier\ that\ the\ GTP-\/U\ will\ keep\ as\ a\ member.}}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ *\ 4.\ DOMAIN\ indicates\ the\ GTP-\/U\ specialization\ for\ a\ particular\ domain\ \{NGU\ (N3),\ NRUP\ (F1-\/U),...\}}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{comment}{/****************************************}}
+\DoxyCodeLine{00051\ \textcolor{comment}{\ *\ Interfaces/notifiers\ for\ the\ gateway}}
+\DoxyCodeLine{00052\ \textcolor{comment}{\ ****************************************/}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ This\ interface\ represents\ the\ data\ entry\ point\ of\ the\ receiving\ side\ of\ a\ GTP-\/U\ entity.}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ The\ IO\ gateway\ will\ use\ this\ call\ to\ pass\ GTP-\/U\ PDUs\ into\ the\ RX\ entity.}}
+\DoxyCodeLine{00055\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}}
+\DoxyCodeLine{00056\ \{}
+\DoxyCodeLine{00057\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ gtpu\_tunnel\_rx\_upper\_layer\_interface()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{virtual}\ \string~gtpu\_tunnel\_rx\_upper\_layer\_interface()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00060\ \ \ gtpu\_tunnel\_rx\_upper\_layer\_interface(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00062\ \ \ gtpu\_tunnel\_rx\_upper\_layer\_interface(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00063\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Interface\ for\ the\ IO\ gateway\ to\ pass\ PDUs\ into\ the\ GTP-\/U}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ pdu\ PDU\ to\ be\ handled}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ src\_addr\ Source\ address\ of\ this\ PDU}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface_a7bcb422179241bedf90870418f3e6d9d}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ src\_addr)\ =\ 0;}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ This\ interface\ represents\ the\ data\ exit\ point\ of\ the\ receiving\ side\ of\ a\ GTP-\/U\ NGU\ entity.}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ The\ GTP-\/U\ will\ use\ this\ notifier\ to\ pass\ GTP-\/U\ NGU\ PDUs\ into\ the\ lower-\/layers.}}
+\DoxyCodeLine{00073\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}}
+\DoxyCodeLine{00074\ \{}
+\DoxyCodeLine{00075\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ \ \ gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{virtual}\ \string~gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00078\ \ \ gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&)\ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00080\ \ \ gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&\&)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier}{gtpu\_tunnel\_ngu\_rx\_lower\_layer\_notifier}}\&\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Interface\ for\ the\ GTP-\/U\ to\ pass\ SDUs\ into\ the\ lower\ layer}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sdu\ SDU\ to\ be\ passed\ down.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__ngu__rx__lower__layer__notifier_aa5a23d2fae6eea333de2928a24dcee56}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ sdu,\ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ qos\_flow\_id)\ =\ 0;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

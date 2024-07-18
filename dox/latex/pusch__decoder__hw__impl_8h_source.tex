@@ -1,0 +1,134 @@
+\doxysection{pusch\+\_\+decoder\+\_\+hw\+\_\+impl.\+h}
+\hypertarget{pusch__decoder__hw__impl_8h_source}{}\label{pusch__decoder__hw__impl_8h_source}\index{lib/phy/upper/channel\_processors/pusch/pusch\_decoder\_hw\_impl.h@{lib/phy/upper/channel\_processors/pusch/pusch\_decoder\_hw\_impl.h}}
+\mbox{\hyperlink{pusch__decoder__hw__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{hw__accelerator_8h}{srsran/hal/hw\_accelerator.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{hw__accelerator__pusch__dec_8h}{srsran/hal/phy/upper/channel\_processors/pusch/hw\_accelerator\_pusch\_dec.h}}"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_coding/crc\_calculator.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ldpc__segmenter__rx_8h}{srsran/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_rx.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pusch__decoder_8h}{srsran/phy/upper/channel\_processors/pusch/pusch\_decoder.h}}"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_processors/pusch/pusch\_decoder\_buffer.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{codeblock__metadata_8h}{srsran/phy/upper/codeblock\_metadata.h}}"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/unique\_rx\_buffer.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{pdsch__constants_8h}{srsran/ran/pdsch/pdsch\_constants.h}}"{}}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{//\ Maximum\ accepted\ transport\ block\ size.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_TBS\ =\ 1277992;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//\ Number\ of\ bits\ in\ the\ long\ CRC.\ A\ CRC\ of\ this\ length\ is\ used\ either\ for\ TB\ CRCs,\ when\ the\ TB\ is\ longer\ than}}
+\DoxyCodeLine{00044\ \textcolor{comment}{//\ MAX\_BITS\_CRC16,\ or\ as\ a\ codeblock\ CRC,\ when\ the\ TB\ consists\ of\ multiple\ codeblocks.}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ LONG\_CRC\_LENGTH\ =\ 24;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pusch__decoder__hw__impl}{pusch\_decoder\_hw\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder}{pusch\_decoder}},\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc}{sch\_crc}}\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ std::unique\_ptr<crc\_calculator>\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_afb6628d5ee7060dce2432b20a2e83c92}{crc16}};}
+\DoxyCodeLine{00056\ \ \ \ \ std::unique\_ptr<crc\_calculator>\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a194e6a9cb523084572cc35a8b998f45f}{crc24A}};}
+\DoxyCodeLine{00058\ \ \ \ \ std::unique\_ptr<crc\_calculator>\ \mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a40df2f0210d7bbaf6848b28e94996a28}{crc24B}};}
+\DoxyCodeLine{00059\ \ \ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__hw__impl_a280a86d13e98b6adab62643758d87449}{pusch\_decoder\_hw\_impl}}(std::unique\_ptr<ldpc\_segmenter\_rx>\ \ \ \ \ \ \ \ \ \ \ \ \ seg,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc}{sch\_crc}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ c,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<hal::hw\_accelerator\_pusch\_dec>\ hw)\ :}
+\DoxyCodeLine{00072\ \ \ \ \ segmenter(std::move(seg)),}
+\DoxyCodeLine{00073\ \ \ \ \ crc\_set(\{std::move(c.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_afb6628d5ee7060dce2432b20a2e83c92}{crc16}}),\ std::move(c.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a194e6a9cb523084572cc35a8b998f45f}{crc24A}}),\ std::move(c.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a40df2f0210d7bbaf6848b28e94996a28}{crc24B}})\}),}
+\DoxyCodeLine{00074\ \ \ \ \ decoder(std::move(hw)),}
+\DoxyCodeLine{00075\ \ \ \ \ softbits\_buffer(pdsch\_constants::CODEWORD\_MAX\_SIZE.value())}
+\DoxyCodeLine{00076\ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ srsran\_assert(segmenter,\ \textcolor{stringliteral}{"{}Invalid\ LDPC\ segmenter\ factory."{}});}
+\DoxyCodeLine{00078\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_afb6628d5ee7060dce2432b20a2e83c92}{crc16}},\ \textcolor{stringliteral}{"{}Invalid\ CRC16\ calculator."{}});}
+\DoxyCodeLine{00079\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a194e6a9cb523084572cc35a8b998f45f}{crc24A}},\ \textcolor{stringliteral}{"{}Invalid\ CRC24A\ calculator."{}});}
+\DoxyCodeLine{00080\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a40df2f0210d7bbaf6848b28e94996a28}{crc24B}},\ \textcolor{stringliteral}{"{}Invalid\ CRC24B\ calculator."{}});}
+\DoxyCodeLine{00081\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_afb6628d5ee7060dce2432b20a2e83c92}{crc16}}-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC16,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Not\ a\ CRC\ generator\ of\ type\ CRC16."{}});}
+\DoxyCodeLine{00083\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a194e6a9cb523084572cc35a8b998f45f}{crc24A}}-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC24A,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Not\ a\ CRC\ generator\ of\ type\ CRC24A."{}});}
+\DoxyCodeLine{00085\ \ \ \ \ srsran\_assert(crc\_set.\mbox{\hyperlink{structsrsran_1_1pusch__decoder__hw__impl_1_1sch__crc_a40df2f0210d7bbaf6848b28e94996a28}{crc24B}}-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC24B,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Not\ a\ CRC\ generator\ of\ type\ CRC24B."{}});}
+\DoxyCodeLine{00087\ \ \ \ \ srsran\_assert(decoder,\ \textcolor{stringliteral}{"{}Invalid\ hardware-\/accelerated\ PUSCH\ decoder."{}});}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00091\ \ \ pusch\_decoder\_buffer\&\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__hw__impl_a1d7c2214a70cc68ddac55397eb422416}{new\_data}}(span<uint8\_t>\ \ \ \ \ \ \ \ \ \ \ transport\_block,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ unique\_rx\_buffer\ \ \ \ \ \ \ \ softbuffer,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pusch\_decoder\_notifier\&\ notifier,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ configuration\&\ \ \ \ cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__hw__impl_a7538e51c2273ff7b8bf25c5cb16890dd}{set\_nof\_softbits}}(\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ nof\_softbits)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00098\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ Not\ implemented.}}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00104\ \ \ std::unique\_ptr<ldpc\_segmenter\_rx>\ segmenter;}
+\DoxyCodeLine{00109\ \ \ sch\_crc\ crc\_set;}
+\DoxyCodeLine{00111\ \ \ std::unique\_ptr<hal::hw\_accelerator\_pusch\_dec>\ decoder;}
+\DoxyCodeLine{00113\ \ \ std::vector<log\_likelihood\_ratio>\ softbits\_buffer;}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{unsigned}\ softbits\_count;}
+\DoxyCodeLine{00117\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ transport\_block;}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__rx__buffer}{unique\_rx\_buffer}}\ softbuffer;}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__notifier}{pusch\_decoder\_notifier}}*\ result\_notifier\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{structsrsran_1_1pusch__decoder_1_1configuration}{pusch\_decoder::configuration}}\ current\_config;}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<unsigned,\ MAX\_NOF\_SEGMENTS>}}\ absolute\_cb\_ids;}
+\DoxyCodeLine{00127\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<described\_rx\_codeblock,\ MAX\_NOF\_SEGMENTS>}}\ codeblock\_llrs\ =\ \{\};}
+\DoxyCodeLine{00129\ \ \ static\_bit\_buffer<MAX\_TBS\ +\ LONG\_CRC\_LENGTH>\ tmp\_tb\_bits;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00132\ \ \ span<log\_likelihood\_ratio>\ get\_next\_block\_view(\textcolor{keywordtype}{unsigned}\ block\_size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{void}\ on\_new\_softbits(span<const\ log\_likelihood\_ratio>\ softbits)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{void}\ on\_end\_softbits()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{void}\ check\_hw\_results(pusch\_decoder\_result\&\ \ \ stats,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<bool>\ \ \ \ \ \ \ \ \ \ \ \ \ \ cb\_crcs,}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cb\_id,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hal::hw\_dec\_cb\_crc\_type\ crc\_type,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bit\_buffer\ \ \ \ \ \ \ \ \ \ \ \ \ \ data);}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{void}\ copy\_tb\_and\_notify(pusch\_decoder\_result\&\ stats,\ \textcolor{keywordtype}{unsigned}\ nof\_cbs,\ span<bool>\ cb\_crcs);}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{keywordtype}{void}\ set\_hw\_dec\_configuration(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_segments,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rm\_length,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lifting\_size,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_segment\_bits,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_filler\_bits,}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crc\_len,}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hal::hw\_dec\_cb\_crc\_type\ crc\_type,}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cb\_index);}
+\DoxyCodeLine{00176\ \};}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

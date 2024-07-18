@@ -1,0 +1,171 @@
+\doxysection{rlf\+\_\+detector.\+h}
+\hypertarget{rlf__detector_8h_source}{}\label{rlf__detector_8h_source}\index{lib/mac/mac\_sched/rlf\_detector.h@{lib/mac/mac\_sched/rlf\_detector.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/mac\_config.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/mac\_ue\_configurator.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rlf__metrics}{rlf\_metrics}}\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{unsigned}\ max\_consecutive\_dl\_kos;}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{unsigned}\ max\_consecutive\_ul\_kos;}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{unsigned}\ max\_consecutive\_csi\_dtx;}
+\DoxyCodeLine{00040\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rlf__detector}{rlf\_detector}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1rlf__detector}{rlf\_detector}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__expert__config}{mac\_expert\_config}}\&\ expert\_cfg)\ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}MAC"{}}))}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ max\_consecutive\_kos.resize(expert\_cfg.configs.size());}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ mac\_cfg\_it\ =\ expert\_cfg.configs.begin();\ mac\_cfg\_it\ !=\ expert\_cfg.configs.end();\ ++mac\_cfg\_it)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ max\_consecutive\_kos[std::distance(expert\_cfg.configs.begin(),\ mac\_cfg\_it)]\ =}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlf__metrics}{rlf\_metrics}}\{.max\_consecutive\_dl\_kos\ \ =\ mac\_cfg\_it-\/>max\_consecutive\_dl\_kos,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .max\_consecutive\_ul\_kos\ \ =\ mac\_cfg\_it-\/>max\_consecutive\_ul\_kos,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .max\_consecutive\_csi\_dtx\ =\ mac\_cfg\_it-\/>max\_consecutive\_csi\_dtx\};}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ add\_ue(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1mac__ue__radio__link__notifier}{mac\_ue\_radio\_link\_notifier}}\&\ notifier)}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ srsran\_assert(ue\_index\ <\ MAX\_NOF\_DU\_UES,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ ues[ue\_index].ko\_counters[0]\ =\ 0;}
+\DoxyCodeLine{00062\ \ \ \ \ ues[ue\_index].ko\_counters[1]\ =\ 0;}
+\DoxyCodeLine{00063\ \ \ \ \ ues[ue\_index].ko\_counters[2]\ =\ 0;}
+\DoxyCodeLine{00064\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(ues[ue\_index].notifier\_mutex);}
+\DoxyCodeLine{00065\ \ \ \ \ ues[ue\_index].notifier\ =\ \&notifier;}
+\DoxyCodeLine{00066\ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ rem\_ue(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ srsran\_assert(ue\_index\ <\ MAX\_NOF\_DU\_UES,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ ues[ue\_index].ko\_counters[0]\ =\ max\_consecutive\_kos[cell\_index].max\_consecutive\_dl\_kos\ +\ 1;}
+\DoxyCodeLine{00073\ \ \ \ \ ues[ue\_index].ko\_counters[1]\ =\ max\_consecutive\_kos[cell\_index].max\_consecutive\_ul\_kos\ +\ 1;}
+\DoxyCodeLine{00074\ \ \ \ \ ues[ue\_index].ko\_counters[2]\ =\ max\_consecutive\_kos[cell\_index].max\_consecutive\_csi\_dtx\ +\ 1;}
+\DoxyCodeLine{00075\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(ues[ue\_index].notifier\_mutex);}
+\DoxyCodeLine{00076\ \ \ \ \ ues[ue\_index].notifier\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ handle\_ack(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{bool}\ ack)}
+\DoxyCodeLine{00080\ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ handle\_ack\_common(ue\_index,\ cell\_index,\ ack,\ 0);}
+\DoxyCodeLine{00082\ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ handle\_crc(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{bool}\ crc)}
+\DoxyCodeLine{00085\ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ handle\_ack\_common(ue\_index,\ cell\_index,\ crc,\ 1);}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ handle\_csi(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{bool}\ csi\_decoded)}
+\DoxyCodeLine{00090\ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ srsran\_assert(ue\_index\ <\ MAX\_NOF\_DU\_UES,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{auto}\&\ u\ =\ ues[ue\_index];}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ csi\_index\ =\ 2U;}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{if}\ (csi\_decoded)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ u.ko\_counters[csi\_index].store(0,\ std::memory\_order::memory\_order\_relaxed);}
+\DoxyCodeLine{00098\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ current\_count\ =\ u.ko\_counters[csi\_index].fetch\_add(1,\ std::memory\_order::memory\_order\_relaxed)\ +\ 1;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ We\ use\ ==\ instead\ of\ <=\ to\ ensure\ only\ one\ notification\ is\ sent.}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (current\_count\ ==\ max\_consecutive\_kos[cell\_index].max\_consecutive\_csi\_dtx)\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ lock(u.notifier\_mutex);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u.notifier\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}ue=\{\}:\ RLF\ detected.\ Cause:\ \{\}\ consecutive\ undecoded\ CSIs"{}},\ ue\_index,\ current\_count);}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Notify\ upper\ layers.}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ u.notifier-\/>on\_rlf\_detected();}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{void}\ handle\_crnti\_ce(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)}
+\DoxyCodeLine{00114\ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ ues[ue\_index].ko\_counters[0]\ =\ 0;}
+\DoxyCodeLine{00116\ \ \ \ \ ues[ue\_index].ko\_counters[1]\ =\ 0;}
+\DoxyCodeLine{00117\ \ \ \ \ ues[ue\_index].ko\_counters[2]\ =\ 0;}
+\DoxyCodeLine{00118\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(ues[ue\_index].notifier\_mutex);}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{if}\ (ues[ue\_index].notifier\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ ues[ue\_index].notifier-\/>on\_crnti\_ce\_received();}
+\DoxyCodeLine{00121\ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{void}\ handle\_ack\_common(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \textcolor{keywordtype}{bool}\ ack,\ \textcolor{keywordtype}{unsigned}\ count\_index)}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ srsran\_assert(ue\_index\ <\ MAX\_NOF\_DU\_UES,\ \textcolor{stringliteral}{"{}Invalid\ ue\_index=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keyword}{auto}\&\ u\ =\ ues[ue\_index];}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (ack)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ u.ko\_counters[count\_index].store(0,\ std::memory\_order::memory\_order\_relaxed);}
+\DoxyCodeLine{00132\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ current\_count\ =\ u.ko\_counters[count\_index].fetch\_add(1,\ std::memory\_order::memory\_order\_relaxed)\ +\ 1;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ We\ use\ ==\ instead\ of\ <=\ to\ ensure\ only\ one\ notification\ is\ sent.}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ max\_counter\ =\ count\_index\ ==\ 0\ ?\ max\_consecutive\_kos[cell\_index].max\_consecutive\_dl\_kos}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ max\_consecutive\_kos[cell\_index].max\_consecutive\_csi\_dtx;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (current\_count\ ==\ max\_counter)\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ std::lock\_guard<std::mutex>\ lock(u.notifier\_mutex);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u.notifier\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}ue=\{\}:\ RLF\ detected.\ Cause:\ \{\}\ consecutive\ \{\}\ KOs."{}},}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ current\_count,}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\_index\ ==\ 0\ ?\ \textcolor{stringliteral}{"{}HARQ-\/ACK"{}}\ :\ \textcolor{stringliteral}{"{}CRC"{}});}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Notify\ upper\ layers.}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ u.notifier-\/>on\_rlf\_detected();}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \textcolor{comment}{//\ DL\ for\ index\ 0,\ UL\ for\ index\ 1,\ CSI\ for\ index\ 2\ in\ each\ cell.}}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<rlf\_metrics,\ MAX\_NOF\_DU\_CELLS>}}\ max\_consecutive\_kos;}
+\DoxyCodeLine{00154\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{struct\ }ue\_context\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{comment}{//\ DL\ for\ index\ 0,\ UL\ for\ index\ 1,\ CSI\ for\ index\ 2.}}
+\DoxyCodeLine{00158\ \ \ \ \ std::array<std::atomic<unsigned>,\ 3>\ ko\_counters\{\};}
+\DoxyCodeLine{00159\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1mac__ue__radio__link__notifier}{mac\_ue\_radio\_link\_notifier}}*\ \ \ \ \ \ \ \ \ \ notifier\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{comment}{//\ Access\ to\ the\ notifier\ is\ protected,\ as\ many\ threads\ may\ access\ it.}}
+\DoxyCodeLine{00161\ \ \ \ \ std::mutex\ notifier\_mutex;}
+\DoxyCodeLine{00162\ \ \ \};}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ std::array<ue\_context,\ MAX\_NOF\_DU\_UES>\ ues;}
+\DoxyCodeLine{00165\ \};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

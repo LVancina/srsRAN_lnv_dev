@@ -20,7 +20,7 @@
  *
  */
 
-#include "../../../fapi/message_builder_helpers.h"
+#include "../../../fapi/validators/helpers.h"
 #include "srsran/fapi_adaptor/phy/messages/prach.h"
 #include "srsran/phy/support/prach_buffer_context.h"
 #include <gtest/gtest.h>

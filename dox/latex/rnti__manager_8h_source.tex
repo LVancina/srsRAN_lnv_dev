@@ -1,0 +1,64 @@
+\doxysection{rnti\+\_\+manager.\+h}
+\hypertarget{rnti__manager_8h_source}{}\label{rnti__manager_8h_source}\index{lib/mac/rnti\_manager.h@{lib/mac/rnti\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/du\_high/rnti\_value\_table.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{using\ }du\_rnti\_table\ =\ rnti\_value\_table<du\_ue\_index\_t,\ du\_ue\_index\_t::INVALID\_DU\_UE\_INDEX>;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rnti__manager}{rnti\_manager}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rnti__value__table}{du\_rnti\_table}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \mbox{\hyperlink{classsrsran_1_1rnti__manager_abf1d4100a248606a6543a573c73d8618}{allocate}}()}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>\mbox{\hyperlink{classsrsran_1_1rnti__value__table_ab2a527711436812dc5b96e6f4d174140}{nof\_ues}}()\ >=\ MAX\_NOF\_DU\_UES)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ number\ of\ UEs\ is\ already\ maximum,\ ignore\ RACH.}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rnti\_t::INVALID\_RNTI;}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ Increments\ rnti\ counter\ until\ it\ finds\ an\ available\ temp\ C-\/RNTI.}}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ temp\_crnti;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ uint16\_t\ prev\_counter\ =\ rnti\_counter.fetch\_add(1,\ std::memory\_order\_relaxed)\ \%\ CRNTI\_RANGE;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ temp\_crnti\ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a19ba96c7ba2f370f5ffdf9d9cf28e0b0}{to\_rnti}}(prev\_counter\ +\ \mbox{\hyperlink{namespacesrsran_a7c1de1f75dd2aabbf557bc8713f3da98}{to\_value}}(rnti\_t::MIN\_CRNTI));}
+\DoxyCodeLine{00049\ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (this-\/>\mbox{\hyperlink{classsrsran_1_1rnti__value__table_a577070532601d9b2c354589c72ac18ca}{has\_rnti}}(temp\_crnti));}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{return}\ temp\_crnti;}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \ \ \ CRNTI\_RANGE\ \ =\ \mbox{\hyperlink{namespacesrsran_a7c1de1f75dd2aabbf557bc8713f3da98}{to\_value}}(rnti\_t::MAX\_CRNTI)\ +\ 1\ -\/\ \mbox{\hyperlink{namespacesrsran_a7c1de1f75dd2aabbf557bc8713f3da98}{to\_value}}(rnti\_t::MIN\_CRNTI);}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ INITIAL\_RNTI\ =\ \mbox{\hyperlink{namespacesrsran_a19ba96c7ba2f370f5ffdf9d9cf28e0b0}{to\_rnti}}(0x4601);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ std::atomic<std::underlying\_type\_t<rnti\_t>>\ rnti\_counter\{\mbox{\hyperlink{namespacesrsran_a7c1de1f75dd2aabbf557bc8713f3da98}{to\_value}}(INITIAL\_RNTI)\ -\/\ \mbox{\hyperlink{namespacesrsran_a7c1de1f75dd2aabbf557bc8713f3da98}{to\_value}}(rnti\_t::MIN\_CRNTI)\};}
+\DoxyCodeLine{00058\ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

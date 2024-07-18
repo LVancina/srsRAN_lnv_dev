@@ -1,0 +1,368 @@
+\doxysection{bit\+\_\+buffer.\+h}
+\hypertarget{bit__buffer_8h_source}{}\label{bit__buffer_8h_source}\index{include/srsran/adt/bit\_buffer.h@{include/srsran/adt/bit\_buffer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\ =\ uint8\_t;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}})\ *\ 8;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af295a8d2fc7ee7aee6d993e260f4e7d5}{calculate\_nof\_words}}(\textcolor{keywordtype}{unsigned}\ nof\_bits)}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{return}\ (nof\_bits\ +\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ 1))\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00044\ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ae335cd0991283d4b7e89bd93f66c8515}{set\_buffer}}(\mbox{\hyperlink{classsrsran_1_1span}{span<word\_t>}}\ new\_buffer,\ \textcolor{keywordtype}{unsigned}\ new\_size)}
+\DoxyCodeLine{00049\ \ \ \{}
+\DoxyCodeLine{00050\ \ \ \ \ buffer\ \ \ \ \ \ \ =\ new\_buffer;}
+\DoxyCodeLine{00051\ \ \ \ \ current\_size\ =\ new\_size;}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}()\ :\ buffer(\{\}),\ current\_size(0)\ \{\}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_afd684b8d310bb49c5ef47f54ed0b2369}{bit\_buffer}}(\mbox{\hyperlink{classsrsran_1_1span}{span<word\_t>}}\ buffer\_,\ \textcolor{keywordtype}{unsigned}\ current\_size\_\ =\ 0)\ :\ buffer(buffer\_),\ current\_size(current\_size\_)}
+\DoxyCodeLine{00059\ \ \ \{}
+\DoxyCodeLine{00060\ \ \ \ \ srsran\_assert(nof\_words()\ <=\ buffer.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ current\ size\ (i.e.,\ \{\})\ requires\ \{\}\ words\ which\ exceeds\ the\ maximum\ number\ of\ words\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ current\_size,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_words(),}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}());}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a69017e63cce99f1c0c6aaa79a4439a89}{from\_bytes}}(\mbox{\hyperlink{classsrsran_1_1span}{span<word\_t>}}\ \mbox{\hyperlink{classbytes}{bytes}})\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}(\mbox{\hyperlink{classbytes}{bytes}},\ \mbox{\hyperlink{classbytes}{bytes}}.size()\ *\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}});\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af451739a7d6028693b491252a4219049}{zero}}()\ \{\ std::fill\_n(buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ nof\_words(),\ 0);\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab6ec21d34f0d2931dd369e107e3aa87c}{one}}()}
+\DoxyCodeLine{00076\ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_full\ =\ nof\_full\_words();}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\ \ \ val\ \ \ \ \ \ =\ (1U\ <<\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}})\ -\/\ 1;}
+\DoxyCodeLine{00079\ \ \ \ \ std::fill\_n(buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ nof\_full,\ val);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ tail\_bits\ =\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ nof\_full\ *\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{if}\ (tail\_bits\ ==\ 0)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ val\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ (1U\ <<\ tail\_bits)\ -\/\ 1;}
+\DoxyCodeLine{00086\ \ \ \ \ buffer[nof\_full]\ =\ val\ <<\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ tail\_bits);}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a6a4cc3c118ab69642f23eaed6aa6868c}{insert}}(Integer\ value\_,\ \textcolor{keywordtype}{unsigned}\ startpos,\ \textcolor{keywordtype}{unsigned}\ count)}
+\DoxyCodeLine{00099\ \ \ \{}
+\DoxyCodeLine{00100\ \ \ \ \ srsran\_assert(count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ bits\ to\ insert\ (i.e.,\ \{\})\ exceeds\ the\ number\ of\ bits\ per\ word\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}));}
+\DoxyCodeLine{00104\ \ \ \ \ srsran\_assert(value\_\ <\ (1U\ <<\ count),}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ value\ (i.e.,\ \{\})\ number\ of\ bits\ exceeds\ the\ number\ of\ bits\ to\ insert\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value\_,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count);}
+\DoxyCodeLine{00108\ \ \ \ \ srsran\_assert(startpos\ +\ count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}(),}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ bit\ range\ starting\ at\ \{\}\ for\ \{\}\ bits\ exceed\ the\ buffer\ size\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ startpos,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}());}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ start\_word\ =\ startpos\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ start\_mod\ \ =\ startpos\ \%\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\ \ \ value\ \ \ \ \ \ =\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\textcolor{keyword}{>}(value\_);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ value\_\ <=\ mask\_lsb\_ones<word\_t>(count),}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ value\ (i.e.,\ \{\})\ number\ of\ bits\ exceeds\ the\ number\ of\ bits\ that\ can\ be\ fitted\ inside\ a\ word\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ value,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ mask\_lsb\_ones<word\_t>(count));}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ If\ the\ start\ bit\ is\ aligned\ with\ the\ beginning\ of\ the\ word.}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{if}\ (start\_mod\ ==\ 0)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ buffer[start\_word]\ =\ (buffer[start\_word]\ \&\ mask\_msb\_zeros<word\_t>(count))\ |\ (value\ <<\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ count));}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{//\ If\ the\ insertion\ only\ affects\ to\ one\ word.}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (start\_mod\ +\ count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}})\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \textcolor{comment}{//\ Extract\ word.}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\ word\ =\ buffer[start\_word];}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{comment}{//\ Mask\ bits\ that\ are\ used.}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ word\ \&=\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{word\_t}}\textcolor{keyword}{>}(mask\_msb\_ones<word\_t>(start\_mod)\ |}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask\_lsb\_ones<word\_t>(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ start\_mod\ -\/\ count));}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \textcolor{comment}{//\ Insert\ bits.}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ word\ |=\ value\ <<\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ start\_mod\ -\/\ count);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \textcolor{comment}{//\ Insert\ word.}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ buffer[start\_word]\ =\ word;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ buffer[start\_word]\ =}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ (buffer[start\_word]\ \&\ mask\_msb\_ones<word\_t>(start\_mod))\ |\ (value\ >>\ (start\_mod\ +\ count\ -\/\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}));}
+\DoxyCodeLine{00145\ \ \ \ \ buffer[start\_word\ +\ 1]\ =\ (buffer[start\_word\ +\ 1]\ \&\ mask\_msb\_zeros<word\_t>(start\_mod\ +\ count\ -\/\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}))\ |}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (value\ <<\ (2\ *\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ start\_mod\ -\/\ count));}
+\DoxyCodeLine{00147\ \ \ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer\ =\ u\textcolor{keywordtype}{int}8\_t>}
+\DoxyCodeLine{00160\ \ \ Integer\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab4650aa5eccca52eea8a7cb4d14702a7}{extract}}(\textcolor{keywordtype}{unsigned}\ startpos,\ \textcolor{keywordtype}{unsigned}\ count)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00161\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00162\ \ \ \ \ srsran\_assert(count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}},}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ number\ of\ bits\ to\ insert\ (i.e.,\ \{\})\ exceeds\ the\ number\ of\ bits\ per\ word\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}));}
+\DoxyCodeLine{00166\ \ \ \ \ srsran\_assert(startpos\ +\ count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}(),}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ bit\ range\ starting\ at\ \{\}\ for\ \{\}\ bits\ exceed\ the\ buffer\ size\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ startpos,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}());}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ start\_word\ =\ startpos\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ start\_mod\ \ =\ startpos\ \%\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{comment}{//\ If\ the\ operation\ does\ not\ cross\ boundaries\ between\ words.}}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{if}\ (start\_mod\ ==\ 0)\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ buffer[start\_word]\ >>\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ count);}
+\DoxyCodeLine{00177\ \ \ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{comment}{//\ If\ the\ insertion\ only\ affects\ to\ one\ word.}}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{if}\ (start\_mod\ +\ count\ <=\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}})\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (buffer[start\_word]\ >>\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ start\_mod\ -\/\ count))\ \&\ mask\_lsb\_ones<Integer>(count);}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{comment}{//\ Concatenates\ two\ bytes\ in\ a\ 32-\/bit\ register\ and\ then\ extracts\ a\ word\ with\ the\ requested\ number\ of\ bits.}}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keyword}{using\ }extended\_word\_t\ =\ uint32\_t;}
+\DoxyCodeLine{00186\ \ \ \ \ extended\_word\_t\ word\ \ =\ \textcolor{keyword}{static\_cast<}extended\_word\_t\textcolor{keyword}{>}(buffer[start\_word])\ <<\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00187\ \ \ \ \ word\ |=\ \textcolor{keyword}{static\_cast<}extended\_word\_t\textcolor{keyword}{>}(buffer[start\_word\ +\ 1]);}
+\DoxyCodeLine{00188\ \ \ \ \ word\ =\ word\ >>\ (2\ *\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ start\_mod\ -\/\ count);}
+\DoxyCodeLine{00189\ \ \ \ \ word\ \&=\ mask\_lsb\_ones<extended\_word\_t>(count);}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}Integer\textcolor{keyword}{>}(word);}
+\DoxyCodeLine{00192\ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a842a889b261b19ab4f37c070e74ad347}{get\_byte}}(\textcolor{keywordtype}{unsigned}\ i\_byte)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00197\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00198\ \ \ \ \ srsran\_assert(i\_byte\ <\ nof\_full\_words(),}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ byte\ index\ \{\}\ exceeds\ the\ number\ of\ full\ words\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_byte,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_full\_words());}
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer[i\_byte];}
+\DoxyCodeLine{00203\ \ \ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ad751b3e6553b927661d5e2bb175894d6}{set\_byte}}(uint8\_t\ \textcolor{keywordtype}{byte},\ \textcolor{keywordtype}{unsigned}\ i\_byte)}
+\DoxyCodeLine{00208\ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ srsran\_assert(i\_byte\ <\ nof\_full\_words(),}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ byte\ index\ \{\}\ exceeds\ the\ number\ of\ full\ words\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_byte,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_full\_words());}
+\DoxyCodeLine{00213\ \ \ \ \ buffer[i\_byte]\ =\ byte;}
+\DoxyCodeLine{00214\ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00217\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_abba52fc044021e0e4492726fc8a4dc24}{first}}(\textcolor{keywordtype}{unsigned}\ count)}
+\DoxyCodeLine{00218\ \ \ \{}
+\DoxyCodeLine{00219\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ >=\ count,}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ buffer\ size\ (i.e.,\ \{\})\ must\ be\ greater\ than\ or\ equal\ to\ the\ number\ of\ bits\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}(),}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count);}
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}(buffer,\ count);}
+\DoxyCodeLine{00224\ \ \ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00227\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1f1d8f5579fb3fea2b054198488364b3}{first}}(\textcolor{keywordtype}{unsigned}\ count)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00228\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00229\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ >=\ count,}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ buffer\ size\ (i.e.,\ \{\})\ must\ be\ greater\ than\ or\ equal\ to\ the\ number\ of\ bits\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}(),}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count);}
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}(buffer,\ count);}
+\DoxyCodeLine{00234\ \ \ \}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00238\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a36bd3d5ce1f04be9a8e5c2cbcfd2ebe3}{last}}(\textcolor{keywordtype}{unsigned}\ count)}
+\DoxyCodeLine{00239\ \ \ \{}
+\DoxyCodeLine{00240\ \ \ \ \ srsran\_assert((\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ count)\ \%\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ ==\ 0,\ \textcolor{stringliteral}{"{}Only\ bit\ word\ boundaries\ are\ supported."{}});}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ buffer\_start\ =\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ count)\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ buffer\_len\ \ \ =\ \mbox{\hyperlink{namespacesrsran_a6e5aee1d553dc6e825017842e4059adb}{divide\_ceil}}(count,\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}});}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}(buffer.\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}(buffer\_start,\ buffer\_len),\ count);}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00249\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a7d46b447a8989527e891146763d0280e}{last}}(\textcolor{keywordtype}{unsigned}\ count)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00250\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00251\ \ \ \ \ srsran\_assert((\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ count)\ \%\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ ==\ 0,\ \textcolor{stringliteral}{"{}Only\ bit\ word\ boundaries\ are\ supported."{}});}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ buffer\_start\ =\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ count)\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ buffer\_len\ \ \ =\ \mbox{\hyperlink{namespacesrsran_a6e5aee1d553dc6e825017842e4059adb}{divide\_ceil}}(count,\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}});}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a65981894ac0e6975924f468dbe760a38}{bit\_buffer}}(buffer.\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}(buffer\_start,\ buffer\_len),\ count);}
+\DoxyCodeLine{00257\ \ \ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ current\_size;\ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00263\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ OutputIt>}
+\DoxyCodeLine{00264\ \ \ OutputIt\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a485e42730363c4df55ecc737334dd786}{to\_bin\_string}}(OutputIt\&\&\ mem\_buffer)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00265\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ byte\_remainder\ =\ current\_size\ \%\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordflow}{if}\ (byte\_remainder\ ==\ 0)\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ fmt::format\_to(mem\_buffer,\ \textcolor{stringliteral}{"{}\{:08B\}"{}},\ buffer.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(nof\_words()));}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mem\_buffer;}
+\DoxyCodeLine{00270\ \ \ \ \ \}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_words()\ >\ 1)\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ fmt::format\_to(mem\_buffer,\ \textcolor{stringliteral}{"{}\{:08B\}"{}},\ buffer.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(nof\_words()\ -\/\ 1));}
+\DoxyCodeLine{00274\ \ \ \ \ \}}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \ \ \ \ fmt::format\_to(mem\_buffer,\ \textcolor{stringliteral}{"{}\ \{:0\{\}B\}"{}},\ buffer[nof\_words()\ -\/\ 1]\ >>\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ -\/\ byte\_remainder),\ byte\_remainder);}
+\DoxyCodeLine{00277\ \ \ \ \ \textcolor{keywordflow}{return}\ mem\_buffer;}
+\DoxyCodeLine{00278\ \ \ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00281\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ OutputIt>}
+\DoxyCodeLine{00282\ \ \ OutputIt\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab72abeb15085480e9dfa5e0b912072dc}{to\_hex\_string}}(OutputIt\&\&\ mem\_buffer)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00283\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00284\ \ \ \ \ fmt::format\_to(mem\_buffer,\ \textcolor{stringliteral}{"{}\{:02X\}"{}},\ buffer.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(nof\_words()));}
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keywordflow}{return}\ mem\_buffer;}
+\DoxyCodeLine{00286\ \ \ \}}
+\DoxyCodeLine{00287\ }
+\DoxyCodeLine{00289\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab9007bda778f3c5ef8387eeaea84850f}{is\_empty}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ current\_size\ ==\ 0;\ \}}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00292\ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\&\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a0bb3e1656458de23756cfc4226d963fb}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00293\ \ \ \{}
+\DoxyCodeLine{00294\ \ \ \ \ buffer\ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.buffer;}
+\DoxyCodeLine{00295\ \ \ \ \ current\_size\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.current\_size;}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00297\ \ \ \}}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00300\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab92aa529158593ad5833c715fdd6ca59}{operator==}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00301\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ !=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.size())\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00304\ \ \ \ \ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{comment}{//\ Compare\ full\ words.}}
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_complete\_words\ =\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordflow}{if}\ (!std::equal(buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ buffer.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}()\ +\ nof\_complete\_words,\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.buffer.begin()))\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00310\ \ \ \ \ \}}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \ \ \ \ \textcolor{comment}{//\ Check\ the\ remaining\ number\ of\ bits\ to\ compare.}}
+\DoxyCodeLine{00313\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ remainder\ =\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ -\/\ nof\_complete\_words\ *\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{if}\ (remainder\ ==\ 0)\ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00316\ \ \ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{comment}{//\ Compare\ the\ remaining\ number\ of\ bits.}}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ab4650aa5eccca52eea8a7cb4d14702a7}{extract}}(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ *\ nof\_complete\_words,\ remainder)\ ==}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.extract(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}}\ *\ nof\_complete\_words,\ remainder);}
+\DoxyCodeLine{00321\ \ \ \}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00324\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a27eda412814f4ffc37bb674b887eb087}{operator!=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});\ \}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00327\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<word\_t>}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_abe4140b787ae23537082f998f43aad45}{get\_buffer}}()\ \{\ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(nof\_words());\ \}}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00330\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ word\_t>}}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_afa9668bed6c98ad4b7fe0288837cfa77}{get\_buffer}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1span_aa4238c2e04ac8c60726db8cc0b687582}{first}}(nof\_words());\ \}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00334\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_words()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af295a8d2fc7ee7aee6d993e260f4e7d5}{calculate\_nof\_words}}(\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}());\ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00337\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_full\_words()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}()\ /\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af8055e469c2e85ae898b18b287999bc2}{bits\_per\_word}};\ \}}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00340\ \ \ span<word\_t>\ buffer;}
+\DoxyCodeLine{00342\ \ \ \textcolor{keywordtype}{size\_t}\ current\_size;}
+\DoxyCodeLine{00343\ \};}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00347\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ SizeInBits>}
+\DoxyCodeLine{00348\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1static__bit__buffer}{static\_bit\_buffer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}}
+\DoxyCodeLine{00349\ \{}
+\DoxyCodeLine{00350\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00352\ \ \ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer_ac0fa4ef915c6296df115bb6468e1ae04}{static\_bit\_buffer}}(\textcolor{keywordtype}{unsigned}\ nof\_bits\ =\ 0)\ :\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}(buffer,\ nof\_bits)\ \{\}}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00354\ \ \ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer_ac0fa4ef915c6296df115bb6468e1ae04}{static\_bit\_buffer}}(\mbox{\hyperlink{classsrsran_1_1static__bit__buffer}{static\_bit\_buffer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \ \ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer_ac0fa4ef915c6296df115bb6468e1ae04}{static\_bit\_buffer}}(\mbox{\hyperlink{classsrsran_1_1static__bit__buffer}{static\_bit\_buffer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ :\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}(buffer,\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.\mbox{\hyperlink{classsrsran_1_1bit__buffer_a1fb9f58eca152546267cb24e18f9b6f0}{size}}())\{\};}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00359\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1static__bit__buffer_a1a0ab7531227d17f74d71d4a91239400}{resize}}(\textcolor{keywordtype}{unsigned}\ new\_size)}
+\DoxyCodeLine{00360\ \ \ \{}
+\DoxyCodeLine{00361\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ new\_size\ <=\ SizeInBits,\ \textcolor{stringliteral}{"{}The\ new\ size\ (i.e.,\ \{\})\ exceeds\ the\ memory\ size\ (i.e.,\ \{\})."{}},\ new\_size,\ SizeInBits);}
+\DoxyCodeLine{00363\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ae335cd0991283d4b7e89bd93f66c8515}{set\_buffer}}(buffer,\ new\_size);}
+\DoxyCodeLine{00364\ \ \ \}}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00366\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00368\ \ \ std::array<\mbox{\hyperlink{classsrsran_1_1bit__buffer_a342390c6941ad8590c110975926f36ef}{bit\_buffer::word\_t}},\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_af295a8d2fc7ee7aee6d993e260f4e7d5}{calculate\_nof\_words}}(SizeInBits)>\ buffer;}
+\DoxyCodeLine{00369\ \};}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00372\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1dynamic__bit__buffer}{dynamic\_bit\_buffer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{bit\_buffer}}}
+\DoxyCodeLine{00373\ \{}
+\DoxyCodeLine{00374\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00376\ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__bit__buffer_ae4b8a3743ce2e51d2d64ac37d35e5ffb}{dynamic\_bit\_buffer}}(\textcolor{keywordtype}{unsigned}\ nof\_bits\ =\ 0)\ :\ buffer(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af295a8d2fc7ee7aee6d993e260f4e7d5}{calculate\_nof\_words}}(nof\_bits))\ \{\ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ae335cd0991283d4b7e89bd93f66c8515}{set\_buffer}}(buffer,\ nof\_bits);\ \}}
+\DoxyCodeLine{00377\ }
+\DoxyCodeLine{00379\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dynamic__bit__buffer_a9f9469e669f2003c294b7694ac3945ce}{resize}}(\textcolor{keywordtype}{unsigned}\ new\_size)}
+\DoxyCodeLine{00380\ \ \ \{}
+\DoxyCodeLine{00381\ \ \ \ \ buffer.resize(\mbox{\hyperlink{classsrsran_1_1bit__buffer_af295a8d2fc7ee7aee6d993e260f4e7d5}{calculate\_nof\_words}}(new\_size));}
+\DoxyCodeLine{00382\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1bit__buffer_ae335cd0991283d4b7e89bd93f66c8515}{set\_buffer}}(buffer,\ new\_size);}
+\DoxyCodeLine{00383\ \ \ \}}
+\DoxyCodeLine{00384\ }
+\DoxyCodeLine{00385\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00387\ \ \ std::vector<bit\_buffer::word\_t>\ buffer;}
+\DoxyCodeLine{00388\ \};}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00395\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::bit\_buffer>\ \{}
+\DoxyCodeLine{00396\ \ \ \textcolor{keyword}{enum}\ \{\ hexadecimal,\ binary\ \}\ mode\ =\ binary;}
+\DoxyCodeLine{00397\ }
+\DoxyCodeLine{00398\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00399\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00400\ \ \ \{}
+\DoxyCodeLine{00401\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ctx.begin();}
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keywordflow}{while}\ (it\ !=\ ctx.end()\ and\ *it\ !=\ \textcolor{charliteral}{'\}'})\ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (*it\ ==\ \textcolor{charliteral}{'x'})\ \{}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ mode\ =\ hexadecimal;}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00407\ \ \ \ \ \}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \ \ \textcolor{keywordflow}{return}\ it;}
+\DoxyCodeLine{00410\ \ \ \}}
+\DoxyCodeLine{00411\ }
+\DoxyCodeLine{00412\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00413\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bit__buffer}{srsran::bit\_buffer}}\&\ s,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00414\ \ \ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \textcolor{keywordflow}{if}\ (mode\ ==\ hexadecimal)\ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ s.template\ to\_hex\_string(ctx.out());}
+\DoxyCodeLine{00417\ \ \ \ \ \}}
+\DoxyCodeLine{00418\ \ \ \ \ \textcolor{keywordflow}{return}\ s.template\ to\_bin\_string(ctx.out());}
+\DoxyCodeLine{00419\ \ \ \}}
+\DoxyCodeLine{00420\ \};}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

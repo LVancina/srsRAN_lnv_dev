@@ -1,0 +1,141 @@
+\doxysection{scheduler\+\_\+metrics\+\_\+handler.\+h}
+\hypertarget{scheduler__metrics__handler_8h_source}{}\label{scheduler__metrics__handler_8h_source}\index{lib/scheduler/logging/scheduler\_metrics\_handler.h@{lib/scheduler/logging/scheduler\_metrics\_handler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../ue\_scheduling/harq\_process.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{scheduler__metrics__ue__configurator_8h}{"{}scheduler\_metrics\_ue\_configurator.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_dl\_buffer\_state\_indication\_handler.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_feedback\_handler.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_metrics.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_slot\_handler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{unordered\_map}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\(\backslash\)brief\ Handler\ of\ scheduler\ slot\ metrics.}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ scheduler\_metrics\_handler\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1harq__timeout__handler}{harq\_timeout\_handler}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1sched__metrics__ue__configurator}{sched\_metrics\_ue\_configurator}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{using}\ msecs\ =\ std::chrono::milliseconds;}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{using}\ usecs\ =\ std::chrono::microseconds;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ scheduler\ UE\ metrics\ handler.\ In\ case\ the\ metrics\_report\_period\ is\ zero,\ no\ metrics\ are\ reported.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_ac4142249957c95fe4b5f5a69628b644e}{scheduler\_metrics\_handler}}(msecs\ metrics\_report\_period,\ \mbox{\hyperlink{classsrsran_1_1scheduler__ue__metrics__notifier}{scheduler\_ue\_metrics\_notifier}}\&\ notifier);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ creation\ of\ a\ UE.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_aae9c742ae0dadd2ab2e8e0e71e449586}{handle\_ue\_creation}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti,\ pci\_t\ pcell\_pci,\ \textcolor{keywordtype}{unsigned}\ num\_prbs)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ removal\ of\ a\ UE.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a650e66ac7cde2e021fbb2f87f48834b1}{handle\_ue\_deletion}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ CRC\ indication.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a0755c662b8f2268fbdee06923b302459}{handle\_crc\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__crc__pdu__indication}{ul\_crc\_pdu\_indication}}\&\ crc\_pdu,\ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ tbs);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ CSI\ report\ metric.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a2ee861c06168f75518709b4c2ecd5a61}{handle\_csi\_report}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1csi__report__data}{csi\_report\_data}}\&\ csi);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ HARQ-\/ACK\ UCI\ indication.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_af7471a9b23189e8d0f1afa0faf235092}{handle\_dl\_harq\_ack}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keywordtype}{bool}\ ack,\ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bytes}{bytes}}\ tbs);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ HARQ\ timeout.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a72777975e9e487d6db9a26c08a312039}{handle\_harq\_timeout}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keywordtype}{bool}\ is\_dl)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Register\ PUCCH\ SINR.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a6e4f25d8ec9c5136211a605d524480ef}{handle\_pucch\_sinr}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{float}>\ pucch\_sinr);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ UL\ BSR\ indication.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_ae145075dfaf3f5ea6f7f4d0988935ab6}{handle\_ul\_bsr\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__bsr__indication__message}{ul\_bsr\_indication\_message}}\&\ bsr);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ UL\ PHR\ indication.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a775ca5759c1bbed03fbf9fb47d725733}{handle\_ul\_phr\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__phr__indication__message}{ul\_phr\_indication\_message}}\&\ phr\_ind);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ DL\ Buffer\ Status\ indication.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a843953e9d43f49853bddb729e0886798}{handle\_dl\_buffer\_state\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dl__buffer__state__indication__message}{dl\_buffer\_state\_indication\_message}}\&\ dl\_bs);}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handle\ results\ stored\ in\ the\ scheduler\ result\ and\ push\ new\ entry.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_abc092a207333c6e214401566aacc960a}{push\_result}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_tx,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__result}{sched\_result}}\&\ slot\_result);}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ metrics\ reporting\ is\ active.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler_a012943eb25e6a9d2eeca459deb9ac83e}{connected}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ report\_period\ !=\ std::chrono::nanoseconds\{0\};\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{struct}\ ue\_metric\_context\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ In\ this\ struct\ we\ store\ all\ the\ metadata\ that\ is\ reset\ at\ every\ report.}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1scheduler__metrics__handler_1_1ue__metric__context_1_1non__persistent__data}{non\_persistent\_data}}\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\_uci\_harq\_acks\ \ \ =\ 0;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\_uci\_harqs\ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\_crc\_acks\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ count\_crc\_pdus\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ dl\_mcs\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_dl\_cws\ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ ul\_mcs\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_puschs\ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ uint64\_t\ sum\_dl\_tb\_bytes\ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ uint64\_t\ sum\_ul\_tb\_bytes\ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \ \ sum\_pusch\_snrs\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ \ \ sum\_pucch\_snrs\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_pucch\_snr\_reports\ =\ 0;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_pusch\_snr\_reports\ =\ 0;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ dl\_prbs\_used\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ ul\_prbs\_used\ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00101\ \ \ \ \ \};}
+\DoxyCodeLine{00102\ \ \ \ \ pci\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci;}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_prbs;}
+\DoxyCodeLine{00104\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00105\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti;}
+\DoxyCodeLine{00106\ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_cqi\ =\ 0;}
+\DoxyCodeLine{00107\ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_ri\ \ =\ 1;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_bsr\ =\ 0;}
+\DoxyCodeLine{00109\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1phr__report}{phr\_report}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_phr;}
+\DoxyCodeLine{00110\ \ \ \ \ std::array<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_RB\_LCIDS>\ last\_dl\_bs\{0\};}
+\DoxyCodeLine{00111\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1scheduler__metrics__handler_1_1ue__metric__context_1_1non__persistent__data}{non\_persistent\_data}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1scheduler__ue__metrics}{scheduler\_ue\_metrics}}\ compute\_report(std::chrono::milliseconds\ metric\_report\_period);}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordtype}{void}\ reset();}
+\DoxyCodeLine{00116\ \ \ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ report\_metrics();}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{void}\ handle\_slot\_result(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__result}{sched\_result}}\&\ slot\_result);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__ue__metrics__notifier}{scheduler\_ue\_metrics\_notifier}}\&\ \ notifier;}
+\DoxyCodeLine{00122\ \ \ \textcolor{keyword}{const}\ std::chrono::milliseconds\ report\_period;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{//\ derived.}}
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{unsigned}\ report\_period\_slots\ =\ 0;}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ This\ type\ is\ used\ so\ that\ multiple\ threads\ can\ access\ different\ positions\ concurrently.}}
+\DoxyCodeLine{00128\ \ \ slotted\_id\_table<du\_ue\_index\_t,\ ue\_metric\_context,\ MAX\_NOF\_DU\_UES>\ ues;}
+\DoxyCodeLine{00129\ \ \ std::unordered\_map<rnti\_t,\ du\_ue\_index\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti\_to\_ue\_index\_lookup;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Counter\ of\ number\ of\ slots\ elapsed\ since\ the\ last\ report.}}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordtype}{unsigned}\ slot\_counter\ =\ 0;}
+\DoxyCodeLine{00133\ \};}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -27,6 +27,35 @@
 namespace srsran {
 namespace srs_cu_cp {
 
+/// Forward declared classes.
+class du_processor_mobility_handler;
+class du_processor_f1ap_ue_context_notifier;
+class du_processor_ue_task_handler;
+class du_processor_ue_context_notifier;
+
+/// Handler of a single DU connected to the CU-CP.
+class du_handler
+{
+public:
+  virtual ~du_handler() = default;
+
+  /// \brief Get the F1AP message handler interface of the DU processor object.
+  /// \return The F1AP message handler interface of the DU processor object.
+  virtual f1ap_message_handler& get_f1ap_message_handler() = 0;
+
+  /// \brief Get the mobility handler.
+  virtual du_processor_mobility_handler& get_mobility_handler() = 0;
+
+  /// \brief Get the UE task handler
+  virtual du_processor_ue_task_handler& get_du_processor_ue_task_handler() = 0;
+
+  /// \brief Retrieve the F1AP UE notifier of the DU processor.
+  virtual du_processor_f1ap_ue_context_notifier& get_f1ap_ue_context_notifier() = 0;
+
+  /// \brief Retrieve the UE Context notifier of the DU processor.
+  virtual du_processor_ue_context_notifier& get_du_processor_ue_context_notifier() = 0;
+};
+
 /// \brief Handler of the F1-C interface of the CU-CP.
 ///
 /// This interface is used to forward F1AP messages or DU connection updates to the CU-CP.
@@ -38,7 +67,7 @@ public:
   /// \brief Handles the start of a new DU connection.
   ///
   /// \param f1ap_tx_pdu_notifier Notifier that the CU-CP will use to push F1AP Tx messages to the DU. Once this
-  /// object goes out of scope, the F1-C GW-to-DU connection will be closed.
+  /// object goes out of scope, the DU connection will be closed.
   /// \return Notifier that the F1-C will use to forward to the CU-CP received F1AP messages from the DU via F1-C. If
   /// the caller lets the returned object go out of scope, the DU connection will be closed.
   virtual std::unique_ptr<f1ap_message_notifier>
@@ -47,6 +76,13 @@ public:
   /// \brief Handles a remove request. The corresponding DU processor object will be removed.
   /// \param[in] du_index The index of the DU processor object to delete.
   virtual void handle_du_remove_request(du_index_t du_index) = 0;
+
+  /// \brief Get handler to a DU connected to the CU-CP.
+  virtual du_handler& get_du(du_index_t du_index) = 0;
+
+  /// \brief Checks whether a cell with the specified PCI is served by any of the connected DUs.
+  /// \param[out] The index of the DU serving the given PCI.
+  virtual du_index_t find_du(pci_t pci) = 0;
 };
 
 } // namespace srs_cu_cp

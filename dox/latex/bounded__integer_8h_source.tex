@@ -1,0 +1,182 @@
+\doxysection{bounded\+\_\+integer.\+h}
+\hypertarget{bounded__integer_8h_source}{}\label{bounded__integer_8h_source}\index{include/srsran/adt/bounded\_integer.h@{include/srsran/adt/bounded\_integer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/strong\_type.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}fmt/format.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00036\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1bounded__integer__tag}{bounded\_integer\_tag}}\ \{}
+\DoxyCodeLine{00037\ \};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer>}
+\DoxyCodeLine{00040\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1strong__type}{bounded\_integer\_base}}\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type}{strong\_type}}<Integer,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1bounded__integer__tag}{detail::bounded\_integer\_tag<Integer>}},}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__equality}{strong\_equality}},}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__equality__with}{strong\_equality\_with<Integer>}},}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__comparison}{strong\_comparison}},}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1strong__comparison__with}{strong\_comparison\_with<Integer>}}>;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1bounded__integer__invalid__tag}{bounded\_integer\_invalid\_tag}}\ \{\};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer,\ Integer\ MIN\_VALUE,\ Integer\ MAX\_VALUE>}
+\DoxyCodeLine{00054\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1strong__type}{detail::bounded\_integer\_base}}<Integer>}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{static\_assert}(std::is\_integral<Integer>::value,\ \textcolor{stringliteral}{"{}Template\ argument\ must\ be\ an\ integer"{}});}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{static\_assert}(MIN\_VALUE\ <=\ MAX\_VALUE,\ \textcolor{stringliteral}{"{}Provided\ bounds\ for\ bounded\_integer\ are\ not\ valid"{}});}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1strong__type}{base\_class}}\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type}{detail::bounded\_integer\_base<Integer>}};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{using\ }base\_class::base\_class;}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{using\ }difference\_type\ =\ std::conditional\_t<\textcolor{keyword}{sizeof}(Integer)\ ==\ \textcolor{keyword}{sizeof}(int64\_t),\ int64\_t,\ int32\_t>;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}(\mbox{\hyperlink{structsrsran_1_1bounded__integer__invalid__tag}{bounded\_integer\_invalid\_tag}}\ )\ :\ \mbox{\hyperlink{classsrsran_1_1strong__type}{base\_class}}(MAX\_VALUE\ +\ 1)\ \{\}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}(Integer\ v)\ :\ \mbox{\hyperlink{classsrsran_1_1strong__type}{base\_class}}(v)\ \{\ assert\_bounds(v);\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}\&\ operator=(Integer\ v)}
+\DoxyCodeLine{00070\ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ assert\_bounds(v);}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()\ =\ v;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ Integer\ min()\ \{\ \textcolor{keywordflow}{return}\ MIN\_VALUE;\ \}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ Integer\ max()\ \{\ \textcolor{keywordflow}{return}\ MAX\_VALUE;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1bounded__integer_a146a3755987bef080dbd04ecdfdb6f39}{valid}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()\ >=\ MIN\_VALUE\ \&\&\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()\ <=\ MAX\_VALUE;\ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{operator}\ Integer()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}();\ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00086\ \ \ template\ <typename\ U\ =\ Integer,\ std::enable\_if\_t<std::is\_unsigned<U>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{constexpr}\ Integer\ \mbox{\hyperlink{classsrsran_1_1bounded__integer_a538a1728080ec0e1e715583a942435c7}{to\_uint}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00088\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}();}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00093\ \ \ template\ <typename\ U\ =\ Integer,\ std::enable\_if\_t<std::is\_signed<U>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{constexpr}\ Integer\ \mbox{\hyperlink{classsrsran_1_1bounded__integer_a6d246110e56734ba56b0f9c2e2e05b16}{to\_int}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00095\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}();}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{bounded\_integer}}\&\ operator++()}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ ++\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}();}
+\DoxyCodeLine{00102\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ bounded\_integer\ operator++(\textcolor{keywordtype}{int})}
+\DoxyCodeLine{00107\ \ \ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{auto}\ tmp\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()++;}
+\DoxyCodeLine{00109\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{return}\ tmp;}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ bounded\_integer\&\ operator-\/-\/()}
+\DoxyCodeLine{00114\ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ -\/-\/\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}();}
+\DoxyCodeLine{00116\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00118\ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ bounded\_integer\ operator-\/-\/(\textcolor{keywordtype}{int})}
+\DoxyCodeLine{00121\ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keyword}{auto}\ tmp\ =\ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()-\/-\/;}
+\DoxyCodeLine{00123\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{return}\ tmp;}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ \ \ bounded\_integer\&\ operator+=(Integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00127\ \ \ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()\ +=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}};}
+\DoxyCodeLine{00129\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ \ \ bounded\_integer\&\ operator+=(bounded\_integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this}\ +=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.value();\ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ bounded\_integer\ operator+(Integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00135\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00136\ \ \ \ \ bounded\_integer<Integer,\ MIN\_VALUE,\ MAX\_VALUE>\ ret\{*\textcolor{keyword}{this}\};}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{return}\ ret\ +=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}};}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ \ \ bounded\_integer\ operator+(bounded\_integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this}\ +\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.value();\ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ bounded\_integer\&\ operator-\/=(Integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00142\ \ \ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}()\ -\/=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}};}
+\DoxyCodeLine{00144\ \ \ \ \ assert\_bounds(\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{base\_class::value}}());}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00146\ \ \ \}}
+\DoxyCodeLine{00147\ \ \ bounded\_integer\&\ operator-\/=(bounded\_integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this}\ -\/=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.value();\ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ bounded\_integer\ operator-\/(Integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00150\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00151\ \ \ \ \ bounded\_integer<Integer,\ MIN\_VALUE,\ MAX\_VALUE>\ ret\{*\textcolor{keyword}{this}\};}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{return}\ ret\ -\/=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}};}
+\DoxyCodeLine{00153\ \ \ \}}
+\DoxyCodeLine{00154\ \ \ difference\_type\ operator-\/(bounded\_integer\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00155\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}difference\_type\textcolor{keyword}{>}(this-\/>\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{value}}())\ -\/\ \textcolor{keyword}{static\_cast<}difference\_type\textcolor{keyword}{>}(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.value());}
+\DoxyCodeLine{00157\ \ \ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ assert\_bounds(Integer\ v)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00161\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00162\ \ \ \ \ srsran\_assert(v\ >=\ MIN\_VALUE\ \&\&\ v\ <=\ MAX\_VALUE,\ \textcolor{stringliteral}{"{}Value=\{\}\ out-\/of-\/bounds\ [\{\},\ \{\}]"{}},\ v,\ MIN\_VALUE,\ MAX\_VALUE);}
+\DoxyCodeLine{00163\ \ \ \}}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00171\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Integer,\ Integer\ MIN\_VALUE,\ Integer\ MAX\_VALUE>}
+\DoxyCodeLine{00172\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::bounded\_integer<Integer,\ MIN\_VALUE,\ MAX\_VALUE>>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structformatter}{formatter}}<Integer>\ \{}
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bounded__integer}{srsran::bounded\_integer<Integer,\ MIN\_VALUE,\ MAX\_VALUE>}}\&\ s,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00176\ \ \ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{if}\ (s.\mbox{\hyperlink{classsrsran_1_1bounded__integer_a146a3755987bef080dbd04ecdfdb6f39}{valid}}())\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fmt::format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ \textcolor{keyword}{static\_cast<}Integer\textcolor{keyword}{>}(s));}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ fmt::format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}INVALID"{}});}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ \};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

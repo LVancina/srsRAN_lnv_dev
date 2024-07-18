@@ -119,10 +119,10 @@ void ldpc_decoder_generic::compute_soft_bits(span<log_likelihood_ratio>       th
   }
 }
 
-bool ldpc_decoder_generic::get_hard_bits(bit_buffer& out)
+void ldpc_decoder_generic::get_hard_bits(bit_buffer& out)
 {
   unsigned out_length = out.size();
 
   span<log_likelihood_ratio> llrs = span<log_likelihood_ratio>(soft_bits).first(out_length);
-  return srsran::hard_decision(out, llrs);
+  srsran::hard_decision(out, llrs);
 }

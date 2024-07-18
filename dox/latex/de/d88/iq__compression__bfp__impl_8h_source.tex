@@ -1,0 +1,116 @@
+\doxysection{iq\+\_\+compression\+\_\+bfp\+\_\+impl.\+h}
+\hypertarget{iq__compression__bfp__impl_8h_source}{}\label{iq__compression__bfp__impl_8h_source}\index{lib/ofh/compression/iq\_compression\_bfp\_impl.h@{lib/ofh/compression/iq\_compression\_bfp\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{quantizer_8h}{"{}quantizer.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/compression/iq\_compressor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/compression/iq\_decompressor.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Implementation\ of\ the\ Block\ Floating\ Point\ IQ\ data\ compression.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ iq\_compression\_bfp\_impl\ :\ \textcolor{keyword}{public}\ iq\_compressor,\ \textcolor{keyword}{public}\ iq\_decompressor}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{//\ Constructor.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{explicit}\ iq\_compression\_bfp\_impl(srslog::basic\_logger\&\ logger\_,\ \textcolor{keywordtype}{float}\ iq\_scaling\_\ =\ 1.0)\ :}
+\DoxyCodeLine{00038\ \ \ \ \ logger(logger\_),\ iq\_scaling(iq\_scaling\_)}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00044\ \ \ compress(span<compressed\_prb>\ output,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keyword}{const}\ ru\_compression\_params\&\ params)\ override;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00048\ \ \ decompress(span<cf\_t>\ output,\ span<\textcolor{keyword}{const}\ compressed\_prb>\ input,\ \textcolor{keyword}{const}\ ru\_compression\_params\&\ params)\ override;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Number\ of\ quantized\ samples\ per\ resource\ block.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ NOF\_SAMPLES\_PER\_PRB\ =\ 2\ *\ NOF\_SUBCARRIERS\_PER\_RB;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Determines\ the\ exponent\ to\ be\ used\ in\ BFP\ compression.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ First,\ it\ determines\ the\ maximum\ left\ shift\ that\ will\ still\ preserve\ the\ original\ value\ (implemented\ as\ a\ counter}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ of\ leading\ zeros\ without\ a\ sign\ bit).\ Then,\ it\ determines\ an\ exponent\ given\ the\ requested\ \(\backslash\)c\ data\_width.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ in\_sample\ \ 16bit\ input\ value\ for\ which\ the\ exponent\ is\ calculated.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ data\_width\ BFP\ compression\ bit\ width.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ An\ exponent\ to\ be\ applied\ to\ the\ input\ sample\ to\ compress\ it\ to\ \(\backslash\)c\ data\_width\ bits.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ determine\_exponent(uint16\_t\ x,\ \textcolor{keywordtype}{unsigned}\ data\_width)}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(data\_width\ !=\ 0,\ \textcolor{stringliteral}{"{}Invalid\ data\ width"{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(data\_width\ <=\ MAX\_IQ\_WIDTH,\ \textcolor{stringliteral}{"{}Passed\ IQ\ data\ width\ exceeds\ 16\ bits"{}});}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ max\_shift\ \ \ \ \ \ \ =\ MAX\_IQ\_WIDTH\ -\/\ data\_width;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ lz\_without\_sign\ =\ max\_shift;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{if}\ ((x\ >\ 0)\ \&\&\ (max\_shift\ >\ 0))\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ use\ a\ wrapper\ that\ checks\ whether\ this\ builtin\ is\ actually\ available\ and\ provides\ a\ fallback\ option.}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ lz\_without\_sign\ =\ \_\_builtin\_clz(x)\ -\/\ 16U\ -\/\ 1U;}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{int}\ raw\_exp\ =\ std::min(max\_shift,\ lz\_without\_sign);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{return}\ std::max(0,\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{int}>(MAX\_IQ\_WIDTH\ -\/\ data\_width)\ -\/\ raw\_exp);}
+\DoxyCodeLine{00076\ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Compresses\ one\ resource\ block\ using\ the\ generic\ implementation\ of\ the\ algorithm}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ from\ O-\/RAN.WG4.CUS,\ Annex\ A.1.2.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ c\_prb\ \ \ \ \ \ Compressed\ PRB.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ input\_quantized\ Span\ of\ quantized\ IQ\ samples\ of\ a\ resource\ block\ to\ be\ compressed.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ data\_width\ \ \ \ \ \ BFP\ compression\ bit\ width.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ compress\_prb\_generic(compressed\_prb\&\ c\_prb,\ span<\textcolor{keyword}{const}\ int16\_t>\ input\_quantized,\ \textcolor{keywordtype}{unsigned}\ data\_width);}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Decompresses\ one\ resource\ block\ using\ a\ generic\ implementation\ of\ the\ algorithm}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ from\ O-\/RAN.WG4.CUS,\ Annex\ A.1.3.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ Span\ of\ decompressed\ complex\ samples\ of\ a\ resource\ block\ (12\ samples).}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ c\_prb\ \ Compressed\ PRB.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ q\ \ \ \ \ \ Quantizer\ object.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ data\_width\ \ Bit\ width\ of\ compressed\ samples.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00094\ \ \ decompress\_prb\_generic(span<cf\_t>\ output,\ \textcolor{keyword}{const}\ compressed\_prb\&\ c\_prb,\ \textcolor{keyword}{const}\ quantizer\&\ q,\ \textcolor{keywordtype}{unsigned}\ data\_width);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Quantizes\ complex\ float\ samples\ using\ the\ specified\ bit\ width.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ out\ \ \ \ \ \ Quantized\ samples.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ in\ \ \ \ \ \ \ \ Span\ of\ input\ float\ samples.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ bit\_width\ Number\ of\ significant\ bits\ used\ by\ the\ quantized\ samples.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{void}\ quantize\_input(span<int16\_t>\ out,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ in);}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00104\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ Scaling\ factor\ applied\ to\ IQ\ data\ prior\ to\ quantization.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ iq\_scaling;}
+\DoxyCodeLine{00107\ \};}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00110\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

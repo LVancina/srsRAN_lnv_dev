@@ -1,0 +1,80 @@
+\doxysection{rx\+\_\+symbol\+\_\+handler\+\_\+example.\+h}
+\hypertarget{rx__symbol__handler__example_8h_source}{}\label{rx__symbol__handler__example_8h_source}\index{apps/examples/phy/rx\_symbol\_handler\_example.h@{apps/examples/phy/rx\_symbol\_handler\_example.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_timing\_notifier.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{upper__phy__rx__symbol__handler_8h}{srsran/phy/upper/upper\_phy\_rx\_symbol\_handler.h}}"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1rx__symbol__handler__example}{rx\_symbol\_handler\_example}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1upper__phy__rx__symbol__handler}{upper\_phy\_rx\_symbol\_handler}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00035\ \ \ std::mutex\ \ \ \ \ \ \ \ \ \ \ \ mutex;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1rx__symbol__handler__example}{rx\_symbol\_handler\_example}}(std::string\ log\_level)\ :\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}RxSyHan"{}}))}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ logger.\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::str\_to\_basic\_level(log\_level));}
+\DoxyCodeLine{00041\ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rx__symbol__handler__example_a5612e0da184680296c7f2d3ebf601f83}{handle\_rx\_symbol}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context}{upper\_phy\_rx\_symbol\_context}}\&\ context,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ grid)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00045\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00046\ \ \ \ \ logger.debug(context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_ab8d4e82e50a92da6e1774524af7046b9}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a19d7b2faaa1fcc74f3d01560339f7602}{sfn}}(),}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_ab8d4e82e50a92da6e1774524af7046b9}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}(),}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Rx\ symbol\ \{\}\ received\ for\ sector\ \{\}"{}},}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_a637467dd67495568900d87b45e44c154}{symbol}},}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_a2a1351affccbdddb614e8d0abde8d7d1}{sector}});}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rx__symbol__handler__example_a89b44f98eabac0db35d31c681f6f5e4f}{handle\_rx\_prach\_window}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__buffer__context}{prach\_buffer\_context}}\&\ context,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}\&\ buffer)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00055\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00056\ \ \ \ \ logger.debug(context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a814ea3070cc63fb8dff774e11223cddf}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a19d7b2faaa1fcc74f3d01560339f7602}{sfn}}(),}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a814ea3070cc63fb8dff774e11223cddf}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}(),}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}PRACH\ symbol\ \{\}\ received\ for\ sector\ \{\}"{}},}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_a1530821e8cd26832c55cf63ceecaac38}{start\_symbol}},}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1prach__buffer__context_aac17f389286b5f746f90619989c0ee90}{sector}});}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rx__symbol__handler__example_a7d6ffc3176d2aecc3abce3aa57b8e4cb}{handle\_rx\_srs\_symbol}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context}{upper\_phy\_rx\_symbol\_context}}\&\ context)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00064\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00065\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00066\ \ \ \ \ logger.debug(context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_ab8d4e82e50a92da6e1774524af7046b9}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a19d7b2faaa1fcc74f3d01560339f7602}{sfn}}(),}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_ab8d4e82e50a92da6e1774524af7046b9}{slot}}.\mbox{\hyperlink{classsrsran_1_1slot__point_a1808c0aeecc25d6382e49511028c010e}{slot\_index}}(),}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}SRS\ symbol\ \{\}\ received\ for\ sector\ \{\}"{}},}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_a637467dd67495568900d87b45e44c154}{symbol}},}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context.\mbox{\hyperlink{structsrsran_1_1upper__phy__rx__symbol__context_a2a1351affccbdddb614e8d0abde8d7d1}{sector}});}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

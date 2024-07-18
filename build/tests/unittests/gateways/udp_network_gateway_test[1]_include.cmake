@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/gateways/udp_network_gateway_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/gateways/udp_network_gateway_test[1]_tests.cmake")
+else()
+  add_test(udp_network_gateway_test_NOT_BUILT udp_network_gateway_test_NOT_BUILT)
+endif()

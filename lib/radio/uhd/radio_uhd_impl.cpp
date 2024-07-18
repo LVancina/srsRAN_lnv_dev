@@ -33,7 +33,7 @@ bool radio_session_uhd_impl::set_time_to_gps_time()
   const std::string sensor_name = "gps_time";
 
   std::vector<std::string> sensors;
-  if (!device.get_mboard_sensor_names(sensors)) {
+  if (device.get_mboard_sensor_names(sensors) != UHD_ERROR_NONE) {
     fmt::print("Error: failed to read sensors. {}\n", device.get_error_message());
     return false;
   }
@@ -53,7 +53,7 @@ bool radio_session_uhd_impl::set_time_to_gps_time()
 
   // Get time and set
   fmt::print("Setting USRP time to {}s\n", frac_secs);
-  if (!device.set_time_unknown_pps(uhd::time_spec_t(frac_secs))) {
+  if (device.set_time_unknown_pps(uhd::time_spec_t(frac_secs)) != UHD_ERROR_NONE) {
     fmt::print("Error: failed to set time. {}\n", device.get_error_message());
     return false;
   }
@@ -63,7 +63,8 @@ bool radio_session_uhd_impl::set_time_to_gps_time()
 
 bool radio_session_uhd_impl::wait_sensor_locked(const std::string& sensor_name, bool is_mboard, int timeout)
 {
-  auto end_time = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+  bool is_locked = false;
+  auto end_time  = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
 
   // Get sensor list
   std::vector<std::string> sensors;
@@ -89,7 +90,6 @@ bool radio_session_uhd_impl::wait_sensor_locked(const std::string& sensor_name, 
 
   do {
     // Get actual sensor value
-    bool is_locked = false;
     if (is_mboard) {
       if (!device.get_sensor(sensor_name, is_locked)) {
         fmt::print("Error: reading mboard sensor {}. {}.\n", sensor_name, device.get_error_message());
@@ -102,16 +102,11 @@ bool radio_session_uhd_impl::wait_sensor_locked(const std::string& sensor_name, 
       }
     }
 
-    // Return true if the sensor is locked.
-    if (is_locked) {
-      return true;
-    }
+    // Read value and wait
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  } while (not is_locked and std::chrono::steady_clock::now() < end_time);
 
-    // Sleep some time before trying it again.
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  } while (std::chrono::steady_clock::now() < end_time);
-
-  return false;
+  return is_locked;
 }
 
 bool radio_session_uhd_impl::set_tx_gain_unprotected(unsigned port_idx, double gain_dB)
@@ -271,6 +266,9 @@ radio_session_uhd_impl::radio_session_uhd_impl(const radio_configuration::radio&
     }
   }
 
+  bool        is_locked = false;
+  std::string sensor_name;
+
   // Set sync source.
   if (!device.set_sync_source(radio_config.clock)) {
     fmt::print("Error: couldn't set sync source: {}\n", device.get_error_message());
@@ -279,21 +277,22 @@ radio_session_uhd_impl::radio_session_uhd_impl(const radio_configuration::radio&
 
   // Set GPS time if GPSDO is selected.
   if (radio_config.clock.sync == radio_configuration::clock_sources::source::GPSDO) {
-    if (!wait_sensor_locked("gps_locked", true, CLOCK_TIMEOUT_MS)) {
-      // It blocks until sync source is locked.
-      fmt::print("Could not lock reference GPS time source.\n");
-      return;
-    }
-
     set_time_to_gps_time();
   }
 
+  // Select oscillator sensor name.
+  if (radio_config.clock.sync == radio_configuration::clock_sources::source::GPSDO) {
+    sensor_name = "gps_locked";
+  } else {
+    sensor_name = "ref_locked";
+  }
+
   // Wait until external reference / GPS is locked.
-  if (radio_config.clock.clock == radio_configuration::clock_sources::source::GPSDO ||
-      radio_config.clock.clock == radio_configuration::clock_sources::source::EXTERNAL) {
-    // It blocks until clock source is locked.
-    if (!wait_sensor_locked("ref_locked", true, CLOCK_TIMEOUT_MS)) {
-      fmt::print("Could not lock reference clock source.\n");
+  if (radio_config.clock.sync == radio_configuration::clock_sources::source::GPSDO ||
+      radio_config.clock.sync == radio_configuration::clock_sources::source::EXTERNAL) {
+    // blocks until clock source is locked
+    if (not wait_sensor_locked(sensor_name, true, CLOCK_TIMEOUT_MS)) {
+      fmt::print("Could not lock reference clock source. Sensor: {}={}.\n", sensor_name, is_locked ? "true" : "false");
       return;
     }
   }
@@ -346,8 +345,8 @@ radio_session_uhd_impl::radio_session_uhd_impl(const radio_configuration::radio&
     stream_description.otw_format                              = otw_format;
     stream_description.srate_hz                                = actual_tx_rate_Hz;
     stream_description.args                                    = stream.args;
-    stream_description.discontiuous_tx  = (radio_config.tx_mode != radio_configuration::transmission_mode::continuous);
-    stream_description.power_ramping_us = radio_config.power_ramping_us;
+    stream_description.discontiuous_tx                         = radio_config.discontinuous_tx;
+    stream_description.power_ramping_us                        = radio_config.power_ramping_us;
 
     // Setup ports.
     for (unsigned channel_idx = 0; channel_idx != stream.channels.size(); ++channel_idx) {
@@ -427,36 +426,6 @@ radio_session_uhd_impl::radio_session_uhd_impl(const radio_configuration::radio&
       // Setup frequency.
       if (!set_rx_freq(port_idx, channel.freq)) {
         return;
-      }
-
-      // Set the same port for TX and RX.
-      if (radio_config.tx_mode == radio_configuration::transmission_mode::same_port) {
-        // Get the selected TX antenna.
-        std::string selected_tx_antenna;
-        if (!device.get_selected_tx_antenna(selected_tx_antenna, port_idx)) {
-          return;
-        }
-
-        // Get the available RX antennas.
-        std::vector<std::string> rx_antennas;
-        if (!device.get_rx_antennas(rx_antennas, port_idx)) {
-          return;
-        }
-
-        // If the TX antenna is also available for reception, configure the TX antenna as RX antennas as well.
-        if (std::find(rx_antennas.begin(), rx_antennas.end(), selected_tx_antenna) != rx_antennas.end()) {
-          fmt::print("Same port transmission mode: Selecting antenna {} as Rx antenna for channel {}\n",
-                     selected_tx_antenna,
-                     port_idx);
-          if (!device.set_rx_antenna(selected_tx_antenna, port_idx)) {
-            return;
-          };
-        } else {
-          fmt::print("Error: Selected TX antenna, i.e., {}, is not available as RX antenna in channel {}. Same port "
-                     "transmission mode not suppored.\n",
-                     selected_tx_antenna,
-                     port_idx);
-        }
       }
 
       // Inform about ignored argument.

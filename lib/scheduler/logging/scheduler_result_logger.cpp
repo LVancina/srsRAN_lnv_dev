@@ -25,11 +25,6 @@
 
 using namespace srsran;
 
-scheduler_result_logger::scheduler_result_logger(bool log_broadcast_, pci_t pci_) :
-  logger(srslog::fetch_basic_logger("SCHED")), log_broadcast(log_broadcast_), enabled(logger.info.enabled()), pci(pci_)
-{
-}
-
 void scheduler_result_logger::log_debug(const sched_result& result)
 {
   auto slot_stop_tp = std::chrono::high_resolution_clock::now();
@@ -57,32 +52,29 @@ void scheduler_result_logger::log_debug(const sched_result& result)
       case dci_dl_rnti_config_type::c_rnti_f1_0: {
         const auto& dci = pdcch.dci.c_rnti_f1_0;
         fmt::format_to(fmtbuf,
-                       " dci: h_id={} ndi={} rv={} mcs={} res_ind={}",
+                       " dci: h_id={} ndi={} rv={} mcs={}",
                        dci.harq_process_number,
                        dci.new_data_indicator,
                        dci.redundancy_version,
-                       dci.modulation_coding_scheme,
-                       dci.pucch_resource_indicator);
+                       dci.modulation_coding_scheme);
       } break;
       case dci_dl_rnti_config_type::tc_rnti_f1_0: {
         const auto& dci = pdcch.dci.tc_rnti_f1_0;
         fmt::format_to(fmtbuf,
-                       " dci: h_id={} ndi={} rv={} mcs={} res_ind={}",
+                       " dci: h_id={} ndi={} rv={} mcs={}",
                        dci.harq_process_number,
                        dci.new_data_indicator,
                        dci.redundancy_version,
-                       dci.modulation_coding_scheme,
-                       dci.pucch_resource_indicator);
+                       dci.modulation_coding_scheme);
       } break;
       case dci_dl_rnti_config_type::c_rnti_f1_1: {
         const auto& dci = pdcch.dci.c_rnti_f1_1;
         fmt::format_to(fmtbuf,
-                       " dci: h_id={} ndi={} rv={} mcs={} res_ind={}",
+                       " dci: h_id={} ndi={} rv={} mcs={}",
                        dci.harq_process_number,
                        dci.tb1_new_data_indicator,
                        dci.tb1_redundancy_version,
-                       dci.tb1_modulation_coding_scheme,
-                       dci.pucch_resource_indicator);
+                       dci.tb1_modulation_coding_scheme);
         if (dci.downlink_assignment_index.has_value()) {
           fmt::format_to(fmtbuf, " dai={}", *dci.downlink_assignment_index);
         }
@@ -295,8 +287,8 @@ void scheduler_result_logger::log_debug(const sched_result& result)
     const unsigned nof_pdschs = result.dl.paging_grants.size() + result.dl.rar_grants.size() +
                                 result.dl.ue_grants.size() + result.dl.bc.sibs.size();
     const unsigned nof_puschs = result.ul.puschs.size();
-    logger.debug("Slot decisions pci={} t={}us ({} PDSCH{}, {} PUSCH{}):{}",
-                 pci,
+    logger.debug("Slot decisions cell={} t={}us ({} PDSCH{}, {} PUSCH{}):{}",
+                 cell_index,
                  decision_latency.count(),
                  nof_pdschs,
                  nof_pdschs == 1 ? "" : "s",
@@ -383,8 +375,8 @@ void scheduler_result_logger::log_info(const sched_result& result)
     const unsigned nof_pdschs = result.dl.paging_grants.size() + result.dl.rar_grants.size() +
                                 result.dl.ue_grants.size() + result.dl.bc.sibs.size();
     const unsigned nof_puschs = result.ul.puschs.size();
-    logger.info("Slot decisions pci={} t={}us ({} PDSCH{}, {} PUSCH{}): {}",
-                pci,
+    logger.info("Slot decisions cell={} t={}us ({} PDSCH{}, {} PUSCH{}): {}",
+                cell_index,
                 decision_latency.count(),
                 nof_pdschs,
                 nof_pdschs == 1 ? "" : "s",

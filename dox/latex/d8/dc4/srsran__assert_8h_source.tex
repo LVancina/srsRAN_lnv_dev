@@ -1,0 +1,106 @@
+\doxysection{srsran\+\_\+assert.\+h}
+\hypertarget{srsran__assert_8h_source}{}\label{srsran__assert_8h_source}\index{include/srsran/support/srsran\_assert.h@{include/srsran/support/srsran\_assert.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/compiler.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdio}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)brief\ helper\ function\ to\ format\ and\ print\ assertion\ messages.\ Before\ printing,\ the\ srslog\ is\ flushed.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)param\ filename\ file\ name\ where\ assertion\ failed.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)param\ line\ line\ in\ which\ assertion\ was\ placed.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)param\ funcname\ function\ name\ where\ assertion\ failed.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)param\ condstr\ assertion\ condition\ that\ failed.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)param\ msg\ additional\ assertion\ message.}}
+\DoxyCodeLine{00039\ [[gnu::noinline,\ noreturn]]\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ print\_and\_abort(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ filename,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ line,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ funcname,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ condstr\ =\ \textcolor{keywordtype}{nullptr},}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ msg\ \ \ \ \ =\ \textcolor{stringliteral}{"{}"{}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ fmt::memory\_buffer\ fmtbuf;}
+\DoxyCodeLine{00046\ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}\{\}:\{\}:\ \{\}:\ \(\backslash\)n"{}},\ filename,\ line,\ funcname);}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{if}\ (condstr\ ==\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}Assertion\ failed"{}});}
+\DoxyCodeLine{00049\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}Assertion\ \`{}\{\}'\ failed"{}},\ condstr);}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ msg.empty())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}\ -\/\ \{\}"{}},\ msg);}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordflow}{if}\ (msg.back()\ !=\ \textcolor{stringliteral}{'.'})\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}."{}});}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ \ \ fmt::format\_to(fmtbuf,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00059\ \ \ fmtbuf.push\_back(\textcolor{stringliteral}{'\(\backslash\)0'});\ \textcolor{comment}{//\ make\ it\ a\ c-\/string}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ srslog::flush();}
+\DoxyCodeLine{00062\ \ \ fmt::print(stderr,\ \textcolor{stringliteral}{"{}\{\}"{}},\ fmtbuf.data());}
+\DoxyCodeLine{00063\ \ \ std::abort();}
+\DoxyCodeLine{00064\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{comment}{//\ NOLINTBEGIN}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ Helper\ macro\ to\ log\ assertion\ message\ and\ terminate\ program.}}
+\DoxyCodeLine{00073\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{SRSRAN\_ASSERT\_FAILURE\_\_}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condmessage}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00074\ \ \ \textcolor{preprocessor}{srsran}\textcolor{preprocessor}{::}\textcolor{preprocessor}{detail}\textcolor{preprocessor}{::}\textcolor{preprocessor}{print\_and\_abort}\textcolor{preprocessor}{(}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{preprocessor}{\_\_FILE\_\_}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\_\_LINE\_\_}\textcolor{preprocessor}{,}\ \textcolor{keyword}{\_\_PRETTY\_FUNCTION\_\_}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{condmessage}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmt}\textcolor{preprocessor}{::}\textcolor{preprocessor}{format}\textcolor{preprocessor}{(}\mbox{\hyperlink{format_8h_a09119ad072f708d17b88704fa898aff0}{FMT\_STRING}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{)}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{comment}{///\ \(\backslash\)brief\ Helper\ macro\ that\ asserts\ condition\ is\ true.\ If\ false,\ it\ logs\ the\ remaining\ macro\ args,\ flushes\ the\ log,}}
+\DoxyCodeLine{00078\ \textcolor{comment}{///\ prints\ the\ backtrace\ (if\ it\ was\ activated)\ and\ closes\ the\ application.}}
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{SRSRAN\_ALWAYS\_ASSERT\_\_}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00080\ \ \ \textcolor{preprocessor}{(}\textcolor{keywordtype}{void}\textcolor{preprocessor}{)}\textcolor{preprocessor}{(}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{)}\ \textcolor{preprocessor}{||}\ \textcolor{preprocessor}{(}\mbox{\hyperlink{srsran__assert_8h_a2c06a56b33c43be3a453e46928f902f3}{SRSRAN\_ASSERT\_FAILURE\_\_}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{(}\textcolor{preprocessor}{\#}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{)}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}\textcolor{preprocessor}{,}\ 0\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ Same\ as\ "{}SRSRAN\_ALWAYS\_ASSERT\_\_"{}\ but\ it\ is\ only\ active\ when\ "{}enable\_check"{}\ flag\ is\ defined}}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{SRSRAN\_ALWAYS\_ASSERT\_IFDEF\_\_}\textcolor{preprocessor}{(}\textcolor{preprocessor}{enable\_check}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00084\ \ \ \textcolor{preprocessor}{(}\textcolor{keywordtype}{void}\textcolor{preprocessor}{)}\textcolor{preprocessor}{(}\textcolor{preprocessor}{(}\textcolor{keyword}{not}\ \mbox{\hyperlink{compiler_8h_a75759b1f5ff75d56e2a35a82d7436710}{SRSRAN\_IS\_DEFINED}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{enable\_check}\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}\ \textcolor{preprocessor}{||}\ \textcolor{preprocessor}{(}\mbox{\hyperlink{srsran__assert_8h_a28226a772d6db5f21347a8b6d1890752}{SRSRAN\_ALWAYS\_ASSERT\_\_}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}\textcolor{preprocessor}{,}\ 0\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \textcolor{comment}{///\ \(\backslash\)brief\ Terminates\ program\ with\ an\ assertion\ failure.\ No\ condition\ message\ is\ provided.}}
+\DoxyCodeLine{00087\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{srsran\_assertion\_failure}\textcolor{preprocessor}{(}\textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00088\ \ \ \textcolor{preprocessor}{(}\textcolor{keywordtype}{void}\textcolor{preprocessor}{)}\textcolor{preprocessor}{(}\textcolor{preprocessor}{(}\textcolor{keyword}{not}\ \mbox{\hyperlink{compiler_8h_a75759b1f5ff75d56e2a35a82d7436710}{SRSRAN\_IS\_DEFINED}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{ASSERTS\_ENABLED}\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}\ \textcolor{preprocessor}{||}\ \textcolor{preprocessor}{(}\mbox{\hyperlink{srsran__assert_8h_a2c06a56b33c43be3a453e46928f902f3}{SRSRAN\_ASSERT\_FAILURE\_\_}}\textcolor{preprocessor}{(}\textcolor{keywordtype}{nullptr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}\textcolor{preprocessor}{,}\ 0\textcolor{preprocessor}{)}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{comment}{///\ Specialization\ of\ "{}SRSRAN\_ALWAYS\_ASSERT\_IFDEF\_\_"{}\ for\ the\ ASSERTS\_ENABLED\ flag.}}
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{srsran\_assert}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{srsran__assert_8h_a9e51d08ef36d4bf86522e68d26ce5e7b}{SRSRAN\_ALWAYS\_ASSERT\_IFDEF\_\_}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{ASSERTS\_ENABLED}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ Specialization\ of\ "{}SRSRAN\_ALWAYS\_ASSERT\_IFDEF\_\_"{}\ for\ the\ PARANOID\_ASSERTS\_ENABLED\ flag.}}
+\DoxyCodeLine{00095\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{srsran\_sanity\_check}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{...}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{srsran__assert_8h_a9e51d08ef36d4bf86522e68d26ce5e7b}{SRSRAN\_ALWAYS\_ASSERT\_IFDEF\_\_}}\textcolor{preprocessor}{(}\textcolor{preprocessor}{PARANOID\_ASSERTS\_ENABLED}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{condition}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{fmtstr}\textcolor{preprocessor}{,}\ \textcolor{preprocessor}{\#\#}\textcolor{preprocessor}{\_\_VA\_ARGS\_\_}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{srsran\_assume}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{)}\ \textcolor{keyword}{static\_cast}\textcolor{preprocessor}{<}\textcolor{keywordtype}{void}\textcolor{preprocessor}{>}\textcolor{preprocessor}{(}\textcolor{preprocessor}{(}\textcolor{preprocessor}{condition}\textcolor{preprocessor}{)}\ \textcolor{preprocessor}{?}\ \textcolor{keywordtype}{void}\textcolor{preprocessor}{(}0\textcolor{preprocessor}{)}\ \textcolor{preprocessor}{:}\ \mbox{\hyperlink{compiler_8h_af4badefae68005d9942b30d26ccad03a}{SRSRAN\_UNREACHABLE}}\textcolor{preprocessor}{)}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{comment}{//\ NOLINTEND}}
+
+\end{DoxyCode}

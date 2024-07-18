@@ -259,7 +259,7 @@ void ra_scheduler::handle_rach_indication_impl(const rach_indication_message& ms
 
       // Check if TC-RNTI value to be scheduled is already under use
       if (not pending_msg3s[to_value(prach_preamble.tc_rnti) % MAX_NOF_MSG3].harq.empty()) {
-        logger.warning("PRACH ignored, as the allocated TC-RNTI={} is already under use", prach_preamble.tc_rnti);
+        logger.warning("PRACH ignored, as the allocated TC-RNTI=0x{:x} is already under use", prach_preamble.tc_rnti);
         continue;
       }
 
@@ -289,7 +289,7 @@ void ra_scheduler::handle_pending_crc_indications_impl(cell_resource_allocator& 
       srsran_assert(crc.ue_index == INVALID_DU_UE_INDEX, "Msg3 HARQ CRCs cannot have a ueId assigned yet");
       auto& pending_msg3 = pending_msg3s[to_value(crc.rnti) % MAX_NOF_MSG3];
       if (pending_msg3.preamble.tc_rnti != crc.rnti) {
-        logger.warning("Invalid UL CRC, cell={}, rnti={}, h_id={}. Cause: Nonexistent rnti.",
+        logger.warning("Invalid UL CRC, cell={}, rnti={}, h_id={}. Cause: Inexistent rnti.",
                        cell_cfg.cell_index,
                        crc.rnti,
                        crc.harq_id);
@@ -381,10 +381,14 @@ void ra_scheduler::run_slot(cell_resource_allocator& res_alloc)
     // - if window hasn't started, stop loop, as RARs are ordered by slot
     if (not rar_req.rar_window.contains(pdcch_slot)) {
       if (pdcch_slot >= rar_req.rar_window.stop()) {
-        logger.warning("Could not transmit RAR within the window={}, prach_slot={}, slot_tx={}",
+        fmt::memory_buffer str_buffer;
+        fmt::format_to(str_buffer,
+                       "Could not transmit RAR within the window={}, prach_slot={}, slot_tx={}",
                        rar_req.rar_window,
                        rar_req.prach_slot_rx,
                        pdcch_slot);
+        fmt::print("{}\n", to_c_str(str_buffer));
+        logger.warning("{}", to_c_str(str_buffer));
         it = pending_rars.erase(it);
         continue;
       }
@@ -639,7 +643,7 @@ void ra_scheduler::fill_rar_grant(cell_resource_allocator&         res_alloc,
     pusch.pusch_cfg.new_data = true;
 
     // Store parameters used in HARQ.
-    pending_msg3.harq.save_alloc_params(ul_harq_sched_context{dci_ul_rnti_config_type::tc_rnti_f0_0}, pusch.pusch_cfg);
+    pending_msg3.harq.save_alloc_params(dci_ul_rnti_config_type::tc_rnti_f0_0, pusch.pusch_cfg);
   }
 }
 
@@ -670,7 +674,7 @@ void ra_scheduler::schedule_msg3_retx(cell_resource_allocator& res_alloc, pendin
     // If it is a retx, we need to ensure we use a time_domain_resource with the same number of symbols as used for
     // the first transmission.
     const bool sym_length_match_prev_grant_for_retx =
-        pusch_td_cfg.symbols.length() == msg3_ctx.harq.last_tx_params().nof_symbols;
+        pusch_td_cfg.symbols.length() != msg3_ctx.harq.last_tx_params().nof_symbols;
     if (not cell_cfg.is_ul_enabled(pusch_alloc.slot) or pusch_td_cfg.symbols.start() < start_ul_symbols or
         !sym_length_match_prev_grant_for_retx) {
       // Not possible to schedule Msg3s in this TDD slot.
@@ -746,7 +750,7 @@ void ra_scheduler::schedule_msg3_retx(cell_resource_allocator& res_alloc, pendin
     ul_info.pusch_cfg.new_data = false;
 
     // Store parameters used in HARQ.
-    msg3_ctx.harq.save_alloc_params(ul_harq_sched_context{dci_ul_rnti_config_type::tc_rnti_f0_0}, ul_info.pusch_cfg);
+    msg3_ctx.harq.save_alloc_params(dci_ul_rnti_config_type::tc_rnti_f0_0, ul_info.pusch_cfg);
 
     // successful allocation. Exit loop.
     break;

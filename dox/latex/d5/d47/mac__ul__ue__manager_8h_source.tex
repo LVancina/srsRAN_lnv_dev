@@ -1,0 +1,94 @@
+\doxysection{mac\+\_\+ul\+\_\+ue\+\_\+manager.\+h}
+\hypertarget{mac__ul__ue__manager_8h_source}{}\label{mac__ul__ue__manager_8h_source}\index{lib/mac/mac\_ul/mac\_ul\_ue\_manager.h@{lib/mac/mac\_ul/mac\_ul\_ue\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../../ran/gnb\_format.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/du\_high/rnti\_value\_table.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/mac.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_ue\_list.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran}{du\_rnti\_table}}\ =\ \mbox{\hyperlink{namespacesrsran}{rnti\_value\_table}}<\mbox{\hyperlink{namespacesrsran}{du\_ue\_index\_t}},\ \mbox{\hyperlink{namespacesrsran}{du\_ue\_index\_t}}::\mbox{\hyperlink{namespacesrsran}{INVALID\_DU\_UE\_INDEX}}>;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Stores\ MAC\ UL\ UE\ context.\ In\ particular,\ the\ UL\ PDU\ notifiers\ for\ each\ logical\ channel.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ mac\_ul\_ue\_context}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{explicit}\ mac\_ul\_ue\_context(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti\_)\ :\ ue\_index(ue\_index\_),\ rnti(rnti\_)\ \{\}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\ =\ MAX\_NOF\_DU\_UES;}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ rnti\ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}::INVALID\_RNTI;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ List\ of\ UL\ PDU\ notification\ endpoints\ associated\ to\ UE's\ logical\ channels.}}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__vector}{slotted\_vector}}<\mbox{\hyperlink{classsrsran_1_1mac__sdu__rx__notifier}{mac\_sdu\_rx\_notifier}}*>\ ul\_bearers;}
+\DoxyCodeLine{00047\ \};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ Class\ that\ manages\ the\ creation/reconfiguration/deletion\ of\ UEs\ from\ the\ MAC\ UL}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ Note:\ The\ access\ to\ this\ class\ is\ thread-\/safe\ as\ long\ as\ the\ same\ UE\ index\ and\ RNTI\ \%\ MAX\_NOF\_UES\ is\ not\ accessed}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ \ \ \ \ \ \ from\ different\ threads.\ This\ is\ in\ general\ assured\ by\ the\ DU\ manager.}}
+\DoxyCodeLine{00052\ \textcolor{keyword}{class}\ mac\_ul\_ue\_manager}
+\DoxyCodeLine{00053\ \{}
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ mac\_ul\_ue\_manager(du\_rnti\_table\&\ rnti\_table\_);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ Checks\ whether\ RNTI\ exists.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{bool}\ contains\_rnti(\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ue\_db.contains(rnti\_table[rnti]);\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Adds\ UE\ in\ MAC\ UL\ UE\ repository}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{bool}\ add\_ue(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__ue__create__request}{mac\_ue\_create\_request}}\&\ request);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ Add\ bearers\ to\ existing\ UE.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{bool}\ addmod\_bearers(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keyword}{const}\ std::vector<mac\_logical\_channel\_config>\&\ ul\_logical\_channels);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Remove\ bearers\ based\ on\ LCID.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{bool}\ remove\_bearers(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a9fb768b4a14baadb9295634bcaf010bc}{lcid\_t}}>\ lcids);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ remove\_ue(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ mac\_ul\_ue\_context*\ find\_ue(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_db.contains(ue\_index))\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&ue\_db[ue\_index];}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Arguments\ of\ UE\ manager.}}
+\DoxyCodeLine{00081\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00082\ \ \ du\_rnti\_table\&\ \ \ \ \ \ \ \ rnti\_table;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ MAC\ UL\ UE\ repository.}}
+\DoxyCodeLine{00085\ \ \ du\_ue\_list<mac\_ul\_ue\_context>\ ue\_db;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

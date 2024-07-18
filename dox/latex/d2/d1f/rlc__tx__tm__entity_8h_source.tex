@@ -1,0 +1,93 @@
+\doxysection{rlc\+\_\+tx\+\_\+tm\+\_\+entity.\+h}
+\hypertarget{rlc__tx__tm__entity_8h_source}{}\label{rlc__tx__tm__entity_8h_source}\index{lib/rlc/rlc\_tx\_tm\_entity.h@{lib/rlc/rlc\_tx\_tm\_entity.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__sdu__queue__lockfree_8h}{"{}rlc\_sdu\_queue\_lockfree.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__tx__entity_8h}{"{}rlc\_tx\_entity.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity}{rlc\_tx\_tm\_entity}}\ :\ \textcolor{keyword}{public}\ rlc\_tx\_entity}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{comment}{//\ Config\ storage}}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__tm__config}{rlc\_tx\_tm\_config}}\ cfg;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree}{rlc\_sdu\_queue\_lockfree}}\ sdu\_queue;}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdu;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ pcell\_executor;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{structsrsran_1_1pcap__rlc__pdu__context}{pcap\_rlc\_pdu\_context}}\ pcap\_context;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ This\ atomic\_flag\ indicates\ whether\ a\ buffer\ state\ update\ task\ has\ been\ queued\ but\ not\ yet\ run\ by\ pcell\_executor.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ It\ helps\ to\ avoid\ queuing\ of\ redundant\ notification\ tasks\ in\ case\ of\ frequent\ changes\ of\ the\ buffer\ status.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ If\ the\ flag\ is\ set,\ no\ further\ notification\ needs\ to\ be\ scheduled,\ because\ the\ already\ queued\ task\ will\ pick\ the}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ latest\ buffer\ state\ upon\ execution.}}
+\DoxyCodeLine{00048\ \ \ std::atomic\_flag\ pending\_buffer\_state\ =\ ATOMIC\_FLAG\_INIT;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00051\ \ \ rlc\_tx\_tm\_entity(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_index,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rb__id__t}{rb\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_id,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__tm__config}{rlc\_tx\_tm\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ config,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{rlc\_tx\_upper\_layer\_data\_notifier}}\&\ \ \ \ upper\_dn\_,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}\&\ upper\_cn\_,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}\&\ \ \ \ \ \ \ \ \ lower\_dn\_,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcell\_executor\_,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ metrics\_enabled\_,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__pcap}{rlc\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap\_);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{//\ Interfaces\ for\ higher\ layers}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_abc95357266e454ce5dc055b455f43e74}{handle\_sdu}}(\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\ sdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_ac66b3d59044966d3c6000409d0604ba5}{discard\_sdu}}(uint32\_t\ pdcp\_sn)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ Interfaces\ for\ lower\ layers}}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a80834aaffe2d6f038707f4f26b336178}{size\_t}}\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a80834aaffe2d6f038707f4f26b336178}{pull\_pdu}}(\mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a80834aaffe2d6f038707f4f26b336178}{span}}<\mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a80834aaffe2d6f038707f4f26b336178}{uint8\_t}}>\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a80834aaffe2d6f038707f4f26b336178}{rlc\_pdu\_buf}})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00068\ \ \ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__tm__entity_a18f1f8b8006a1fd7c6afb76b670561bd}{get\_buffer\_state}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Called\ whenever\ the\ buffer\ state\ has\ been\ changed\ by\ upper\ layers\ (new\ SDUs\ or\ SDU\ discard)\ so\ that\ lower\ layers}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ need\ to\ be\ informed\ about\ the\ new\ buffer\ state.\ This\ function\ defers\ the\ actual\ notification\ \(\backslash\)c}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ handle\_changed\_buffer\_state\ to\ pcell\_executor.\ The\ notification\ is\ discarded\ if\ another\ notification\ is\ already}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ queued\ for\ execution.\ This\ function\ should\ not\ be\ called\ from\ \(\backslash\)c\ pull\_pdu,\ since\ the\ lower\ layer\ accounts\ for\ the}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ amount\ of\ extracted\ data\ itself.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Safe\ execution\ from:\ Any\ executor}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ handle\_changed\_buffer\_state();}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Immediately\ informs\ the\ lower\ layer\ of\ the\ current\ buffer\ state.\ This\ function\ is\ called\ from\ pcell\_executor\ and}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ its\ execution\ is\ queued\ by\ \(\backslash\)c\ handle\_changed\_buffer\_state.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ Safe\ execution\ from:\ pcell\_executor}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ update\_mac\_buffer\_state();}
+\DoxyCodeLine{00085\ \};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

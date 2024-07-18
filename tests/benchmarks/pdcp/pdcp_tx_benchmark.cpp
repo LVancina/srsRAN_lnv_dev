@@ -50,46 +50,32 @@ struct bench_params {
   bool     print_timing_info = false;
 };
 
-struct app_params {
-  int         algo         = -1;
-  std::string log_level    = "error";
-  std::string log_filename = "stdout";
-};
-
-static void usage(const char* prog, const bench_params& params, const app_params& app)
+static void usage(const char* prog, const bench_params& params, int algo)
 {
   fmt::print("Usage: {} [-R repetitions] [-t timing information]\n", prog);
-  fmt::print("\t-a Security algorithm to use [Default {}, valid {{-1,0,1,2,3}}]\n", app.algo);
+  fmt::print("\t-a Security algorithm to use [Default {}, valid {{-1,0,1,2,3}}]\n", algo);
   fmt::print("\t-t Print timing information [Default {}]\n", params.print_timing_info);
   fmt::print("\t-R Repetitions [Default {}]\n", params.nof_repetitions);
-  fmt::print("\t-l Log level to use [Default {}, valid {{error, warning, info, debug}}]\n", app.log_level);
-  fmt::print("\t-f Log filename to use [Default {}]\n", app.log_filename);
   fmt::print("\t-h Show this message\n");
 }
 
-static void parse_args(int argc, char** argv, bench_params& params, app_params& app)
+static void parse_args(int argc, char** argv, bench_params& params, int& algo)
 {
   int opt = 0;
-  while ((opt = getopt(argc, argv, "a:R:l:f:th")) != -1) {
+  while ((opt = getopt(argc, argv, "a:R:th")) != -1) {
     switch (opt) {
       case 'R':
         params.nof_repetitions = std::strtol(optarg, nullptr, 10);
         break;
       case 'a':
-        app.algo = std::strtol(optarg, nullptr, 10);
+        algo = std::strtol(optarg, nullptr, 10);
         break;
       case 't':
         params.print_timing_info = true;
         break;
-      case 'l':
-        app.log_level = std::string(optarg);
-        break;
-      case 'f':
-        app.log_filename = std::string(optarg);
-        break;
       case 'h':
       default:
-        usage(argv[0], params, app);
+        usage(argv[0], params, algo);
         exit(0);
     }
   }
@@ -139,9 +125,12 @@ void benchmark_pdcp_tx(bench_params                  params,
   // Create test frame
   pdcp_tx_gen_frame frame = {};
 
+  auto& logger = srslog::fetch_basic_logger("PDCP");
+  logger.set_level(srslog::str_to_basic_level("warning"));
+
   // Create PDCP entities
-  std::unique_ptr<pdcp_entity_tx> pdcp_tx = std::make_unique<pdcp_entity_tx>(
-      0, drb_id_t::drb1, config, frame, frame, timer_factory{timers, worker}, worker, worker);
+  std::unique_ptr<pdcp_entity_tx> pdcp_tx =
+      std::make_unique<pdcp_entity_tx>(0, drb_id_t::drb1, config, frame, frame, timer_factory{timers, worker});
   pdcp_tx->configure_security(sec_cfg);
   pdcp_tx->set_integrity_protection(int_enabled);
   pdcp_tx->set_ciphering(ciph_enabled);
@@ -183,8 +172,8 @@ int run_benchmark(bench_params params, int algo)
   }
   fmt::print("------ Benchmarcking: NIA{} NEA{} ------\n", algo, algo);
 
-  auto int_algo  = static_cast<security::integrity_algorithm>(algo);
-  auto ciph_algo = static_cast<security::ciphering_algorithm>(algo);
+  security::integrity_algorithm int_algo  = static_cast<security::integrity_algorithm>(algo);
+  security::ciphering_algorithm ciph_algo = static_cast<security::ciphering_algorithm>(algo);
 
   if (algo == 0) {
     benchmark_pdcp_tx(params,
@@ -203,22 +192,15 @@ int run_benchmark(bench_params params, int algo)
 
 int main(int argc, char** argv)
 {
-  bench_params params{};
-  app_params   app_params{};
-  parse_args(argc, argv, params, app_params);
-
   srslog::init();
+  srslog::fetch_basic_logger("PDCP").set_level(srslog::basic_levels::error);
 
-  srslog::sink* log_sink = (app_params.log_filename == "stdout") ? srslog::create_stdout_sink()
-                                                                 : srslog::create_file_sink(app_params.log_filename);
-  if (log_sink == nullptr) {
-    return -1;
-  }
-  srslog::set_default_sink(*log_sink);
-  srslog::fetch_basic_logger("PDCP").set_level(srslog::str_to_basic_level(app_params.log_level));
+  int          algo = -1;
+  bench_params params{};
+  parse_args(argc, argv, params, algo);
 
-  if (app_params.algo != -1) {
-    run_benchmark(params, app_params.algo);
+  if (algo != -1) {
+    run_benchmark(params, algo);
   } else {
     for (unsigned i = 0; i < 4; i++) {
       run_benchmark(params, i);

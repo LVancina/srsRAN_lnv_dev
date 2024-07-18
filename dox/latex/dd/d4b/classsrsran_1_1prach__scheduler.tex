@@ -1,0 +1,166 @@
+\doxysection{srsran\+::prach\+\_\+scheduler Class Reference}
+\hypertarget{classsrsran_1_1prach__scheduler}{}\label{classsrsran_1_1prach__scheduler}\index{srsran::prach\_scheduler@{srsran::prach\_scheduler}}
+
+
+Collaboration diagram for srsran\+::prach\+\_\+scheduler\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=206pt]{d0/d72/classsrsran_1_1prach__scheduler__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1prach__scheduler_afc9604623832666222d8447ad0ad7232}{prach\+\_\+scheduler}} (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\+\_\+configuration}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cfg\+\_\+}})
+\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1prach__scheduler_a4f3bcd812b4d17894e526e7e0dd420f2}{run\+\_\+slot}} (\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\+\_\+resource\+\_\+allocator}} \&res\+\_\+grid)
+\begin{DoxyCompactList}\small\item\em Allocate RACH PDUs for the given slot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1prach__scheduler_afc9604623832666222d8447ad0ad7232}\label{classsrsran_1_1prach__scheduler_afc9604623832666222d8447ad0ad7232} 
+\index{srsran::prach\_scheduler@{srsran::prach\_scheduler}!prach\_scheduler@{prach\_scheduler}}
+\index{prach\_scheduler@{prach\_scheduler}!srsran::prach\_scheduler@{srsran::prach\_scheduler}}
+\doxysubsubsection{\texorpdfstring{prach\_scheduler()}{prach\_scheduler()}}
+{\footnotesize\ttfamily prach\+\_\+scheduler\+::prach\+\_\+scheduler (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\+\_\+configuration}} \&}]{cfg\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00034\ \ \ cell\_cfg(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cfg\_}}),}
+\DoxyCodeLine{00035\ \ \ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SCHED"{}})),}
+\DoxyCodeLine{00036\ \ \ prach\_cfg(\mbox{\hyperlink{namespacesrsran_a58b0f14b15728d7d3d269968352a3ca8}{prach\_configuration\_get}}(\mbox{\hyperlink{namespacesrsran_afa6be91e79cbb8c64c2a280ddad608b5a34d1cf1496d544eb35e3461a5235f7e9}{frequency\_range::FR1}},}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_cfg.paired\_spectrum\ ?\ \mbox{\hyperlink{namespacesrsran_a7c254965b53e3067931191bc7eda18acaeec6da44109af7259e81b505436583ff}{duplex\_mode::FDD}}\ :\ \mbox{\hyperlink{namespacesrsran_a7c254965b53e3067931191bc7eda18ac}{duplex\_mode}}::\mbox{\hyperlink{namespacesrsran_a7c254965b53e3067931191bc7eda18aca1ffd07437a30fba5785ce6557acca2b2}{TDD}},}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rach\_cfg\_common().rach\_cfg\_generic.prach\_config\_index))}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{//\ With\ SCS\ 15kHz\ and\ 30kHz,\ only\ normal\ CP\ is\ supported.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ nof\_symbols\_per\_slot\ =\ \mbox{\hyperlink{namespacesrsran_a2ec632168c0292dc5fd78c9bd35f159b}{NOF\_OFDM\_SYM\_PER\_SLOT\_NORMAL\_CP}};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ Convert\ list\ of\ PRACH\ subframe\ occasions\ to\ bitmap.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pos}}\ :\ prach\_cfg.subframe)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ prach\_subframe\_occasion\_bitmap.set(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pos}},\ \textcolor{keyword}{true});}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{structsrsran_1_1prach__symbols__slots__duration}{prach\_symbols\_slots\_duration}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}\ =}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a159a9292ae7b131f38a3cede90ec7c40}{get\_prach\_duration\_info}}(prach\_cfg,\ cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params.scs);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ Derive\ PRACH\ duration\ information.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ The\ information\ we\ need\ are\ not\ related\ to\ whether\ it\ is\ the\ last\ PRACH\ occasion.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{is\_last\_prach\_occasion}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prach__preamble__information}{prach\_preamble\_information}}\ info\ =}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaea6c484cd5f8113a5b11434d68e371b}{is\_long\_preamble}}(prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a8514f238ece852fa1aac2ff106e4b720}{format}})}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ ?\ \mbox{\hyperlink{namespacesrsran_a41d072dc823c78c2627da83a877dcf5a}{get\_prach\_preamble\_long\_info}}(prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a8514f238ece852fa1aac2ff106e4b720}{format}})}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{namespacesrsran_a33cfd882b612da5eceff76a95662d0b3}{get\_prach\_preamble\_short\_info}}(}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prach\_cfg.format,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a0d5bec5128991413e4e3a59ca6e16426}{to\_ra\_subcarrier\_spacing}}(cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params.scs),}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{is\_last\_prach\_occasion}});}
+\DoxyCodeLine{00061\ \ \ start\_slot\_pusch\_scs\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.start\_slot\_pusch\_scs;}
+\DoxyCodeLine{00062\ \ \ prach\_length\_slots\ \ \ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.prach\_length\_slots;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ This\ is\ a\ safety\ margin\ that\ prevents\ PUSCH\ REs\ to\ be\ decoded\ by\ the\ PRACH\ decoder\ with\ short\ PRACH\ formats.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ TODO:\ remove\ them\ when\ the\ PHY\ is\ supports\ short\ PRACH\ with\ adjacent\ PUCCH/PUSCH.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_to\_pusch\_guardband}}\ =\ \mbox{\hyperlink{namespacesrsran_a7c2e3c58a56b57be024f8bfc3271186d}{is\_short\_preamble}}(prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a8514f238ece852fa1aac2ff106e4b720}{format}})\ ?\ 5U\ :\ 0U;}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{id\_fd\_ra}}\ =\ 0;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{id\_fd\_ra}}\ !=\ rach\_cfg\_common().rach\_cfg\_generic.\mbox{\hyperlink{structsrsran_1_1rach__config__generic_a58013c5c716fd8353570bef00bef13bd}{msg1\_fdm}};\ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{id\_fd\_ra}})\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ cached\_prach\_occasion\&\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}\ =\ cached\_prachs.emplace\_back();}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_nof\_prbs}}\ =}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a4ec686128158cd9524f64b7df77762bd}{prach\_frequency\_mapping\_get}}(info.scs,\ cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params.scs).\mbox{\hyperlink{structsrsran_1_1prach__frequency__mapping__information_a3b237981f4c93ec4f4521c0ba1d09f4d}{nof\_rb\_ra}};}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{//\ This\ is\ the\ start\ of\ the\ PRBs\ dedicated\ to\ PRACH.}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classuint8__t}{uint8\_t}}\ \ \ \ \ \ prb\_start\ =\ rach\_cfg\_common().rach\_cfg\_generic.\mbox{\hyperlink{structsrsran_1_1rach__config__generic_affd21c8299058177e04fc4ecb7f5e2d8}{msg1\_frequency\_start}}\ +\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{id\_fd\_ra}}\ *\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_nof\_prbs}};}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_prbs}}\{prb\_start,\ prb\_start\ +\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_nof\_prbs}}\ +\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_to\_pusch\_guardband}}\};}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ crbs\ =\ \mbox{\hyperlink{namespacesrsran_a7a79603d00c739d6ecec3dbe77bd0f2f}{prb\_to\_crb}}(cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_prbs}});}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaea6c484cd5f8113a5b11434d68e371b}{is\_long\_preamble}}(prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a8514f238ece852fa1aac2ff106e4b720}{format}}))\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ PRACH\ preamble\ is\ longer\ than\ 1\ slot,\ then\ allocate\ a\ grant\ for\ each\ slot\ that\ include\ the\ preamble.}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ =\ 0;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ <\ prach\_length\_slots;\ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}})\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ the\ first\ slot,\ use\ the\ start\_symbol\_pusch\_scs;\ in\ any\ other\ case,\ the\ preamble\ starts\ from\ the\ initial}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ symbol.\ For\ the\ last\ slot,\ compute\ the\ final\ symbol;\ in\ any\ other\ case,\ the\ preamble\ ends\ at\ the\ last\ slot's}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ symbol.}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofdm__symbol__range}{ofdm\_symbol\_range}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_symbols}}\{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ ==\ 0\ ?\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.start\_symbol\_pusch\_scs\ :\ 0,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ <\ prach\_length\_slots\ -\/\ 1}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ nof\_symbols\_per\_slot}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.start\_symbol\_pusch\_scs\ +\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.nof\_symbols)\ \%}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_symbols\_per\_slot\};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.grant\_list.emplace\_back(}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1grant__info}{grant\_info}}\{cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params.scs,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_symbols}},\ crbs\});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofdm__symbol__range}{ofdm\_symbol\_range}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_symbols}}\{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.start\_symbol\_pusch\_scs,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.start\_symbol\_pusch\_scs\ +}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_duration\_info}}.nof\_symbols\};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ burst\ of\ PRACH\ opportunities\ extends\ over\ 1\ slot,\ then\ allocate\ a\ grant\ for\ each\ slot\ that\ include\ these}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{comment}{//\ opportunities\ (1\ or\ 2\ slots).}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ =\ 0;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}}\ <\ prach\_length\_slots;\ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_slot\_idx}})\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ the\ short\ PRACH\ formats,\ both\ grants\ (if\ more\ than\ 1)\ occupy\ the\ same\ symbols\ within\ the\ slot.}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.grant\_list.emplace\_back(}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1grant__info}{grant\_info}}\{cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.generic\_params.scs,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{prach\_symbols}},\ crbs\});}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ Pre-\/compute\ PRACH\ occasion\ parameters.}}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.pci\ \ \ \ =\ cell\_cfg.pci;}
+\DoxyCodeLine{00108\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.format\ =\ prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a8514f238ece852fa1aac2ff106e4b720}{format}};}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ Note:\ the\ Starting\ Symbol\ that\ is\ required\ for\ the\ PHY\ interface\ is\ actually\ the\ one\ given\ by\ Table\ 6.3.3.2-\/2}}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ and\ 6.3.3.2-\/3,\ TS\ 38.211.}}
+\DoxyCodeLine{00111\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.start\_symbol\ \ \ \ \ \ \ \ =\ prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a085a9be25a0b931dcf63411f2b03ddcb}{starting\_symbol}};}
+\DoxyCodeLine{00112\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.nof\_prach\_occasions\ =\ prach\_cfg.\mbox{\hyperlink{structsrsran_1_1prach__configuration_a4c15df30813c9583625202e488e06a54}{nof\_occasions\_within\_slot}};}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.nof\_cs\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_aafa4c456e58b29f8804fedc599ab8710}{prach\_cyclic\_shifts\_get}}(}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ info.scs,\ rach\_cfg\_common().restricted\_set,\ rach\_cfg\_common().rach\_cfg\_generic.zero\_correlation\_zone\_config);}
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.index\_fd\_ra\ =\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{id\_fd\_ra}};}
+\DoxyCodeLine{00116\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.nof\_fd\_ra\ \ \ =\ rach\_cfg\_common().rach\_cfg\_generic.\mbox{\hyperlink{structsrsran_1_1rach__config__generic_a58013c5c716fd8353570bef00bef13bd}{msg1\_fdm}};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{//\ We\ assume\ all\ the\ preambles\ from\ 0\ to\ 64\ are\ assigned\ to\ the\ same\ PRACH\ occasion.}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ TODO:\ adapt\ scheduler\ to\ difference\ preamble\ indices\ intervals.}}
+\DoxyCodeLine{00119\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.start\_preamble\_index\ =\ 0;}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{if}\ (cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.rach\_cfg\_common-\/>total\_nof\_ra\_preambles.has\_value())\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.nof\_preamble\_indexes\ =}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ cell\_cfg.ul\_cfg\_common.init\_ul\_bwp.rach\_cfg\_common-\/>total\_nof\_ra\_preambles.value();}
+\DoxyCodeLine{00123\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ field\ is\ absent,\ all\ possible\ preambles\ are\ available\ for\ RA.}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cached\_prach}}.occasion.nof\_preamble\_indexes\ =\ MAX\_NOF\_PRACH\_PREAMBLES;}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \}}
+\DoxyCodeLine{00128\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1prach__scheduler_a4f3bcd812b4d17894e526e7e0dd420f2}\label{classsrsran_1_1prach__scheduler_a4f3bcd812b4d17894e526e7e0dd420f2} 
+\index{srsran::prach\_scheduler@{srsran::prach\_scheduler}!run\_slot@{run\_slot}}
+\index{run\_slot@{run\_slot}!srsran::prach\_scheduler@{srsran::prach\_scheduler}}
+\doxysubsubsection{\texorpdfstring{run\_slot()}{run\_slot()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} prach\+\_\+scheduler\+::run\+\_\+slot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\+\_\+resource\+\_\+allocator}} \&}]{res\+\_\+grid }\end{DoxyParamCaption})}
+
+
+
+Allocate RACH PDUs for the given slot. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00131\ \{}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{compiler_8h_a1bdfef20c1237666a841b5c9b9c8e69b}{SRSRAN\_UNLIKELY}}(first\_slot\_ind))\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{//\ If\ called\ for\ the\ first\ time,\ pre-\/allocates\ the\ PRACH\ PDUs\ over\ the\ entire\ grid,\ until\ the\ last}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{comment}{//\ (farthest\ in\ the\ future)\ usable\ slot.}}
+\DoxyCodeLine{00135\ \ \ \ \ first\_slot\_ind\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ Min\ value\ of\ cell\_resource\_allocator.max\_ul\_slot\_alloc\_delay\ is\ 20,\ max\ value\ of\ prach\_length\_slots\ is\ 7.}}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}\ =\ 0;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}\ <\ (res\_grid.max\_ul\_slot\_alloc\_delay\ -\/\ prach\_length\_slots\ +\ 1);\ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}})\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ allocate\_slot\_prach\_pdus(res\_grid,\ res\_grid[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}].\mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}});}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00141\ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{//\ Pre-\/allocate\ PRACH\ PDU\ in\ the\ last\ slot.}}
+\DoxyCodeLine{00144\ \ \ allocate\_slot\_prach\_pdus(res\_grid,\ res\_grid[res\_grid.max\_ul\_slot\_alloc\_delay\ -\/\ prach\_length\_slots].slot);}
+\DoxyCodeLine{00145\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/scheduler/common\+\_\+scheduling/prach\+\_\+scheduler.\+h\item 
+lib/scheduler/common\+\_\+scheduling/prach\+\_\+scheduler.\+cpp\end{DoxyCompactItemize}

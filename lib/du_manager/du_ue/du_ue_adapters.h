@@ -186,14 +186,7 @@ public:
     mac      = &mac_;
   }
 
-  void disconnect()
-  {
-    lcid_t prev_lcid = lcid.exchange(INVALID_LCID);
-    if (prev_lcid != INVALID_LCID) {
-      // Push an empty buffer state update to MAC, so the scheduler doesn't keep allocating grants for this bearer.
-      mac->handle_dl_buffer_state_update(mac_dl_buffer_state_indication_message{ue_index, prev_lcid, 0});
-    }
-  }
+  void disconnect() { lcid = INVALID_LCID; }
 
   void on_buffer_state_update(unsigned bsr) override
   {
@@ -239,22 +232,19 @@ class mac_sdu_tx_adapter : public mac_sdu_tx_builder
 public:
   void connect(rlc_tx_lower_layer_interface& rlc_tx) { rlc_handler = &rlc_tx; }
 
-  void disconnect() { connected = false; }
-
   size_t on_new_tx_sdu(span<uint8_t> mac_sdu_buf) override
   {
     srsran_assert(rlc_handler != nullptr, "MAC Rx SDU notifier is disconnected");
-    return SRSRAN_LIKELY(connected.load(std::memory_order_relaxed)) ? rlc_handler->pull_pdu(mac_sdu_buf) : 0;
+    return rlc_handler->pull_pdu(mac_sdu_buf);
   }
 
   unsigned on_buffer_state_update() override
   {
     srsran_assert(rlc_handler != nullptr, "MAC Rx SDU notifier is disconnected");
-    return SRSRAN_LIKELY(connected.load(std::memory_order_relaxed)) ? rlc_handler->get_buffer_state() : 0;
+    return rlc_handler->get_buffer_state();
   }
 
 private:
-  std::atomic<bool>             connected{true};
   rlc_tx_lower_layer_interface* rlc_handler = nullptr;
 };
 

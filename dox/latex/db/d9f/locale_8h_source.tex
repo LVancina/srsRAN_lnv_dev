@@ -1,0 +1,84 @@
+\doxysection{locale.\+h}
+\hypertarget{locale_8h_source}{}\label{locale_8h_source}\index{external/fmt/include/fmt/locale.h@{external/fmt/include/fmt/locale.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ Formatting\ library\ for\ C++\ -\/\ std::locale\ support}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright\ (c)\ 2012\ -\/\ present,\ Victor\ Zverovich}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ All\ rights\ reserved.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ For\ the\ license\ information\ refer\ to\ format.h.}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{ifndef}\ \textcolor{preprocessor}{FMT\_LOCALE\_H\_}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{define}\ \textcolor{preprocessor}{FMT\_LOCALE\_H\_}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{locale}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{format_8h}{"{}format.h"{}}}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \mbox{\hyperlink{core_8h_a887c191adf8cfaf06ed40b5c4d487343}{FMT\_BEGIN\_NAMESPACE}}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00018\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Char>}
+\DoxyCodeLine{00019\ \textcolor{keyword}{typename}\ buffer\_context<Char>::iterator\ vformat\_to(}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{const}\ std::locale\&\ loc,\ buffer<Char>\&\ buf,}
+\DoxyCodeLine{00021\ \ \ \ \ basic\_string\_view<Char>\ format\_str,}
+\DoxyCodeLine{00022\ \ \ \ \ basic\_format\_args<buffer\_context<type\_identity\_t<Char>>>\ args)\ \{}
+\DoxyCodeLine{00023\ \ \ \textcolor{keyword}{using}\ af\ =\ arg\_formatter<\textcolor{keyword}{typename}\ buffer\_context<Char>::iterator,\ Char>;}
+\DoxyCodeLine{00024\ \ \ \textcolor{keywordflow}{return}\ vformat\_to<af>(std::back\_inserter(buf),\ to\_string\_view(format\_str),}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ args,\ detail::locale\_ref(loc));}
+\DoxyCodeLine{00026\ \}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Char>}
+\DoxyCodeLine{00029\ std::basic\_string<Char>\ vformat(}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{const}\ std::locale\&\ loc,\ basic\_string\_view<Char>\ format\_str,}
+\DoxyCodeLine{00031\ \ \ \ \ basic\_format\_args<buffer\_context<type\_identity\_t<Char>>>\ args)\ \{}
+\DoxyCodeLine{00032\ \ \ basic\_memory\_buffer<Char>\ buffer;}
+\DoxyCodeLine{00033\ \ \ detail::vformat\_to(loc,\ buffer,\ format\_str,\ args);}
+\DoxyCodeLine{00034\ \ \ \textcolor{keywordflow}{return}\ fmt::to\_string(buffer);}
+\DoxyCodeLine{00035\ \}}
+\DoxyCodeLine{00036\ \}\ \ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ S,\ \textcolor{keyword}{typename}\ Char\ =\ char\_t<S>>}
+\DoxyCodeLine{00039\ \textcolor{keyword}{inline}\ std::basic\_string<Char>\ vformat(}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{const}\ std::locale\&\ loc,\ \textcolor{keyword}{const}\ S\&\ format\_str,}
+\DoxyCodeLine{00041\ \ \ \ \ basic\_format\_args<buffer\_context<type\_identity\_t<Char>>>\ args)\ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordflow}{return}\ detail::vformat(loc,\ to\_string\_view(format\_str),\ args);}
+\DoxyCodeLine{00043\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ S,\ \textcolor{keyword}{typename}...\ Args,\ \textcolor{keyword}{typename}\ Char\ =\ char\_t<S>>}
+\DoxyCodeLine{00046\ \textcolor{keyword}{inline}\ std::basic\_string<Char>\ format(\textcolor{keyword}{const}\ std::locale\&\ loc,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ S\&\ format\_str,\ Args\&\&...\ args)\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordflow}{return}\ detail::vformat(}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ loc,\ to\_string\_view(format\_str),}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ detail::make\_args\_checked<Args...>(format\_str,\ args...));}
+\DoxyCodeLine{00051\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ S,\ \textcolor{keyword}{typename}\ OutputIt,\ \textcolor{keyword}{typename}...\ Args,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Char\ =\ enable\_if\_t<}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detail::is\_output\_iterator<OutputIt>::value,\ char\_t<S>>>}
+\DoxyCodeLine{00056\ \textcolor{keyword}{inline}\ OutputIt\ vformat\_to(}
+\DoxyCodeLine{00057\ \ \ \ \ OutputIt\ out,\ \textcolor{keyword}{const}\ std::locale\&\ loc,\ \textcolor{keyword}{const}\ S\&\ format\_str,}
+\DoxyCodeLine{00058\ \ \ \ \ format\_args\_t<type\_identity\_t<OutputIt>,\ Char>\ args)\ \{}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using}\ af\ =\ detail::\mbox{\hyperlink{classdetail_1_1arg__formatter}{arg\_formatter}}<OutputIt,\ Char>;}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordflow}{return}\ vformat\_to<af>(out,\ to\_string\_view(format\_str),\ args,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detail::locale\_ref(loc));}
+\DoxyCodeLine{00062\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ OutputIt,\ \textcolor{keyword}{typename}\ S,\ \textcolor{keyword}{typename}...\ Args,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{core_8h_ab02671eb0d43965fe2957e844f427451}{FMT\_ENABLE\_IF}}(detail::is\_output\_iterator<OutputIt>::value\&\&}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detail::is\_string<S>::value)>}
+\DoxyCodeLine{00067\ \textcolor{keyword}{inline}\ OutputIt\ format\_to(OutputIt\ out,\ \textcolor{keyword}{const}\ std::locale\&\ loc,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ S\&\ format\_str,\ Args\&\&...\ args)\ \{}
+\DoxyCodeLine{00069\ \ \ detail::check\_format\_string<Args...>(format\_str);}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{using}\ context\ =\ format\_context\_t<OutputIt,\ char\_t<S>>;}
+\DoxyCodeLine{00071\ \ \ format\_arg\_store<context,\ Args...>\ as\{args...\};}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordflow}{return}\ vformat\_to(out,\ loc,\ to\_string\_view(format\_str),}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ basic\_format\_args<context>(as));}
+\DoxyCodeLine{00074\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \mbox{\hyperlink{core_8h_ae0d2fbdf031547a949fc7e1c0b3c97f1}{FMT\_END\_NAMESPACE}}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{endif}\ \ \textcolor{comment}{//\ FMT\_LOCALE\_H\_}}
+
+\end{DoxyCode}

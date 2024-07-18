@@ -1,0 +1,92 @@
+\doxysection{scheduler\+\_\+impl.\+h}
+\hypertarget{scheduler__impl_8h_source}{}\label{scheduler__impl_8h_source}\index{lib/scheduler/scheduler\_impl.h@{lib/scheduler/scheduler\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}cell\_scheduler.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}config/sched\_config\_manager.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}logging/scheduler\_event\_logger.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}logging/scheduler\_metrics\_handler.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}logging/scheduler\_result\_logger.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}ue\_scheduling/ue\_scheduler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scheduler__expert__config_8h}{srsran/scheduler/config/scheduler\_expert\_config.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/mac\_scheduler.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1scheduler__impl}{scheduler\_impl}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__scheduler}{mac\_scheduler}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl}{scheduler\_impl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__config}{scheduler\_config}}\&\ sched\_cfg);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{bool}\ handle\_cell\_configuration\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message}{sched\_cell\_configuration\_request\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ scheduler\_slot\_handler\ interface\ methods.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__result}{sched\_result}}\&\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_a9e6d081da807343b28c59763d14ec5f0}{slot\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_tx,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_aaced0503d5386f45e7e9997df93394be}{handle\_error\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_tx,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index,\ \mbox{\hyperlink{structsrsran_1_1scheduler__slot__handler_1_1error__outcome}{error\_outcome}}\ event)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{//\ DU\ manager\ events.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_creation\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message}{sched\_ue\_creation\_request\_message}}\&\ ue\_request)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_reconfiguration\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__reconfiguration__message}{sched\_ue\_reconfiguration\_message}}\&\ ue\_request)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_removal\_request(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ F1\ events.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_a7e9d3b941a8da28047a4a834ea853335}{handle\_paging\_information}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__paging__information}{sched\_paging\_information}}\&\ pi)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{//\ RLC\ events.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_ac1777edcc3131c64a7c8045e24896f4d}{handle\_dl\_buffer\_state\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dl__buffer__state__indication__message}{dl\_buffer\_state\_indication\_message}}\&\ bs)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{//\ MAC\ events.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_a0370a19af5d479a4b11c04f617723d36}{handle\_dl\_mac\_ce\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dl__mac__ce__indication}{dl\_mac\_ce\_indication}}\&\ mac\_ce)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{void}\ handle\_ul\_bsr\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__bsr__indication__message}{ul\_bsr\_indication\_message}}\&\ bsr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1scheduler__impl_a78df301b6a3aa2189d58048fc1fde95c}{handle\_ul\_phr\_indication}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__phr__indication__message}{ul\_phr\_indication\_message}}\&\ phr\_ind)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ PHY\ events.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ handle\_rach\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{void}\ handle\_crc\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ul__crc__indication}{ul\_crc\_indication}}\&\ crc)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ handle\_uci\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1uci__indication}{uci\_indication}}\&\ uci)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1scheduler__expert__config}{scheduler\_expert\_config}}\ expert\_params;}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1sched__configuration__notifier}{sched\_configuration\_notifier}}\&\ config\_notifier;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ logger;}
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__event__logger}{scheduler\_event\_logger}}\ sched\_ev\_logger;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{//\ Slot\ metrics\ sink.}}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1scheduler__metrics__handler}{scheduler\_metrics\_handler}}\ metrics;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ Manager\ of\ configurations\ forwarded\ to\ the\ scheduler.}}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1sched__config__manager}{sched\_config\_manager}}\ cfg\_mng;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00082\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__table}{slotted\_id\_table<du\_cell\_index\_t,\ std::unique\_ptr<cell\_scheduler>}},\ MAX\_NOF\_DU\_CELLS>\ cells;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__table}{slotted\_id\_table<du\_cell\_group\_index\_t,\ std::unique\_ptr<ue\_scheduler>}},\ MAX\_DU\_CELL\_GROUPS>\ groups;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

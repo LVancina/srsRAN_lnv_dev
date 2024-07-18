@@ -1,0 +1,172 @@
+\doxysection{complex\+\_\+normal\+\_\+random.\+h}
+\hypertarget{complex__normal__random_8h_source}{}\label{complex__normal__random_8h_source}\index{include/srsran/support/complex\_normal\_random.h@{include/srsran/support/complex\_normal\_random.h}}
+\mbox{\hyperlink{complex__normal__random_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Complex\ normal\ distribution.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{random}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ Complex\ normal\ distribution.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Generates\ random\ complex\ numbers\ according\ to\ the\ [complex\ normal\ (or\ Gaussian)}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ random\ number\ distribution](https://en.wikipedia.org/wiki/Complex\_normal\_distribution),\ circularly\ symmetric\ when}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ centered:\ the\ real\ and\ imaginary\ parts\ of\ the\ generated\ numbers\ are,\ after\ centering,\ independent\ and\ identically}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ distributed\ real-\/valued\ normal\ random\ variables.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)tparam\ ComplexType\ Complex\ type\ of\ the\ generated\ random\ values.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ComplexType\ =\ cf\_t>}
+\DoxyCodeLine{00043\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ NB:\ complex\ types\ are\ always\ floating\ point\ types.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static\_assert}(\mbox{\hyperlink{structsrsran_1_1is__complex}{is\_complex}}<ComplexType>::value,\ \textcolor{stringliteral}{"{}result\_type\ must\ be\ a\ complex\ floating\ point\ type."{}});}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Type\ of\ the\ generated\ complex\ numbers.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{using}\ result\_type\ =\ ComplexType;}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Type\ of\ the\ standard\ deviation,\ as\ well\ as\ of\ the\ real\ and\ imaginary\ parts.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{using}\ stddev\_type\ =\ \textcolor{keyword}{typename}\ ComplexType::value\_type;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Parameter\ set.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ A\ complex\ normal\ distribution\ is\ parametrized\ by\ its\ mean\ and\ its\ standard\ deviation\ (the\ square\ root\ of\ the}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ variance).}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{using}\ distribution\_type\ =\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType>;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{///\ Default\ constructor\ (zero\ mean\ and\ unitary\ variance).}}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_a980f1150886d761eb79f2ddd411ce172}{param\_type}}()\ :\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}(ComplexType(0,\ 0))\ \{\}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Constructor:\ Set\ mean\ and\ standard\ deviation.}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ m\ \ \ Distribution\ mean.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ sd\ \ Distribution\ standard\ deviation,\ defaults\ to\ 1\ if\ omitted.\ Must\ be\ positive\ valued.}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_a129d4a118c1bb248729e9cc52cd71f63}{param\_type}}(result\_type\ m,\ stddev\_type\ sd\ =\ stddev\_type(1))\ :\ mean\_v(m),\ stddev\_v(sd)}
+\DoxyCodeLine{00069\ \ \ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(stddev\_v\ >\ stddev\_type(0),\ \textcolor{stringliteral}{"{}Standard\ deviation\ should\ be\ positive,\ given\ \{\}."{}},\ stddev\_v);}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{///\ Returns\ the\ mean.}}
+\DoxyCodeLine{00074\ \ \ \ \ result\_type\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_a0a69089e4ecb20eaa6da6e81054e98c7}{mean}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ mean\_v;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{///\ Returns\ the\ standard\ deviation.}}
+\DoxyCodeLine{00077\ \ \ \ \ stddev\_type\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_a4771ffb4ee62a4d341b0199aa36521c3}{stddev}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ stddev\_v;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{///\ Checks\ whether\ two\ parameter\ sets\ are\ the\ same.}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_a52b025bcd298841079fb39d533978443}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ p1,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ p2)}
+\DoxyCodeLine{00081\ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((p1.mean\_v\ ==\ p2.mean\_v)\ \&\&\ (p1.stddev\_v\ ==\ p2.stddev\_v));}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{///\ Checks\ whether\ two\ parameter\ sets\ are\ different.}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type_ad962b6a31949034db887505f9c001a00}{operator}}!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ p1,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ p2)\ \{\ \textcolor{keywordflow}{return}\ !(p1\ ==\ p2);\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00089\ \ \ \ \ result\_type\ mean\_v;}
+\DoxyCodeLine{00090\ \ \ \ \ stddev\_type\ stddev\_v;}
+\DoxyCodeLine{00091\ \ \ \};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ Default\ constructor\ (standard\ complex\ normal\ with\ zero\ mean\ and\ unitary\ variance).}}
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_af2d19c30422563b0e5293dc436a8107b}{complex\_normal\_distribution}}()\ :\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}(0.0)\ \{\}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Constructor:\ sets\ the\ distribution\ parameters\ to\ the\ given\ values.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_aa98fd7b0033ab175aeeffb3082452b5b}{complex\_normal\_distribution}}(result\_type\ mean\_v,\ stddev\_type\ stddev\_v\ =\ stddev\_type(1))\ :}
+\DoxyCodeLine{00098\ \ \ \ \ parameters(mean\_v,\ stddev\_v)}
+\DoxyCodeLine{00099\ \ \ \{}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ Constructor:\ sets\ the\ distribution\ parameters\ to\ the\ given\ parameter\ set.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_ad5d10605d517925799e5e3e0d2ac9f9e}{complex\_normal\_distribution}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ params)\ :\ parameters(params)\ \{\}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ Resets\ the\ internal\ state\ of\ the\ distribution.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_a27bc550818fd25a418e752f38359c843}{reset}}()\ \{\ real\_normal.reset();\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ Returns\ the\ distribution\ mean.}}
+\DoxyCodeLine{00109\ \ \ result\_type\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_a5c1cf127b76abe1f3df822e23075301e}{mean}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parameters.mean();\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ Returns\ the\ distribution\ standard\ deviation.}}
+\DoxyCodeLine{00112\ \ \ stddev\_type\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_af09f2fc3560958ee616d4c16d00af887}{stddev}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parameters.stddev();\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Returns\ the\ distribution\ parameter\ set.}}
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_ae4bb05e3a5b6fc3fbabe77ea0182263a}{param}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parameters;\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ Sets\ the\ distribution\ parameters\ to\ the\ given\ parameter\ set.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_a492c3d29e6c0f07d825616754e38ee3b}{param}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ pp)\ \{\ parameters\ =\ pp;\ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ the\ next\ random\ number\ in\ the\ distribution.}}
+\DoxyCodeLine{00121\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ UniformRandomNumberGenerator>}
+\DoxyCodeLine{00122\ \ \ result\_type\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_a9a7a812b1580d80238c33176de1db915}{operator}}()(UniformRandomNumberGenerator\&\ urng)}
+\DoxyCodeLine{00123\ \ \ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{this}-\/>operator()(urng,\ parameters);}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ the\ next\ random\ number\ in\ the\ distribution\ with\ a\ different\ parameter\ set.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ UniformRandomNumberGenerator>}
+\DoxyCodeLine{00129\ \ \ result\_type\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_ab424aea52df93bd5c6a6d00de435720e}{operator}}()(UniformRandomNumberGenerator\&\ urng,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\&\ pp)}
+\DoxyCodeLine{00130\ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{//\ Square\ root\ of\ 1/2,\ for\ variance\ normalization.}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ stddev\_type\ SQRT1\_2\ =\ 1\ /\ std::sqrt(2.0);}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ result\_type\ tmp(real\_normal(urng),\ real\_normal(urng));}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{return}\ (tmp\ *\ pp.stddev()\ *\ SQRT1\_2\ +\ pp.mean());}
+\DoxyCodeLine{00136\ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{///\ Checks\ whether\ two\ complex\ normal\ distributions\ are\ the\ same.}}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ComplexType1>}
+\DoxyCodeLine{00140\ \ \ \textcolor{keyword}{friend}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution_a5c56077960b3aac4f8b6b19fcce89113}{operator}}==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType1>\&\ distr1,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType1>\&\ distr2);}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00144\ \ \ \textcolor{comment}{///\ Internal\ parameter\ set\ of\ the\ distribution.}}
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{structsrsran_1_1complex__normal__distribution_1_1param__type}{param\_type}}\ parameters;}
+\DoxyCodeLine{00146\ \ \ \textcolor{comment}{///\ Real-\/valued\ normal\ distribution\ used\ to\ generate\ real\ and\ imaginary\ parts.}}
+\DoxyCodeLine{00147\ \ \ std::normal\_distribution<stddev\_type>\ real\_normal\ =\ \{\};}
+\DoxyCodeLine{00148\ \};}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \textcolor{comment}{//\ Declared\ as\ friend\ inside\ complex\_normal\_distribution.}}
+\DoxyCodeLine{00151\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ComplexType1>}
+\DoxyCodeLine{00152\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType1>\&\ distr1,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType1>\&\ distr2)}
+\DoxyCodeLine{00154\ \{}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordflow}{return}\ ((distr1.parameters\ ==\ distr2.parameters)\ \&\&\ (distr1.real\_normal\ ==\ distr2.real\_normal));}
+\DoxyCodeLine{00156\ \}}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \textcolor{comment}{///\ Checks\ whether\ two\ complex\ normal\ distributions\ are\ different.}}
+\DoxyCodeLine{00159\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ComplexType>}
+\DoxyCodeLine{00160\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a11dd28a7e1f95a26ffe5ada83ad29aa8}{operator}}!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType>\&\ distr1,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<ComplexType>\&\ distr2)}
+\DoxyCodeLine{00162\ \{}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordflow}{return}\ !(distr1\ ==\ distr2);}
+\DoxyCodeLine{00164\ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

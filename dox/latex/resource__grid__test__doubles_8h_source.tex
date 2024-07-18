@@ -1,0 +1,485 @@
+\doxysection{resource\+\_\+grid\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{resource__grid__test__doubles_8h_source}{}\label{resource__grid__test__doubles_8h_source}\index{tests/unittests/phy/support/resource\_grid\_test\_doubles.h@{tests/unittests/phy/support/resource\_grid\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensor_8h}{srsran/adt/tensor.h}}"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_mapper.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_reader.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_writer.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cyclic__prefix_8h}{srsran/ran/cyclic\_prefix.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/support/file\_vector.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_test.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy}{resource\_grid\_writer\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer}{resource\_grid\_writer}}}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t}{expected\_entry\_t}}\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t_ab1d4b73be8c18b5b71f342c63cfaa881}{port}};}
+\DoxyCodeLine{00053\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t_aea4214d14e26406feac85bdb02f2f70f}{symbol}};}
+\DoxyCodeLine{00055\ \ \ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t_a14171268c5ce269a657d877c02cd3bae}{subcarrier}};}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t_ab28e2aa877a9cd8dc7ed01651ed919fe}{value}};}
+\DoxyCodeLine{00058\ \ \ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a3bdff8b755452ccac86e3abd75024593}{resource\_grid\_writer\_spy}}(\textcolor{keywordtype}{unsigned}\ \ \ \ max\_ports\_\ =\ 0,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ max\_symb\_\ \ =\ 0,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ max\_prb\_\ \ \ =\ 0,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ log\_level\ \ =\ \textcolor{stringliteral}{"{}none"{}})\ :}
+\DoxyCodeLine{00065\ \ \ \ \ max\_ports(max\_ports\_),}
+\DoxyCodeLine{00066\ \ \ \ \ max\_symb(max\_symb\_),}
+\DoxyCodeLine{00067\ \ \ \ \ max\_prb(max\_prb\_),}
+\DoxyCodeLine{00068\ \ \ \ \ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}unittest/resource\_grid\_spy"{}},\ false))}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ srslog::init();}
+\DoxyCodeLine{00071\ \ \ \ \ logger.\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl_a70bfaf5c4255d339daae19d8d7194b23}{set\_level}}(srslog::str\_to\_basic\_level(log\_level));}
+\DoxyCodeLine{00072\ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad506fb5345d4564572acf9f4494cce14}{get\_nof\_ports}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_ports;\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ae4d069137d9451662fd907b3f54cdfb1}{get\_nof\_subc}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_prb\ *\ NRE;\ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_afba4ce8333ddbee788d2897b7521d859}{get\_nof\_symbols}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_symb;\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(\textcolor{keywordtype}{unsigned}\ port,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ resource\_grid\_coordinate>}}\ coordinates,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ symbols)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00085\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00086\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(entries\_mutex);}
+\DoxyCodeLine{00087\ \ \ \ \ ++count;}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ symbol\_ptr\ =\ symbols.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}();}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__coordinate}{resource\_grid\_coordinate}}\&\ coordinate\ :\ coordinates)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(port,\ coordinate.symbol,\ coordinate.subcarrier,\ *(symbol\_ptr++));}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}entries.size()=\{\}\(\backslash\)n"{}},\ entries.size());}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a4de6fb0cc087653daa81bf55f5d21436}{put}}(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ bool>}}\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ symbols)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00098\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00099\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(entries\_mutex);}
+\DoxyCodeLine{00100\ \ \ \ \ TESTASSERT(k\_init\ +\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size()\ <=\ max\_prb\ *\ NRE,}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ mask\ staring\ at\ \{\}\ for\ \{\}\ subcarriers\ exceeds\ the\ resource\ grid\ bandwidth\ (max\ \{\})."{}},}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size(),}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_prb\ *\ NRE);}
+\DoxyCodeLine{00105\ \ \ \ \ ++count;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_symb\ =\ 0;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ k\ =\ 0;\ k\ !=\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size();\ ++k)\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}[k])\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(port,\ l,\ k\_init\ +\ k,\ symbols[i\_symb]);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ i\_symb++;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ Consume\ buffer.}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ i\_symb);}
+\DoxyCodeLine{00116\ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_aa74fe4eb4494777a254b702f3b280a77}{put}}(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset<NRE\ *\ MAX\_RB>}}\&\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbols)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00123\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00124\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(entries\_mutex);}
+\DoxyCodeLine{00125\ \ \ \ \ ++count;}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_symb\ =\ 0;}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ k\ =\ 0;\ k\ !=\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size();\ ++k)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \textcolor{comment}{//\ Skip\ if\ subcarrier\ is\ not\ active.}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.test(k))\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{comment}{//\ Skip\ Symbol\ if\ the\ symbol\ is\ 0.}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((symbols[i\_symb].real()\ !=\ 0)\ ||\ (symbols[i\_symb].imag()\ !=\ 0))\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(port,\ l,\ k\ +\ k\_init,\ symbols[i\_symb]);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ ++i\_symb;}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{comment}{//\ Consume\ buffer.}}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ i\_symb);}
+\DoxyCodeLine{00143\ \ \ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a82812b5aeba82372978a7a91518f39ab}{put}}(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ symbols)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00147\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00148\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(entries\_mutex);}
+\DoxyCodeLine{00149\ \ \ \ \ ++count;}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ ++i)\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(port,\ l,\ k\_init\ +\ i,\ symbols[i]);}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a9090b08686557dcaf193996d0087e8a9}{put}}(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ \textcolor{keywordtype}{unsigned}\ stride,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ symbols)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00156\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00157\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(entries\_mutex);}
+\DoxyCodeLine{00158\ \ \ \ \ ++count;}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_symb\ =\ 0;\ i\_symb\ !=\ symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ ++i\_symb)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((symbols[i\_symb].real()\ !=\ 0)\ ||\ (symbols[i\_symb].imag()\ !=\ 0))\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(port,\ l,\ k\_init\ +\ (i\_symb\ *\ stride),\ symbols[i\_symb]);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a19081fdfc5e80491780512500a411b22}{assert\_entries}}(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ expected\_entry\_t>}}\ expected\_entries)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00174\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{comment}{//\ Make\ sure\ the\ number\ of\ elements\ match.}}
+\DoxyCodeLine{00176\ \ \ \ \ TESTASSERT\_EQ(expected\_entries.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),\ entries.size());}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{comment}{//\ Iterate\ each\ expected\ entry,\ check\ that\ there\ is\ an\ entry\ and\ that\ the\ expected\ value\ error\ is\ below\ a\ threshold.}}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ entry\ :\ expected\_entries)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ entry\_key\_t\ key\ =\ \{entry.port,\ entry.symbol,\ entry.subcarrier\};}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ TESTASSERT(entries.count(key),}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}No\ resource\ element\ was\ written\ for\ port=\{\},\ symbol=\{\}\ and\ subcarrier=\{\}."{}},}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.port,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.symbol,}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.subcarrier);}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ \ value\ =\ entries.at(key);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ err\ \ \ =\ std::abs(entry.value\ -\/\ value);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ TESTASSERT(err\ <\ ASSERT\_MAX\_ERROR,\ \textcolor{stringliteral}{"{}Mismatched\ value\ \{\}\ but\ expected\ \{\}"{}},\ value,\ entry.value);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00201\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_afe94f1dc744d824f259777d4153238f1}{assert\_entries}}(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ expected\_entry\_t>}}\ expected\_entries,\ \textcolor{keywordtype}{float}\ max\_error)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00202\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{comment}{//\ Make\ sure\ the\ number\ of\ elements\ match.}}
+\DoxyCodeLine{00204\ \ \ \ \ TESTASSERT\_EQ(expected\_entries.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}(),\ entries.size());}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{comment}{//\ Iterate\ each\ expected\ entry,\ check\ that\ there\ is\ an\ entry\ and\ that\ the\ expected\ value\ error\ is\ below\ a\ threshold.}}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ entry\ :\ expected\_entries)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ entry\_key\_t\ key\ =\ \{entry.port,\ entry.symbol,\ entry.subcarrier\};}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ TESTASSERT(entries.count(key),}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}No\ resource\ element\ was\ written\ for\ port=\{\},\ symbol=\{\}\ and\ subcarrier=\{\}."{}},}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.port,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.symbol,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entry.subcarrier);}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ \ value\ =\ entries.at(key);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ err\ \ \ =\ std::abs(entry.value\ -\/\ value);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ TESTASSERT(err\ <\ max\_error,\ \textcolor{stringliteral}{"{}Mismatched\ value\ \{\}\ but\ expected\ \{\}"{}},\ value,\ entry.value);}
+\DoxyCodeLine{00218\ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \}}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00222\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a2d6514231f8d394e887f78964e944d1f}{get\_count}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ count;\ \}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a3e334ed0e7acd4ec41191e130a444024}{reset}}()}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ entries.clear();}
+\DoxyCodeLine{00228\ \ \ \ \ count\ =\ 0;}
+\DoxyCodeLine{00229\ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00233\ \ \ \textcolor{keyword}{using\ }entry\_key\_t\ =\ std::tuple<uint8\_t,\ uint8\_t,\ uint16\_t>;}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00236\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ ASSERT\_MAX\_ERROR\ =\ 1e-\/6;}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00239\ \ \ std::map<entry\_key\_t,\ cf\_t>\ entries;}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00242\ \ \ std::mutex\ entries\_mutex;}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00245\ \ \ \textcolor{keywordtype}{unsigned}\ count\ =\ 0;}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00248\ \ \ \textcolor{keywordtype}{unsigned}\ max\_ports;}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00251\ \ \ \textcolor{keywordtype}{unsigned}\ max\_symb;}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00254\ \ \ \textcolor{keywordtype}{unsigned}\ max\_prb;}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00257\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00266\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_ad75f92a47ca60d5f8ada6d95b5550181}{put}}(uint8\_t\ port,\ uint8\_t\ symbol,\ uint16\_t\ subcarrier,\ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ value)}
+\DoxyCodeLine{00267\ \ \ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{comment}{//\ Generate\ key.}}
+\DoxyCodeLine{00269\ \ \ \ \ entry\_key\_t\ key\{port,\ symbol,\ subcarrier\};}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{comment}{//\ Ensure\ the\ port,\ symbol\ and\ subcarrier\ indexes\ are\ in\ range.}}
+\DoxyCodeLine{00272\ \ \ \ \ TESTASSERT(port\ <\ max\_ports,\ \textcolor{stringliteral}{"{}Port\ index\ \{\}\ exceeded\ maximum\ \{\}."{}},\ port,\ max\_ports);}
+\DoxyCodeLine{00273\ \ \ \ \ TESTASSERT(symbol\ <\ max\_symb,\ \textcolor{stringliteral}{"{}Symbol\ index\ \{\}\ exceeded\ maximum\ \{\}."{}},\ symbol,\ max\_symb);}
+\DoxyCodeLine{00274\ \ \ \ \ TESTASSERT(subcarrier\ <\ max\_prb\ *\ NRE,\ \textcolor{stringliteral}{"{}Subcarrier\ index\ \{\}\ exceeded\ maximum\ \{\}."{}},\ subcarrier,\ max\_prb\ *\ NRE);}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{comment}{//\ Ensure\ the\ resource\ element\ does\ not\ exist.}}
+\DoxyCodeLine{00277\ \ \ \ \ TESTASSERT(entries.count(key)\ ==\ 0,}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Detected\ resource\ grid\ overwrite\ for\ port=\{\},\ symbol=\{\}\ and\ subcarrier=\{\}."{}},}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbol,}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier);}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{comment}{//\ Debug\ trace.}}
+\DoxyCodeLine{00284\ \ \ \ \ logger.debug(\textcolor{stringliteral}{"{}[put]\ port=\{:>2\};\ symbol=\{:>2\};\ subcarrier=\{:>4\};\ value=\{\};\ count=\{\};"{}},}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbol,}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier,}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value,}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ entries.size()\ +\ 1);}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{comment}{//\ Write\ element.}}
+\DoxyCodeLine{00292\ \ \ \ \ entries.emplace(key,\ value);}
+\DoxyCodeLine{00293\ \ \ \}}
+\DoxyCodeLine{00294\ \};}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00297\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy}{resource\_grid\_reader\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}}
+\DoxyCodeLine{00298\ \{}
+\DoxyCodeLine{00299\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00300\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t}{expected\_entry\_t}}\ =\ \mbox{\hyperlink{structsrsran_1_1resource__grid__writer__spy_1_1expected__entry__t}{resource\_grid\_writer\_spy::expected\_entry\_t}};}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy}{resource\_grid\_reader\_spy}}(\textcolor{keywordtype}{unsigned}\ max\_ports\_\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ max\_symb\_\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ max\_prb\_\ =\ 0)\ :}
+\DoxyCodeLine{00303\ \ \ \ \ max\_ports(max\_ports\_),\ max\_symb(max\_symb\_),\ max\_prb(max\_prb\_)}
+\DoxyCodeLine{00304\ \ \ \{}
+\DoxyCodeLine{00305\ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a3d15e9bdbc0f97d381c8dea974189f10}{get\_nof\_ports}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_ports;\ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a98d350974ef9b2fef6c0ee946ac941b0}{get\_nof\_subc}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_prb\ *\ NRE;\ \}}
+\DoxyCodeLine{00310\ }
+\DoxyCodeLine{00311\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a57d6e3dea2b9a361ce3a4d80b0180023}{get\_nof\_symbols}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ max\_symb;\ \}}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_aab9f47363d9d54d3de5fdc605823be08}{is\_empty}}(\textcolor{keywordtype}{unsigned}\ port)\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ entries.empty();\ \}}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ab9a5e253951f3f944acd8b96f064f96a}{is\_empty}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ entries.empty();\ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00317\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a3bb9758534b28197f9859fb1351c3387}{get}}(\mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ bool>}}\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00318\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00319\ \ \ \ \ ++count;}
+\DoxyCodeLine{00320\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_symb\ =\ 0;}
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ k\ =\ 0;\ k\ !=\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size();\ ++k)\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}[k])\ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ symbols[i\_symb]\ =\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a3bb9758534b28197f9859fb1351c3387}{get}}(\textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(port),\ l,\ k\_init\ +\ k);}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ i\_symb++;}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ \}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{comment}{//\ Consume\ buffer.}}
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ i\_symb);}
+\DoxyCodeLine{00330\ \ \ \}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_abb716f999835dee2e92fdb6222aa7902}{get}}(\mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbols,}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l,}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1bounded__bitset}{bounded\_bitset<MAX\_RB\ *\ NRE>}}\&\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00337\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00338\ \ \ \ \ ++count;}
+\DoxyCodeLine{00339\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.for\_each(0,\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}.size(),\ [\&](\textcolor{keywordtype}{unsigned}\ i\_subc)\ \{}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ symbols.front()\ =\ get(static\_cast<uint8\_t>(port),\ l,\ k\_init\ +\ i\_subc);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ symbols\ \ \ \ \ \ \ \ \ =\ symbols.last(symbols.size()\ -\/\ 1);}
+\DoxyCodeLine{00342\ \ \ \ \ \});}
+\DoxyCodeLine{00343\ }
+\DoxyCodeLine{00344\ \ \ \ \ \textcolor{comment}{//\ Consume\ buffer.}}
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols;}
+\DoxyCodeLine{00346\ \ \ \}}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ad6e87dd0b1face910e509bf2fcc4425b}{get}}(\mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00349\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00350\ \ \ \ \ ++count;}
+\DoxyCodeLine{00351\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ symbol\_ptr\ =\ symbols.\mbox{\hyperlink{classsrsran_1_1span_a451a209648781b54503ae671408e16b8}{data}}();}
+\DoxyCodeLine{00352\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ k\ =\ k\_init,\ k\_end\ =\ k\_init\ +\ symbols.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ k\ !=\ k\_end;\ ++k)\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ *(symbol\_ptr++)\ =\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a3bb9758534b28197f9859fb1351c3387}{get}}(port,\ l,\ k);}
+\DoxyCodeLine{00354\ \ \ \ \ \}}
+\DoxyCodeLine{00355\ \ \ \}}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a10a76938b2d1daa84a64046e058c265b}{get\_view}}(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00358\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00359\ \ \ \ \ srsran\_assert(\textcolor{keyword}{false},\ \textcolor{stringliteral}{"{}Unimplemented\ method"{}});}
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00361\ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \ \textcolor{keywordtype}{void}\ write(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ expected\_entry\_t>}}\ entries\_)}
+\DoxyCodeLine{00364\ \ \ \{}
+\DoxyCodeLine{00365\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ expected\_entry\_t\&\ e\ :\ entries\_)\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ write(e);}
+\DoxyCodeLine{00367\ \ \ \ \ \}}
+\DoxyCodeLine{00368\ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \textcolor{keywordtype}{void}\ write(\textcolor{keyword}{const}\ expected\_entry\_t\&\ entry)}
+\DoxyCodeLine{00371\ \ \ \{}
+\DoxyCodeLine{00372\ \ \ \ \ entry\_key\_t\ key\ =\ \{entry.port,\ entry.symbol,\ entry.subcarrier\};}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \ \ entries.emplace(key,\ entry.value);}
+\DoxyCodeLine{00375\ \ \ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \ \ \textcolor{keywordtype}{unsigned}\ get\_count()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ count;\ \}}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00380\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ab34d271ea6dbdea4e8caada043810ac9}{reset}}()}
+\DoxyCodeLine{00381\ \ \ \{}
+\DoxyCodeLine{00382\ \ \ \ \ entries.clear();}
+\DoxyCodeLine{00383\ \ \ \ \ count\ =\ 0;}
+\DoxyCodeLine{00384\ \ \ \}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00387\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ max\_ports;}
+\DoxyCodeLine{00388\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ max\_symb;}
+\DoxyCodeLine{00389\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ max\_prb;}
+\DoxyCodeLine{00390\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ count\ =\ 0;}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00393\ \ \ \textcolor{keyword}{using\ }entry\_key\_t\ =\ std::tuple<uint8\_t,\ uint8\_t,\ uint16\_t>;}
+\DoxyCodeLine{00394\ }
+\DoxyCodeLine{00396\ \ \ std::map<entry\_key\_t,\ cf\_t>\ entries;}
+\DoxyCodeLine{00397\ }
+\DoxyCodeLine{00398\ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_a3bb9758534b28197f9859fb1351c3387}{get}}(uint8\_t\ port,\ uint8\_t\ symbol,\ uint16\_t\ subcarrier)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00399\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00400\ \ \ \ \ \textcolor{comment}{//\ Generate\ key.}}
+\DoxyCodeLine{00401\ \ \ \ \ entry\_key\_t\ key\{port,\ symbol,\ subcarrier\};}
+\DoxyCodeLine{00402\ }
+\DoxyCodeLine{00403\ \ \ \ \ \textcolor{comment}{//\ Ensure\ the\ resource\ element\ exist.}}
+\DoxyCodeLine{00404\ \ \ \ \ srsran\_assert(entries.count(key)\ ==\ 1,}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Resource\ grid\ for\ port=\{\},\ symbol=\{\}\ and\ subcarrier=\{\}\ does\ not\ exist."{}},}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbol,}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subcarrier);}
+\DoxyCodeLine{00409\ }
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keywordflow}{return}\ entries.at(key);}
+\DoxyCodeLine{00411\ \ \ \}}
+\DoxyCodeLine{00412\ \};}
+\DoxyCodeLine{00413\ }
+\DoxyCodeLine{00415\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1resource__grid__spy}{resource\_grid\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1resource__grid}{resource\_grid}},\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}}
+\DoxyCodeLine{00416\ \{}
+\DoxyCodeLine{00417\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00418\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy}{resource\_grid\_spy}}(\textcolor{keywordtype}{unsigned}\ max\_ports\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ max\_symb\ =\ 0,\ \textcolor{keywordtype}{unsigned}\ max\_prb\ =\ 0)\ :}
+\DoxyCodeLine{00419\ \ \ \ \ reader(max\_ports,\ max\_symb,\ max\_prb),\ writer(max\_ports,\ max\_symb,\ max\_prb)}
+\DoxyCodeLine{00420\ \ \ \{}
+\DoxyCodeLine{00421\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00422\ \ \ \}}
+\DoxyCodeLine{00423\ }
+\DoxyCodeLine{00424\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_a96fdfa72504319bceb5da38a670ac8ec}{set\_all\_zero}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00425\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00426\ \ \ \ \ ++set\_all\_zero\_count;}
+\DoxyCodeLine{00427\ }
+\DoxyCodeLine{00428\ \ \ \ \ \textcolor{comment}{//\ Reset\ the\ reader\ and\ writer.}}
+\DoxyCodeLine{00429\ \ \ \ \ reader.\mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ab34d271ea6dbdea4e8caada043810ac9}{reset}}();}
+\DoxyCodeLine{00430\ \ \ \ \ writer.\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a3e334ed0e7acd4ec41191e130a444024}{reset}}();}
+\DoxyCodeLine{00431\ \ \ \}}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \textcolor{keywordtype}{void}\ set\_empty(\textcolor{keywordtype}{bool}\ empty\_)\ \{\ empty\ =\ empty\_;\ \}}
+\DoxyCodeLine{00434\ }
+\DoxyCodeLine{00435\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer}{resource\_grid\_writer}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_a5740a0e19b02eff6248d793b458534b1}{get\_writer}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ writer;\ \}}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_ad144f2a7ed6d788da170c47c74773592}{get\_reader}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ reader;\ \}}
+\DoxyCodeLine{00438\ }
+\DoxyCodeLine{00440\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_a2a5ada436539f12b363b02f0cc6f6242}{has\_set\_all\_zero\_method\_been\_called}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ set\_all\_zero\_count\ >\ 0;\ \}}
+\DoxyCodeLine{00441\ }
+\DoxyCodeLine{00443\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_afaec76ade6375e42a9641ca7e8c95043}{get\_total\_count}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ set\_all\_zero\_count\ +\ reader.get\_count()\ +\ writer.\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a2d6514231f8d394e887f78964e944d1f}{get\_count}}();\ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00446\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_af09c0f3f25df2516e8f0632e19aa457d}{clear}}()}
+\DoxyCodeLine{00447\ \ \ \{}
+\DoxyCodeLine{00448\ \ \ \ \ set\_all\_zero\_count\ =\ 0;}
+\DoxyCodeLine{00449\ \ \ \ \ reader.\mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ab34d271ea6dbdea4e8caada043810ac9}{reset}}();}
+\DoxyCodeLine{00450\ \ \ \ \ writer.\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a3e334ed0e7acd4ec41191e130a444024}{reset}}();}
+\DoxyCodeLine{00451\ \ \ \}}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_a2e907a75407af81398f78200171d0489}{get\_mapper}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_a21f7f0478776025d79971c550d3e45a2}{map}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__buffer__reader}{re\_buffer\_reader}}\&\ \textcolor{comment}{/*\ input\ */},}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ \textcolor{comment}{/*\ pattern\ */},}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\&\ \textcolor{comment}{/*\ precoding\ */})\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00458\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00459\ \ \ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}Resource\ grid\ spy\ does\ not\ implement\ the\ resource\ grid\ mapper."{}});}
+\DoxyCodeLine{00460\ \ \ \}}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__spy_aa63c52c418d7664e9691165f8fe74d3b}{map}}(\mbox{\hyperlink{classsrsran_1_1resource__grid__mapper_1_1symbol__buffer}{symbol\_buffer}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer,}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ \ \ \ \ \ \ \ \ pattern,}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ \ \ \ \ \ \ \ \ reserved,}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\&\ precoding,}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ re\_skip)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00467\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00468\ \ \ \ \ srsran\_assertion\_failure(\textcolor{stringliteral}{"{}Resource\ grid\ spy\ does\ not\ implement\ the\ resource\ grid\ mapper."{}});}
+\DoxyCodeLine{00469\ \ \ \}}
+\DoxyCodeLine{00470\ }
+\DoxyCodeLine{00471\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00472\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy}{resource\_grid\_reader\_spy}}\ reader;}
+\DoxyCodeLine{00473\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy}{resource\_grid\_writer\_spy}}\ writer;}
+\DoxyCodeLine{00474\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ empty\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00475\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ set\_all\_zero\_count\ =\ 0;}
+\DoxyCodeLine{00476\ \};}
+\DoxyCodeLine{00477\ }
+\DoxyCodeLine{00482\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1resource__grid__dummy}{resource\_grid\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1resource__grid}{resource\_grid}},\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}}
+\DoxyCodeLine{00483\ \{}
+\DoxyCodeLine{00484\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00486\ \ \ \textcolor{keywordtype}{void}\ failure()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00487\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00488\ \ \ \ \ srsran\_assertion\_failure(}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Components\ using\ resource\ grid\ dummy\ are\ not\ allowed\ to\ call\ any\ method\ from\ the\ interface."{}});}
+\DoxyCodeLine{00490\ \ \ \}}
+\DoxyCodeLine{00491\ }
+\DoxyCodeLine{00492\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy}{resource\_grid\_reader\_spy}}\ reader;}
+\DoxyCodeLine{00493\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy}{resource\_grid\_writer\_spy}}\ writer;}
+\DoxyCodeLine{00494\ }
+\DoxyCodeLine{00495\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00496\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy}{resource\_grid\_dummy}}()\ :\ reader(0,\ 0,\ 0),\ writer(0,\ 0,\ 0)\ \{\}}
+\DoxyCodeLine{00497\ }
+\DoxyCodeLine{00498\ \ \ \textcolor{keywordtype}{unsigned}\ set\_all\_zero\_count\ =\ 0;}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__writer}{resource\_grid\_writer}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_a9225387a17206ef1d9a90b7e4f464193}{get\_writer}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ writer;\ \}}
+\DoxyCodeLine{00501\ }
+\DoxyCodeLine{00502\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_a7c8b8f3d85413f08b75415ff364cf89c}{get\_reader}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ reader;\ \}}
+\DoxyCodeLine{00503\ }
+\DoxyCodeLine{00504\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_a396188e2c45b62257217eaf0322442cd}{set\_all\_zero}}()\textcolor{keyword}{\ override\ }\{\ ++set\_all\_zero\_count;\ \}}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__mapper}{resource\_grid\_mapper}}\&\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_a35b65958d39635302bebe2caa53640c1}{get\_mapper}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00507\ }
+\DoxyCodeLine{00508\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_afe7e235807cbcefee1ac71d87538c8b7}{map}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__buffer__reader}{re\_buffer\_reader}}\&\ input,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{re\_pattern}}\&\ pattern,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\&\ precoding)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00509\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00510\ \ \ \ \ failure();}
+\DoxyCodeLine{00511\ \ \ \}}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__dummy_ae9989dcbc2640cef582f2832b1f60cbc}{map}}(\mbox{\hyperlink{classsrsran_1_1resource__grid__mapper_1_1symbol__buffer}{symbol\_buffer}}\&\ \textcolor{comment}{/*\ buffer\ */},}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ \textcolor{comment}{/*\ pattern\ */},}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\&\ \textcolor{comment}{/*\ reserved\ */},}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\&\ \textcolor{comment}{/*\ precoding\ */},}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{comment}{/*\ re\_skip\ */})\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00518\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00519\ \ \ \ \ failure();}
+\DoxyCodeLine{00520\ \ \ \}}
+\DoxyCodeLine{00521\ }
+\DoxyCodeLine{00522\ \ \ \textcolor{keywordtype}{unsigned}\ get\_reader\_writer\_count()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ reader.get\_count()\ +\ writer.\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a2d6514231f8d394e887f78964e944d1f}{get\_count}}();\ \}}
+\DoxyCodeLine{00523\ }
+\DoxyCodeLine{00524\ \ \ \textcolor{keywordtype}{void}\ reset()}
+\DoxyCodeLine{00525\ \ \ \{}
+\DoxyCodeLine{00526\ \ \ \ \ set\_all\_zero\_count\ =\ 0;}
+\DoxyCodeLine{00527\ \ \ \ \ reader.\mbox{\hyperlink{classsrsran_1_1resource__grid__reader__spy_ab34d271ea6dbdea4e8caada043810ac9}{reset}}();}
+\DoxyCodeLine{00528\ \ \ \ \ writer.\mbox{\hyperlink{classsrsran_1_1resource__grid__writer__spy_a3e334ed0e7acd4ec41191e130a444024}{reset}}();}
+\DoxyCodeLine{00529\ \ \ \}}
+\DoxyCodeLine{00530\ \};}
+\DoxyCodeLine{00531\ }
+\DoxyCodeLine{00532\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

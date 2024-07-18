@@ -1,0 +1,312 @@
+\doxysection{bcd\+\_\+helpers.\+h}
+\hypertarget{bcd__helpers_8h_source}{}\label{bcd__helpers_8h_source}\index{include/srsran/ran/bcd\_helpers.h@{include/srsran/ran/bcd\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{ctype}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{stdint}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Convert\ between\ string\ and\ BCD-\/coded\ MCC.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ MCC\ 001\ results\ in\ 0xf001}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a9263cc05d97c957e1aa5db4b8c793ae3}{string\_to\_mcc}}(std::string\ str,\ uint16\_t*\ mcc)}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \ \ uint32\_t\ len\ =\ (uint32\_t)str.size();}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordflow}{if}\ (len\ !=\ 3)\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00039\ \ \ \}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordflow}{if}\ (!isdigit(str[0])\ ||\ !isdigit(str[1])\ ||\ !isdigit(str[2]))\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ \ \ *mcc\ =\ 0xf000;}
+\DoxyCodeLine{00044\ \ \ *mcc\ |=\ ((uint8\_t)(str[0]\ -\/\ \textcolor{stringliteral}{'0'})\ <<\ 8);}
+\DoxyCodeLine{00045\ \ \ *mcc\ |=\ ((uint8\_t)(str[1]\ -\/\ \textcolor{stringliteral}{'0'})\ <<\ 4);}
+\DoxyCodeLine{00046\ \ \ *mcc\ |=\ ((uint8\_t)(str[2]\ -\/\ \textcolor{stringliteral}{'0'}));}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ mcc\_to\_string(uint16\_t\ mcc,\ std::string*\ str)}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{if}\ ((mcc\ \&\ 0xf000)\ !=\ 0xf000)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ \ \ *str\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00056\ \ \ *str\ +=\ ((mcc\ \&\ 0x0f00)\ >>\ 8)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00057\ \ \ *str\ +=\ ((mcc\ \&\ 0x00f0)\ >>\ 4)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00058\ \ \ *str\ +=\ (mcc\ \&\ 0x000f)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00060\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ Convert\ between\ array\ of\ bytes\ and\ BCD-\/coded\ MCC.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ MCC\ 001\ results\ in\ 0xf001}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a790a394d15a6d4608067df4228beabab}{bytes\_to\_mcc}}(\textcolor{keyword}{const}\ uint8\_t*\ bytes,\ uint16\_t*\ mcc)}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ *mcc\ =\ 0xf000;}
+\DoxyCodeLine{00068\ \ \ *mcc\ |=\ (((uint16\_t)bytes[0])\ <<\ 8u);}
+\DoxyCodeLine{00069\ \ \ *mcc\ |=\ (((uint16\_t)bytes[1])\ <<\ 4u);}
+\DoxyCodeLine{00070\ \ \ *mcc\ |=\ (uint16\_t)bytes[2];}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00072\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ mcc\_to\_bytes(uint16\_t\ mcc,\ uint8\_t*\ bytes)}
+\DoxyCodeLine{00075\ \{}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{if}\ ((mcc\ \&\ 0xf000)\ !=\ 0xf000)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ \ \ bytes[0]\ =\ (uint8\_t)((mcc\ \&\ 0xf00)\ >>\ 8);}
+\DoxyCodeLine{00080\ \ \ bytes[1]\ =\ (uint8\_t)((mcc\ \&\ 0x0f0)\ >>\ 4);}
+\DoxyCodeLine{00081\ \ \ bytes[2]\ =\ (uint8\_t)(mcc\ \&\ 0x00f);}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00083\ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{inline}\ std::string\ mcc\_bytes\_to\_string(uint8\_t*\ mcc\_bytes)}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \ \ std::string\ mcc\_str;}
+\DoxyCodeLine{00088\ \ \ uint16\_t\ \ \ \ mcc;}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{namespacesrsran_a790a394d15a6d4608067df4228beabab}{bytes\_to\_mcc}}\mbox{\hyperlink{namespacesrsran_a790a394d15a6d4608067df4228beabab}{(}}\&mcc\_bytes[0]\mbox{\hyperlink{namespacesrsran_a790a394d15a6d4608067df4228beabab}{,}}\ \&mcc\mbox{\hyperlink{namespacesrsran_a790a394d15a6d4608067df4228beabab}{)}};}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordflow}{if}\ (!mcc\_to\_string(mcc,\ \&mcc\_str))\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ mcc\_str\ =\ \textcolor{stringliteral}{"{}000"{}};}
+\DoxyCodeLine{00092\ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordflow}{return}\ mcc\_str;}
+\DoxyCodeLine{00094\ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{comment}{///\ Convert\ between\ string\ and\ BCD-\/coded\ MNC.}}
+\DoxyCodeLine{00097\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///\ MNC\ 001\ results\ in\ 0xf001}}
+\DoxyCodeLine{00099\ \textcolor{comment}{///\ MNC\ 01\ results\ in\ 0xff01}}
+\DoxyCodeLine{00100\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a96fe2706ed5983db2a799d12fc8e03e5}{string\_to\_mnc}}(std::string\ str,\ uint16\_t*\ mnc)}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \ \ uint32\_t\ len\ =\ str.size();}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordflow}{if}\ (len\ !=\ 3\ \&\&\ len\ !=\ 2)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00105\ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordflow}{if}\ (len\ ==\ 3)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{if}\ (!isdigit(str[0])\ ||\ !isdigit(str[1])\ ||\ !isdigit(str[2]))\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ *mnc\ =\ 0xf000;}
+\DoxyCodeLine{00111\ \ \ \ \ *mnc\ |=\ ((uint8\_t)(str[0]\ -\/\ \textcolor{stringliteral}{'0'})\ <<\ 8);}
+\DoxyCodeLine{00112\ \ \ \ \ *mnc\ |=\ ((uint8\_t)(str[1]\ -\/\ \textcolor{stringliteral}{'0'})\ <<\ 4);}
+\DoxyCodeLine{00113\ \ \ \ \ *mnc\ |=\ ((uint8\_t)(str[2]\ -\/\ \textcolor{stringliteral}{'0'}));}
+\DoxyCodeLine{00114\ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordflow}{if}\ (len\ ==\ 2)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{if}\ (!isdigit(str[0])\ ||\ !isdigit(str[1]))\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ \ \ \ \ *mnc\ =\ 0xff00;}
+\DoxyCodeLine{00120\ \ \ \ \ *mnc\ |=\ ((uint8\_t)(str[0]\ -\/\ \textcolor{stringliteral}{'0'})\ <<\ 4);}
+\DoxyCodeLine{00121\ \ \ \ \ *mnc\ |=\ ((uint8\_t)(str[1]\ -\/\ \textcolor{stringliteral}{'0'}));}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00125\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ mnc\_to\_string(uint16\_t\ mnc,\ std::string*\ str)}
+\DoxyCodeLine{00128\ \{}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordflow}{if}\ ((mnc\ \&\ 0xf000)\ !=\ 0xf000)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ \ \ *str\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordflow}{if}\ ((mnc\ \&\ 0xff00)\ !=\ 0xff00)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ *str\ +=\ ((mnc\ \&\ 0x0f00)\ >>\ 8)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ \ \ *str\ +=\ ((mnc\ \&\ 0x00f0)\ >>\ 4)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00137\ \ \ *str\ +=\ (mnc\ \&\ 0x000f)\ +\ \textcolor{stringliteral}{'0'};}
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00139\ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \textcolor{comment}{///\ Convert\ between\ array\ of\ bytes\ and\ BCD-\/coded\ MNC.}}
+\DoxyCodeLine{00142\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00143\ \textcolor{comment}{///\ MNC\ 001\ results\ in\ 0xf001}}
+\DoxyCodeLine{00144\ \textcolor{comment}{///\ MNC\ 01\ results\ in\ 0xff01}}
+\DoxyCodeLine{00145\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{bytes\_to\_mnc}}(\textcolor{keyword}{const}\ uint8\_t*\ bytes,\ uint16\_t*\ mnc,\ uint8\_t\ len)}
+\DoxyCodeLine{00146\ \{}
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordflow}{if}\ (len\ !=\ 3\ \&\&\ len\ !=\ 2)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ *mnc\ =\ 0;}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00150\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (len\ ==\ 3)\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ *mnc\ =\ 0xf000;}
+\DoxyCodeLine{00152\ \ \ \ \ *mnc\ |=\ ((uint16\_t)bytes[0])\ <<\ 8u;}
+\DoxyCodeLine{00153\ \ \ \ \ *mnc\ |=\ ((uint16\_t)bytes[1])\ <<\ 4u;}
+\DoxyCodeLine{00154\ \ \ \ \ *mnc\ |=\ ((uint16\_t)bytes[2])\ <<\ 0u;}
+\DoxyCodeLine{00155\ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (len\ ==\ 2)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ *mnc\ =\ 0xff00;}
+\DoxyCodeLine{00157\ \ \ \ \ *mnc\ |=\ ((uint16\_t)bytes[0])\ <<\ 4u;}
+\DoxyCodeLine{00158\ \ \ \ \ *mnc\ |=\ ((uint16\_t)bytes[1])\ <<\ 0u;}
+\DoxyCodeLine{00159\ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00161\ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ mnc\_to\_bytes(uint16\_t\ mnc,\ uint8\_t*\ bytes,\ uint8\_t*\ len)}
+\DoxyCodeLine{00164\ \{}
+\DoxyCodeLine{00165\ \ \ \textcolor{keywordflow}{if}\ ((mnc\ \&\ 0xf000)\ !=\ 0xf000)\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ *len\ =\ 0;}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00168\ \ \ \}}
+\DoxyCodeLine{00169\ \ \ uint8\_t\ count\ =\ 0;}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordflow}{if}\ ((mnc\ \&\ 0xff00)\ !=\ 0xff00)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ bytes[count++]\ =\ (mnc\ \&\ 0xf00)\ >>\ 8u;}
+\DoxyCodeLine{00172\ \ \ \}}
+\DoxyCodeLine{00173\ \ \ bytes[count++]\ =\ (mnc\ \&\ 0x00f0)\ >>\ 4u;}
+\DoxyCodeLine{00174\ \ \ bytes[count++]\ =\ (mnc\ \&\ 0x000f);}
+\DoxyCodeLine{00175\ \ \ *len\ \ \ \ \ \ \ \ \ \ \ =\ count;}
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00177\ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Vec>}
+\DoxyCodeLine{00180\ \textcolor{keywordtype}{bool}\ mnc\_to\_bytes(uint16\_t\ mnc,\ Vec\&\ vec)}
+\DoxyCodeLine{00181\ \{}
+\DoxyCodeLine{00182\ \ \ uint8\_t\ len;}
+\DoxyCodeLine{00183\ \ \ uint8\_t\ v[3];}
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ ret\ =\ mnc\_to\_bytes(mnc,\ \&v[0],\ \&len);}
+\DoxyCodeLine{00185\ \ \ vec.resize(len);}
+\DoxyCodeLine{00186\ \ \ memcpy(\&vec[0],\ \&v[0],\ len);}
+\DoxyCodeLine{00187\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00188\ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \textcolor{keyword}{inline}\ std::string\ mnc\_bytes\_to\_string(uint8\_t*\ mnc\_bytes,\ uint32\_t\ nof\_bytes)}
+\DoxyCodeLine{00191\ \{}
+\DoxyCodeLine{00192\ \ \ std::string\ mnc\_str;}
+\DoxyCodeLine{00193\ \ \ uint16\_t\ \ \ \ mnc;}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{bytes\_to\_mnc}}\mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{(}}\&mnc\_bytes[0]\mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{,}}\ \&mnc\mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{,}}\ nof\_bytes\mbox{\hyperlink{namespacesrsran_a42f144efc197632c96fa8377def81ec4}{)}};}
+\DoxyCodeLine{00195\ \ \ \textcolor{keywordflow}{if}\ (!mnc\_to\_string(mnc,\ \&mnc\_str))\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ mnc\_str\ =\ \textcolor{stringliteral}{"{}000"{}};}
+\DoxyCodeLine{00197\ \ \ \}}
+\DoxyCodeLine{00198\ \ \ \textcolor{keywordflow}{return}\ mnc\_str;}
+\DoxyCodeLine{00199\ \}}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ Vec>}
+\DoxyCodeLine{00202\ std::string\ mnc\_bytes\_to\_string(Vec\ mnc\_bytes)}
+\DoxyCodeLine{00203\ \{}
+\DoxyCodeLine{00204\ \ \ \textcolor{keywordflow}{return}\ mnc\_bytes\_to\_string(\&mnc\_bytes[0],\ mnc\_bytes.size());}
+\DoxyCodeLine{00205\ \}}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \textcolor{comment}{///\ Convert\ PLMN\ to\ BCD-\/coded\ MCC\ and\ MNC.}}
+\DoxyCodeLine{00208\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00209\ \textcolor{comment}{///\ MNC\ 001\ represented\ as\ 0xf001}}
+\DoxyCodeLine{00210\ \textcolor{comment}{///\ MNC\ 01\ represented\ as\ 0xff01}}
+\DoxyCodeLine{00211\ \textcolor{comment}{///\ PLMN\ encoded\ as\ per\ TS\ 38.413\ sec\ 9.3.3.5}}
+\DoxyCodeLine{00212\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{ngap\_plmn\_to\_mccmnc}}(uint32\_t\ plmn,\ uint16\_t*\ mcc,\ uint16\_t*\ mnc)}
+\DoxyCodeLine{00213\ \{}
+\DoxyCodeLine{00214\ \ \ uint8\_t\ nibbles[6];}
+\DoxyCodeLine{00215\ \ \ nibbles[0]\ =\ (plmn\ \&\ 0xf00000)\ >>\ 20;}
+\DoxyCodeLine{00216\ \ \ nibbles[1]\ =\ (plmn\ \&\ 0x0f0000)\ >>\ 16;}
+\DoxyCodeLine{00217\ \ \ nibbles[2]\ =\ (plmn\ \&\ 0x00f000)\ >>\ 12;}
+\DoxyCodeLine{00218\ \ \ nibbles[3]\ =\ (plmn\ \&\ 0x000f00)\ >>\ 8;}
+\DoxyCodeLine{00219\ \ \ nibbles[4]\ =\ (plmn\ \&\ 0x0000f0)\ >>\ 4;}
+\DoxyCodeLine{00220\ \ \ nibbles[5]\ =\ (plmn\ \&\ 0x00000f);}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ *mcc\ =\ 0xf000;}
+\DoxyCodeLine{00223\ \ \ *mnc\ =\ 0xf000;}
+\DoxyCodeLine{00224\ \ \ *mcc\ |=\ nibbles[1]\ <<\ 8;\ \textcolor{comment}{//\ MCC\ digit\ 1}}
+\DoxyCodeLine{00225\ \ \ *mcc\ |=\ nibbles[0]\ <<\ 4;\ \textcolor{comment}{//\ MCC\ digit\ 2}}
+\DoxyCodeLine{00226\ \ \ *mcc\ |=\ nibbles[3];\ \ \ \ \ \ \textcolor{comment}{//\ MCC\ digit\ 3}}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \textcolor{keywordflow}{if}\ (nibbles[2]\ ==\ 0xf)\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{comment}{//\ 2-\/digit\ MNC}}
+\DoxyCodeLine{00230\ \ \ \ \ *mnc\ |=\ 0x0f00;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 1}}
+\DoxyCodeLine{00231\ \ \ \ \ *mnc\ |=\ nibbles[5]\ <<\ 4;\ \textcolor{comment}{//\ MNC\ digit\ 2}}
+\DoxyCodeLine{00232\ \ \ \ \ *mnc\ |=\ nibbles[4];\ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 3}}
+\DoxyCodeLine{00233\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{comment}{//\ 3-\/digit\ MNC}}
+\DoxyCodeLine{00235\ \ \ \ \ *mnc\ |=\ nibbles[2]\ <<\ 8;\ \textcolor{comment}{//\ MNC\ digit\ 1}}
+\DoxyCodeLine{00236\ \ \ \ \ *mnc\ |=\ nibbles[5]\ <<\ 4;\ \textcolor{comment}{//\ MNC\ digit\ 2}}
+\DoxyCodeLine{00237\ \ \ \ \ *mnc\ |=\ nibbles[4];\ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 3}}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \textcolor{comment}{///\ Convert\ BCD-\/coded\ MCC\ and\ MNC\ to\ PLMN.}}
+\DoxyCodeLine{00242\ \textcolor{comment}{///\ Digits\ are\ represented\ by\ 4-\/bit\ nibbles.\ Unused\ nibbles\ are\ filled\ with\ 0xf.}}
+\DoxyCodeLine{00243\ \textcolor{comment}{///\ MNC\ 001\ represented\ as\ 0xf001}}
+\DoxyCodeLine{00244\ \textcolor{comment}{///\ MNC\ 01\ represented\ as\ 0xff01}}
+\DoxyCodeLine{00245\ \textcolor{comment}{///\ PLMN\ encoded\ as\ per\ TS\ 38.413\ sec\ 9.3.3.5}}
+\DoxyCodeLine{00246\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{ngap\_mccmnc\_to\_plmn}}(uint16\_t\ mcc,\ uint16\_t\ mnc,\ uint32\_t*\ plmn)}
+\DoxyCodeLine{00247\ \{}
+\DoxyCodeLine{00248\ \ \ uint8\_t\ nibbles[6];}
+\DoxyCodeLine{00249\ \ \ nibbles[1]\ =\ (mcc\ \&\ 0x0f00)\ >>\ 8;\ \textcolor{comment}{//\ MCC\ digit\ 1}}
+\DoxyCodeLine{00250\ \ \ nibbles[0]\ =\ (mcc\ \&\ 0x00f0)\ >>\ 4;\ \textcolor{comment}{//\ MCC\ digit\ 2}}
+\DoxyCodeLine{00251\ \ \ nibbles[3]\ =\ (mcc\ \&\ 0x000f);\ \ \ \ \ \ \textcolor{comment}{//\ MCC\ digit\ 3}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ \textcolor{keywordflow}{if}\ ((mnc\ \&\ 0xff00)\ ==\ 0xff00)\ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{comment}{//\ 2-\/digit\ MNC}}
+\DoxyCodeLine{00255\ \ \ \ \ nibbles[2]\ =\ 0x0f;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 1}}
+\DoxyCodeLine{00256\ \ \ \ \ nibbles[5]\ =\ (mnc\ \&\ 0x00f0)\ >>\ 4;\ \textcolor{comment}{//\ MNC\ digit\ 2}}
+\DoxyCodeLine{00257\ \ \ \ \ nibbles[4]\ =\ (mnc\ \&\ 0x000f);\ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 3}}
+\DoxyCodeLine{00258\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{comment}{//\ 3-\/digit\ MNC}}
+\DoxyCodeLine{00260\ \ \ \ \ nibbles[2]\ =\ (mnc\ \&\ 0x0f00)\ >>\ 8;\ \textcolor{comment}{//\ MNC\ digit\ 1}}
+\DoxyCodeLine{00261\ \ \ \ \ nibbles[5]\ =\ (mnc\ \&\ 0x00f0)\ >>\ 4;\ \textcolor{comment}{//\ MNC\ digit\ 2}}
+\DoxyCodeLine{00262\ \ \ \ \ nibbles[4]\ =\ (mnc\ \&\ 0x000f);\ \ \ \ \ \ \textcolor{comment}{//\ MNC\ digit\ 3}}
+\DoxyCodeLine{00263\ \ \ \}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ *plmn\ =\ 0x000000;}
+\DoxyCodeLine{00266\ \ \ *plmn\ |=\ nibbles[0]\ <<\ 20;}
+\DoxyCodeLine{00267\ \ \ *plmn\ |=\ nibbles[1]\ <<\ 16;}
+\DoxyCodeLine{00268\ \ \ *plmn\ |=\ nibbles[2]\ <<\ 12;}
+\DoxyCodeLine{00269\ \ \ *plmn\ |=\ nibbles[3]\ <<\ 8;}
+\DoxyCodeLine{00270\ \ \ *plmn\ |=\ nibbles[4]\ <<\ 4;}
+\DoxyCodeLine{00271\ \ \ *plmn\ |=\ nibbles[5];}
+\DoxyCodeLine{00272\ \}}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \textcolor{keyword}{inline}\ uint32\_t\ plmn\_string\_to\_bcd(\textcolor{keyword}{const}\ std::string\&\ plmn)}
+\DoxyCodeLine{00275\ \{}
+\DoxyCodeLine{00276\ \ \ uint32\_t\ bcd\_plmn\ =\ 0;}
+\DoxyCodeLine{00277\ \ \ \textcolor{keywordflow}{if}\ (plmn.length()\ !=\ 5\ \textcolor{keyword}{and}\ plmn.length()\ !=\ 6)\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \textcolor{keywordflow}{return}\ bcd\_plmn;}
+\DoxyCodeLine{00279\ \ \ \}}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \ \ uint16\_t\ mcc;}
+\DoxyCodeLine{00282\ \ \ \textcolor{keywordflow}{if}\ (string\_to\_mcc(plmn.substr(0,\ 3),\ \&mcc)\ ==\ \textcolor{keyword}{false})\ \{}
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{keywordflow}{return}\ bcd\_plmn;}
+\DoxyCodeLine{00284\ \ \ \}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ uint16\_t\ mnc;}
+\DoxyCodeLine{00287\ \ \ \textcolor{keywordflow}{if}\ (string\_to\_mnc(plmn.substr(3),\ \&mnc)\ ==\ \textcolor{keyword}{false})\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keywordflow}{return}\ bcd\_plmn;}
+\DoxyCodeLine{00289\ \ \ \}}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{ngap\_mccmnc\_to\_plmn}}\mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{(}}mcc\mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{,}}\ mnc\mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{,}}\ \&bcd\_plmn\mbox{\hyperlink{namespacesrsran_a83cd25562e62e346f835377725059151}{)}};}
+\DoxyCodeLine{00292\ }
+\DoxyCodeLine{00293\ \ \ \textcolor{keywordflow}{return}\ bcd\_plmn;}
+\DoxyCodeLine{00294\ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \textcolor{keyword}{inline}\ std::string\ plmn\_bcd\_to\_string(uint32\_t\ plmn)}
+\DoxyCodeLine{00297\ \{}
+\DoxyCodeLine{00298\ \ \ uint16\_t\ mcc,\ mnc;}
+\DoxyCodeLine{00299\ \ \ \mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{ngap\_plmn\_to\_mccmnc}}\mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{(}}plmn\mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{,}}\ \&mcc\mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{,}}\ \&mnc\mbox{\hyperlink{namespacesrsran_a4ef29dad33b43aa6a1afc07b4258a9db}{)}};}
+\DoxyCodeLine{00300\ \ \ std::string\ mcc\_string,\ mnc\_string;}
+\DoxyCodeLine{00301\ \ \ mcc\_to\_string(mcc,\ \&mcc\_string);}
+\DoxyCodeLine{00302\ \ \ mnc\_to\_string(mnc,\ \&mnc\_string);}
+\DoxyCodeLine{00303\ \ \ \textcolor{keywordflow}{return}\ mcc\_string\ +\ mnc\_string;}
+\DoxyCodeLine{00304\ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

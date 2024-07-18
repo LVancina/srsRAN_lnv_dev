@@ -20,7 +20,9 @@
 
 set(SOURCES
         channel_equalizer_zf_impl.cpp
-        equalization_factories.cpp)
+        equalization_factories.cpp
+        equalize_zf_2x2.cpp
+        )
 
 add_library(srsran_channel_equalizer STATIC ${SOURCES})
 target_link_libraries(srsran_channel_equalizer srsvec)

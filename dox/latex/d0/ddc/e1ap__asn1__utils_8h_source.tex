@@ -1,0 +1,248 @@
+\doxysection{e1ap\+\_\+asn1\+\_\+utils.\+h}
+\hypertarget{e1ap__asn1__utils_8h_source}{}\label{e1ap__asn1__utils_8h_source}\index{lib/e1ap/common/e1ap\_asn1\_utils.h@{lib/e1ap/common/e1ap\_asn1\_utils.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/e1ap/common.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/e1ap/e1ap.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/e1ap/e1ap\_pdu\_contents.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e1ap/common/e1ap\_types.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Get\ string\ with\ E1AP\ error\ cause.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{namespacesrsran_a245345cae4e8280e4973179050b6e2d8}{get\_cause\_str}}(\textcolor{keyword}{const}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1cause__c}{cause\_c}}\&\ cause)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordflow}{switch}\ (cause.type())\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordflow}{case}\ cause\_c::types\_opts::radio\_network:}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.radio\_network().to\_string();}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordflow}{case}\ cause\_c::types\_opts::transport:}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.transport().to\_string();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1cause__c}{cause\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1cause__c_1_1types__opts}{types\_opts}}::protocol:}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.protocol().to\_string();}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1cause__c}{cause\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1cause__c_1_1types__opts}{types\_opts}}::misc:}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cause.misc().to\_string();}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}unknown"{}};}
+\DoxyCodeLine{00051\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ Extracts\ message\ type.}}
+\DoxyCodeLine{00054\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{namespacesrsran_a3536908808e17a9174fa4e7e3ac75dda}{get\_message\_type\_str}}(\textcolor{keyword}{const}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c}{e1ap\_pdu\_c}}\&\ pdu)}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c}{e1ap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c_1_1types__opts}{types\_opts}}::init\_msg:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.init\_msg().value.type().to\_string();}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c}{e1ap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c_1_1types__opts}{types\_opts}}::successful\_outcome:}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.successful\_outcome().value.type().to\_string();}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{case}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c}{e1ap\_pdu\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__pdu__c_1_1types__opts}{types\_opts}}::unsuccessful\_outcome:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdu.unsuccessful\_outcome().value.type().to\_string();}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ E1AP\ PDU\ type\ \(\backslash\)"{}\{\}\(\backslash\)"{}"{}},\ pdu.type().to\_string());}
+\DoxyCodeLine{00067\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ Extracts\ transaction\ id\ of\ Initiating\ message.}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{expected}}<\mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{uint8\_t}}>\ \mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{get\_transaction\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{asn1}}::\mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{e1ap}}::\mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{init\_msg\_s}}\&\ \mbox{\hyperlink{namespacesrsran_ad7cac9245adf27dd24c8b0d65df2ab46}{out}})}
+\DoxyCodeLine{00071\ \{}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordflow}{switch}\ (out.value.type().value)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_e1\_setup\_request:}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_e1\_setup\_request()-\/>transaction\_id;}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_e1\_setup\_request:}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_e1\_setup\_request()-\/>transaction\_id;}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_cfg\_upd:}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_cfg\_upd()-\/>transaction\_id;}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_cfg\_upd:}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_cfg\_upd()-\/>transaction\_id;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Remaining\ cases.}}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00087\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{comment}{///\ Extracts\ transaction\ id\ of\ Successful\ Outcome\ message.}}
+\DoxyCodeLine{00090\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{expected}}<\mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{uint8\_t}}>\ \mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{get\_transaction\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{asn1}}::\mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{e1ap}}::\mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{successful\_outcome\_s}}\&\ \mbox{\hyperlink{namespacesrsran_a8e5a92d5aada51bc9cfb8d9fa18697bd}{out}})}
+\DoxyCodeLine{00091\ \{}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordflow}{switch}\ (out.value.type().value)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c}{successful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_e1\_setup\_resp:}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_e1\_setup\_resp()-\/>transaction\_id;}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c}{successful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_e1\_setup\_resp:}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_e1\_setup\_resp()-\/>transaction\_id;}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c}{successful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_cfg\_upd\_ack:}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_cfg\_upd\_ack()-\/>transaction\_id;}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c}{successful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1successful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_cfg\_upd\_ack:}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_cfg\_upd\_ack()-\/>transaction\_id;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Remaining\ cases.}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00105\ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00107\ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{comment}{///\ Extracts\ transaction\ id\ of\ Unsuccessful\ Outcome\ message.}}
+\DoxyCodeLine{00110\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{expected}}<\mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{uint8\_t}}>\ \mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{get\_transaction\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{asn1}}::\mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{e1ap}}::\mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{unsuccessful\_outcome\_s}}\&\ \mbox{\hyperlink{namespacesrsran_ac4329d76797bf0c65ea336a6be5d4e25}{out}})}
+\DoxyCodeLine{00111\ \{}
+\DoxyCodeLine{00112\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordflow}{switch}\ (out.value.type().value)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c}{unsuccessful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_e1\_setup\_fail:}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_e1\_setup\_fail()-\/>transaction\_id;}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c}{unsuccessful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_e1\_setup\_fail:}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_e1\_setup\_fail()-\/>transaction\_id;}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c}{unsuccessful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_cp\_cfg\_upd\_fail:}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_cp\_cfg\_upd\_fail()-\/>transaction\_id;}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c}{unsuccessful\_outcome\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1unsuccessful__outcome__c_1_1types__opts}{types\_opts}}::gnb\_cu\_up\_cfg\_upd\_fail:}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out.value.gnb\_cu\_up\_cfg\_upd\_fail()-\/>transaction\_id;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Remaining\ cases.}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00127\ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \textcolor{comment}{///\ Extracts\ transaction\ id\ of\ E1AP\ PDU.}}
+\DoxyCodeLine{00130\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{expected}}<\mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{uint8\_t}}>\ \mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{get\_transaction\_id}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{asn1}}::\mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{e1ap}}::\mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{e1ap\_pdu\_c}}\&\ \mbox{\hyperlink{namespacesrsran_aa6ff70cfb3f5c003dcd86fa5ba19d363}{pdu}})}
+\DoxyCodeLine{00131\ \{}
+\DoxyCodeLine{00132\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00133\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::init\_msg:}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_transaction\_id(pdu.init\_msg());}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::successful\_outcome:}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_transaction\_id(pdu.successful\_outcome());}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::unsuccessful\_outcome:}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_transaction\_id(pdu.unsuccessful\_outcome());}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00142\ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00144\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_cp\_ue\_e1ap\_id\_t>\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::init\_msg\_s\&\ init\_msg)}
+\DoxyCodeLine{00147\ \{}
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{using}\ init\_msg\_type\ =\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}};}
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordflow}{switch}\ (init\_msg.value.type())\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_setup\_request:}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_cp\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_setup\_request()-\/>gnb\_cu\_cp\_ue\_e1ap\_id;}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_release\_cmd:}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_cp\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_release\_cmd()-\/>gnb\_cu\_cp\_ue\_e1ap\_id;}
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_mod\_request:}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_cp\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_mod\_request()-\/>gnb\_cu\_cp\_ue\_e1ap\_id;}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_mod\_required:}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_cp\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_mod\_required()-\/>gnb\_cu\_cp\_ue\_e1ap\_id;}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_release\_request:}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_cp\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_release\_request()-\/>gnb\_cu\_cp\_ue\_e1ap\_id;}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00164\ \}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_cp\_ue\_e1ap\_id\_t>}
+\DoxyCodeLine{00167\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::successful\_outcome\_s\&\ success\_outcome)}
+\DoxyCodeLine{00168\ \{}
+\DoxyCodeLine{00169\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00170\ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_cp\_ue\_e1ap\_id\_t>}
+\DoxyCodeLine{00173\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::unsuccessful\_outcome\_s\&\ unsuccessful\_outcome)}
+\DoxyCodeLine{00174\ \{}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00176\ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_cp\_ue\_e1ap\_id\_t>\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::e1ap\_pdu\_c\&\ pdu)}
+\DoxyCodeLine{00179\ \{}
+\DoxyCodeLine{00180\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00181\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::init\_msg:}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(pdu.init\_msg());}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::successful\_outcome:}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(pdu.successful\_outcome());}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::unsuccessful\_outcome:}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_cp\_ue\_e1ap\_id(pdu.unsuccessful\_outcome());}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00192\ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \textcolor{comment}{//////////////////////////////////}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_up\_ue\_e1ap\_id\_t>\ get\_gnb\_cu\_up\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::init\_msg\_s\&\ init\_msg)}
+\DoxyCodeLine{00197\ \{}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{using}\ init\_msg\_type\ =\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o}{e1ap\_elem\_procs\_o}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c}{init\_msg\_c}}::\mbox{\hyperlink{structasn1_1_1e1ap_1_1e1ap__elem__procs__o_1_1init__msg__c_1_1types__opts}{types\_opts}};}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordflow}{switch}\ (init\_msg.value.type())\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_release\_cmd:}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_up\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_release\_cmd()-\/>gnb\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_mod\_request:}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_up\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_mod\_request()-\/>gnb\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00204\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_mod\_required:}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_up\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_mod\_required()-\/>gnb\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{case}\ init\_msg\_type::bearer\_context\_release\_request:}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (gnb\_cu\_up\_ue\_e1ap\_id\_t)init\_msg.value.bearer\_context\_release\_request()-\/>gnb\_cu\_up\_ue\_e1ap\_id;}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00210\ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00212\ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_up\_ue\_e1ap\_id\_t>}
+\DoxyCodeLine{00215\ get\_gnb\_cu\_up\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::successful\_outcome\_s\&\ success\_outcome)}
+\DoxyCodeLine{00216\ \{}
+\DoxyCodeLine{00217\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00218\ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_up\_ue\_e1ap\_id\_t>}
+\DoxyCodeLine{00221\ get\_gnb\_cu\_up\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::unsuccessful\_outcome\_s\&\ unsuccessful\_outcome)}
+\DoxyCodeLine{00222\ \{}
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00224\ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \textcolor{keyword}{inline}\ expected<gnb\_cu\_up\_ue\_e1ap\_id\_t>\ get\_gnb\_cu\_up\_ue\_e1ap\_id(\textcolor{keyword}{const}\ asn1::e1ap::e1ap\_pdu\_c\&\ pdu)}
+\DoxyCodeLine{00227\ \{}
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::e1ap;}
+\DoxyCodeLine{00229\ \ \ \textcolor{keywordflow}{switch}\ (pdu.type().value)\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::init\_msg:}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_up\_ue\_e1ap\_id(pdu.init\_msg());}
+\DoxyCodeLine{00232\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::successful\_outcome:}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_up\_ue\_e1ap\_id(pdu.successful\_outcome());}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{case}\ e1ap\_pdu\_c::types\_opts::unsuccessful\_outcome:}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ get\_gnb\_cu\_up\_ue\_e1ap\_id(pdu.unsuccessful\_outcome());}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \textcolor{keywordflow}{return}\ \{default\_error\_t\{\}\};}
+\DoxyCodeLine{00240\ \}}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

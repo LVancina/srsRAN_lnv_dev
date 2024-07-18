@@ -1,0 +1,138 @@
+\doxysection{async\+\_\+procedure.\+h}
+\hypertarget{async__procedure_8h_source}{}\label{async__procedure_8h_source}\index{include/srsran/support/async/async\_procedure.h@{include/srsran/support/async/async\_procedure.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}async\_task.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}coroutine.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FutureType>}
+\DoxyCodeLine{00032\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1base__resumable__procedure}{base\_resumable\_procedure}}\ \{}
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{using\ }future\_type\ \ =\ FutureType;}
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{using\ }promise\_type\ =\ \textcolor{keyword}{typename}\ FutureType::promise\_type;}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{using\ }result\_type\ \ =\ \textcolor{keyword}{typename}\ FutureType::result\_type;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_af7026e79427665c7b4c971213c18197b}{start}}()\ =\ 0;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_a5edcb6deccebfa485b8ae4b85397f93c}{operator()}}(\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{detail::base\_coro\_frame<promise\_type>}}\&\ ctx)}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{if}\ (frame\_ptr\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ srsran\_sanity\_check(ctx.state\_index\ ==\ detail::tag\_init,\ \textcolor{stringliteral}{"{}Invalid\ coro\ state"{}});}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ ctx.state\_index\ =\ 10;}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ frame\_ptr\ \ \ \ \ \ \ =\ \&ctx;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_a4d1aac5a935fcee5058c68ed47668194}{async\_await}}(\mbox{\hyperlink{structsrsran_1_1suspend__always}{suspend\_always}}\{\},\ \&\mbox{\hyperlink{structsrsran_1_1base__resumable__procedure}{base\_resumable\_procedure<FutureType>::start}});}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \ \ resume\_method();}
+\DoxyCodeLine{00051\ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable,\ \textcolor{keyword}{typename}\ Derived,\ \textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_a4d1aac5a935fcee5058c68ed47668194}{async\_await}}(Awaitable\&\&\ a,\ \textcolor{keywordtype}{void}\ (Derived::*action)(Args...))}
+\DoxyCodeLine{00057\ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{auto}\ resume\_func\ =\ [\textcolor{keyword}{this},\ action]()\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this-\/>frame\_ptr-\/>state\_index\ >\ 0)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ await\_resume\_helper<Awaitable>(action);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ srsran\_sanity\_check(frame\_ptr-\/>state\_index\ !=\ detail::coro\_state\_tag\_t::tag\_cancelled,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Calling\ resume\ on\ cancelled\ task"{}});}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ srsran\_sanity\_check(frame\_ptr-\/>state\_index\ !=\ detail::coro\_state\_tag\_t::tag\_final\_suspend,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Calling\ on\ task\ on\ suspended\ point"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cancelled}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ frame\_ptr-\/>template\ on\_await\_cancel<Awaitable>();}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ frame\_ptr-\/>state\_index\ =\ detail::coro\_state\_tag\_t::tag\_cancelled;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ frame\_ptr-\/>on\_return();}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ Do\ not\ touch\ any\ member\ at\ this\ point}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{//\ Note:\ we\ have\ to\ store\ the\ resume\ point\ before,\ in\ case\ the\ coroutine\ changes\ execution\ context\ and\ calls\ resume}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{comment}{//\ before\ on\_await\_call\ is\ complete}}
+\DoxyCodeLine{00076\ \ \ \ \ resume\_method\ =\ resume\_func;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{if}\ (frame\_ptr-\/>\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aa8cad528feb1aa1a1b0ea106949932eb}{on\_await\_call}}(std::forward<Awaitable>(a)))\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ resume\_func();}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ R\ =\ result\_type>}
+\DoxyCodeLine{00084\ \ \ detail::enable\_if\_void<R>\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_aedbf92241f9f959ee20427895b9f1a88}{async\_return}}()}
+\DoxyCodeLine{00085\ \ \ \{}
+\DoxyCodeLine{00086\ \ \ \ \ frame\_ptr-\/>\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aba31882f71cf0cc8c5357313b4425aff}{promise}}().return\_value();}
+\DoxyCodeLine{00087\ \ \ \ \ final\_await();}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U,\ \textcolor{keyword}{typename}\ R\ =\ result\_type>}
+\DoxyCodeLine{00092\ \ \ detail::enable\_if\_nonvoid<R,\ void>\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure_a1087ee646f5b6cf69b225f3edbc936cc}{async\_return}}(U\&\&\ r)}
+\DoxyCodeLine{00093\ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<U,\ result\_type>::value,\ \textcolor{stringliteral}{"{}Invalid\ value\ returned\ in\ async\_return(R)"{}});}
+\DoxyCodeLine{00095\ \ \ \ \ frame\_ptr-\/>\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame_aba31882f71cf0cc8c5357313b4425aff}{promise}}().return\_value(std::forward<U>(r));}
+\DoxyCodeLine{00096\ \ \ \ \ final\_await();}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure}{\string~base\_resumable\_procedure}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ final\_await()}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{comment}{//\ destroy\ procedure\ object\ including\ its\ members\ (without\ destroying\ the\ rest\ of\ the\ frame)}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{auto}*\ local\_ptr\ \ \ \ \ \ \ \ =\ frame\_ptr;}
+\DoxyCodeLine{00106\ \ \ \ \ frame\_ptr-\/>state\_index\ =\ detail::coro\_state\_tag\_t::tag\_final\_suspend;}
+\DoxyCodeLine{00107\ \ \ \ \ frame\_ptr-\/>on\_return();}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ Note:\ Do\ not\ touch\ any\ procedure\ variable\ from\ now\ on.}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ suspend\ on\ final\ awaiter}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{if}\ (local\_ptr-\/>on\_await\_call(local\_ptr-\/>promise().final\_suspend()))\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \textcolor{comment}{//\ destroy\ coroutine\ frame}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ local\_ptr-\/>destroy();}
+\DoxyCodeLine{00114\ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable,\ \textcolor{keyword}{typename}\ Derived,\ \textcolor{keyword}{typename}\ Arg>}
+\DoxyCodeLine{00119\ \ \ detail::enable\_if\_nonvoid<detail::awaitable\_result\_t<Awaitable>,\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00120\ \ \ await\_resume\_helper(\textcolor{keywordtype}{void}\ (Derived::*action)(Arg))}
+\DoxyCodeLine{00121\ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ (\textcolor{keyword}{static\_cast<}Derived*\textcolor{keyword}{>}(\textcolor{keyword}{this})-\/>*action)(frame\_ptr-\/>template\ on\_await\_resume<Awaitable>());}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Awaitable,\ \textcolor{keyword}{typename}\ Derived>}
+\DoxyCodeLine{00127\ \ \ detail::enable\_if\_void<detail::awaitable\_result\_t<Awaitable>>\ await\_resume\_helper(\textcolor{keywordtype}{void}\ (Derived::*action)())}
+\DoxyCodeLine{00128\ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ frame\_ptr-\/>template\ on\_await\_resume<Awaitable>();}
+\DoxyCodeLine{00130\ \ \ \ \ (\textcolor{keyword}{static\_cast<}Derived*\textcolor{keyword}{>}(\textcolor{keyword}{this})-\/>*action)();}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ detail::base\_coro\_frame<promise\_type>*\ frame\_ptr\ =\ \textcolor{keyword}{nullptr};\ }
+\DoxyCodeLine{00134\ \ \ std::function<void()>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ resume\_method;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00135\ \};}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00138\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ R>}
+\DoxyCodeLine{00139\ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1base__resumable__procedure}{async\_procedure}}\ =\ \mbox{\hyperlink{structsrsran_1_1base__resumable__procedure}{base\_resumable\_procedure<async\_task<R>}}>;}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

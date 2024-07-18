@@ -1,0 +1,119 @@
+\doxysection{epoll\+\_\+helper.\+h}
+\hypertarget{epoll__helper_8h_source}{}\label{epoll__helper_8h_source}\index{lib/support/network/epoll\_helper.h@{lib/support/network/epoll\_helper.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/io/io\_broker.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <signal.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <sys/epoll.h>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <sys/eventfd.h>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <sys/signalfd.h>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <sys/timerfd.h>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <unistd.h>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1epoll__handler}{epoll\_handler}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{int}\ handle\_event(\textcolor{keywordtype}{int}\ fd,\ epoll\_event\ e)\ =\ 0;}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1epoll__handler}{\string~epoll\_handler}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00043\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1epoll__receive__callback}{epoll\_receive\_callback}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1epoll__handler}{epoll\_handler}}}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{classsrsran_1_1epoll__receive__callback}{epoll\_receive\_callback}}(\mbox{\hyperlink{classsrsran_1_1io__broker_a0aeb4484b3f57202da18bb2ef94d370c}{io\_broker::recv\_callback\_t}}\ callback\_)\ :\ callback(callback\_)\ \{\}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{int}\ handle\_event(\textcolor{keywordtype}{int}\ fd,\ epoll\_event\ e)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ TODO:\ translate\ epoll\ events\ to\ io\_broker\_base::event\_t}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{if}\ (e.events\ \&\ EPOLLIN)\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \textcolor{comment}{//\ just\ handle\ the\ normal\ receive\ event}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ callback(fd);}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1io__broker_a0aeb4484b3f57202da18bb2ef94d370c}{io\_broker::recv\_callback\_t}}\ callback;}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespacesrsran_a2fc43b0ab60ce34d2e91e4fbb276d156}{epoll\_timer\_callback}}\ =\ std::function<void(uint64\_t\ res)>;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1epoll__timer__handler}{epoll\_timer\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1epoll__handler}{epoll\_handler}}}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1epoll__timer__handler}{epoll\_timer\_handler}}(\textcolor{keywordtype}{int}\ fd\_,\ \mbox{\hyperlink{namespacesrsran_a2fc43b0ab60ce34d2e91e4fbb276d156}{epoll\_timer\_callback}}\ callback\_)\ :\ timer\_fd(fd\_),\ callback(callback\_)\{\};}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{int}\ handle\_event(\textcolor{keywordtype}{int}\ fd,\ epoll\_event\ e)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00073\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00074\ \ \ \ \ uint64\_t\ res;}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ ret\ =\ read(fd,\ \&res,\ \textcolor{keyword}{sizeof}(res));}
+\DoxyCodeLine{00076\ \ \ \ \ callback(res);}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{int}\ get\_timer\_fd()\ \{\ \textcolor{keywordflow}{return}\ timer\_fd;\ \};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timer\_fd\ =\ -\/1;}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{namespacesrsran_a2fc43b0ab60ce34d2e91e4fbb276d156}{epoll\_timer\_callback}}\ callback;}
+\DoxyCodeLine{00085\ \};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1epoll__signal__handler}{epoll\_signal\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1epoll__handler}{epoll\_handler}}}
+\DoxyCodeLine{00089\ \{}
+\DoxyCodeLine{00090\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1epoll__signal__handler}{epoll\_signal\_handler}}(std::atomic<bool>\&\ running\_)\ :\ running(running\_)\ \{\}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{int}\ handle\_event(\textcolor{keywordtype}{int}\ fd,\ epoll\_event\ e)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00094\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{struct\ }signalfd\_siginfo\ info;}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{if}\ (read(fd,\ \&info,\ \textcolor{keyword}{sizeof}(info))\ !=\ \textcolor{keyword}{sizeof}(info))\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{comment}{//\ fprintf(stderr,\ "{}failed\ to\ read\ signal\ fd\ buffer\(\backslash\)n"{});}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{switch}\ (info.ssi\_signo)\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ SIGTERM:}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ SIGINT:}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ SIGHUP:}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ SIGQUIT:}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ running\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ std::printf(\textcolor{stringliteral}{"{}got\ unknown\ signal\(\backslash\)n"{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00115\ \ \ std::atomic<bool>\&\ running;\ }
+\DoxyCodeLine{00116\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

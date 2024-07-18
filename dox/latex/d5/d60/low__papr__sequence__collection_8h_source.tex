@@ -1,0 +1,64 @@
+\doxysection{low\+\_\+papr\+\_\+sequence\+\_\+collection.\+h}
+\hypertarget{low__papr__sequence__collection_8h_source}{}\label{low__papr__sequence__collection_8h_source}\index{include/srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_collection.h@{include/srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_collection.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ a\ low\ PAPR\ sequence\ collection\ as\ per\ TS38.211\ Section\ 5.2.2.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ This\ class\ describes\ a\ collection\ of\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)delta)\}\_\{u,v\}(n)\(\backslash\)f\$\ sequences.\ The\ collection\ of\ sequences\ is}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ generated\ at\ construction\ time.\ The\ constructor\ is\ not\ suitable\ for\ real-\/time\ operation\ while\ the\ sequence\ retrieval}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ through\ method\ get()\ is\ suitable\ for\ real-\/time\ execution.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ low\_papr\_sequence\_collection}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Defines\ the\ number\ of\ sequence\ groups\ (\(\backslash\)f\$u\(\backslash\)f\$).}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_GROUPS\ =\ 30;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ Defines\ the\ number\ of\ sequence\ bases\ (\(\backslash\)f\$v\(\backslash\)f\$).}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_BASES\ =\ 2;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{virtual}\ \string~low\_papr\_sequence\_collection()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)delta)\}\_\{u,v\}(n)\(\backslash\)f\$\ corresponding\ to\ the\ given\ indices.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ \ \ \ \ \ \ \ \ Sequence\ group\ \(\backslash\)f\$u\(\backslash\)f\$\ \{0,\ ...,\ 29\}.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ v\ \ \ \ \ \ \ \ \ Sequence\ base\ \(\backslash\)f\$v\(\backslash\)f\$\ \{0,\ 1\}.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ alpha\_idx\ Corresponding\ index\ of\ parameter\ \(\backslash\)f\$\(\backslash\)alpha\(\backslash\)f\$.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ read-\/only\ view\ of\ the\ generated\ signal.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ any\ of\ \(\backslash\)c\ u,\ \(\backslash\)c\ v\ and\ \(\backslash\)c\ alpha\_idx\ is\ invalid.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{virtual}\ span<\textcolor{keyword}{const}\ cf\_t>\ get(\textcolor{keywordtype}{unsigned}\ u,\ \textcolor{keywordtype}{unsigned}\ v,\ \textcolor{keywordtype}{unsigned}\ alpha\_idx)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

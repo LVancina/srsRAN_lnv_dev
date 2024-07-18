@@ -1,0 +1,84 @@
+\doxysection{gtpu\+\_\+demux\+\_\+impl.\+h}
+\hypertarget{gtpu__demux__impl_8h_source}{}\label{gtpu__demux__impl_8h_source}\index{lib/gtpu/gtpu\_demux\_impl.h@{lib/gtpu/gtpu\_demux\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gtpu/gtpu\_demux.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/pcap/dlt\_pcap.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}fmt/format.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl}{gtpu\_demux\_impl}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux}{gtpu\_demux}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl}{gtpu\_demux\_impl}}(\mbox{\hyperlink{structsrsran_1_1gtpu__demux__cfg__t}{gtpu\_demux\_cfg\_t}}\ cfg\_,\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ cu\_up\_exec,\ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}\&\ gtpu\_pcap\_);}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl}{\string~gtpu\_demux\_impl}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{//\ gtpu\_demux\_rx\_upper\_layer\_interface}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl_a704ebb77d4374bb62747926e001d15b6}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ src\_addr)\ \textcolor{keyword}{override};\ \textcolor{comment}{//\ Will\ be\ run\ from\ IO\ executor.}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ gtpu\_demux\_ctrl}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl_a431ff9eff2d3ec341b1ab77e108bb2dc}{add\_tunnel}}(\mbox{\hyperlink{classsrsran_1_1strong__type}{gtpu\_teid\_t}}\ teid,\ \mbox{\hyperlink{classsrsran_1_1gtpu__tunnel__rx__upper__layer__interface}{gtpu\_tunnel\_rx\_upper\_layer\_interface}}*\ tunnel)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1gtpu__demux__impl_ac4a046983ab542f4c5b645b66725ff3f}{remove\_tunnel}}(\mbox{\hyperlink{classsrsran_1_1strong__type}{gtpu\_teid\_t}}\ teid)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ Actual\ demuxing,\ to\ be\ run\ in\ CU-\/UP\ executor.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu\_impl(\mbox{\hyperlink{classsrsran_1_1strong__type}{gtpu\_teid\_t}}\ teid,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \textcolor{keyword}{const}\ sockaddr\_storage\&\ src\_addr);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1gtpu__demux__cfg__t}{gtpu\_demux\_cfg\_t}}\ cfg;}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ cu\_up\_exec;}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1dlt__pcap}{dlt\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ gtpu\_pcap;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00056\ \ \ std::unordered\_map<gtpu\_teid\_t,\ gtpu\_tunnel\_rx\_upper\_layer\_interface*,\ gtpu\_teid\_hasher\_t>\ teid\_to\_tunnel;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00059\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00064\ \textcolor{comment}{//\ GTP-\/U\ demux\ config\ formatter}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00066\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::gtpu\_demux\_cfg\_t>\ \{}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{auto}\ format(\mbox{\hyperlink{structsrsran_1_1gtpu__demux__cfg__t}{srsran::gtpu\_demux\_cfg\_t}}\ cfg,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}warn\_on\_drop=\{\}"{}},\ cfg.warn\_on\_drop);}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

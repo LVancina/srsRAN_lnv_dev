@@ -1,0 +1,299 @@
+\doxysection{fapi\+\_\+to\+\_\+phy\+\_\+translator.\+h}
+\hypertarget{fapi__to__phy__translator_8h_source}{}\label{fapi__to__phy__translator_8h_source}\index{lib/fapi\_adaptor/phy/fapi\_to\_phy\_translator.h@{lib/fapi\_adaptor/phy/fapi\_to\_phy\_translator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/fapi/messages.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/fapi/slot\_error\_message\_notifier.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/fapi/slot\_message\_gateway.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/fapi\_adaptor/precoding\_matrix\_repository.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/fapi\_adaptor/uci\_part2\_correspondence\_repository.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdsch\_processor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{atomic}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1downlink__pdu__validator}{downlink\_pdu\_validator}};}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor}{downlink\_processor}};}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}};}
+\DoxyCodeLine{00039\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}};}
+\DoxyCodeLine{00040\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1uplink__pdu__validator}{uplink\_pdu\_validator}};}
+\DoxyCodeLine{00041\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1uplink__request__processor}{uplink\_request\_processor}};}
+\DoxyCodeLine{00042\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1uplink__slot__pdu__repository}{uplink\_slot\_pdu\_repository}};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{namespace}\ fapi\_adaptor\ \{}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ FAPI-\/to-\/PHY\ translator\ configuration.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config}{fapi\_to\_phy\_translator\_config}}\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Base\ station\ sector\ identifier.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_a5dbccec12901fd96d0e32c3e71aa138a}{sector\_id}};}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Request\ headroom\ size\ in\ slots.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_ab643bbd93aed1404cb2a5c64d741b1cd}{nof\_slots\_request\_headroom}};}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing\ as\ per\ TS38.211\ Section\ 4.2.}}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_ae2d3f2a330e06db42a94143f2d4f62de}{scs}};}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Common\ subcarrier\ spacing\ as\ per\ TS38.331\ Section\ 6.2.2.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_ac1444b431f87239690a260872f275d31}{scs\_common}};}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ FAPI\ PRACH\ configuration\ TLV\ as\ per\ SCF-\/222\ v4.0\ section\ 3.3.2.4.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1prach__config}{prach\_config}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_a1012f6e360f5023d58d17ed09827a2e2}{prach\_cfg}};}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ FAPI\ carrier\ configuration\ TLV\ as\ per\ SCF-\/222\ v4.0\ section\ 3.3.2.4.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1carrier__config}{carrier\_config}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_a4ae3eb5c29f5c215353b5a92dcf6c8af}{carrier\_cfg}};}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ PRACH\ port\ list.}}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_af2a3a84a6078f600c25fbe8a47157107}{std}}::\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_af2a3a84a6078f600c25fbe8a47157107}{vector}}<\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_af2a3a84a6078f600c25fbe8a47157107}{uint8\_t}}>\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config_af2a3a84a6078f600c25fbe8a47157107}{prach\_ports}};}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ FAPI-\/to-\/PHY\ translator\ dependencies.}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies}{fapi\_to\_phy\_translator\_dependencies}}\ \{}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a7aeda1510140781a0240c37883858d5a}{srslog}}::\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a7aeda1510140781a0240c37883858d5a}{basic\_logger}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a7aeda1510140781a0240c37883858d5a}{logger}};}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ Downlink\ processor\ pool.}}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a067db01f6e3d13e15d2d6aad028dd8a9}{dl\_processor\_pool}};}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Downlink\ resource\ grid\ pool.}}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ab6dcfc21e362e058263576d4b66e0fed}{dl\_rg\_pool}};}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ Downlink\ PDU\ validator.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1downlink__pdu__validator}{downlink\_pdu\_validator}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_af1d8ab0ac48546b742812e08a4db8ed0}{dl\_pdu\_validator}};}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ Uplink\ request\ processor.}}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__request__processor}{uplink\_request\_processor}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_aa03f13e508429291eba44f36d1c50cfc}{ul\_request\_processor}};}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Uplink\ resource\ grid\ pool.}}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ab47d6763813375d84c5ab71aa20e183d}{ul\_rg\_pool}};}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Uplink\ slot\ PDU\ repository.}}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__slot__pdu__repository}{uplink\_slot\_pdu\_repository}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a92988bc9ab4be6304be5b4008fe7e85e}{ul\_pdu\_repository}};}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Uplink\ PDU\ validator.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1uplink__pdu__validator}{uplink\_pdu\_validator}}*\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a39608b364c7ee5750d0de9cc336ee6ee}{ul\_pdu\_validator}};}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ Precoding\ matrix\ repository.}}
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a9ed2754439327c3f5731edf6b6ad788a}{std}}::\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a9ed2754439327c3f5731edf6b6ad788a}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a9ed2754439327c3f5731edf6b6ad788a}{precoding\_matrix\_repository}}>\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_a9ed2754439327c3f5731edf6b6ad788a}{pm\_repo}};}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ UCI\ Part2\ correspondence\ repository.}}
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ad8975dcd711993796a489690e4f339c0}{std}}::\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ad8975dcd711993796a489690e4f339c0}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ad8975dcd711993796a489690e4f339c0}{uci\_part2\_correspondence\_repository}}>\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies_ad8975dcd711993796a489690e4f339c0}{part2\_repo}};}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{comment}{///\ \(\backslash\)brief\ FAPI-\/to-\/PHY\ message\ translator.}}
+\DoxyCodeLine{00089\ \textcolor{comment}{///}}
+\DoxyCodeLine{00090\ \textcolor{comment}{///\ This\ class\ receives\ slot-\/based\ FAPI\ messages\ and\ translates\ them\ into\ PHY\ specific\ data\ types,\ which\ can\ then\ be}}
+\DoxyCodeLine{00091\ \textcolor{comment}{///\ processed\ by\ the\ upper\ PHY.}}
+\DoxyCodeLine{00092\ \textcolor{comment}{///}}
+\DoxyCodeLine{00093\ \textcolor{comment}{///\ Translating\ and\ processing\ slot-\/based\ FAPI\ messages\ involves\ converting\ them\ to\ the\ suitable\ data\ types\ for\ the\ PHY}}
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ layer,\ validation\ of\ the\ contents\ for\ each\ incoming\ message\ and\ selecting\ and\ reserving\ resources\ in\ the\ upper\ PHY}}
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ to\ process\ the\ messages.}}
+\DoxyCodeLine{00096\ \textcolor{comment}{///}}
+\DoxyCodeLine{00097\ \textcolor{comment}{///\ \(\backslash\)note\ This\ class\ is\ thread\ safe\ and\ allows\ calling\ the\ \(\backslash\)ref\ handle\_new\_slot\ method\ and\ the\ message\ handlers\ from}}
+\DoxyCodeLine{00098\ \textcolor{comment}{///\ different\ threads.}}
+\DoxyCodeLine{00099\ \textcolor{comment}{///\ \(\backslash\)note\ The\ translator\ assumes\ that\ only\ one\ message\ of\ each\ type\ can\ be\ received\ within\ a\ slot.\ Receiving\ multiple}}
+\DoxyCodeLine{00100\ \textcolor{comment}{///\ messages\ of\ the\ same\ type\ in\ one\ slot\ results\ in\ undefined\ behavior.}}
+\DoxyCodeLine{00101\ \textcolor{comment}{///\ \(\backslash\)note\ The\ translator\ is\ designed\ to\ work\ for\ a\ sector\ and\ subcarrier\ spacing.\ Supporting\ more\ than\ one\ sector\ and/or}}
+\DoxyCodeLine{00102\ \textcolor{comment}{///\ subcarrier\ spacing\ will\ require\ more\ instances\ of\ the\ translator.}}
+\DoxyCodeLine{00103\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator}{fapi\_to\_phy\_translator}}\ :\ \textcolor{keyword}{public}\ fapi::\mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__message__gateway}{slot\_message\_gateway}}}
+\DoxyCodeLine{00104\ \{}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Slot-\/based\ upper\ PHY\ controller.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ Takes\ care\ of\ the\ opening\ and\ closing\ procedures\ required\ by\ the\ upper\ PHY\ within\ each\ slot.}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ class\ follows\ the\ RAII\ (resource\ acquisition\ is\ initialization)\ programming\ principle.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ lifetime\ of\ any\ instantiation\ of\ this\ class\ is\ meant\ to\ be\ a\ single\ slot.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{class}\ slot\_based\_upper\_phy\_controller}
+\DoxyCodeLine{00112\ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot;}
+\DoxyCodeLine{00114\ \ \ \ \ std::reference\_wrapper<\mbox{\hyperlink{classsrsran_1_1downlink__processor}{downlink\_processor}}>\ dl\_processor;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00117\ \ \ \ \ slot\_based\_upper\_phy\_controller();}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ slot\_based\_upper\_phy\_controller(\mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}}\&\ dl\_processor\_pool,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ \ \ \ \ \ rg\_pool,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot\_,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_id);}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ slot\_based\_upper\_phy\_controller(slot\_based\_upper\_phy\_controller\&\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ slot\_based\_upper\_phy\_controller\&\ operator=(slot\_based\_upper\_phy\_controller\&\&\ other);}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \string~slot\_based\_upper\_phy\_controller();}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{comment}{///\ Overloaded\ member\ of\ pointer\ operator.}}
+\DoxyCodeLine{00131\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor}{downlink\_processor}}*\ operator-\/>()\ \{\ \textcolor{keywordflow}{return}\ \&dl\_processor.get();\ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{///\ Overloaded\ member\ of\ pointer\ operator.}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1downlink__processor}{downlink\_processor}}*\ operator-\/>()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \&dl\_processor.get();\ \}}
+\DoxyCodeLine{00134\ \ \ \};}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ Manages\ slot\ based\ controllers.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{keyword}{class}\ slot\_based\_upper\_phy\_controller\_manager}
+\DoxyCodeLine{00138\ \ \ \{}
+\DoxyCodeLine{00139\ \ \ \ \ slot\_based\_upper\_phy\_controller\ \ \ \ \ \ \ \ \ \ \ \ \ \ dummy;}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dl\_processor\_pool;}
+\DoxyCodeLine{00141\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rg\_pool;}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_id;}
+\DoxyCodeLine{00143\ \ \ \ \ std::vector<slot\_based\_upper\_phy\_controller>\ controllers;}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{comment}{///\ Returns\ the\ controller\ for\ the\ given\ slot.}}
+\DoxyCodeLine{00146\ \ \ \ \ slot\_based\_upper\_phy\_controller\&\ controller(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)}
+\DoxyCodeLine{00147\ \ \ \ \ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ controllers[slot.system\_slot()\ \%\ controllers.size()];}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{comment}{///\ Returns\ the\ controller\ for\ the\ given\ slot.}}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keyword}{const}\ slot\_based\_upper\_phy\_controller\&\ controller(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00153\ \ \ \ \ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ controllers[slot.system\_slot()\ \%\ controllers.size()];}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00158\ \ \ \ \ slot\_based\_upper\_phy\_controller\_manager(\mbox{\hyperlink{classsrsran_1_1downlink__processor__pool}{downlink\_processor\_pool}}\&\ dl\_processor\_pool\_,}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ \ \ \ \ \ rg\_pool\_,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sector\_id\_,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_slots\_request\_headroom);}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{comment}{///\ Acquires\ and\ returns\ the\ controller\ for\ the\ given\ slot.}}
+\DoxyCodeLine{00164\ \ \ \ \ slot\_based\_upper\_phy\_controller\&\ acquire\_controller(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot);}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Releases\ the\ controller\ for\ the\ given\ slot.}}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{comment}{///\ If\ the\ controller\ has\ already\ been\ released,\ this\ function\ does\ nothing.}}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordtype}{void}\ release\_controller(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot);}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{comment}{///\ Returns\ the\ controller\ for\ the\ given\ slot.}}
+\DoxyCodeLine{00172\ \ \ \ \ slot\_based\_upper\_phy\_controller\&\ get\_controller(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot);}
+\DoxyCodeLine{00173\ \ \ \};}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ PDSCH\ PDU\ repository.}}
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ Stores\ the\ PDSCH\ PDUs\ for\ later\ processing.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keyword}{struct}\ pdsch\_pdu\_repository\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ slot;}
+\DoxyCodeLine{00180\ \ \ \ \ static\_vector<pdsch\_processor::pdu\_t,\ MAX\_PDSCH\_PDUS\_PER\_SLOT>\ pdus;}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{comment}{///\ Returns\ true\ if\ the\ repository\ is\ empty,\ otherwise\ false.}}
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdus.empty();\ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{comment}{///\ Clears\ the\ repository.}}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordtype}{void}\ clear()}
+\DoxyCodeLine{00187\ \ \ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ slot\ =\ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{(}}\mbox{\hyperlink{classsrsran_1_1slot__point_ae6fcf007920cb4503aee707b1c1a424f}{)}};}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ pdus.clear();}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{comment}{///\ Resets\ the\ repository\ by\ clearing\ the\ PDUs\ and\ setting\ the\ slot\ to\ the\ given\ one.}}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordtype}{void}\ reset(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ new\_slot)}
+\DoxyCodeLine{00194\ \ \ \ \ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ pdus.clear();}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ slot\ =\ new\_slot;}
+\DoxyCodeLine{00197\ \ \ \ \ \}}
+\DoxyCodeLine{00198\ \ \ \};}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00201\ \ \ fapi\_to\_phy\_translator(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__config}{fapi\_to\_phy\_translator\_config}}\&\ \ config,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator__dependencies}{fapi\_to\_phy\_translator\_dependencies}}\&\&\ dependencies);}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00205\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_aff16ea9b0c27d5279edb644296e00530}{dl\_tti\_request}}(\textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1dl__tti__request__message}{dl\_tti\_request\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_adaf761a8eac47d983c64cee5ce5f577e}{ul\_tti\_request}}(\textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1ul__tti__request__message}{ul\_tti\_request\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00211\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_acda731523131cee6da7a8cd2cfbd9d1d}{ul\_dci\_request}}(\textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1ul__dci__request__message}{ul\_dci\_request\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00214\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_a93eb39a0b5b3da625d4b9c98d19dbf7c}{tx\_data\_request}}(\textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1tx__data__request__message}{tx\_data\_request\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Handles\ a\ new\ slot.}}
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00218\ \ \ \textcolor{comment}{///\ Handling\ a\ new\ slot\ consists\ of\ the\ following\ steps.}}
+\DoxyCodeLine{00219\ \ \ \textcolor{comment}{///\ -\/\ Finish\ processing\ the\ PDUs\ from\ a\ past\ slot.}}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ -\/\ Update\ the\ current\ slot\ value\ to\ the\ new\ one.}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ -\/\ Reset\ the\ contents\ of\ the\ uplink\ PDU\ repository.}}
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ slot\ Identifies\ the\ new\ slot.}}
+\DoxyCodeLine{00224\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ This\ method\ is\ thread\ safe\ and\ may\ be\ called\ from\ different\ threads.}}
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_acbbabd23e0c88bc437f7bbe1f2483372}{handle\_new\_slot}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot);}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \textcolor{comment}{///\ Configures\ the\ FAPI\ slot-\/based,\ error-\/specific\ notifier\ to\ the\ given\ one.}}
+\DoxyCodeLine{00228\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1fapi__to__phy__translator_a923923123c04b367cd544f3de1c9e58e}{set\_slot\_error\_message\_notifier}}(fapi::\mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__error__message__notifier}{slot\_error\_message\_notifier}}\&\ fapi\_error\_notifier)}
+\DoxyCodeLine{00229\ \ \ \{}
+\DoxyCodeLine{00230\ \ \ \ \ error\_notifier\ =\ std::ref(fapi\_error\_notifier);}
+\DoxyCodeLine{00231\ \ \ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{///\ Returns\ true\ if\ the\ given\ message\ arrived\ in\ time,\ otherwise\ returns\ false.}}
+\DoxyCodeLine{00235\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00236\ \ \ \textcolor{keywordtype}{bool}\ is\_message\_in\_time(\textcolor{keyword}{const}\ T\&\ msg)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \textcolor{comment}{///\ Returns\ this\ adaptor\ current\ slot.}}
+\DoxyCodeLine{00239\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ get\_current\_slot()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00240\ \ \ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \textcolor{keywordflow}{return}\ slot\_point(scs,\ current\_slot\_count\_val.load(std::memory\_order\_acquire));}
+\DoxyCodeLine{00242\ \ \ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{///\ Updates\ this\ adaptor\ current\ slot\ to\ the\ given\ value.}}
+\DoxyCodeLine{00245\ \ \ \textcolor{keywordtype}{void}\ update\_current\_slot(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ slot)}
+\DoxyCodeLine{00246\ \ \ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{comment}{//\ Update\ the\ atomic\ variable\ that\ holds\ the\ slot\ point.}}
+\DoxyCodeLine{00248\ \ \ \ \ current\_slot\_count\_val.store(slot.system\_slot(),\ std::memory\_order\_release);}
+\DoxyCodeLine{00249\ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00252\ \ \ \textcolor{comment}{///\ Sector\ identifier.}}
+\DoxyCodeLine{00253\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ sector\_id;}
+\DoxyCodeLine{00254\ \ \ \textcolor{comment}{///\ Request\ headroom\ size\ in\ slots.}}
+\DoxyCodeLine{00255\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ nof\_slots\_request\_headroom;}
+\DoxyCodeLine{00256\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00257\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{///\ Downlink\ PDU\ validator.}}
+\DoxyCodeLine{00259\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1downlink__pdu__validator}{downlink\_pdu\_validator}}\&\ dl\_pdu\_validator;}
+\DoxyCodeLine{00260\ \ \ \textcolor{comment}{///\ Uplink\ request\ processor.}}
+\DoxyCodeLine{00261\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__request__processor}{uplink\_request\_processor}}\&\ ul\_request\_processor;}
+\DoxyCodeLine{00262\ \ \ \textcolor{comment}{///\ Uplink\ resource\ grid\ pool.}}
+\DoxyCodeLine{00263\ \ \ \mbox{\hyperlink{classsrsran_1_1resource__grid__pool}{resource\_grid\_pool}}\&\ ul\_rg\_pool;}
+\DoxyCodeLine{00264\ \ \ \textcolor{comment}{///\ Uplink\ PDU\ validator.}}
+\DoxyCodeLine{00265\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1uplink__pdu__validator}{uplink\_pdu\_validator}}\&\ ul\_pdu\_validator;}
+\DoxyCodeLine{00266\ \ \ \textcolor{comment}{///\ Uplink\ slot\ PDU\ repository.}}
+\DoxyCodeLine{00267\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__slot__pdu__repository}{uplink\_slot\_pdu\_repository}}\&\ ul\_pdu\_repository;}
+\DoxyCodeLine{00268\ \ \ \textcolor{comment}{///\ Current\ slot\ count\ value.}}
+\DoxyCodeLine{00269\ \ \ std::atomic<uint32\_t>\ current\_slot\_count\_val;}
+\DoxyCodeLine{00270\ \ \ \textcolor{comment}{///\ Slot\ controller\ manager.}}
+\DoxyCodeLine{00271\ \ \ slot\_based\_upper\_phy\_controller\_manager\ slot\_controller\_mngr;}
+\DoxyCodeLine{00272\ \ \ \textcolor{comment}{///\ Precoding\ matrix\ repository.}}
+\DoxyCodeLine{00273\ \ \ std::unique\_ptr<precoding\_matrix\_repository>\ pm\_repo;}
+\DoxyCodeLine{00274\ \ \ \textcolor{comment}{///\ UCI\ Part2\ correspondence\ repository.}}
+\DoxyCodeLine{00275\ \ \ std::unique\_ptr<uci\_part2\_correspondence\_repository>\ part2\_repo;}
+\DoxyCodeLine{00276\ \ \ \textcolor{comment}{///\ Error\ indication\ notifier.}}
+\DoxyCodeLine{00277\ \ \ std::reference\_wrapper<fapi::\mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__error__message__notifier}{slot\_error\_message\_notifier}}>\ error\_notifier;}
+\DoxyCodeLine{00278\ \ \ \textcolor{comment}{///\ Subcarrier\ spacing\ as\ per\ TS38.211\ Section\ 4.2.}}
+\DoxyCodeLine{00279\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs;}
+\DoxyCodeLine{00280\ \ \ \textcolor{comment}{///\ Common\ subcarrier\ spacing\ as\ per\ TS38.331\ Section\ 6.2.2.}}
+\DoxyCodeLine{00281\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs\_common;}
+\DoxyCodeLine{00282\ \ \ \textcolor{comment}{///\ PRACH\ configuration\ as\ per\ SCF-\/222\ v4.0\ section\ 3.3.2.4.}}
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1prach__config}{prach\_config}}\ prach\_cfg;}
+\DoxyCodeLine{00284\ \ \ \textcolor{comment}{///\ Carrier\ configuration\ as\ per\ SCF-\/222\ v4.0\ section\ 3.3.2.4.}}
+\DoxyCodeLine{00285\ \ \ \textcolor{keyword}{const}\ fapi::\mbox{\hyperlink{structsrsran_1_1fapi_1_1carrier__config}{carrier\_config}}\ carrier\_cfg;}
+\DoxyCodeLine{00286\ \ \ \textcolor{comment}{///\ PRACH\ receive\ ports.}}
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ MAX\_PORTS>\ prach\_ports;}
+\DoxyCodeLine{00288\ \ \ \textcolor{comment}{///\ PDSCH\ PDU\ repository.}}
+\DoxyCodeLine{00289\ \ \ pdsch\_pdu\_repository\ pdsch\_repository;}
+\DoxyCodeLine{00290\ \};}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00292\ \}\ \textcolor{comment}{//\ namespace\ fapi\_adaptor}}
+\DoxyCodeLine{00293\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

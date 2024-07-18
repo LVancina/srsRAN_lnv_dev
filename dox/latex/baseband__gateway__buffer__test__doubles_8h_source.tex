@@ -1,0 +1,109 @@
+\doxysection{baseband\+\_\+gateway\+\_\+buffer\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{baseband__gateway__buffer__test__doubles_8h_source}{}\label{baseband__gateway__buffer__test__doubles_8h_source}\index{tests/unittests/gateways/baseband/baseband\_gateway\_buffer\_test\_doubles.h@{tests/unittests/gateways/baseband/baseband\_gateway\_buffer\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_reader.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_writer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ nof\_channels;}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ nof\_samples;}
+\DoxyCodeLine{00039\ \ \ std::vector<cf\_t>\ data;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a4b572932b979fc91bf57511ac899fe10}{get\_nof\_channels}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ nof\_channels;\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a703874a71df249d5e9d85094cd44a100}{get\_nof\_samples}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ nof\_samples;\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_aee3659d5029ac3ffa21ab02790de9cee}{get\_channel\_buffer}}(\textcolor{keywordtype}{unsigned}\ channel\_idx)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00050\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00051\ \ \ \ \ report\_fatal\_error\_if\_not(!data.empty(),\ \textcolor{stringliteral}{"{}Data\ is\ empty.\ Was\ the\ buffer\ moved?"{}});}
+\DoxyCodeLine{00052\ \ \ \ \ report\_fatal\_error\_if\_not(}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ channel\_idx\ <\ nof\_channels,\ \textcolor{stringliteral}{"{}Channel\ index\ (\{\})\ is\ out-\/of-\/range\ (\{\})."{}},\ channel\_idx,\ nof\_channels);}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ offset\ =\ nof\_samples\ *\ channel\_idx;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}(data).\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}(offset,\ nof\_samples);}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_aa35fe6957ee6a0061fe70d8d76bfd1c4}{baseband\_gateway\_buffer\_read\_only}}()\ :\ nof\_channels(0),\ nof\_samples(0)}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a8ccccc0c93af9b7c3d001256c66ef3d5}{baseband\_gateway\_buffer\_read\_only}}(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00066\ \ \ \ \ nof\_channels(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_channels),\ nof\_samples(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_samples),\ data(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.data))}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Reset\ the\ other\ number\ of\ channels\ and\ samples\ to\ 0\ to\ be\ consistent\ with\ other.data.size().}}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_channels\ =\ 0;}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_samples\ \ =\ 0;}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a0681fd6d1e08752db709b55ed4b0fac5}{baseband\_gateway\_buffer\_read\_only}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00075\ \ \ \ \ nof\_channels(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_channels),\ nof\_samples(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_samples),\ data(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.data))}
+\DoxyCodeLine{00076\ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a6af0cca26b0a7aace9489b3d8140785d}{baseband\_gateway\_buffer\_read\_only}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00082\ \ \ \ \ nof\_channels(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_nof\_channels()),\ nof\_samples(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_nof\_samples()),\ data(nof\_channels\ *\ nof\_samples)}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ channel\ =\ 0;\ channel\ !=\ nof\_channels;\ ++channel)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ buffer\ =\ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}(data).\mbox{\hyperlink{classsrsran_1_1span_ac5f02596fcb6e8f430a3e11e47a6d7e8}{subspan}}(nof\_samples\ *\ channel,\ nof\_samples);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ srsvec::copy(buffer,\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}[channel]);}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a4a60d4d9b4f04716237bf8de03bb7f0b}{baseband\_gateway\_buffer\_read\_only}}(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00092\ \ \ \ \ nof\_channels(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_nof\_channels()),\ nof\_samples(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.get\_nof\_samples())}
+\DoxyCodeLine{00093\ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \ \ data.clear();}
+\DoxyCodeLine{00095\ \ \ \ \ data.reserve(nof\_channels\ *\ nof\_samples);}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ channel\ =\ 0;\ channel\ !=\ nof\_channels;\ ++channel)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ source\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}[channel];}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ data.insert(data.end(),\ source.\mbox{\hyperlink{classsrsran_1_1span_a6202eea0b4569bf9ba5bf5b1574a03ae}{begin}}(),\ source.\mbox{\hyperlink{classsrsran_1_1span_ab0dddc814f190b4e022e9cbfbf1f2400}{end}}());}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only_a05652a15e5449880979e7c60d16e7877}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00104\ \ \ \{}
+\DoxyCodeLine{00105\ \ \ \ \ nof\_channels\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_channels;}
+\DoxyCodeLine{00106\ \ \ \ \ nof\_samples\ \ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.nof\_samples;}
+\DoxyCodeLine{00107\ \ \ \ \ data\ \ \ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.data;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ \};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,103 @@
+\doxysection{phr\+\_\+report.\+h}
+\hypertarget{phr__report_8h_source}{}\label{phr__report_8h_source}\index{include/srsran/mac/phr\_report.h@{include/srsran/mac/phr\_report.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/interval.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)brief\ PH\ value\ expressed\ in\ dB\ interval\ as\ defined\ in\ Table\ 10.1.17.1-\/1\ of\ TS\ 38.133.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran}{ph\_db\_range}}\ =\ \mbox{\hyperlink{namespacesrsran}{interval}}<\textcolor{keywordtype}{int}>;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)brief\ P\_CMAX,f,c\ value\ expressed\ in\ dBm\ interval\ as\ defined\ in\ Table\ 10.1.18.1-\/1\ of\ TS\ 38.133.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)remark\ P\_CMAX,f,c\ is\ the\ UE\ configured\ maximum\ output\ power\ used\ in\ computation\ of\ Power\ Headroom\ level.\ See}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ TS\ 38.321,\ 6.1.3.8\ and\ TS\ 38.213,\ 7.1.1.}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{using}\ \mbox{\hyperlink{namespacesrsran}{p\_cmax\_dbm\_range}}\ =\ \mbox{\hyperlink{namespacesrsran}{interval}}<\textcolor{keywordtype}{int}>;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)brief\ Type\ of\ PH\ field\ reported\ by\ UE.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.321,\ 6.1.3.8\ and\ 6.1.3.9.}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_aff37b97c7d41bf16be491e71410cc957}{ph\_field\_type\_t}}\ \{\ type1,\ type2,\ type3\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ UL\ Power\ Headroom\ Report\ (PHR)\ of\ a\ cell.}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Serving\ cell\ ID\ of\ the\ cell\ for\ which\ PH\ is\ reported.\ du\_cell\_index\_t\ ==\ 0\ for\ SE-\/PHR.}}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_ab82b6455b55203e7b1b79758466f3f60}{serv\_cell\_id}};}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ PH\ type.\ For\ SE-\/PHR\ its\ type1.}}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{namespacesrsran_aff37b97c7d41bf16be491e71410cc957}{ph\_field\_type\_t}}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_ad418799ffbe6f7556207f43dffc17b48}{ph\_type}};}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Indicates\ the\ power\ headroom\ level\ in\ dB\ interval.}}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_a99b59093bbe7b9278a4dfbd7d3834c1e}{ph\_db\_range}}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_a99b59093bbe7b9278a4dfbd7d3834c1e}{ph}};}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ UE\ configured\ maximum\ output\ power\ used\ in\ computation\ of\ Power\ Headroom\ level.\ This\ field\ maps\ to\ P\_CMAX,f,c\ in}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ table\ 6.1.3.8-\/2\ of\ TS\ 38.321.\ This\ field\ is\ optional\ only\ in\ case\ of\ Multiple\ Entry\ PHR.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_a8687d6082e7ba62b6cb6083fe6b7f16b}{optional}}<\mbox{\hyperlink{structsrsran_1_1cell__ph__report_a8687d6082e7ba62b6cb6083fe6b7f16b}{p\_cmax\_dbm\_range}}>\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report_a8687d6082e7ba62b6cb6083fe6b7f16b}{p\_cmax}};}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ UL\ Power\ Headroom\ Report\ (PHR).}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1phr__report}{phr\_report}}\ \{}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ Single\ Entry\ PHR\ report.}}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}\ \mbox{\hyperlink{structsrsran_1_1phr__report_a9c49134f7719b8c1647ac308379db1a9}{get\_se\_phr}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ ph\_reports.empty(),\ \textcolor{stringliteral}{"{}Invalid\ access\ to\ SE-\/PHR\ report.\ Cause:\ No\ PHR\ report\ set."{}});}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordflow}{return}\ ph\_reports.back();}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ Single-\/Entry\ PHR\ report.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1phr__report_a7d35a86379563ebb64ae8df8b3a006cf}{set\_se\_phr}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}\&\ cell\_phr)}
+\DoxyCodeLine{00069\ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cell\_phr.serv\_cell\_id\ ==\ to\_du\_cell\_index(0),\ \textcolor{stringliteral}{"{}Invalid\ serving\ cell\ id\ set\ in\ SE-\/PHR."{}});}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cell\_phr.ph\_type\ ==\ ph\_field\_type\_t::type1,\ \textcolor{stringliteral}{"{}Invalid\ PH\ type\ set\ in\ SE-\/PHR."{}});}
+\DoxyCodeLine{00072\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cell\_phr.p\_cmax.has\_value(),\ \textcolor{stringliteral}{"{}P\_CMAX\ must\ be\ set\ for\ SE-\/PHR."{}});}
+\DoxyCodeLine{00073\ \ \ \ \ ph\_reports.clear();}
+\DoxyCodeLine{00074\ \ \ \ \ ph\_reports.push\_back(cell\_phr);}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ whether\ the\ PHR\ is\ of\ type\ Single\ Entry\ PHR\ or\ not.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.321,\ 6.1.3.8.\ A\ Single\ Entry\ PHR\ consists\ of\ a\ single\ PH\ report\ for\ PCell\ with\ Type1\ PH\ field.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1phr__report_a84e30b72b4beb0e31412f1ffbc376d77}{is\_se\_phr}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00080\ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ph\_reports.size()\ >\ 0,\ \textcolor{stringliteral}{"{}PHR\ report\ not\ set."{}});}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ ph\_reports.size()\ ==\ 1\ \textcolor{keyword}{and}\ ph\_reports.back().ph\_type\ ==\ ph\_field\_type\_t::type1;}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ TODO:\ Handle\ Multiple\ Entry\ PHR.}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ PHR\ as\ list\ of\ PH\ report\ per\ cell.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Applies\ for\ both\ Single\ Entry\ PHR\ and\ multiple\ Entry\ PHR.}}
+\DoxyCodeLine{00089\ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}}>\ \mbox{\hyperlink{structsrsran_1_1phr__report_ad41f968293d8f2aa6a11c3080a69f653}{get\_phr}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ph\_reports;\ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ List\ containing\ PH\ reports.\ Only\ 1\ report\ present\ in\ case\ of\ Single\ Entry\ PHR\ and\ can\ be\ more\ than\ 1\ in\ case\ of}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ Multiple\ Entry\ PHR.}}
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1cell__ph__report}{cell\_ph\_report}},\ MAX\_NOF\_DU\_CELLS>\ ph\_reports;}
+\DoxyCodeLine{00095\ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

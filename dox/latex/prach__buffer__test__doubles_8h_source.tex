@@ -1,0 +1,246 @@
+\doxysection{prach\+\_\+buffer\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{prach__buffer__test__doubles_8h_source}{}\label{prach__buffer__test__doubles_8h_source}\index{tests/unittests/phy/support/prach\_buffer\_test\_doubles.h@{tests/unittests/phy/support/prach\_buffer\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}../../../lib/phy/support/prach\_buffer\_impl.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensor_8h}{srsran/adt/tensor.h}}"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/support\_factories.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/support/file\_tensor.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1prach__buffer__spy}{prach\_buffer\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1prach__buffer__spy_1_1entry__t}{entry\_t}}\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_port;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_td\_occasion;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_fd\_occasion;}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_symbol;}
+\DoxyCodeLine{00042\ \ \ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy}{prach\_buffer\_spy}}()\ :\ buffer(0,\ 0,\ 0,\ 0,\ 0)\ \{\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy}{prach\_buffer\_spy}}(\mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ data\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ nof\_td\_occasions,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ nof\_fd\_occasions,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ nof\_symbols,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ sequence\_length)\ :}
+\DoxyCodeLine{00051\ \ \ \ \ buffer(1,\ nof\_td\_occasions,\ nof\_fd\_occasions,\ nof\_symbols,\ sequence\_length)}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ data\ \ \ \ \ \ =\ data\_;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ nof\_ports\ =\ get\_max\_nof\_ports\_inner();}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ report\_fatal\_error\_if\_not(data.size()\ ==\ nof\_td\_occasions\ *\ nof\_fd\_occasions\ *\ sequence\_length,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ symbols\ data\ size\ is\ not\ consistent\ with\ the\ symbol\ size\ and\ number\ of\ symbols."{}});}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_td\_occasion\ =\ 0;\ i\_td\_occasion\ !=\ nof\_td\_occasions;\ ++i\_td\_occasion)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_fd\_occasion\ =\ 0;\ i\_fd\_occasion\ !=\ nof\_fd\_occasions;\ ++i\_fd\_occasion)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}\ occasion\_data\ =\ data.first(sequence\_length);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ data\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ data.last(data.size()\ -\/\ sequence\_length);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_port\ =\ 0;\ i\_port\ !=\ nof\_ports;\ ++i\_port)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\_symbol\ =\ 0;\ i\_symbol\ !=\ nof\_symbols;\ ++i\_symbol)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ srsvec::copy(buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a700ded24619b61b847cb271afcf1e9b2}{get\_symbol}}(i\_port,\ i\_td\_occasion,\ i\_fd\_occasion,\ i\_symbol),\ occasion\_data);}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_aebb332dccf2a9d15fc01ef77867139c7}{get\_max\_nof\_ports}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ get\_max\_nof\_ports\_inner();\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_ace284ce06d6d7ce6f61c7b8a87c45014}{get\_max\_nof\_td\_occasions}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00075\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00076\ \ \ \ \ ++count\_get\_max\_nof\_td\_occasions;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a73a994634f719c46fd71e0a3d8727c7c}{get\_max\_nof\_td\_occasions}}();}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_aa810b517ea255780b40569e50662ea07}{get\_max\_nof\_fd\_occasions}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00081\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00082\ \ \ \ \ ++count\_get\_max\_nof\_fd\_occasions;}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_af4a42c051df5a2e14e2cb424d710e945}{get\_max\_nof\_fd\_occasions}}();}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_a7338a2bc80173627ce41afd772a66826}{get\_max\_nof\_symbols}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00087\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00088\ \ \ \ \ ++count\_get\_max\_nof\_symbols;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a80787bdd9fd0d314bdddca75810941e8}{get\_max\_nof\_symbols}}();}
+\DoxyCodeLine{00090\ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_a5432562c30bdc80fedddb7486bef657e}{get\_sequence\_length}}()\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00093\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00094\ \ \ \ \ ++count\_get\_sequence\_length;}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a41a2dd19570b3abd250d9fef53655723}{get\_sequence\_length}}();}
+\DoxyCodeLine{00096\ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_ab5f48c180df9b6236c1ee0326383bc2b}{get\_symbol}}(\textcolor{keywordtype}{unsigned}\ i\_port,\ \textcolor{keywordtype}{unsigned}\ i\_td\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_fd\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_symbol)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00099\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00100\ \ \ \ \ get\_symbol\_entries.emplace\_back();}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1prach__buffer__spy_1_1entry__t}{entry\_t}}\&\ entry\ \ \ \ \ \ =\ get\_symbol\_entries.back();}
+\DoxyCodeLine{00102\ \ \ \ \ entry.i\_port\ \ \ \ \ \ \ \ =\ i\_port;}
+\DoxyCodeLine{00103\ \ \ \ \ entry.i\_td\_occasion\ =\ i\_td\_occasion;}
+\DoxyCodeLine{00104\ \ \ \ \ entry.i\_fd\_occasion\ =\ i\_fd\_occasion;}
+\DoxyCodeLine{00105\ \ \ \ \ entry.i\_symbol\ \ \ \ \ \ =\ i\_symbol;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a700ded24619b61b847cb271afcf1e9b2}{get\_symbol}}(i\_port,\ i\_td\_occasion,\ i\_fd\_occasion,\ i\_symbol);}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__spy_abf45cc1f89f87e5e7d08adcbe277e5c9}{get\_symbol}}(\textcolor{keywordtype}{unsigned}\ i\_port,\ \textcolor{keywordtype}{unsigned}\ i\_td\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_fd\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_symbol)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00111\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00112\ \ \ \ \ get\_symbol\_const\_entries.emplace\_back();}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1prach__buffer__spy_1_1entry__t}{entry\_t}}\&\ entry\ \ \ \ \ \ =\ get\_symbol\_const\_entries.back();}
+\DoxyCodeLine{00114\ \ \ \ \ entry.i\_port\ \ \ \ \ \ \ \ =\ i\_port;}
+\DoxyCodeLine{00115\ \ \ \ \ entry.i\_td\_occasion\ =\ i\_td\_occasion;}
+\DoxyCodeLine{00116\ \ \ \ \ entry.i\_fd\_occasion\ =\ i\_fd\_occasion;}
+\DoxyCodeLine{00117\ \ \ \ \ entry.i\_symbol\ \ \ \ \ \ =\ i\_symbol;}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.\mbox{\hyperlink{classsrsran_1_1prach__buffer__impl_a700ded24619b61b847cb271afcf1e9b2}{get\_symbol}}(i\_port,\ i\_td\_occasion,\ i\_fd\_occasion,\ i\_symbol);}
+\DoxyCodeLine{00119\ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{keywordtype}{unsigned}\ get\_total\_count()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00122\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ count\_get\_max\_nof\_ports\ +\ count\_get\_max\_nof\_td\_occasions\ +\ count\_get\_max\_nof\_fd\_occasions\ +}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ count\_get\_max\_nof\_symbols\ +\ count\_get\_sequence\_length\ +\ get\_symbol\_entries.size()\ +}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ get\_symbol\_const\_entries.size();}
+\DoxyCodeLine{00126\ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \textcolor{keyword}{const}\ std::vector<entry\_t>\&\ get\_get\_symbol\_entries()\ \{\ \textcolor{keywordflow}{return}\ get\_symbol\_entries;\ \};}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{const}\ std::vector<entry\_t>\&\ get\_get\_symbol\_const\_entries()\ \{\ \textcolor{keywordflow}{return}\ get\_symbol\_const\_entries;\ \};}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{void}\ clear()}
+\DoxyCodeLine{00132\ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ count\_get\_max\_nof\_ports\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00134\ \ \ \ \ count\_get\_max\_nof\_td\_occasions\ =\ 0;}
+\DoxyCodeLine{00135\ \ \ \ \ count\_get\_max\_nof\_fd\_occasions\ =\ 0;}
+\DoxyCodeLine{00136\ \ \ \ \ count\_get\_max\_nof\_symbols\ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00137\ \ \ \ \ count\_get\_sequence\_length\ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00142\ \ \ prach\_buffer\_impl\ buffer;}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ count\_get\_max\_nof\_ports\ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ count\_get\_max\_nof\_td\_occasions\ =\ 0;}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ count\_get\_max\_nof\_fd\_occasions\ =\ 0;}
+\DoxyCodeLine{00147\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ count\_get\_max\_nof\_symbols\ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00148\ \ \ \textcolor{keyword}{mutable}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ count\_get\_sequence\_length\ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00149\ \ \ std::vector<entry\_t>\ \ \ \ \ \ \ \ \ get\_symbol\_entries;}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{mutable}\ std::vector<entry\_t>\ get\_symbol\_const\_entries;}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{unsigned}\ get\_max\_nof\_ports\_inner()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00153\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00154\ \ \ \ \ ++count\_get\_max\_nof\_ports;}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{return}\ buffer.get\_max\_nof\_ports();}
+\DoxyCodeLine{00156\ \ \ \}}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00160\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor}{prach\_buffer\_tensor}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer}{prach\_buffer}}}
+\DoxyCodeLine{00161\ \{}
+\DoxyCodeLine{00162\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00164\ \ \ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a19838ca3a1abd57e95486e18c3ed4751}{dims}}\ :\ \textcolor{keywordtype}{unsigned}\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ re\ \ \ \ \ \ \ \ \ \ =\ 0,}
+\DoxyCodeLine{00166\ \ \ \ \ symbol\ \ \ \ \ \ =\ 1,}
+\DoxyCodeLine{00167\ \ \ \ \ fd\_occasion\ =\ 2,}
+\DoxyCodeLine{00168\ \ \ \ \ td\_occasion\ =\ 3,}
+\DoxyCodeLine{00169\ \ \ \ \ port\ \ \ \ \ \ \ \ =\ 4,}
+\DoxyCodeLine{00170\ \ \ \ \ count\ \ \ \ \ \ \ =\ 5,}
+\DoxyCodeLine{00171\ \ \ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{using\ }storage\_type\ =\ \mbox{\hyperlink{classsrsran_1_1tensor}{tensor<static\_cast<std::underlying\_type\_t<dims>}}>(dims::count),\ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}},\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a19838ca3a1abd57e95486e18c3ed4751}{dims}}>;}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab6ade7bb2609720e946195511b7e52df}{prach\_buffer\_tensor}}(\mbox{\hyperlink{classsrsran_1_1tensor}{storage\_type}}\&\ data\_)\ :\ data(data\_)\ \{\}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a51cf3bb9bc47c61c6c9aae2bb16266ca}{get\_max\_nof\_ports}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::port);\ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ad4b14ae7a5dc1796a3b480f384af853e}{get\_max\_nof\_td\_occasions}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::td\_occasion);\ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00185\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab234a029cb659afc9730d1f733ac5479}{get\_max\_nof\_fd\_occasions}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::fd\_occasion);\ \}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00188\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a1d1c4873bebfb231425f6987eaa42171}{get\_max\_nof\_symbols}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::symbol);\ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00190\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ac31507b8be9196446872ca6b024fd942}{get\_sequence\_length}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ data.get\_dimension\_size(dims::re);\ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<cf\_t>}}\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_af8486bb1e7460a61ccfb19f7e5671cb2}{get\_symbol}}(\textcolor{keywordtype}{unsigned}\ i\_port,\ \textcolor{keywordtype}{unsigned}\ i\_td\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_fd\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_symbol)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00195\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00196\ \ \ \ \ srsran\_assert(i\_port\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a51cf3bb9bc47c61c6c9aae2bb16266ca}{get\_max\_nof\_ports}}(),}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ ports\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_port,}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a51cf3bb9bc47c61c6c9aae2bb16266ca}{get\_max\_nof\_ports}}());}
+\DoxyCodeLine{00200\ \ \ \ \ srsran\_assert(i\_td\_occasion\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ad4b14ae7a5dc1796a3b480f384af853e}{get\_max\_nof\_td\_occasions}}(),}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ time-\/domain\ occasion\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ time-\/domain\ occasions\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_td\_occasion,}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ad4b14ae7a5dc1796a3b480f384af853e}{get\_max\_nof\_td\_occasions}}());}
+\DoxyCodeLine{00204\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ i\_fd\_occasion\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab234a029cb659afc9730d1f733ac5479}{get\_max\_nof\_fd\_occasions}}(),}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ frequency-\/domain\ occasion\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ frequency-\/domain\ occasions\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ i\_fd\_occasion,}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab234a029cb659afc9730d1f733ac5479}{get\_max\_nof\_fd\_occasions}}());}
+\DoxyCodeLine{00209\ \ \ \ \ srsran\_assert(i\_symbol\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a1d1c4873bebfb231425f6987eaa42171}{get\_max\_nof\_symbols}}(),}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ symbol\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ symbols\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_symbol,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a1d1c4873bebfb231425f6987eaa42171}{get\_max\_nof\_symbols}}());}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keywordflow}{return}\ data.get\_view(\{i\_symbol,\ i\_fd\_occasion,\ i\_td\_occasion,\ i\_port\});}
+\DoxyCodeLine{00214\ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00217\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ cf\_t>}}}
+\DoxyCodeLine{00218\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ac8f92542e7b03635d6103936561feb3c}{get\_symbol}}(\textcolor{keywordtype}{unsigned}\ i\_port,\ \textcolor{keywordtype}{unsigned}\ i\_td\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_fd\_occasion,\ \textcolor{keywordtype}{unsigned}\ i\_symbol)\textcolor{keyword}{\ const\ override}}
+\DoxyCodeLine{00219\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00220\ \ \ \ \ srsran\_assert(i\_port\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a51cf3bb9bc47c61c6c9aae2bb16266ca}{get\_max\_nof\_ports}}(),}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ port\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ ports\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_port,}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a51cf3bb9bc47c61c6c9aae2bb16266ca}{get\_max\_nof\_ports}}());}
+\DoxyCodeLine{00224\ \ \ \ \ srsran\_assert(i\_td\_occasion\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ad4b14ae7a5dc1796a3b480f384af853e}{get\_max\_nof\_td\_occasions}}(),}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ time-\/domain\ occasion\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ time-\/domain\ occasions\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_td\_occasion,}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ad4b14ae7a5dc1796a3b480f384af853e}{get\_max\_nof\_td\_occasions}}());}
+\DoxyCodeLine{00228\ \ \ \ \ srsran\_assert(}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ i\_fd\_occasion\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab234a029cb659afc9730d1f733ac5479}{get\_max\_nof\_fd\_occasions}}(),}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ frequency-\/domain\ occasion\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ frequency-\/domain\ occasions\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ i\_fd\_occasion,}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_ab234a029cb659afc9730d1f733ac5479}{get\_max\_nof\_fd\_occasions}}());}
+\DoxyCodeLine{00233\ \ \ \ \ srsran\_assert(i\_symbol\ <\ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a1d1c4873bebfb231425f6987eaa42171}{get\_max\_nof\_symbols}}(),}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ symbol\ index\ (i.e.,\ \{\})\ exceeds\ the\ maximum\ number\ of\ symbols\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_symbol,}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__buffer__tensor_a1d1c4873bebfb231425f6987eaa42171}{get\_max\_nof\_symbols}}());}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{return}\ data.get\_view(\{i\_symbol,\ i\_fd\_occasion,\ i\_td\_occasion,\ i\_port\});}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00242\ \ \ storage\_type\&\ data;}
+\DoxyCodeLine{00243\ \};}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

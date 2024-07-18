@@ -1,0 +1,76 @@
+\doxysection{pdcch\+\_\+encoder\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{pdcch__encoder__test__doubles_8h_source}{}\label{pdcch__encoder__test__doubles_8h_source}\index{tests/unittests/phy/upper/channel\_processors/pdcch\_encoder\_test\_doubles.h@{tests/unittests/phy/upper/channel\_processors/pdcch\_encoder\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}../../phy\_test\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_processors/channel\_processor\_factories.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pdcch__encoder__spy}{pdcch\_encoder\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdcch__encoder}{pdcch\_encoder}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{struct\ }entry\_t\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdcch__encoder_1_1config__t}{config\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ config;}
+\DoxyCodeLine{00036\ \ \ \ \ std::vector<uint8\_t>\ data;}
+\DoxyCodeLine{00037\ \ \ \ \ std::vector<uint8\_t>\ encoded;}
+\DoxyCodeLine{00038\ \ \ \};}
+\DoxyCodeLine{00039\ \ \ std::vector<entry\_t>\ entries;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdcch__encoder__spy_acf6ca23102952ef7c978cb05bf4b6742}{encode}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ encoded,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}}\ data,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdcch__encoder_1_1config__t}{config\_t}}\&\ config)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ Generate\ new\ entry.}}
+\DoxyCodeLine{00045\ \ \ \ \ entry\_t\ entry\ =\ \{\};}
+\DoxyCodeLine{00046\ \ \ \ \ entry.config\ \ =\ config;}
+\DoxyCodeLine{00047\ \ \ \ \ entry.encoded.resize(encoded.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}());}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Fill\ data.}}
+\DoxyCodeLine{00050\ \ \ \ \ entry.data.resize(data.size());}
+\DoxyCodeLine{00051\ \ \ \ \ std::copy(data.begin(),\ data.end(),\ entry.data.begin());}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ Generate\ encoded\ message.}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0,\ len\ =\ encoded.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ i\ !=\ len;\ ++i)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ encoded[i]\ \ \ \ \ \ \ =\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(i\ \&\ 0xff);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ entry.encoded[i]\ =\ encoded[i];}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ Append\ entry.}}
+\DoxyCodeLine{00060\ \ \ \ \ entries.emplace\_back(entry);}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reset()\ \{\ entries.clear();\ \}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_entries()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ entries.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ \}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{const}\ std::vector<entry\_t>\&\ get\_entries()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ entries;\ \}}
+\DoxyCodeLine{00066\ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ PHY\_SPY\_FACTORY\_TEMPLATE(pdcch\_encoder);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -23,7 +23,6 @@
 #pragma once
 
 #include "ngap_context.h"
-#include "ngap_error_indication_helper.h"
 #include "procedures/ngap_transaction_manager.h"
 #include "ue_context/ngap_ue_context.h"
 #include "srsran/asn1/ngap/ngap.h"
@@ -41,7 +40,7 @@ class ngap_impl final : public ngap_interface
 {
 public:
   ngap_impl(ngap_configuration&                ngap_cfg_,
-            ngap_cu_cp_notifier&               cu_cp_notifier_,
+            ngap_cu_cp_ue_creation_notifier&   cu_cp_ue_creation_notifier_,
             ngap_cu_cp_du_repository_notifier& cu_cp_du_repository_notifier_,
             ngap_ue_task_scheduler&            task_sched_,
             ngap_ue_manager&                   ue_manager_,
@@ -86,21 +85,6 @@ public:
   ngap_ue_context_removal_handler& get_ngap_ue_context_removal_handler() override { return *this; }
 
 private:
-  class tx_pdu_notifier_with_logging final : public ngap_message_notifier
-  {
-  public:
-    tx_pdu_notifier_with_logging(ngap_impl& parent_, ngap_message_notifier& decorated_) :
-      parent(parent_), decorated(decorated_)
-    {
-    }
-
-    void on_new_message(const ngap_message& msg) override;
-
-  private:
-    ngap_impl&             parent;
-    ngap_message_notifier& decorated;
-  };
-
   /// \brief Notify about the reception of an initiating message.
   /// \param[in] msg The received initiating message.
   void handle_initiating_message(const asn1::ngap::init_msg_s& msg);
@@ -153,13 +137,9 @@ private:
   /// \param[in] ue_index The index of the related UE.
   /// \param[in] cause The cause of the Error Indication.
   /// \param[in] amf_ue_id The AMF UE ID.
-  void schedule_error_indication(ue_index_t ue_index, ngap_cause_t cause, optional<amf_ue_id_t> amf_ue_id = {});
+  void schedule_error_indication(ue_index_t ue_index, cause_t cause, optional<amf_ue_id_t> amf_ue_id = {});
 
-  /// \brief Callback for the PDU Session Setup Timer expiration. Triggers the release of the UE.
-  void on_pdu_session_setup_timer_expired(ue_index_t ue_index);
-
-  /// \brief Log NGAP RX PDU.
-  void log_rx_pdu(const ngap_message& msg);
+  void on_ue_context_setup_timer_expired(ue_index_t ue_index);
 
   ngap_context_t context;
 
@@ -168,13 +148,11 @@ private:
   /// Repository of UE Contexts.
   ngap_ue_context_list ue_ctxt_list;
 
-  std::unordered_map<ue_index_t, error_indication_request_t> stored_error_indications;
-
-  ngap_cu_cp_notifier&               cu_cp_notifier;
+  ngap_cu_cp_ue_creation_notifier&   cu_cp_ue_creation_notifier;
   ngap_cu_cp_du_repository_notifier& cu_cp_du_repository_notifier;
   ngap_ue_task_scheduler&            task_sched;
   ngap_ue_manager&                   ue_manager;
-  tx_pdu_notifier_with_logging       tx_pdu_notifier;
+  ngap_message_notifier&             ngap_notifier;
   task_executor&                     ctrl_exec;
 
   ngap_transaction_manager ev_mng;

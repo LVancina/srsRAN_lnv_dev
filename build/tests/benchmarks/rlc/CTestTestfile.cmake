@@ -1,0 +1,7 @@
+# CMake generated Testfile for 
+# Source directory: /home/lucas/thesis/dev/srsRAN_Project/tests/benchmarks/rlc
+# Build directory: /home/lucas/thesis/dev/srsRAN_Project/build/tests/benchmarks/rlc
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+set_directory_properties(PROPERTIES LABELS "rlc")

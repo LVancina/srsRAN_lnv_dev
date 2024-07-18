@@ -23,7 +23,6 @@
 #pragma once
 
 #include "lib/cu_cp/cell_meas_manager/cell_meas_manager_impl.h"
-#include "srsran/support/executors/manual_task_worker.h"
 #include <gtest/gtest.h>
 
 namespace srsran {
@@ -32,10 +31,7 @@ namespace srs_cu_cp {
 class dummy_mobility_manager : public cell_meas_mobility_manager_notifier
 {
 public:
-  void on_neighbor_better_than_spcell(ue_index_t   ue_index,
-                                      gnb_id_t     neighbor_gnb_id,
-                                      nr_cell_id_t neighbor_nci,
-                                      pci_t        neighbor_pci) override
+  void on_neighbor_better_than_spcell(ue_index_t ue_index, pci_t neighbor_pci) override
   {
     fmt::print("on_neighbor_better_than_spcell() called.\n");
   }
@@ -51,7 +47,6 @@ protected:
   void create_empty_manager();
   void create_default_manager();
   void create_default_manager_with_cell_params();
-  void create_manager_with_incomplete_cells_and_periodic_report_at_target_cell();
   void create_manager_without_ncells_and_periodic_report();
   void check_default_meas_cfg(const optional<rrc_meas_cfg>& meas_cfg, meas_obj_id_t meas_obj_id);
   void verify_meas_cfg(const optional<rrc_meas_cfg>& meas_cfg);
@@ -62,11 +57,6 @@ protected:
 
   std::unique_ptr<cell_meas_manager> manager;
   dummy_mobility_manager             mobility_manager;
-  manual_task_worker                 ctrl_worker{128};
-  timer_manager                      timers;
-  ue_configuration                   ue_config;
-  up_resource_manager_cfg            up_config;
-  ue_manager                         ue_mng{ue_config, up_config, timers, ctrl_worker};
 };
 
 } // namespace srs_cu_cp

@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_cp/up_resource_manager/up_resource_manager_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_cp/up_resource_manager/up_resource_manager_test[1]_tests.cmake")
+else()
+  add_test(up_resource_manager_test_NOT_BUILT up_resource_manager_test_NOT_BUILT)
+endif()

@@ -171,9 +171,6 @@ class f1ap_du_configurator : public f1ap_task_scheduler
 public:
   virtual ~f1ap_du_configurator() = default;
 
-  /// Called when the F1-C interface shutdowns unexpectedly.
-  virtual void on_f1c_disconnection() = 0;
-
   /// \brief Search for an unused DU UE index.
   virtual du_ue_index_t find_free_ue_index() = 0;
 
@@ -188,18 +185,8 @@ public:
   /// \brief Request the update of the UE configuration in the DU.
   virtual async_task<void> request_ue_removal(const f1ap_ue_delete_request& request) = 0;
 
-  /// \brief Request by the F1AP to the DU to deactivate the DRB activity for a given UE.
-  ///
-  /// This is generally called when the DU receives a request to remove a UE context, but it needs to flush first
-  /// any pending SRB PDUs.
-  /// \param ue_index Index of the UE for which the DRB deactivation is requested.
-  virtual async_task<void> request_ue_drb_deactivation(du_ue_index_t ue_index) = 0;
-
   /// \brief Notify DU that a given UE is performing RRC Reestablishment.
   virtual void notify_reestablishment_of_old_ue(du_ue_index_t new_ue_index, du_ue_index_t old_ue_index) = 0;
-
-  /// Confirm that the UE applied the pending configuration.
-  virtual void on_ue_config_applied(du_ue_index_t ue_index) = 0;
 
   /// \brief Retrieve task scheduler specific to a given UE.
   virtual f1ap_ue_task_scheduler& get_ue_handler(du_ue_index_t ue_index) = 0;
@@ -217,6 +204,7 @@ public:
 
 /// Combined entry point for F1AP handling.
 class f1ap_du : public f1ap_message_handler,
+                public f1ap_event_handler,
                 public f1ap_rrc_message_transfer_procedure_handler,
                 public f1ap_connection_manager,
                 public f1ap_ue_context_manager,
@@ -224,9 +212,6 @@ class f1ap_du : public f1ap_message_handler,
 {
 public:
   virtual ~f1ap_du() = default;
-
-  /// \brief Get handler of F1-C connectivity updates.
-  virtual f1ap_event_handler& get_f1c_connection_handler() = 0;
 };
 
 } // namespace srs_du

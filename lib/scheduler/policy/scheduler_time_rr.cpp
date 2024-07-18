@@ -22,47 +22,42 @@
 
 #include "scheduler_time_rr.h"
 #include "../support/pdsch/pdsch_resource_allocation.h"
-#include "../support/pusch/pusch_td_resource_indices.h"
 #include "../ue_scheduling/ue_pdsch_param_candidate_searcher.h"
 
 using namespace srsran;
-
-struct scheduler_alloc_limits {
-  unsigned max_nof_ues_with_new_tx;
-  unsigned nof_ues_to_be_scheduled_per_slot;
-};
-
-// [Implementation-defined] The following lookup of nof. UEs to be scheduled per slot is based on simple heuristic
-// and to ensure multiple UEs are scheduled per slot rather than single UE hogging all the resource in a slot under
-// full buffer scenario.
-static const std::vector<scheduler_alloc_limits> scheduler_alloc_limits_lookup = {
-    {3, 1},
-    {7, 3},
-    {15, 4},
-    {32, 6},
-    {MAX_NOF_DU_UES, 8},
-};
 
 /// \brief Computes maximum nof. RBs to allocate per UE per slot for newTx.
 /// \param[in] ue_db map of ues.
 /// \param[in] is_dl Flag indicating whether the computation is DL or UL.
 /// \return Maximum nof. RBs to allocate per UE per slot for newTx.
-static unsigned compute_max_nof_rbs_per_ue_per_slot(const ue_repository&              ues,
-                                                    bool                              is_dl,
-                                                    const ue_resource_grid_view&      res_grid,
-                                                    const scheduler_ue_expert_config& expert_cfg)
+static unsigned compute_max_nof_rbs_per_ue_per_slot(const ue_repository& ues, bool is_dl)
 {
   if (ues.empty()) {
     return 0;
   }
 
-  unsigned nof_ue_with_new_tx               = 0;
-  unsigned nof_ues_to_be_scheduled_per_slot = 0;
+  unsigned nof_ue_with_new_tx = 0;
+  unsigned nof_ues_to_be_scheduled_per_slot;
 
   for (const auto& u : ues) {
     if ((is_dl and u->has_pending_dl_newtx_bytes()) or (not is_dl and u->pending_ul_newtx_bytes() > 0)) {
       ++nof_ue_with_new_tx;
     }
+  }
+
+  // [Implementation-defined] The following selection of nof. UEs to be scheduled per slot is based on simple heuristic
+  // and to ensure multiple UEs are scheduler per slot rather than single UE hogging all the resource in a slot under
+  // full buffer scenario.
+  if (nof_ue_with_new_tx <= 3) {
+    nof_ues_to_be_scheduled_per_slot = 1;
+  } else if (nof_ue_with_new_tx <= 7) {
+    nof_ues_to_be_scheduled_per_slot = 3;
+  } else if (nof_ue_with_new_tx <= 15) {
+    nof_ues_to_be_scheduled_per_slot = 4;
+  } else if (nof_ue_with_new_tx <= 32) {
+    nof_ues_to_be_scheduled_per_slot = 6;
+  } else {
+    nof_ues_to_be_scheduled_per_slot = 8;
   }
 
   // NOTE: All UEs use the same dedicated SearchSpace configuration.
@@ -84,43 +79,13 @@ static unsigned compute_max_nof_rbs_per_ue_per_slot(const ue_repository&        
     bwp_crb_limits = ss_info->ul_crb_lims;
   }
 
-  // > Fetch nof. UEs to be scheduled per slot based on the lookup.
-  for (const auto& lims : scheduler_alloc_limits_lookup) {
-    if (nof_ue_with_new_tx <= lims.max_nof_ues_with_new_tx) {
-      nof_ues_to_be_scheduled_per_slot = lims.nof_ues_to_be_scheduled_per_slot;
-      break;
-    }
-  }
-
-  // > Apply limits if passed to scheduler.
-  if (is_dl) {
-    nof_ues_to_be_scheduled_per_slot = std::min(expert_cfg.max_pdschs_per_slot, nof_ues_to_be_scheduled_per_slot);
-  } else {
-    nof_ues_to_be_scheduled_per_slot = std::min(expert_cfg.max_puschs_per_slot, nof_ues_to_be_scheduled_per_slot);
-  }
-
-  // > Compute maximum nof. PDCCH candidates allowed for each direction.
-  // [Implementation-defined]
-  // - Assume aggregation level 2 while computing nof. candidates that can be fit in CORESET.
-  // - CORESET CCEs are divided by 2 to provide equal PDCCH resources to DL and UL.
-  unsigned max_nof_candidates = (ss_info->coreset->get_nof_cces() / 2) / to_nof_cces(aggregation_level::n2);
-
-  // > Subtract candidates used for DL retransmission since DL gets scheduled first over UL.
-  // [Implementation-defined] Assumes that retransmissions use PDCCH candidates of aggregation level 2.
-  if (is_dl) {
-    max_nof_candidates -= (res_grid.get_dl_pdcch_sched_results(u.get_pcell().cell_index).size() > max_nof_candidates)
-                              ? 0
-                              : res_grid.get_dl_pdcch_sched_results(u.get_pcell().cell_index).size();
-  }
-
-  // > Ensure fairness in PDCCH allocation between DL and UL.
-  // [Implementation-defined] To avoid running out of PDCCH candidates for UL allocation in multi-UE scenario and short
-  // BW (e.g. TDD and 10Mhz BW), apply further limits on nof. UEs to be scheduled per slot.
-  nof_ues_to_be_scheduled_per_slot = std::min(max_nof_candidates, nof_ues_to_be_scheduled_per_slot);
-
-  if (nof_ues_to_be_scheduled_per_slot == 0) {
-    // Skip allocation.
-    return 0;
+  // [Implementation-defined] Assume aggregation level 2 while computing nof. candidates that can be fit in CORESET.
+  const unsigned max_nof_candidates = ss_info->coreset->get_nof_cces() / to_nof_cces(aggregation_level::n2);
+  // [Implementation-defined] To avoid running out of PDCCH candidates in multi-UE scenario and short BW (e.g. TDD and
+  // 10Mhz BW), apply further limits on nof. UEs to be scheduled per slot i.e. divide available PDCCH candidates evenly
+  // among DL and UL.
+  if (nof_ues_to_be_scheduled_per_slot >= max_nof_candidates) {
+    nof_ues_to_be_scheduled_per_slot = std::ceil(nof_ues_to_be_scheduled_per_slot / 2);
   }
 
   return (bwp_crb_limits.length() / nof_ues_to_be_scheduled_per_slot);
@@ -164,23 +129,15 @@ du_ue_index_t round_robin_apply(const ue_repository& ue_db, du_ue_index_t next_u
 }
 
 /// Allocate UE PDSCH grant.
-static alloc_outcome alloc_dl_ue(const ue&                         u,
-                                 const ue_resource_grid_view&      res_grid,
-                                 ue_pdsch_allocator&               pdsch_alloc,
-                                 bool                              is_retx,
-                                 bool                              ue_with_srb_data_only,
-                                 srslog::basic_logger&             logger,
-                                 const scheduler_ue_expert_config& ue_expert_cfg,
-                                 optional<unsigned>                dl_new_tx_max_nof_rbs_per_ue_per_slot = {})
+static alloc_outcome alloc_dl_ue(const ue&                    u,
+                                 const ue_resource_grid_view& res_grid,
+                                 ue_pdsch_allocator&          pdsch_alloc,
+                                 bool                         is_retx,
+                                 srslog::basic_logger&        logger,
+                                 optional<unsigned>           dl_new_tx_max_nof_rbs_per_ue_per_slot = {})
 {
-  if (not is_retx) {
-    if (not u.has_pending_dl_newtx_bytes()) {
-      return alloc_outcome::skip_ue;
-    }
-    if (ue_with_srb_data_only and not u.has_pending_dl_newtx_bytes(LCID_SRB1) and
-        not u.has_pending_dl_newtx_bytes(LCID_SRB2)) {
-      return alloc_outcome::skip_ue;
-    }
+  if (not is_retx and not u.has_pending_dl_newtx_bytes()) {
+    return alloc_outcome::skip_ue;
   }
 
   // Prioritize PCell over SCells.
@@ -188,21 +145,32 @@ static alloc_outcome alloc_dl_ue(const ue&                         u,
     const ue_cell&   ue_cc      = u.get_cell(to_ue_cell_index(i));
     const slot_point pdcch_slot = res_grid.get_pdcch_slot(ue_cc.cell_index);
 
-    if (ue_cc.is_in_fallback_mode()) {
-      // Skip allocation for UEs in fallback mode, as it is handled by the SRB fallback scheduler.
-      return alloc_outcome::skip_ue;
-    }
-
     // UE is already allocated in the PDCCH for this slot (e.g. we should skip a newTx if a reTx has already been
     // allocated for this UE).
     if (res_grid.has_ue_dl_pdcch(ue_cc.cell_index, u.crnti)) {
       return alloc_outcome::skip_ue;
     }
 
-    // Create PDSCH param candidate search object.
-    ue_pdsch_param_candidate_searcher candidates{u, to_ue_cell_index(i), is_retx, pdcch_slot, logger};
+    ue_pdsch_param_candidate_searcher candidates{u, to_ue_cell_index(i), is_retx, pdcch_slot};
+
     if (candidates.dl_harqs().empty()) {
-      // The conditions for a new PDSCH allocation for this UE were not met (e.g. lack of available HARQs).
+      if (not is_retx) {
+        if (ue_cc.harqs.find_dl_harq_waiting_ack() == nullptr) {
+          // A HARQ is already being retransmitted, or all HARQs are waiting for a grant for a retransmission.
+          logger.debug("ue={} rnti={} PDSCH allocation skipped. Cause: No available HARQs for new transmissions.",
+                       ue_cc.ue_index,
+                       ue_cc.rnti());
+        } else {
+          // All HARQs are waiting for their respective HARQ-ACK. This may be a symptom of a long RTT for the PDSCH
+          // and HARQ-ACK.
+          logger.warning(
+              "ue={} rnti={} PDSCH allocation skipped. Cause: All the UE HARQs are busy waiting for their "
+              "respective HARQ-ACK. Check if any HARQ-ACK went missing in the lower layers or is arriving too late to "
+              "the scheduler.",
+              ue_cc.ue_index,
+              ue_cc.rnti());
+        }
+      }
       continue;
     }
 
@@ -213,19 +181,7 @@ static alloc_outcome alloc_dl_ue(const ue&                         u,
       const dl_harq_process&                       h        = param_candidate.harq();
       const dci_dl_rnti_config_type                dci_type = param_candidate.dci_dl_rnti_cfg_type();
       const cell_slot_resource_grid&               grid     = res_grid.get_pdsch_grid(ue_cc.cell_index, pdsch.k0);
-      // Apply RB allocation limits.
-      const unsigned start_rb = std::max(ue_expert_cfg.pdsch_crb_limits.start(), ss.dl_crb_lims.start());
-      const unsigned end_rb   = std::min(ue_expert_cfg.pdsch_crb_limits.stop(), ss.dl_crb_lims.stop());
-      if (start_rb >= end_rb) {
-        logger.debug("ue={} rnti={} PDSCH allocation skipped. Cause: Invalid RB allocation range [{}, {})",
-                     ue_cc.ue_index,
-                     ue_cc.rnti(),
-                     start_rb,
-                     end_rb);
-        continue;
-      }
-      const crb_interval dl_crb_lims = {start_rb, end_rb};
-      const crb_bitmap   used_crbs = grid.used_crbs(ss.bwp->dl_common->generic_params.scs, dl_crb_lims, pdsch.symbols);
+      const crb_bitmap used_crbs = grid.used_crbs(ss.bwp->dl_common->generic_params.scs, ss.dl_crb_lims, pdsch.symbols);
       if (used_crbs.all()) {
         logger.debug(
             "ue={} rnti={} PDSCH allocation skipped. Cause: No more RBs available", ue_cc.ue_index, ue_cc.rnti());
@@ -237,22 +193,16 @@ static alloc_outcome alloc_dl_ue(const ue&                         u,
       // Limit the grant PRBs.
       if (not is_retx and dl_new_tx_max_nof_rbs_per_ue_per_slot.has_value()) {
         mcs_prbs.n_prbs = std::min(mcs_prbs.n_prbs, dl_new_tx_max_nof_rbs_per_ue_per_slot.value());
-        // [Implementation-defined]
-        // Check whether to allocate all remaining RBs or not. This is done to ensure we allocate only X nof. UEs for
-        // which dl_new_tx_max_nof_rbs_per_ue_per_slot was computed. One way is by checking if the emtpy interval is
-        // less than 2 times the required RBs. If so, allocate all remaining RBs. NOTE: This approach won't hold good in
-        // case of low traffic scenario.
-        const unsigned twice_grant_crbs_length =
-            rb_helper::find_empty_interval_of_length(used_crbs, mcs_prbs.n_prbs * 2, 0).length();
-        if (twice_grant_crbs_length < (mcs_prbs.n_prbs * 2)) {
-          mcs_prbs.n_prbs = twice_grant_crbs_length;
-        }
       }
 
       if (mcs_prbs.n_prbs == 0) {
         logger.debug("ue={} rnti={} PDSCH allocation skipped. Cause: UE's CQI=0 ", ue_cc.ue_index, ue_cc.rnti());
         return alloc_outcome::skip_ue;
       }
+
+      // In case of retx, ensure the RI does not change.
+      const unsigned nof_dl_layers =
+          is_retx ? h.last_alloc_params().nof_layers : ue_cc.channel_state_manager().get_nof_dl_layers();
 
       // [Implementation-defined] In case of partial slots and nof. PRBs allocated equals to 1 probability of KO is
       // high due to code not being able to cope with interference. So the solution is to increase the PRB allocation
@@ -269,13 +219,17 @@ static alloc_outcome alloc_dl_ue(const ue&                         u,
         are_crbs_valid = ue_grant_crbs.length() == h.last_alloc_params().rbs.type1().length();
       }
       if (are_crbs_valid) {
+        const aggregation_level aggr_lvl =
+            ue_cc.get_aggregation_level(ue_cc.channel_state_manager().get_wideband_cqi(), ss, true);
         const alloc_outcome result = pdsch_alloc.allocate_dl_grant(ue_pdsch_grant{&u,
                                                                                   ue_cc.cell_index,
                                                                                   h.id,
                                                                                   ss.cfg->get_id(),
                                                                                   param_candidate.pdsch_td_res_index(),
                                                                                   ue_grant_crbs,
-                                                                                  mcs_prbs.mcs});
+                                                                                  aggr_lvl,
+                                                                                  mcs_prbs.mcs,
+                                                                                  nof_dl_layers});
         // If the allocation failed due to invalid parameters, we continue iteration.
         if (result != alloc_outcome::invalid_params) {
           return result;
@@ -287,15 +241,13 @@ static alloc_outcome alloc_dl_ue(const ue&                         u,
 }
 
 /// Allocate UE PUSCH grant.
-static alloc_outcome alloc_ul_ue(const ue&                         u,
-                                 const ue_resource_grid_view&      res_grid,
-                                 ue_pusch_allocator&               pusch_alloc,
-                                 bool                              is_retx,
-                                 bool                              schedule_sr_only,
-                                 srslog::basic_logger&             logger,
-                                 unsigned                          pusch_td_res_idx,
-                                 const scheduler_ue_expert_config& ue_expert_cfg,
-                                 optional<unsigned>                ul_new_tx_max_nof_rbs_per_ue_per_slot = {})
+static alloc_outcome alloc_ul_ue(const ue&                    u,
+                                 const ue_resource_grid_view& res_grid,
+                                 ue_pusch_allocator&          pusch_alloc,
+                                 bool                         is_retx,
+                                 bool                         schedule_sr_only,
+                                 srslog::basic_logger&        logger,
+                                 optional<unsigned>           ul_new_tx_max_nof_rbs_per_ue_per_slot = {})
 {
   unsigned pending_newtx_bytes = 0;
   if (not is_retx) {
@@ -310,19 +262,19 @@ static alloc_outcome alloc_ul_ue(const ue&                         u,
 
   // Prioritize PCell over SCells.
   for (unsigned i = 0; i != u.nof_cells(); ++i) {
-    const ue_cell& ue_cc = u.get_cell(to_ue_cell_index(i));
-    if (ue_cc.is_in_fallback_mode()) {
-      // Skip allocation for UEs in fallback mode, as it is handled by the SRB fallback scheduler.
+    const ue_cell&   ue_cc      = u.get_cell(to_ue_cell_index(i));
+    const slot_point pdcch_slot = res_grid.get_pdcch_slot(ue_cc.cell_index);
+
+    // UE is already allocated resources.
+    if (res_grid.has_ue_ul_pdcch(ue_cc.cell_index, u.crnti)) {
       return alloc_outcome::skip_ue;
     }
-
-    const slot_point pdcch_slot = res_grid.get_pdcch_slot(ue_cc.cell_index);
 
     const cell_configuration& cell_cfg_common = res_grid.get_cell_cfg_common(ue_cc.cell_index);
     const ul_harq_process*    h = is_retx ? ue_cc.harqs.find_pending_ul_retx() : ue_cc.harqs.find_empty_ul_harq();
     if (h == nullptr) {
       // No HARQs available.
-      if (u.get_cell(to_ue_cell_index(i)).is_active() and not is_retx) {
+      if (not is_retx) {
         if (res_grid.has_ue_ul_pdcch(ue_cc.cell_index, u.crnti) or ue_cc.harqs.find_ul_harq_waiting_ack() == nullptr) {
           // A HARQ is already being retransmitted, or all HARQs are waiting for a grant for a retransmission.
           logger.debug("ue={} rnti={} PUSCH allocation skipped. Cause: No available HARQs for new transmissions.",
@@ -351,47 +303,32 @@ static alloc_outcome alloc_ul_ue(const ue&                         u,
         continue;
       }
 
-      const pusch_time_domain_resource_allocation& pusch_td = ss->pusch_time_domain_list[pusch_td_res_idx];
-
-      if (res_grid.has_ue_ul_grant(ue_cc.cell_index, ue_cc.rnti(), pusch_td.k2 + cell_cfg_common.ntn_cs_koffset)) {
-        // Only one PUSCH per UE per slot.
-        return alloc_outcome::skip_ue;
-      }
-
-      const slot_point pusch_slot = pdcch_slot + pusch_td.k2 + cell_cfg_common.ntn_cs_koffset;
-      if (not cell_cfg_common.is_ul_enabled(pusch_slot)) {
-        // Try next PUSCH time domain resource value.
-        return alloc_outcome::invalid_params;
-      }
-      const unsigned start_ul_symbols =
+      // - [Implementation-defined] k2 value which is less than or equal to minimum value of k1(s) is used.
+      // Assumes that first entry in the PUSCH Time Domain resource list contains the k2 value which is less than or
+      // equal to minimum value of k1(s).
+      const unsigned                               time_res = 0;
+      const pusch_time_domain_resource_allocation& pusch_td = ss->pusch_time_domain_list[time_res];
+      const slot_point pusch_slot                           = pdcch_slot + pusch_td.k2 + cell_cfg_common.ntn_cs_koffset;
+      const unsigned   start_ul_symbols =
           NOF_OFDM_SYM_PER_SLOT_NORMAL_CP - cell_cfg_common.get_nof_ul_symbol_per_slot(pusch_slot);
       // If it is a retx, we need to ensure we use a time_domain_resource with the same number of symbols as used for
       // the first transmission.
       const bool sym_length_match_prev_grant_for_retx =
-          is_retx ? pusch_td.symbols.length() == h->last_tx_params().nof_symbols : true;
-      if (pusch_td.symbols.start() < start_ul_symbols or
-          pusch_td.symbols.stop() > (start_ul_symbols + cell_cfg_common.get_nof_ul_symbol_per_slot(pusch_slot)) or
+          is_retx ? pusch_td.symbols.length() != h->last_tx_params().nof_symbols : true;
+      if (not cell_cfg_common.is_ul_enabled(pusch_slot) or pusch_td.symbols.start() < start_ul_symbols or
           !sym_length_match_prev_grant_for_retx) {
-        // Try next PUSCH time domain resource value.
-        return alloc_outcome::invalid_params;
+        // UL needs to be active for PUSCH in this slot.
+        continue;
       }
 
       const cell_slot_resource_grid& grid =
           res_grid.get_pusch_grid(ue_cc.cell_index, pusch_td.k2 + cell_cfg_common.ntn_cs_koffset);
-      // Apply RB allocation limits.
-      const unsigned start_rb = std::max(ue_expert_cfg.pusch_crb_limits.start(), ss->ul_crb_lims.start());
-      const unsigned end_rb   = std::min(ue_expert_cfg.pusch_crb_limits.stop(), ss->ul_crb_lims.stop());
-      if (start_rb >= end_rb) {
-        logger.debug("ue={} rnti={} PUSCH allocation skipped. Cause: Invalid RB allocation range [{}, {})",
-                     ue_cc.ue_index,
-                     ue_cc.rnti(),
-                     start_rb,
-                     end_rb);
+      if (res_grid.has_ue_ul_grant(ue_cc.cell_index, ue_cc.rnti(), pusch_td.k2 + cell_cfg_common.ntn_cs_koffset)) {
+        // only one PUSCH per UE per slot.
         continue;
       }
-      const crb_interval ul_crb_lims = {start_rb, end_rb};
-      const prb_bitmap   used_crbs =
-          grid.used_crbs(ss->bwp->ul_common->generic_params.scs, ul_crb_lims, pusch_td.symbols);
+      const prb_bitmap used_crbs =
+          grid.used_crbs(ss->bwp->ul_common->generic_params.scs, ss->ul_crb_lims, pusch_td.symbols);
       if (used_crbs.all()) {
         logger.debug(
             "ue={} rnti={} PUSCH allocation skipped. Cause: No more RBs available", ue_cc.ue_index, ue_cc.rnti());
@@ -409,14 +346,6 @@ static alloc_outcome alloc_ul_ue(const ue&                         u,
       // Limit the grant PRBs.
       if (not is_retx and not schedule_sr_only and ul_new_tx_max_nof_rbs_per_ue_per_slot.has_value()) {
         mcs_prbs.n_prbs = std::min(mcs_prbs.n_prbs, ul_new_tx_max_nof_rbs_per_ue_per_slot.value());
-        // [Implementation-defined]
-        // Check whether it's the last UE to be scheduled in this slot i.e. if the emtpy interval is less than 2 times
-        // the required RBs. If so, allocate all remaining RBs.
-        const unsigned twice_grant_crbs_length =
-            rb_helper::find_empty_interval_of_length(used_crbs, mcs_prbs.n_prbs * 2, 0).length();
-        if (twice_grant_crbs_length < (mcs_prbs.n_prbs * 2)) {
-          mcs_prbs.n_prbs = twice_grant_crbs_length;
-        }
       }
       // NOTE: this should never happen, but it's safe not to proceed if we get n_prbs == 0.
       if (mcs_prbs.n_prbs == 0) {
@@ -460,8 +389,17 @@ static alloc_outcome alloc_ul_ue(const ue&                         u,
         are_crbs_valid = ue_grant_crbs.length() == h->last_tx_params().rbs.type1().length();
       }
       if (are_crbs_valid) {
-        const alloc_outcome result = pusch_alloc.allocate_ul_grant(ue_pusch_grant{
-            &u, ue_cc.cell_index, h->id, ue_grant_crbs, pusch_td_res_idx, ss->cfg->get_id(), mcs_prbs.mcs});
+        const aggregation_level aggr_lvl =
+            ue_cc.get_aggregation_level(ue_cc.channel_state_manager().get_wideband_cqi(), *ss, false);
+        const alloc_outcome result = pusch_alloc.allocate_ul_grant(ue_pusch_grant{&u,
+                                                                                  ue_cc.cell_index,
+                                                                                  h->id,
+                                                                                  ue_grant_crbs,
+                                                                                  pusch_td.symbols,
+                                                                                  time_res,
+                                                                                  ss->cfg->get_id(),
+                                                                                  aggr_lvl,
+                                                                                  mcs_prbs.mcs});
         // If the allocation failed due to invalid parameters, we continue the iteration.
         if (result != alloc_outcome::invalid_params) {
           return result;
@@ -474,11 +412,10 @@ static alloc_outcome alloc_ul_ue(const ue&                         u,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-scheduler_time_rr::scheduler_time_rr(const scheduler_ue_expert_config& expert_cfg_) :
+scheduler_time_rr::scheduler_time_rr() :
   logger(srslog::fetch_basic_logger("SCHED")),
   next_dl_ue_index(INVALID_DU_UE_INDEX),
-  next_ul_ue_index(INVALID_DU_UE_INDEX),
-  expert_cfg(expert_cfg_)
+  next_ul_ue_index(INVALID_DU_UE_INDEX)
 {
 }
 
@@ -488,80 +425,38 @@ void scheduler_time_rr::dl_sched(ue_pdsch_allocator&          pdsch_alloc,
 {
   // First schedule re-transmissions.
   auto retx_ue_function = [this, &res_grid, &pdsch_alloc](const ue& u) {
-    return alloc_dl_ue(u, res_grid, pdsch_alloc, true, false, logger, expert_cfg);
+    return alloc_dl_ue(u, res_grid, pdsch_alloc, true, logger);
   };
   next_dl_ue_index = round_robin_apply(ues, next_dl_ue_index, retx_ue_function);
 
-  const unsigned dl_new_tx_max_nof_rbs_per_ue_per_slot =
-      compute_max_nof_rbs_per_ue_per_slot(ues, true, res_grid, expert_cfg);
-  if (dl_new_tx_max_nof_rbs_per_ue_per_slot > 0) {
-    // Second, schedule UEs with SRB data.
-    auto srb_newtx_ue_function = [this, &res_grid, &pdsch_alloc, dl_new_tx_max_nof_rbs_per_ue_per_slot](const ue& u) {
-      return alloc_dl_ue(
-          u, res_grid, pdsch_alloc, false, true, logger, expert_cfg, dl_new_tx_max_nof_rbs_per_ue_per_slot);
-    };
-    next_dl_ue_index = round_robin_apply(ues, next_dl_ue_index, srb_newtx_ue_function);
-
-    // Then, schedule new transmissions.
-    auto tx_ue_function = [this, &res_grid, &pdsch_alloc, dl_new_tx_max_nof_rbs_per_ue_per_slot](const ue& u) {
-      return alloc_dl_ue(
-          u, res_grid, pdsch_alloc, false, false, logger, expert_cfg, dl_new_tx_max_nof_rbs_per_ue_per_slot);
-    };
-    next_dl_ue_index = round_robin_apply(ues, next_dl_ue_index, tx_ue_function);
-  }
+  // Then, schedule new transmissions.
+  const unsigned dl_new_tx_max_nof_rbs_per_ue_per_slot = compute_max_nof_rbs_per_ue_per_slot(ues, true);
+  auto           tx_ue_function = [this, &res_grid, &pdsch_alloc, dl_new_tx_max_nof_rbs_per_ue_per_slot](const ue& u) {
+    return alloc_dl_ue(u, res_grid, pdsch_alloc, false, logger, dl_new_tx_max_nof_rbs_per_ue_per_slot);
+  };
+  next_dl_ue_index = round_robin_apply(ues, next_dl_ue_index, tx_ue_function);
 }
 
 void scheduler_time_rr::ul_sched(ue_pusch_allocator&          pusch_alloc,
                                  const ue_resource_grid_view& res_grid,
                                  const ue_repository&         ues)
 {
-  if (ues.empty()) {
-    // No UEs to be scheduled.
-    return;
-  }
-
-  // Fetch applicable PUSCH Time Domain resource index list.
-  // NOTE: All UEs use the same PUSCH Time Domain Resource configuration.
-  const ue&                    ref_u  = **ues.begin();
-  const ue_cell_configuration& ue_cfg = ref_u.get_pcell().cfg();
-
-  static_vector<unsigned, pusch_constants::MAX_NOF_PUSCH_TD_RES_ALLOCS> pusch_td_res_index_list =
-      get_pusch_td_resource_indices(ue_cfg, res_grid.get_pdcch_slot(ref_u.get_pcell().cell_index));
-
   // First schedule UL data re-transmissions.
-  for (unsigned pusch_td_res_idx : pusch_td_res_index_list) {
-    auto data_retx_ue_function = [this, &res_grid, &pusch_alloc, pusch_td_res_idx](const ue& u) {
-      return alloc_ul_ue(u, res_grid, pusch_alloc, true, false, logger, pusch_td_res_idx, expert_cfg);
-    };
-    next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, data_retx_ue_function);
-  }
+  auto data_retx_ue_function = [this, &res_grid, &pusch_alloc](const ue& u) {
+    return alloc_ul_ue(u, res_grid, pusch_alloc, true, false, logger);
+  };
+  next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, data_retx_ue_function);
 
   // Then, schedule all pending SR.
-  for (unsigned pusch_td_res_idx : pusch_td_res_index_list) {
-    auto sr_ue_function = [this, &res_grid, &pusch_alloc, pusch_td_res_idx](const ue& u) {
-      return alloc_ul_ue(u, res_grid, pusch_alloc, false, true, logger, pusch_td_res_idx, expert_cfg);
-    };
-    next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, sr_ue_function);
-  }
+  auto sr_ue_function = [this, &res_grid, &pusch_alloc](const ue& u) {
+    return alloc_ul_ue(u, res_grid, pusch_alloc, false, true, logger);
+  };
+  next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, sr_ue_function);
 
   // Finally, schedule UL data new transmissions.
-  const unsigned ul_new_tx_max_nof_rbs_per_ue_per_slot =
-      compute_max_nof_rbs_per_ue_per_slot(ues, false, res_grid, expert_cfg);
-  if (ul_new_tx_max_nof_rbs_per_ue_per_slot > 0) {
-    for (unsigned pusch_td_res_idx : pusch_td_res_index_list) {
-      auto data_tx_ue_function =
-          [this, &res_grid, &pusch_alloc, ul_new_tx_max_nof_rbs_per_ue_per_slot, pusch_td_res_idx](const ue& u) {
-            return alloc_ul_ue(u,
-                               res_grid,
-                               pusch_alloc,
-                               false,
-                               false,
-                               logger,
-                               pusch_td_res_idx,
-                               expert_cfg,
-                               ul_new_tx_max_nof_rbs_per_ue_per_slot);
-          };
-      next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, data_tx_ue_function);
-    }
-  }
+  const unsigned ul_new_tx_max_nof_rbs_per_ue_per_slot = compute_max_nof_rbs_per_ue_per_slot(ues, false);
+  auto data_tx_ue_function = [this, &res_grid, &pusch_alloc, ul_new_tx_max_nof_rbs_per_ue_per_slot](const ue& u) {
+    return alloc_ul_ue(u, res_grid, pusch_alloc, false, false, logger, ul_new_tx_max_nof_rbs_per_ue_per_slot);
+  };
+  next_ul_ue_index = round_robin_apply(ues, next_ul_ue_index, data_tx_ue_function);
 }

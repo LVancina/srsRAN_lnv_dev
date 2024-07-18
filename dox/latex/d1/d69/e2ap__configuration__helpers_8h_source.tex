@@ -1,0 +1,72 @@
+\doxysection{e2ap\+\_\+configuration\+\_\+helpers.\+h}
+\hypertarget{e2ap__configuration__helpers_8h_source}{}\label{e2ap__configuration__helpers_8h_source}\index{include/srsran/e2/e2ap\_configuration\_helpers.h@{include/srsran/e2/e2ap\_configuration\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e2/e2ap\_configuration.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/s\_nssai.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ config\_helpers\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Generates\ default\ cell\ configuration\ used\ by\ gNB\ DU.\ The\ default\ configuration\ should\ be\ valid.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\ make\_default\_e2ap\_config()}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\ cfg\{\};}
+\DoxyCodeLine{00035\ \ \ cfg.gnb\_id\ \ \ \ \ \ \ \ \ \ \ \ =\ 411;}
+\DoxyCodeLine{00036\ \ \ cfg.ran\_node\_name\ \ \ \ \ =\ \textcolor{stringliteral}{"{}srsgnb01"{}};}
+\DoxyCodeLine{00037\ \ \ cfg.plmn\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{stringliteral}{"{}00101"{}};}
+\DoxyCodeLine{00038\ \ \ cfg\mbox{\hyperlink{structsrsran_1_1e2ap__configuration_ac90726072be34adeea47eecb18223de9}{.}}\mbox{\hyperlink{structsrsran_1_1e2ap__configuration_ac90726072be34adeea47eecb18223de9}{max\_setup\_retries}}\ =\ 5;}
+\DoxyCodeLine{00039\ \ \ cfg.e2sm\_kpm\_enabled\ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00040\ \ \ cfg.e2sm\_rc\_enabled\ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordflow}{return}\ cfg;}
+\DoxyCodeLine{00042\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ Returns\ true\ if\ the\ given\ E2\ configuration\ is\ valid,\ otherwise\ false.}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ is\_valid\_configuration(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e2ap__configuration}{e2ap\_configuration}}\&\ config)}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordflow}{if}\ (config.ran\_node\_name.empty())\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}RAN\ node\ name\ is\ empty\(\backslash\)n"{}});}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00050\ \ \ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{if}\ (config.plmn.empty())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}PLMN\ id\ is\ empty\(\backslash\)n"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{if}\ (config.plmn.find(\textcolor{stringliteral}{"{}0x"{}})\ !=\ std::string::npos)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ fmt::print(\textcolor{stringliteral}{"{}PLMN\ must\ not\ contain\ 0x\(\backslash\)n"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00060\ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00063\ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \}\ \textcolor{comment}{//\ namespace\ config\_helpers}}
+\DoxyCodeLine{00066\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

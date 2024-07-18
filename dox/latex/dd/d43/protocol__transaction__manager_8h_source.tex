@@ -1,0 +1,411 @@
+\doxysection{protocol\+\_\+transaction\+\_\+manager.\+h}
+\hypertarget{protocol__transaction__manager_8h_source}{}\label{protocol__transaction__manager_8h_source}\index{include/srsran/support/async/protocol\_transaction\_manager.h@{include/srsran/support/async/protocol\_transaction\_manager.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{async__event__source_8h}{"{}async\_event\_source.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{manual__event_8h}{"{}manual\_event.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/variant.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/compiler.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{unordered\_map}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Type\ of\ a\ transaction\ identifier.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{using}\ protocol\_transaction\_id\_t\ =\ \textcolor{keywordtype}{unsigned};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Invalid\ transaction\ id.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{constexpr}\ protocol\_transaction\_id\_t\ \mbox{\hyperlink{namespacesrsran_a4851de3b8b258237ab62d8a94f66d454}{invalid\_protocol\_transaction\_id}}\ =}
+\DoxyCodeLine{00041\ \ \ \ \ std::numeric\_limits<protocol\_transaction\_id\_t>::max();}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ResponseType>}
+\DoxyCodeLine{00044\ \textcolor{keyword}{class}\ protocol\_transaction\_manager;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)brief\ Error\ causes\ for\ the\ case\ of\ transactions\ that\ timed\ out\ or\ were\ cancelled.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}\ \{\ timeout,\ cancel,\ abnormal\ \};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \(\backslash\)brief\ Protocol\ Transaction\ Awaitable.\ This\ awaitable\ is\ single-\/use,\ after\ which,\ the\ respective}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ transaction\_manager\ class\ will\ reset\ its\ underlying\ event\ state.}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ResponseType>}
+\DoxyCodeLine{00052\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}}
+\DoxyCodeLine{00053\ \{}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{using}\ manager\_type\ =\ protocol\_transaction\_manager<ResponseType>;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{using}\ response\_type\ =\ ResponseType;}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{using}\ outcome\_type\ \ =\ expected<ResponseType,\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}>;}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{using}\ event\_type\ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1manual__event}{manual\_event}}<outcome\_type>;}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{using}\ awaiter\_type\ \ =\ \textcolor{keyword}{typename}\ event\_type\ ::awaiter\_type;}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ protocol\_transaction()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00063\ \ \ protocol\_transaction(manager\_type\&\ parent\_,\ \textcolor{keywordtype}{unsigned}\ transaction\_id\_,\ event\_type\&\ ev\_)\ :}
+\DoxyCodeLine{00064\ \ \ \ \ parent(\&parent\_),\ transaction\_id(transaction\_id\_),\ ev(\&ev\_)}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \}}
+\DoxyCodeLine{00067\ \ \ protocol\_transaction(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00068\ \ \ protocol\_transaction(\mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&\&\ other)\ \textcolor{keyword}{noexcept}\ :}
+\DoxyCodeLine{00069\ \ \ \ \ parent(std::exchange(other.parent,\ \textcolor{keywordtype}{nullptr})),}
+\DoxyCodeLine{00070\ \ \ \ \ transaction\_id(other.transaction\_id),}
+\DoxyCodeLine{00071\ \ \ \ \ ev(std::exchange(other.ev,\ \textcolor{keywordtype}{nullptr}))}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \string~protocol\_transaction()\ \{\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{release}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{(}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{)}};\ \}}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00077\ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{release}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{(}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{)}};}
+\DoxyCodeLine{00079\ \ \ \ \ parent\ \ \ \ \ \ \ \ \ =\ std::exchange(other.parent,\ \textcolor{keywordtype}{nullptr});}
+\DoxyCodeLine{00080\ \ \ \ \ transaction\_id\ =\ other.transaction\_id;}
+\DoxyCodeLine{00081\ \ \ \ \ ev\ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::exchange(other.ev,\ \textcolor{keywordtype}{nullptr});}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00083\ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ Gets\ transaction\ id.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_af5099f9e6f799419b17964c51da85ffb}{id}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ transaction\_id;\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ Checks\ whether\ this\ transaction\ represents\ a\ valid,\ allocation\ transaction.}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ada14f3210c34dec8da4ddbdf6471119f}{valid}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ parent\ !=\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ transaction\ result\ has\ been\ set.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{complete}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00093\ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(valid(),\ \textcolor{stringliteral}{"{}Trying\ to\ check\ completion\ of\ invalid\ transaction"{}});}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{return}\ ev-\/>is\_set();}
+\DoxyCodeLine{00096\ \ \ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Check\ whether\ transaction\ finished\ successfully\ with\ a\ response.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_a8a8ceaa33d77f12ada00763baabdcb28}{has\_response}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(valid(),\ \textcolor{stringliteral}{"{}Trying\ to\ check\ completion\ of\ invalid\ transaction"{}});}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{complete}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{(}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{)}}\ \textcolor{keyword}{and}\ ev-\/>get().has\_value();}
+\DoxyCodeLine{00103\ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Check\ whether\ transaction\ was\ aborted\ (e.g.\ timeout\ or\ cancellation).}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_a3c8f0fde20823ba4febfe37f5e0b43c2}{aborted}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00107\ \ \ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(valid(),\ \textcolor{stringliteral}{"{}Trying\ to\ check\ completion\ of\ invalid\ transaction"{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{complete}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{(}}\mbox{\hyperlink{classsrsran_1_1protocol__transaction_ae198b7b4245cd3e8d7a5b43e80648a75}{)}}\ \textcolor{keyword}{and}\ ev-\/>get().is\_error();}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Get\ cause\ of\ transaction\ failure.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}\&\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_a720a943f4586025e2f56c326a239a852}{failure\_cause}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00114\ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(aborted(),\ \textcolor{stringliteral}{"{}Trying\ to\ get\ result\ of\ invalid\ transaction"{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{return}\ ev-\/>get().error();}
+\DoxyCodeLine{00117\ \ \ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Result\ of\ the\ transaction.}}
+\DoxyCodeLine{00120\ \ \ \textcolor{keyword}{const}\ response\_type\&\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_a6fba55f30c9328ecb241ede070bfb598}{response}}()\ \textcolor{keyword}{const}\&}
+\DoxyCodeLine{00121\ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(has\_response(),\ \textcolor{stringliteral}{"{}Trying\ to\ get\ response\ of\ transaction\ without\ a\ response"{}});}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ ev-\/>get().value();}
+\DoxyCodeLine{00124\ \ \ \}}
+\DoxyCodeLine{00125\ \ \ response\_type\ response()\ \&\&}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(has\_response(),\ \textcolor{stringliteral}{"{}Trying\ to\ get\ result\ of\ transaction\ without\ a\ response"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(ev)-\/>get();}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{keyword}{const}\ outcome\_type\&\ outcome()\ \textcolor{keyword}{const}\&}
+\DoxyCodeLine{00132\ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(complete(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ outcome\ of\ incomplete\ transaction"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ ev-\/>get();}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ \ \ outcome\_type\ outcome()\ \&\&}
+\DoxyCodeLine{00137\ \ \ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(complete(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ outcome\ of\ incomplete\ transaction"{}});}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(ev)-\/>get();}
+\DoxyCodeLine{00140\ \ \ \}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{///\ Awaiter\ interface.}}
+\DoxyCodeLine{00143\ \ \ awaiter\_type\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_a4fcd630c8c1012c712cff4c211541dee}{get\_awaiter}}()}
+\DoxyCodeLine{00144\ \ \ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(valid(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ awaiter\ of\ invalid\ transaction"{}});}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{return}\ ev-\/>get\_awaiter();}
+\DoxyCodeLine{00147\ \ \ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ Release\ transaction\ id,\ so\ it\ can\ be\ reused.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction_ade1fd76bef1c31b36555326b17ab6935}{release}}()}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordflow}{if}\ (parent\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ parent-\/>remove\_transaction(transaction\_id);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ parent\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ ev\ \ \ \ \ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00156\ \ \ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00160\ \ \ manager\_type*\ \ \ \ \ \ \ \ \ \ \ \ \ parent\ \ \ \ \ \ \ \ \ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00161\ \ \ protocol\_transaction\_id\_t\ transaction\_id\ =\ \mbox{\hyperlink{namespacesrsran_a4851de3b8b258237ab62d8a94f66d454}{invalid\_protocol\_transaction\_id}};}
+\DoxyCodeLine{00162\ \ \ event\_type*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ev\ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00163\ \};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{comment}{///\ \(\backslash\)brief\ Manager\ of\ multiple\ concurrent\ protocol\ transactions.\ Each\ managed\ transaction\ can\ be\ uniquely\ identified\ by}}
+\DoxyCodeLine{00166\ \textcolor{comment}{///\ a\ "{}transaction\_id"{}\ integer\ value,\ which\ is\ automatically\ assigned\ by\ the\ \(\backslash\)c\ protocol\_transaction\_manager.}}
+\DoxyCodeLine{00167\ \textcolor{comment}{///\ Transactions\ are\ single-\/use,\ meaning\ that\ the\ user\ will\ have\ to\ create\ new\ transaction\ objects,\ with\ different}}
+\DoxyCodeLine{00168\ \textcolor{comment}{///\ transaction\_ids\ for\ every\ message\ exchange.}}
+\DoxyCodeLine{00169\ \textcolor{comment}{///\ To\ create\ a\ new\ transaction,\ the\ user\ may\ call\ "{}create\_transaction(...)"{},\ where\ a\ timeout\ for\ the\ transaction}}
+\DoxyCodeLine{00170\ \textcolor{comment}{///\ can\ be\ optionally\ defined.}}
+\DoxyCodeLine{00171\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ type\ of\ the\ response\ to\ the\ transaction.}}
+\DoxyCodeLine{00172\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00173\ \textcolor{keyword}{class}\ protocol\_transaction\_manager}
+\DoxyCodeLine{00174\ \{}
+\DoxyCodeLine{00175\ \ \ \textcolor{keyword}{using}\ outcome\_type\ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}<T>::outcome\_type;}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{///\ Time\ limit\ for\ a\ transaction\ to\ complete.}}
+\DoxyCodeLine{00179\ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{static}\ std::chrono::milliseconds\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_af725907c7d52154272bd1fe8691bb2ec}{max\_timeout}};}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \textcolor{keyword}{explicit}\ protocol\_transaction\_manager(protocol\_transaction\_id\_t\ nof\_transaction\_ids\_,\ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ timer\_service\_)\ :}
+\DoxyCodeLine{00182\ \ \ \ \ nof\_transaction\_ids(nof\_transaction\_ids\_),\ timer\_service(timer\_service\_)}
+\DoxyCodeLine{00183\ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \string~protocol\_transaction\_manager()}
+\DoxyCodeLine{00186\ \ \ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ running\_transactions.empty())\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).error(\textcolor{stringliteral}{"{}Protocol\ transaction\ manager\ destroyed\ with\ \{\}\ running\ transactions"{}},}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ running\_transactions.size());}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ new\ protocol\ transaction\ with\ automatically\ assigned\ transaction\ ID\ and\ with\ a\ timeout,\ after}}
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{///\ which\ the\ transaction\ gets\ cancelled.}}
+\DoxyCodeLine{00195\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}<T>\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_ab8ce7d8016d112ab8b238a5bba6c2640}{create\_transaction}}(std::chrono::milliseconds\ time\_to\_cancel\ =\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_ab8ce7d8016d112ab8b238a5bba6c2640}{max\_timeout}})}
+\DoxyCodeLine{00196\ \ \ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{comment}{//\ Allocate\ a\ new\ transaction\ id\ for\ the\ protocol\ transaction.}}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ transaction\_id\ =\ \mbox{\hyperlink{namespacesrsran_a4851de3b8b258237ab62d8a94f66d454}{invalid\_protocol\_transaction\_id}};}
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ count\ =\ 0;\ count\ <\ nof\_transaction\_ids\ \textcolor{keyword}{and}\ transaction\_id\ ==\ \mbox{\hyperlink{namespacesrsran_a4851de3b8b258237ab62d8a94f66d454}{invalid\_protocol\_transaction\_id}};}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ ++count)\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running\_transactions.count(next\_transaction\_id)\ ==\ 0)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ transaction\_id\ =\ next\_transaction\_id;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ next\_transaction\_id\ =\ (next\_transaction\_id\ +\ 1)\ \%\ nof\_transaction\_ids;}
+\DoxyCodeLine{00205\ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{if}\ (transaction\_id\ ==\ \mbox{\hyperlink{namespacesrsran_a4851de3b8b258237ab62d8a94f66d454}{invalid\_protocol\_transaction\_id}})\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).error(\textcolor{stringliteral}{"{}Failed\ to\ allocate\ new\ transaction\ id"{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00209\ \ \ \ \ \}}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keywordflow}{return}\ create\_transaction(transaction\_id,\ time\_to\_cancel);}
+\DoxyCodeLine{00212\ \ \ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ new\ protocol\ transaction\ with\ pre-\/defined\ transaction\ ID.}}
+\DoxyCodeLine{00215\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}<T>\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_adee571f327fef8470a58121097640aeb}{create\_transaction}}(protocol\_transaction\_id\_t\ transaction\_id,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::chrono::milliseconds\ time\_to\_cancel\ =\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_adee571f327fef8470a58121097640aeb}{max\_timeout}})}
+\DoxyCodeLine{00217\ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \textcolor{comment}{//\ Create\ new\ transaction\ instance.}}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keyword}{auto}\ ret\ =\ running\_transactions.emplace(}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ std::piecewise\_construct,\ std::forward\_as\_tuple(transaction\_id),\ std::forward\_as\_tuple());}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ ret.second)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).error(\textcolor{stringliteral}{"{}Failed\ to\ allocate\ transaction\ id=\{\}"{}},\ transaction\_id);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00224\ \ \ \ \ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \ \ \textcolor{comment}{//\ Create\ timer,\ set\ timeout\ and\ callback,\ and\ start\ running\ it.}}
+\DoxyCodeLine{00227\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ timer\ =\ ret.first-\/>second.timer;}
+\DoxyCodeLine{00228\ \ \ \ \ timer\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ timer\_service.create\_timer();}
+\DoxyCodeLine{00229\ \ \ \ \ timer.set(time\_to\_cancel,\ [\textcolor{keyword}{this},\ transaction\_id](timer\_id\_t\ \textcolor{comment}{/*unused*/})\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ set\_transaction\_outcome(transaction\_id,\ protocol\_transaction\_failure::timeout))\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).warning(\textcolor{stringliteral}{"{}Transaction\ id=\{\}\ timeout\ but\ transaction\ is\ already\ completed"{}},}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction\_id);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \});}
+\DoxyCodeLine{00235\ \ \ \ \ timer\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{.}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{run}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{(}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{)}};}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{return}\ \{*\textcolor{keyword}{this},\ ret.first-\/>first,\ ret.first-\/>second.event\};}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sets\ the\ result\ of\ a\ managed\ transaction\ with\ the\ provided\ transaction\_id.}}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ transaction\_id\ Id\ of\ the\ transaction.}}
+\DoxyCodeLine{00242\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ result\ Result\ of\ the\ transaction.}}
+\DoxyCodeLine{00243\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ result\ of\ the\ transaction\ was\ successfully\ set.\ False,\ if\ the\ transaction\ has\ already\ finished.}}
+\DoxyCodeLine{00244\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00245\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_aeb8074d2aac3598ae6128862a17366f5}{set\_response}}(\textcolor{keywordtype}{unsigned}\ transaction\_id,\ U\&\&\ result)}
+\DoxyCodeLine{00246\ \ \ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_convertible<U,\ T>::value,\ \textcolor{stringliteral}{"{}Invalid\ transaction\ response\ type\ being\ set"{}});}
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{keywordflow}{return}\ set\_transaction\_outcome(transaction\_id,\ std::forward<U>(result));}
+\DoxyCodeLine{00249\ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Cancel\ a\ running\ transaction.}}
+\DoxyCodeLine{00252\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_ae9efae144ec1373a86972500b8ed6b91}{cancel\_transaction}}(\textcolor{keywordtype}{unsigned}\ transaction\_id)}
+\DoxyCodeLine{00253\ \ \ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{keywordflow}{return}\ set\_transaction\_outcome(transaction\_id,\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}::cancel);}
+\DoxyCodeLine{00255\ \ \ \}}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00258\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction}{protocol\_transaction}}<T>;}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00261\ \ \ \mbox{\hyperlink{compiler_8h_a84270d7b45f0280051bd27685657e03e}{SRSRAN\_NODISCARD}}\ \textcolor{keywordtype}{bool}\ set\_transaction\_outcome(\textcolor{keywordtype}{unsigned}\ transaction\_id,\ U\&\&\ result)}
+\DoxyCodeLine{00262\ \ \ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ running\_transactions.find(transaction\_id);}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ running\_transactions.end())\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \textcolor{comment}{//\ No\ transaction\ with\ provided\ transaction\ id\ exists.}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00267\ \ \ \ \ \}}
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{comment}{//\ Stop\ running\ timer,\ so\ it\ doesn't\ try\ to\ overwrite\ result.}}
+\DoxyCodeLine{00270\ \ \ \ \ it-\/>second.timer.stop();}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{comment}{//\ Store\ result.}}
+\DoxyCodeLine{00273\ \ \ \ \ it-\/>second.event.set(std::forward<U>(result));}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00275\ \ \ \}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \textcolor{keywordtype}{void}\ remove\_transaction(protocol\_transaction\_id\_t\ transaction\_id)}
+\DoxyCodeLine{00278\ \ \ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ running\_transactions.find(transaction\_id);}
+\DoxyCodeLine{00280\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ running\_transactions.end())\ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}ALL"{}}).warning(\textcolor{stringliteral}{"{}Trying\ to\ remove\ non-\/existing\ transaction\ id=\{\}"{}},\ transaction\_id);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00283\ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ running\_transactions.erase(it);}
+\DoxyCodeLine{00285\ \ \ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{const}\ protocol\_transaction\_id\_t\ nof\_transaction\_ids;}
+\DoxyCodeLine{00288\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timer\_service;}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \textcolor{keyword}{struct}\ transaction\_context\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timer;}
+\DoxyCodeLine{00292\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1manual__event}{manual\_event}}<outcome\_type>\ event;}
+\DoxyCodeLine{00293\ \ \ \};}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \ \ protocol\_transaction\_id\_t\ next\_transaction\_id\{0\};}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \ \ std::unordered\_map<protocol\_transaction\_id\_t,\ transaction\_context>\ running\_transactions;}
+\DoxyCodeLine{00298\ \};}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00301\ \textcolor{keyword}{constexpr}\ std::chrono::milliseconds\ protocol\_transaction\_manager<T>::\mbox{\hyperlink{classsrsran_1_1protocol__transaction__manager_af725907c7d52154272bd1fe8691bb2ec}{max\_timeout}}\{600000\};}
+\DoxyCodeLine{00302\ }
+\DoxyCodeLine{00303\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1no__fail__response__path}{no\_fail\_response\_path}}\ \{\};}
+\DoxyCodeLine{00304\ }
+\DoxyCodeLine{00305\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ SuccessResp,\ \textcolor{keyword}{typename}\ FailureResp>}
+\DoxyCodeLine{00306\ \textcolor{keyword}{class}\ protocol\_transaction\_outcome\_observer;}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \textcolor{comment}{///\ \(\backslash\)brief\ Publisher\ of\ application\ protocol\ transaction\ outcomes\ to\ which\ an\ observer\ can\ subscribe\ to.}}
+\DoxyCodeLine{00309\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ SuccessResp,\ \textcolor{keyword}{typename}\ FailureResp\ =\ \mbox{\hyperlink{structsrsran_1_1no__fail__response__path}{no\_fail\_response\_path}}>}
+\DoxyCodeLine{00310\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__event__source}{protocol\_transaction\_event\_source}}}
+\DoxyCodeLine{00311\ \{}
+\DoxyCodeLine{00312\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00313\ \ \ \textcolor{keyword}{explicit}\ protocol\_transaction\_event\_source(\mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ timer\_db)\ :\ ev\_source(timer\_db)\ \{\}}
+\DoxyCodeLine{00314\ \ \ \string~protocol\_transaction\_event\_source()}
+\DoxyCodeLine{00315\ \ \ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{comment}{//\ Automatically\ cancels\ any\ pending\ transaction.}}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keyword}{this}-\/>set(\mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}::cancel);}
+\DoxyCodeLine{00318\ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Forwards\ a\ result\ to\ the\ registered\ listener/subscriber/observer.}}
+\DoxyCodeLine{00321\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ If\ no\ subscriber\ is\ registered,\ returns\ false.}}
+\DoxyCodeLine{00322\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00323\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__event__source_af6df3e0d2fb05e84273ccee93de1e092}{set}}(U\&\&\ u)}
+\DoxyCodeLine{00324\ \ \ \{}
+\DoxyCodeLine{00325\ \ \ \ \ \textcolor{keywordflow}{return}\ ev\_source.set(std::forward<U>(u));}
+\DoxyCodeLine{00326\ \ \ \}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00329\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ protocol\_transaction\_outcome\_observer<SuccessResp,\ FailureResp>;}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ \ \ async\_event\_source<variant<SuccessResp,\ FailureResp,\ protocol\_transaction\_failure>>\ ev\_source;}
+\DoxyCodeLine{00332\ \};}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00334\ \textcolor{comment}{///\ \(\backslash\)brief\ Observer\ of\ application\ protocol\ transaction\ outcome.}}
+\DoxyCodeLine{00335\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ SuccessResp,\ \textcolor{keyword}{typename}\ FailureResp\ =\ \mbox{\hyperlink{structsrsran_1_1no__fail__response__path}{no\_fail\_response\_path}}>}
+\DoxyCodeLine{00336\ \textcolor{keyword}{class}\ protocol\_transaction\_outcome\_observer}
+\DoxyCodeLine{00337\ \{}
+\DoxyCodeLine{00338\ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{not}\ std::is\_same<SuccessResp,\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}>::value,\ \textcolor{stringliteral}{"{}Invalid\ Success\ Response"{}});}
+\DoxyCodeLine{00339\ \ \ \textcolor{keyword}{static\_assert}(\textcolor{keyword}{not}\ std::is\_same<FailureResp,\ \mbox{\hyperlink{namespacesrsran_ab5aab1a1269e900b5a6d2d1cd0bbe4ad}{protocol\_transaction\_failure}}>::value,\ \textcolor{stringliteral}{"{}Invalid\ Success\ Response"{}});}
+\DoxyCodeLine{00340\ }
+\DoxyCodeLine{00341\ \ \ \textcolor{keyword}{using}\ observer\_type\ =\ async\_single\_event\_observer<variant<SuccessResp,\ FailureResp,\ protocol\_transaction\_failure>>;}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00343\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00344\ \ \ \textcolor{keyword}{using}\ success\_response\_type\ =\ SuccessResp;}
+\DoxyCodeLine{00345\ \ \ \textcolor{keyword}{using}\ failure\_response\_type\ =\ FailureResp;}
+\DoxyCodeLine{00346\ \ \ \textcolor{keyword}{using}\ event\_source\_type\ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__event__source}{protocol\_transaction\_event\_source}}<success\_response\_type,\ failure\_response\_type>;}
+\DoxyCodeLine{00347\ \ \ \textcolor{keyword}{using}\ awaiter\_type\ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{typename}\ observer\_type::awaiter\_type;}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Subscribes\ this\ observer\ to\ transaction\ event\ source\ of\ type\ \(\backslash\)c\ protocol\_transaction\_event\_source.}}
+\DoxyCodeLine{00350\ \ \ \textcolor{comment}{///\ Only\ one\ simultaneous\ subscriber\ is\ allowed.}}
+\DoxyCodeLine{00351\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_aca38efd0c015e470bea17db431d741fa}{subscribe\_to}}(event\_source\_type\&\ publisher)\ \{\ observer.subscribe\_to(publisher.ev\_source);\ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Subscribes\ this\ observer\ to\ transaction\ event\ source\ of\ type\ \(\backslash\)c\ protocol\_transaction\_event\_source\ and}}
+\DoxyCodeLine{00354\ \ \ \textcolor{comment}{///\ sets\ a\ timeout\ to\ get\ a\ response.\ Only\ one\ simultaneous\ subscriber\ is\ allowed.}}
+\DoxyCodeLine{00355\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a20705b018bf19ca0bb8b2d949e876288}{subscribe\_to}}(event\_source\_type\&\ publisher,\ std::chrono::milliseconds\ time\_to\_cancel)}
+\DoxyCodeLine{00356\ \ \ \{}
+\DoxyCodeLine{00357\ \ \ \ \ observer.subscribe\_to(publisher.ev\_source,\ time\_to\_cancel,\ protocol\_transaction\_failure::timeout);}
+\DoxyCodeLine{00358\ \ \ \}}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00360\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ this\ sink\ has\ been\ registered\ to\ an\ event\ source.}}
+\DoxyCodeLine{00361\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a4c2f6b66fba05b8ab1fd2f1e4fadf9b3}{connected}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ observer.connected();\ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ result\ has\ been\ set\ by\ the\ event\ source.}}
+\DoxyCodeLine{00364\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a6209438f989fde8ea5d56243a7454250}{complete}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ observer.complete();\ \}}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00366\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ result\ of\ transaction\ was\ successful.}}
+\DoxyCodeLine{00367\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a54537faadf77ae2dc8c21a666295273a}{successful}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ complete()\ \textcolor{keyword}{and}\ variant\_holds\_alternative<success\_response\_type>(observer.result());\ \}}
+\DoxyCodeLine{00368\ }
+\DoxyCodeLine{00369\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ the\ result\ of\ the\ transaction\ was\ a\ failure\ message.}}
+\DoxyCodeLine{00370\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_aa284f28a31628e28fd2b6ca369f07522}{failed}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ complete()\ \textcolor{keyword}{and}\ variant\_holds\_alternative<failure\_response\_type>(observer.result());\ \}}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ if\ the\ protocol\ transaction\ could\ not\ be\ completed,\ due\ to\ abnormal\ conditions,\ cancellations\ or}}
+\DoxyCodeLine{00373\ \ \ \textcolor{comment}{///\ timeout.}}
+\DoxyCodeLine{00374\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a54ccd1322a74fd472c71fca8b17aaa9f}{protocol\_transaction\_failed}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00375\ \ \ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keywordflow}{return}\ complete()\ \textcolor{keyword}{and}\ variant\_holds\_alternative<protocol\_transaction\_failure>(observer.result());}
+\DoxyCodeLine{00377\ \ \ \}}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00379\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ whether\ there\ was\ a\ transaction\ timeout.}}
+\DoxyCodeLine{00380\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a64770bae496b12e34b5baf4e2a43c347}{timeout\_expired}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00381\ \ \ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \textcolor{keywordflow}{return}\ protocol\_transaction\_failed()\ \textcolor{keyword}{and}}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ variant\_get<protocol\_transaction\_failure>(observer.result())\ ==\ protocol\_transaction\_failure::timeout;}
+\DoxyCodeLine{00384\ \ \ \}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Result\ set\ by\ event\ source.}}
+\DoxyCodeLine{00387\ \ \ \textcolor{keyword}{const}\ success\_response\_type\&\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a2b1acafa271f806d6de709b0f2b61255}{response}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00388\ \ \ \{}
+\DoxyCodeLine{00389\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(successful(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ incorrect\ transaction\ result"{}});}
+\DoxyCodeLine{00390\ \ \ \ \ \textcolor{keywordflow}{return}\ variant\_get<success\_response\_type>(observer.result());}
+\DoxyCodeLine{00391\ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \textcolor{keyword}{const}\ failure\_response\_type\&\ failure()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00393\ \ \ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(failed(),\ \textcolor{stringliteral}{"{}Trying\ to\ fetch\ incorrect\ transaction\ result"{}});}
+\DoxyCodeLine{00395\ \ \ \ \ \textcolor{keywordflow}{return}\ variant\_get<failure\_response\_type>(observer.result());}
+\DoxyCodeLine{00396\ \ \ \}}
+\DoxyCodeLine{00397\ }
+\DoxyCodeLine{00398\ \ \ \textcolor{comment}{///\ Awaiter\ interface.}}
+\DoxyCodeLine{00399\ \ \ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a34decf241fde7bbd0390c7a89a5f481c}{awaiter\_type}}\ \mbox{\hyperlink{classsrsran_1_1protocol__transaction__outcome__observer_a34decf241fde7bbd0390c7a89a5f481c}{get\_awaiter}}()\ \{\ \textcolor{keywordflow}{return}\ observer.get\_awaiter();\ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00402\ \ \ observer\_type\ observer;}
+\DoxyCodeLine{00403\ \};}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

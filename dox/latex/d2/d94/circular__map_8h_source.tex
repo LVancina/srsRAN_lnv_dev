@@ -1,0 +1,313 @@
+\doxysection{circular\+\_\+map.\+h}
+\hypertarget{circular__map_8h_source}{}\label{circular__map_8h_source}\index{include/srsran/adt/circular\_map.h@{include/srsran/adt/circular\_map.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}detail/type\_storage.h"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{expected_8h}{"{}expected.h"{}}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{comment}{///\ Contiguous\ array\ of\ optional\ objects\ indexed\ circularly\ via\ a\ integer\ key.\ Random\ access,\ insertion\ and\ removal}}
+\DoxyCodeLine{00012\ \textcolor{comment}{///\ should\ have\ complexity\ O(1).}}
+\DoxyCodeLine{00013\ \textcolor{comment}{///\ Each\ container\ element\ contains\ 3\ fields:\ (i)\ presence\ flag,\ (ii)\ key,\ (iii)\ stored\ object}}
+\DoxyCodeLine{00014\ \textcolor{comment}{///\ In\ case\ the\ presence\ flag\ is\ set\ to\ true,\ the\ stored\ object\ exists\ and\ its\ ctor\ has\ been\ called.}}
+\DoxyCodeLine{00015\ \textcolor{comment}{///\ The\ following\ steps\ are\ performed\ to\ access\ an\ element:}}
+\DoxyCodeLine{00016\ \textcolor{comment}{///\ 1.\ The\ provided\ key\ K\ is\ converted\ to\ an\ array\ index\ via\ the\ operation\ I\ =\ K\ \%\ N.}}
+\DoxyCodeLine{00017\ \textcolor{comment}{///\ 2.\ The\ presence\ flag\ for\ the\ index\ I\ is\ checked.\ If\ present,}}
+\DoxyCodeLine{00018\ \textcolor{comment}{///\ 3.\ Check\ if\ the\ provided\ key\ K\ corresponds\ to\ the\ key\ stored\ in\ the\ element.\ If\ the\ keys\ match,}}
+\DoxyCodeLine{00019\ \textcolor{comment}{///\ 4.\ Retrieve\ the\ stored\ object.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{///\ The\ container\ does\ not\ resolve\ collisions,\ i.e.\ it\ doesn't\ allow\ two\ objects\ of\ different\ keys\ but\ same\ index}}
+\DoxyCodeLine{00021\ \textcolor{comment}{///\ to\ be\ inserted\ in\ the\ container.\ It\ is\ up\ to\ the\ user\ to\ resolve\ such\ situations.}}
+\DoxyCodeLine{00022\ \textcolor{comment}{///\ There\ is\ no\ pointer\ and\ iterator\ invalidation.}}
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)tparam\ K\ type\ of\ key\ used\ to\ retrieve\ an\ element\ index.\ K\ must\ be\ an\ unsigned\ integer}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ type\ of\ each\ element}}
+\DoxyCodeLine{00025\ \textcolor{comment}{///\ \(\backslash\)tparam\ N\ maximum\ number\ of\ elements}}
+\DoxyCodeLine{00026\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ K,\ \textcolor{keyword}{typename}\ T,\ size\_t\ N>}
+\DoxyCodeLine{00027\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}}
+\DoxyCodeLine{00028\ \{}
+\DoxyCodeLine{00029\ \ \ \textcolor{keyword}{static\_assert}(std::is\_integral<K>::value\ \textcolor{keyword}{and}\ std::is\_unsigned<K>::value,\ \textcolor{stringliteral}{"{}Container\ key\ must\ be\ an\ unsigned\ integer"{}});}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \textcolor{keyword}{using}\ obj\_t\ =\ std::pair<K,\ T>;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ \textcolor{keyword}{using}\ key\_type\ \ \ \ \ \ \ \ =\ K;}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{using}\ mapped\_type\ \ \ \ \ =\ T;}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ =\ std::pair<K,\ T>;}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{using}\ difference\_type\ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ Iterator\ type.\ It\ automatically\ skips\ absent\ elements\ of\ the\ container}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{using}\ iterator\_category\ =\ std::forward\_iterator\_tag;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ \ =\ std::pair<K,\ T>;}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{using}\ difference\_type\ \ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ \ =\ value\_type*;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ \ =\ value\_type\&;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ iterator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00050\ \ \ \ \ iterator(\mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>*\ map,\ size\_t\ idx\_)\ :\ ptr(map),\ idx(idx\_)}
+\DoxyCodeLine{00051\ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (idx\ <\ ptr-\/>capacity()\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ ptr-\/>present[idx])\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ ++(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\&\ operator++()}
+\DoxyCodeLine{00058\ \ \ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (++idx\ <\ ptr-\/>capacity()\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ ptr-\/>present[idx])\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ obj\_t\&\ operator*()}
+\DoxyCodeLine{00065\ \ \ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(idx\ <\ ptr-\/>capacity(),\ \textcolor{stringliteral}{"{}Iterator\ out-\/of-\/bounds\ (\{\}\ >=\ \{\})"{}},\ idx,\ ptr-\/>capacity());}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ptr-\/>get\_obj\_(idx);}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ obj\_t*\ operator-\/>()}
+\DoxyCodeLine{00070\ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(idx\ <\ ptr-\/>capacity(),\ \textcolor{stringliteral}{"{}Iterator\ out-\/of-\/bounds\ (\{\}\ >=\ \{\})"{}},\ idx,\ ptr-\/>capacity());}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&ptr-\/>get\_obj\_(idx);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{const}\ obj\_t*\ operator*()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00075\ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(idx\ <\ ptr-\/>capacity(),\ \textcolor{stringliteral}{"{}Iterator\ out-\/of-\/bounds\ (\{\}\ >=\ \{\})"{}},\ idx,\ ptr-\/>capacity());}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&ptr-\/>get\_obj\_(idx);}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{const}\ obj\_t*\ operator-\/>()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00080\ \ \ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(idx\ <\ ptr-\/>capacity(),\ \textcolor{stringliteral}{"{}Iterator\ out-\/of-\/bounds\ (\{\}\ >=\ \{\})"{}},\ idx,\ ptr-\/>capacity());}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&ptr-\/>get\_obj\_(idx);}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ptr\ ==\ other.ptr\ \textcolor{keyword}{and}\ idx\ ==\ other.idx;\ \}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ ==\ other);\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>;}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>*\ ptr\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00091\ \ \ \ \ size\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ idx\ =\ 0;}
+\DoxyCodeLine{00092\ \ \ \};}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00096\ \ \ \ \ const\_iterator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00097\ \ \ \ \ const\_iterator(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>*\ map,\ size\_t\ idx\_)\ :\ ptr(map),\ idx(idx\_)}
+\DoxyCodeLine{00098\ \ \ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (idx\ <\ ptr-\/>capacity()\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ ptr-\/>present[idx])\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ ++(*\textcolor{keyword}{this});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\&\ operator++()}
+\DoxyCodeLine{00105\ \ \ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (++idx\ <\ ptr-\/>capacity()\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ ptr-\/>present[idx])\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{const}\ obj\_t\&\ operator*()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ptr-\/>buffer[idx].get();\ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{const}\ obj\_t*\ operator-\/>()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \&ptr-\/>buffer[idx].get();\ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ ptr\ ==\ other.ptr\ \textcolor{keyword}{and}\ idx\ ==\ other.idx;\ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}(*\textcolor{keyword}{this}\ ==\ other);\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>;}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>*\ ptr\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00120\ \ \ \ \ size\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ idx\ =\ 0;}
+\DoxyCodeLine{00121\ \ \ \};}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keyword}{constexpr}\ circular\_map()\ \{\ std::fill(present.begin(),\ present.end(),\ \textcolor{keyword}{false});\ \}}
+\DoxyCodeLine{00124\ \ \ circular\_map(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>\&\ other)\ :\ present(other.present),\ count(other.count)}
+\DoxyCodeLine{00125\ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{for}\ (size\_t\ idx\ =\ 0;\ idx\ <\ other.capacity();\ ++idx)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ buffer[idx].emplace(other.get\_obj\_(idx));}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \}}
+\DoxyCodeLine{00132\ \ \ circular\_map(\mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>\&\&\ other)\ \textcolor{keyword}{noexcept}\ :\ present(other.present),\ count(other.count)}
+\DoxyCodeLine{00133\ \ \ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{for}\ (size\_t\ idx\ =\ 0;\ idx\ <\ other.capacity();\ ++idx)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ buffer[idx].emplace(std::move(other.get\_obj\_(idx)));}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \ \ other.clear();}
+\DoxyCodeLine{00140\ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \string~circular\_map()\ \{\ clear();\ \}}
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>\&\ other)}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ ==\ \&other)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00146\ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{for}\ (size\_t\ idx\ =\ 0;\ idx\ <\ other.capacity();\ ++idx)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ copy\_if\_present\_helper(buffer[idx],\ other.buffer[idx],\ present[idx],\ other.present[idx]);}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ count\ \ \ =\ other.count;}
+\DoxyCodeLine{00151\ \ \ \ \ present\ =\ other.present;}
+\DoxyCodeLine{00152\ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1circular__map}{circular\_map}}<K,\ T,\ N>\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00154\ \ \ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{for}\ (size\_t\ idx\ =\ 0;\ idx\ <\ other.capacity();\ ++idx)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ move\_if\_present\_helper(buffer[idx],\ other.buffer[idx],\ present[idx],\ other.present[idx]);}
+\DoxyCodeLine{00157\ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ count\ \ \ =\ other.count;}
+\DoxyCodeLine{00159\ \ \ \ \ present\ =\ other.present;}
+\DoxyCodeLine{00160\ \ \ \ \ other.clear();}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00162\ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///\ If\ an\ object\ with\ the\ given\ key\ exists}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{contains}}(K\ key)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00166\ \ \ \{}
+\DoxyCodeLine{00167\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordflow}{return}\ present[idx]\ \textcolor{keyword}{and}\ get\_obj\_(idx).first\ ==\ key;}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ Constructs\ object\ with\ given\ key\ if\ no\ collision\ is\ detected.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ key\ key\ of\ created\ object}}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ no\ collision\ was\ detected\ and\ object\ was\ inserted.\ False,\ otherwise.}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1circular__map_a4b44b7dc301dba7dc9ad538a81305621}{emplace}}(K\ key,\ Args\&\&...\ args)}
+\DoxyCodeLine{00176\ \ \ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_constructible<T,\ Args...>::value,\ \textcolor{stringliteral}{"{}Invalid\ argument\ types"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00181\ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ buffer[idx].emplace(}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ std::piecewise\_construct,\ std::forward\_as\_tuple(key),\ std::forward\_as\_tuple(std::forward<Args>(args)...));}
+\DoxyCodeLine{00184\ \ \ \ \ present[idx]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00185\ \ \ \ \ count++;}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00187\ \ \ \}}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordtype}{bool}\ insert(K\ key,\ \textcolor{keyword}{const}\ T\&\ obj)}
+\DoxyCodeLine{00190\ \ \ \{}
+\DoxyCodeLine{00191\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ buffer[idx].emplace(key,\ obj);}
+\DoxyCodeLine{00196\ \ \ \ \ present[idx]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00197\ \ \ \ \ count++;}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00199\ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \mbox{\hyperlink{namespacesrsran}{srsran}}::expected<\mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}},\ T>\ insert(K\ key,\ T\&\&\ obj)}
+\DoxyCodeLine{00201\ \ \ \{}
+\DoxyCodeLine{00202\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran}{srsran}}::expected<\mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}},\ T>(std::move(obj));}
+\DoxyCodeLine{00205\ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ buffer[idx].emplace(key,\ std::move(obj));}
+\DoxyCodeLine{00207\ \ \ \ \ present[idx]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00208\ \ \ \ \ count++;}
+\DoxyCodeLine{00209\ \ \ \ \ \textcolor{keywordflow}{return}\ iterator(\textcolor{keyword}{this},\ idx);}
+\DoxyCodeLine{00210\ \ \ \}}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///\ Insert\ object\ with\ provided\ key.\ If\ an\ object\ already\ exists\ with\ the\ same\ index,\ it\ gets\ overwritten.}}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ key\ key\ of\ the\ object\ to\ insert}}
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ obj\ Object\ to\ insert}}
+\DoxyCodeLine{00215\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00216\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1circular__map_a85edf6c0e5ce10608610be37ee28e3b5}{overwrite}}(K\ key,\ U\&\&\ obj)}
+\DoxyCodeLine{00217\ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{if}\ (present[idx])\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ erase(buffer[idx].get().first);}
+\DoxyCodeLine{00221\ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ insert(key,\ std::forward<U>(obj));}
+\DoxyCodeLine{00223\ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{bool}\ erase(K\ key)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ \mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{contains}}\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{(}}key\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{)}})\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ size\_t\ idx\ =\ key\ \%\ N;}
+\DoxyCodeLine{00231\ \ \ \ \ get\_obj\_(idx).\string~obj\_t();}
+\DoxyCodeLine{00232\ \ \ \ \ present[idx]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00233\ \ \ \ \ -\/-\/count;}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ erase(\mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ it)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00238\ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(it.idx\ <\ N\ \textcolor{keyword}{and}\ it.ptr\ ==\ \textcolor{keyword}{this},\ \textcolor{stringliteral}{"{}Iterator\ out-\/of-\/bounds\ (\{\}\ >=\ \{\})"{}},\ it.idx,\ N);}
+\DoxyCodeLine{00240\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ next\ =\ it;}
+\DoxyCodeLine{00241\ \ \ \ \ ++next;}
+\DoxyCodeLine{00242\ \ \ \ \ present[it.idx]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00243\ \ \ \ \ get\_obj\_(it.idx).\string~obj\_t();}
+\DoxyCodeLine{00244\ \ \ \ \ -\/-\/count;}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keywordflow}{return}\ next;}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \textcolor{keywordtype}{void}\ clear()\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00249\ \ \ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keywordflow}{for}\ (size\_t\ i\ =\ 0;\ i\ <\ N;\ ++i)\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (present[i])\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ present[i]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ get\_obj\_(i).\string~obj\_t();}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ count\ =\ 0;}
+\DoxyCodeLine{00257\ \ \ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \textcolor{comment}{///\ Random\ Access\ by\ key}}
+\DoxyCodeLine{00260\ \ \ T\&\ \mbox{\hyperlink{classsrsran_1_1circular__map_a5c0f476764bbf410a2f0f694be371420}{operator}}[](K\ key)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00261\ \ \ \{}
+\DoxyCodeLine{00262\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(contains(key),\ \textcolor{stringliteral}{"{}Accessing\ non-\/existent\ ID=\{\}"{}},\ (size\_t)key);}
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_obj\_(key\ \%\ N).second;}
+\DoxyCodeLine{00264\ \ \ \}}
+\DoxyCodeLine{00265\ \ \ \textcolor{keyword}{const}\ T\&\ operator[](K\ key)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00266\ \ \ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(contains(key),\ \textcolor{stringliteral}{"{}Accessing\ non-\/existent\ ID=\{\}"{}},\ (size\_t)key);}
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keywordflow}{return}\ get\_obj\_(key\ \%\ N).second;}
+\DoxyCodeLine{00269\ \ \ \}}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ size\_t\ \ \ \ \ \ \ \ size()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ count;\ \}}
+\DoxyCodeLine{00272\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ empty()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ count\ ==\ 0;\ \}}
+\DoxyCodeLine{00273\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ full()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ count\ ==\ N;\ \}}
+\DoxyCodeLine{00274\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ has\_space(K\ key)\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{not}\ present[key\ \%\ N];\ \}}
+\DoxyCodeLine{00275\ \ \ \textcolor{keyword}{static}\ size\_t\ capacity()\ \{\ \textcolor{keywordflow}{return}\ N;\ \}}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}(\textcolor{keyword}{this},\ 0);\ \}}
+\DoxyCodeLine{00278\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}(\textcolor{keyword}{this},\ N);\ \}}
+\DoxyCodeLine{00279\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\ begin()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}(\textcolor{keyword}{this},\ 0);\ \}}
+\DoxyCodeLine{00280\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\ end()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}(\textcolor{keyword}{this},\ N);\ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \textcolor{comment}{///\ Find\ object\ iterator\ by\ key}}
+\DoxyCodeLine{00283\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}\ \mbox{\hyperlink{classsrsran_1_1circular__map_adeb29e28eae803d4101bb877c1ea49f1}{find}}(K\ key)}
+\DoxyCodeLine{00284\ \ \ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{contains}}\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{(}}key\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{)}})\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1iterator}{iterator}}(\textcolor{keyword}{this},\ key\ \%\ N);}
+\DoxyCodeLine{00287\ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keywordflow}{return}\ end();}
+\DoxyCodeLine{00289\ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}\ find(K\ key)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00291\ \ \ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{contains}}\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{(}}key\mbox{\hyperlink{classsrsran_1_1circular__map_ad7fbb9d8cd90fc3eb5fdebcc72f157eb}{)}})\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1circular__map_1_1const__iterator}{const\_iterator}}(\textcolor{keyword}{this},\ key\ \%\ N);}
+\DoxyCodeLine{00294\ \ \ \ \ \}}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keywordflow}{return}\ end();}
+\DoxyCodeLine{00296\ \ \ \}}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00299\ \ \ obj\_t\&\ \ \ \ \ \ \ get\_obj\_(size\_t\ idx)\ \{\ \textcolor{keywordflow}{return}\ buffer[idx].get();\ \}}
+\DoxyCodeLine{00300\ \ \ \textcolor{keyword}{const}\ obj\_t\&\ get\_obj\_(size\_t\ idx)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ buffer[idx].get();\ \}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ std::array<detail::type\_storage<obj\_t>,\ N>\ buffer;}
+\DoxyCodeLine{00303\ \ \ std::array<\textcolor{keywordtype}{bool},\ N>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ present;}
+\DoxyCodeLine{00304\ \ \ size\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ =\ 0;}
+\DoxyCodeLine{00305\ \};}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

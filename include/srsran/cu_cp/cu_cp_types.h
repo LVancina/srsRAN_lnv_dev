@@ -26,13 +26,13 @@
 #include "srsran/adt/optional.h"
 #include "srsran/adt/slotted_array.h"
 #include "srsran/pdcp/pdcp_config.h"
-#include "srsran/ran/cause/ngap_cause.h"
+#include "srsran/ran/cause.h"
 #include "srsran/ran/crit_diagnostics.h"
 #include "srsran/ran/cu_types.h"
-#include "srsran/ran/gnb_id.h"
 #include "srsran/ran/lcid.h"
 #include "srsran/ran/nr_cgi.h"
 #include "srsran/ran/pci.h"
+#include "srsran/ran/rnti.h"
 #include "srsran/ran/s_nssai.h"
 #include "srsran/ran/subcarrier_spacing.h"
 #include "srsran/ran/up_transport_layer_info.h"
@@ -151,14 +151,6 @@ struct cu_cp_user_location_info_nr {
   optional<uint64_t>  time_stamp;
 };
 
-/// <AMF Identifier> = <AMF Region ID><AMF Set ID><AMF Pointer>
-/// with AMF Region ID length is 8 bits, AMF Set ID length is 10 bits and AMF Pointer length is 6 bits
-struct cu_cp_amf_identifier_t {
-  uint8_t  amf_region_id = 0;
-  uint16_t amf_set_id    = 0;
-  uint8_t  amf_pointer   = 0;
-};
-
 struct cu_cp_five_g_s_tmsi {
   uint16_t amf_set_id;
   uint8_t  amf_pointer;
@@ -171,7 +163,6 @@ struct cu_cp_initial_ue_message {
   establishment_cause_t         establishment_cause;
   cu_cp_user_location_info_nr   user_location_info;
   optional<cu_cp_five_g_s_tmsi> five_g_s_tmsi;
-  optional<uint16_t>            amf_set_id;
 };
 
 struct cu_cp_ul_nas_transport {
@@ -336,7 +327,7 @@ struct cu_cp_associated_qos_flow {
 };
 struct cu_cp_qos_flow_with_cause_item {
   qos_flow_id_t qos_flow_id = qos_flow_id_t::invalid;
-  ngap_cause_t  cause;
+  cause_t       cause;
 };
 
 using cu_cp_qos_flow_failed_to_setup_item = cu_cp_qos_flow_with_cause_item;
@@ -360,7 +351,7 @@ struct cu_cp_pdu_session_res_setup_response_item {
 };
 
 struct cu_cp_pdu_session_resource_setup_unsuccessful_transfer {
-  ngap_cause_t                 cause;
+  cause_t                      cause;
   optional<crit_diagnostics_t> crit_diagnostics;
 };
 
@@ -376,7 +367,7 @@ struct cu_cp_pdu_session_resource_setup_response {
 };
 
 struct cu_cp_pdu_session_res_release_cmd_transfer {
-  ngap_cause_t cause;
+  cause_t cause;
 };
 
 struct cu_cp_pdu_session_res_to_release_item_rel_cmd {
@@ -421,13 +412,14 @@ struct cu_cp_pdu_session_res_release_resp_transfer {
 
 struct cu_cp_pdu_session_res_released_item_rel_res {
   pdu_session_id_t                            pdu_session_id = pdu_session_id_t::invalid;
-  cu_cp_pdu_session_res_release_resp_transfer resp_transfer;
+  cu_cp_pdu_session_res_release_resp_transfer pdu_session_res_release_resp_transfer;
 };
 
 struct cu_cp_pdu_session_resource_release_response {
-  slotted_id_vector<pdu_session_id_t, cu_cp_pdu_session_res_released_item_rel_res> released_pdu_sessions;
-  optional<cu_cp_user_location_info_nr>                                            user_location_info;
-  optional<crit_diagnostics_t>                                                     crit_diagnostics;
+  slotted_id_vector<pdu_session_id_t, cu_cp_pdu_session_res_released_item_rel_res>
+                                        pdu_session_res_released_list_rel_res;
+  optional<cu_cp_user_location_info_nr> user_location_info;
+  optional<crit_diagnostics_t>          crit_diagnostics;
 };
 
 using cu_cp_qos_flow_add_or_mod_item = qos_flow_setup_request_item;
@@ -486,15 +478,14 @@ struct cu_cp_pdu_session_resource_modify_response {
 };
 
 struct cu_cp_ue_context_release_command {
-  ue_index_t   ue_index = ue_index_t::invalid;
-  ngap_cause_t cause;
-  bool         requires_rrc_release = true;
+  ue_index_t ue_index = ue_index_t::invalid;
+  cause_t    cause;
 };
 
 struct cu_cp_ue_context_release_request {
   ue_index_t                    ue_index = ue_index_t::invalid;
   std::vector<pdu_session_id_t> pdu_session_res_list_cxt_rel_req;
-  ngap_cause_t                  cause;
+  cause_t                       cause;
 };
 
 struct cu_cp_recommended_cell_item {
@@ -508,7 +499,7 @@ struct cu_cp_recommended_cells_for_paging {
 
 struct cu_cp_global_gnb_id {
   std::string plmn_id;
-  gnb_id_t    gnb_id;
+  uint64_t    gnb_id;
 };
 
 struct cu_cp_amf_paging_target {
@@ -587,6 +578,17 @@ struct cu_cp_inter_du_handover_request {
 };
 
 struct cu_cp_inter_du_handover_response {
+  // Place-holder for possible return values.
+  bool success = false;
+};
+
+struct cu_cp_inter_ngran_node_n2_handover_request {
+  ue_index_t   ue_index = ue_index_t::invalid;
+  unsigned     gnb_id;
+  nr_cell_id_t nci;
+};
+
+struct cu_cp_inter_ngran_node_n2_handover_response {
   // Place-holder for possible return values.
   bool success = false;
 };

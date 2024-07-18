@@ -50,6 +50,8 @@ public:
     evm_calc(std::move(evm_calc_)),
     descrambler(std::move(descrambler_)),
     ch_re({MAX_BLOCK_SIZE, 1}),
+    eq_re({MAX_BLOCK_SIZE, 1}),
+    eq_noise_vars({MAX_BLOCK_SIZE, 1}),
     ch_estimates({MAX_BLOCK_SIZE, 1, 1}),
     compute_post_eq_sinr(compute_post_eq_sinr_)
   {
@@ -180,10 +182,16 @@ private:
       ch_re;
 
   /// Buffer used to store channel modulation resource elements at the equalizer output.
-  std::array<cf_t, MAX_BLOCK_SIZE> temp_eq_re;
+  dynamic_tensor<std::underlying_type_t<channel_equalizer::re_list::dims>(channel_equalizer::re_list::dims::nof_dims),
+                 cf_t,
+                 channel_equalizer::re_list::dims>
+      eq_re;
 
   /// Buffer used to transfer symbol noise variances at the equalizer output.
-  std::array<float, MAX_BLOCK_SIZE> temp_eq_noise_vars;
+  dynamic_tensor<std::underlying_type_t<channel_equalizer::re_list::dims>(channel_equalizer::re_list::dims::nof_dims),
+                 float,
+                 channel_equalizer::re_list::dims>
+      eq_noise_vars;
 
   /// Buffer used to transfer channel estimation coefficients from the channel estimate to the equalizer.
   dynamic_tensor<std::underlying_type_t<channel_equalizer::ch_est_list::dims>(

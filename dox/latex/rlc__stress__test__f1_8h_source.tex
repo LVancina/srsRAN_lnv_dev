@@ -1,0 +1,104 @@
+\doxysection{rlc\+\_\+stress\+\_\+test\+\_\+f1.\+h}
+\hypertarget{rlc__stress__test__f1_8h_source}{}\label{rlc__stress__test__f1_8h_source}\index{tests/integrationtests/rlc/rlc\_stress\_test\_f1.h@{tests/integrationtests/rlc/rlc\_stress\_test\_f1.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}lib/rlc/rlc\_bearer\_logger.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_rx.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/pdcp/pdcp\_tx.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_rx.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_tx.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1f1ap__dummy}{f1ap\_dummy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdcp__tx__lower__notifier}{pdcp\_tx\_lower\_notifier}},}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{rlc\_tx\_upper\_layer\_data\_notifier}},}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}},}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__upper__layer__data__notifier}{rlc\_rx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{rlc\_bearer\_logger}}\ logger;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}*\ rlc\_tx\_upper\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1pdcp__rx__lower__interface}{pdcp\_rx\_lower\_interface}}*\ \ \ \ \ \ \ \ \ \ \ pdcp\_rx\_lower\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy}{f1ap\_dummy}}(uint32\_t\ \textcolor{keywordtype}{id})\ :\ logger(\textcolor{stringliteral}{"{}F1AP"{}},\ \{0,\ id,\ drb\_id\_t::drb1,\ \textcolor{stringliteral}{"{}DL"{}}\})\ \{\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{//\ PDCP\ -\/>\ F1\ -\/>\ RLC}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy_a535c633466b2537af71c90ba37ce38e4}{on\_new\_pdu}}(\mbox{\hyperlink{structsrsran_1_1pdcp__tx__pdu}{pdcp\_tx\_pdu}}\ pdu)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\ sdu\ =\ \{\};}
+\DoxyCodeLine{00050\ \ \ \ \ sdu.buf\ \ \ \ \ =\ std::move(pdu.buf);}
+\DoxyCodeLine{00051\ \ \ \ \ sdu.pdcp\_sn\ =\ pdu.pdcp\_sn;}
+\DoxyCodeLine{00052\ \ \ \ \ logger.log\_info(\textcolor{stringliteral}{"{}Passing\ F1AP\ PDU\ to\ RLC"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ rlc\_tx\_upper-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a3672e8658872f39bbcbb61afa9a05235}{handle\_sdu}}(std::move(sdu));}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{//\ PDCP\ -\/>\ F1AP\ -\/>\ RLC}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy_ad26618459f6fe4b01f0e91b2cae9918b}{on\_discard\_pdu}}(uint32\_t\ pdcp\_sn)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Discard\ PDU\ called"{}});}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ RLC\ -\/>\ F1AP\ -\/>\ PDCP}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy_adb50aaf25d7ff585e83d9fc9da0b952c}{on\_transmitted\_sdu}}(uint32\_t\ max\_tx\_pdcp\_sn)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Transmitted\ SDU\ called"{}});}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{//\ RLC\ -\/>\ F1AP\ -\/>\ PDCP}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy_ab9898821a169bc7c7c4253f5777cf1d5}{on\_delivered\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Delivered\ SDU\ called"{}});}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ RLC\ -\/>\ F1AP\ -\/>\ PDCP}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1f1ap__dummy_abd1eca96af2c81e4011b6a5c300699e0}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ pdu)\ \textcolor{keyword}{final}}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}Passing\ SDU\ to\ PDCP"{}});}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ TODO\ for\ now\ we\ copy\ to\ a\ new\ byte\ buffer}}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ buf;}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ \textcolor{keywordtype}{byte}\ :\ pdu)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ report\_error\_if\_not(buf.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a190484f4224c88acb2f1b3334b28421b}{append}}(\textcolor{keywordtype}{byte}),\ \textcolor{stringliteral}{"{}Failed\ to\ allocate\ byte\ buffer"{}});}
+\DoxyCodeLine{00085\ \ \ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \ \ pdcp\_rx\_lower-\/>\mbox{\hyperlink{classsrsran_1_1pdcp__rx__lower__interface_a831aa82a3c246bd196e6616ad25bca4e}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\{std::move(buf)\});}
+\DoxyCodeLine{00087\ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ RLC\ -\/>\ F1\ -\/>\ RRC}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ on\_protocol\_failure()\ final\ \{\}}
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordtype}{void}\ on\_max\_retx()\ final\ \{\}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{void}\ set\_rlc\_tx\_upper\_data(rlc\_tx\_upper\_layer\_data\_interface*\ rlc\_tx\_upper\_)\ \{\ this-\/>rlc\_tx\_upper\ =\ rlc\_tx\_upper\_;\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{void}\ set\_pdcp\_rx\_lower(pdcp\_rx\_lower\_interface*\ pdcp\_rx\_lower\_)\ \{\ this-\/>pdcp\_rx\_lower\ =\ pdcp\_rx\_lower\_;\ \}}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

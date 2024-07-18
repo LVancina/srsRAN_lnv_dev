@@ -96,8 +96,7 @@ TEST_F(dl_harq_process_tester, newtx_set_harq_to_not_empty)
   pdsch.codewords[0].mcs_index     = mcs;
   pdsch.codewords[0].tb_size_bytes = tbs_bytes;
   pdsch.rbs                        = vrbs;
-  dl_harq_sched_context harq_ctxt{dci_dl_rnti_config_type::c_rnti_f1_0};
-  h_dl.save_alloc_params(harq_ctxt, pdsch);
+  h_dl.save_alloc_params(srsran::dci_dl_rnti_config_type::c_rnti_f1_0, pdsch);
   ASSERT_EQ(h_dl.last_alloc_params().dci_cfg_type, dci_dl_rnti_config_type::c_rnti_f1_0);
   ASSERT_EQ(h_dl.last_alloc_params().rbs.type1(), vrbs);
   ASSERT_EQ(h_dl.last_alloc_params().tb[0]->mcs, mcs);
@@ -270,7 +269,7 @@ public:
 
   const unsigned max_harq_retxs     = 1;
   const unsigned max_ack_wait_slots = 12;
-  const unsigned shortened_ack_wait_slots{8};
+  const unsigned shortened_ack_wait_slots{4};
   const unsigned k1              = 1;
   const unsigned first_ack_slot  = 1;
   const unsigned second_ack_slot = 2;

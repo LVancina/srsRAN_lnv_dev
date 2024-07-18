@@ -34,7 +34,8 @@ public:
 
   /// Schedules the SR opportunities and CSI occasions.
   /// \param[out,in] res_alloc struct with scheduling results.
-  virtual void run_slot(cell_resource_allocator& res_alloc) = 0;
+  /// \param[in] sl_tx slot for which the SR should be allocated.
+  virtual void run_slot(cell_resource_allocator& res_alloc, slot_point sl_tx) = 0;
 };
 
 } // namespace srsran

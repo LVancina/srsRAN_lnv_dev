@@ -1,0 +1,1181 @@
+\doxysection{ngap\+\_\+asn1\+\_\+helpers.\+h}
+\hypertarget{ngap__asn1__helpers_8h_source}{}\label{ngap__asn1__helpers_8h_source}\index{lib/ngap/ngap\_asn1\_helpers.h@{lib/ngap/ngap\_asn1\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ngap__asn1__converters_8h}{"{}ngap\_asn1\_converters.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ngap__context_8h}{"{}ngap\_context.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/asn1\_utils.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/ngap/ngap\_ies.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/ngap/ngap\_pdu\_contents.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/cu\_cp/cu\_cp\_types.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ngap/ngap\_handover.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ngap/ngap\_init\_context\_setup.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ngap/ngap\_setup.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/security/security.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{string}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{vector}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keyword}{namespace}\ srs\_cu\_cp\ \{}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \(\backslash\)brief\ Fills\ ASN.1\ NGSetupRequest\ struct.}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_request\ The\ NGSetupRequest\ ASN.1\ struct\ to\ fill.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)param[in]\ request\ The\ common\ type\ NGSetupRequest.}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_ng\_setup\_request(asn1::ngap::ng\_setup\_request\_s\&\ asn1\_request,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__ng__setup__request}{ngap\_ng\_setup\_request}}\&\ \ \ \ request)}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ fill\ global\ ran\ node\ id}}
+\DoxyCodeLine{00051\ \ \ asn1\_request-\/>global\_ran\_node\_id.set\_global\_gnb\_id();}
+\DoxyCodeLine{00052\ \ \ asn1\_request-\/>global\_ran\_node\_id.global\_gnb\_id().gnb\_id.set\_gnb\_id();}
+\DoxyCodeLine{00053\ \ \ asn1\_request-\/>global\_ran\_node\_id.global\_gnb\_id().gnb\_id.gnb\_id().from\_number(request.global\_ran\_node\_id.gnb\_id);}
+\DoxyCodeLine{00054\ \ \ asn1\_request-\/>global\_ran\_node\_id.global\_gnb\_id().plmn\_id.from\_number(}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ plmn\_string\_to\_bcd(request.global\_ran\_node\_id.plmn\_id));}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ fill\ ran\ node\ name}}
+\DoxyCodeLine{00058\ \ \ asn1\_request-\/>ran\_node\_name\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00059\ \ \ asn1\_request-\/>ran\_node\_name.from\_string(request.ran\_node\_name);}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{//\ fill\ supported\ ta\ list}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ supported\_ta\_item\ :\ request.supported\_ta\_list)\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ asn1::ngap::supported\_ta\_item\_s\ asn1\_supported\_ta\_item\ =\ \{\};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ fill\ tac}}
+\DoxyCodeLine{00066\ \ \ \ \ asn1\_supported\_ta\_item.tac.from\_number(supported\_ta\_item.tac);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ fill\ broadcast\ plmn\ list}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ broadcast\_plmn\_item\ :\ supported\_ta\_item.broadcast\_plmn\_list)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ asn1::ngap::broadcast\_plmn\_item\_s\ asn1\_broadcast\_plmn\_item\ =\ \{\};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{comment}{//\ fill\ plmn\ id}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ asn1\_broadcast\_plmn\_item.plmn\_id.from\_number(plmn\_string\_to\_bcd(broadcast\_plmn\_item.plmn\_id));}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{comment}{//\ fill\ tai\ slice\ support\ list}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ slice\_support\_item\ :\ broadcast\_plmn\_item.tai\_slice\_support\_list)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fill\ s\_nssai}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ asn1::ngap::slice\_support\_item\_s\ asn1\_slice\_support\_item\ =\ \{\};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ asn1\_slice\_support\_item.s\_nssai\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ s\_nssai\_to\_asn1(slice\_support\_item.s\_nssai);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ asn1\_broadcast\_plmn\_item.tai\_slice\_support\_list.push\_back(asn1\_slice\_support\_item);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ asn1\_supported\_ta\_item.broadcast\_plmn\_list.push\_back(asn1\_broadcast\_plmn\_item);}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ asn1\_request-\/>supported\_ta\_list.push\_back(asn1\_supported\_ta\_item);}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{//\ fill\ paging\ drx}}
+\DoxyCodeLine{00089\ \ \ asn1::number\_to\_enum(asn1\_request-\/>default\_paging\_drx,\ request.default\_paging\_drx);}
+\DoxyCodeLine{00090\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{comment}{///\ \(\backslash\)brief\ Fills\ the\ common\ type\ \(\backslash\)c\ ngap\_ng\_setup\_result\ struct.}}
+\DoxyCodeLine{00093\ \textcolor{comment}{///\ \(\backslash\)param[out]\ result\ The\ common\ type\ \(\backslash\)c\ ngap\_ng\_setup\_result\ struct\ to\ fill.}}
+\DoxyCodeLine{00094\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_response\ The\ ASN.1\ type\ NGSetupResponse.}}
+\DoxyCodeLine{00095\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_ngap\_ng\_setup\_result(ngap\_ng\_setup\_result\&\ result,\ \textcolor{keyword}{const}\ asn1::ngap::ng\_setup\_resp\_s\&\ asn1\_response)}
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__ng__setup__response}{ngap\_ng\_setup\_response}}\ response;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{//\ fill\ amf\ name}}
+\DoxyCodeLine{00100\ \ \ response.amf\_name\ =\ asn1\_response-\/>amf\_name.to\_string();}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{//\ fill\ served\ guami\ list}}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_served\_guami\_item\ :\ asn1\_response-\/>served\_guami\_list)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ ngap\_served\_guami\_item\ served\_guami\_item\ =\ \{\};}
+\DoxyCodeLine{00105\ \ \ \ \ served\_guami\_item.guami\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ asn1\_to\_guami(asn1\_served\_guami\_item.guami);}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_served\_guami\_item.backup\_amf\_name\_present)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ served\_guami\_item.backup\_amf\_name\ =\ asn1\_served\_guami\_item.backup\_amf\_name.to\_string();}
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ response.served\_guami\_list.push\_back(served\_guami\_item);}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{//\ fill\ relative\ amf\ capacity}}
+\DoxyCodeLine{00113\ \ \ response.relative\_amf\_capacity\ =\ asn1\_response-\/>relative\_amf\_capacity;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{//\ fill\ plmn\ support\ list}}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_plmn\_support\_item\ :\ asn1\_response-\/>plmn\_support\_list)\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ ngap\_plmn\_support\_item\ plmn\_support\_item\ =\ \{\};}
+\DoxyCodeLine{00118\ \ \ \ \ plmn\_support\_item.plmn\_id\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ asn1\_plmn\_support\_item.plmn\_id.to\_string();}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_slice\_support\_item\ :\ asn1\_plmn\_support\_item.slice\_support\_list)\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ slice\_support\_item\_t\ slice\_support\_item\ =\ \{\};}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ slice\_support\_item.s\_nssai.sst\ \ \ \ \ \ \ \ \ \ =\ asn1\_slice\_support\_item.s\_nssai.sst.to\_number();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_slice\_support\_item.s\_nssai.sd\_present)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ slice\_support\_item.s\_nssai.sd\ =\ asn1\_slice\_support\_item.s\_nssai.sd.to\_number();}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ plmn\_support\_item.slice\_support\_list.push\_back(slice\_support\_item);}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ response.plmn\_support\_list.push\_back(plmn\_support\_item);}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{comment}{//\ TODO:\ Fill\ crit\ diagnostics}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{//\ TODO:\ Add\ missing\ optional\ values}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ result\ =\ response;}
+\DoxyCodeLine{00136\ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{comment}{///\ \(\backslash\)brief\ Fills\ the\ common\ type\ \(\backslash\)c\ ngap\_ng\_setup\_result\ struct.}}
+\DoxyCodeLine{00139\ \textcolor{comment}{///\ \(\backslash\)param[out]\ result\ The\ common\ type\ \(\backslash\)c\ ngap\_ng\_setup\_result\ struct\ to\ fill.}}
+\DoxyCodeLine{00140\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_fail\ The\ ASN.1\ type\ NGSetupFailure.}}
+\DoxyCodeLine{00141\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_ngap\_ng\_setup\_result(ngap\_ng\_setup\_result\&\ result,\ \textcolor{keyword}{const}\ asn1::ngap::ng\_setup\_fail\_s\&\ asn1\_fail)}
+\DoxyCodeLine{00142\ \{}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__ng__setup__failure}{ngap\_ng\_setup\_failure}}\ fail;}
+\DoxyCodeLine{00144\ \ \ fail.cause\ =\ asn1\_to\_cause(asn1\_fail-\/>cause);}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \textcolor{keywordflow}{if}\ (asn1\_fail-\/>crit\_diagnostics\_present)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{00148\ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ result\ =\ fail;}
+\DoxyCodeLine{00151\ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ Initial\ UE\ Message\ to\ NGAP\ Initial\ UE\ Message.}}
+\DoxyCodeLine{00154\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_msg\ The\ ASN1\ NGAP\ Initial\ UE\ Message.}}
+\DoxyCodeLine{00155\ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ CU-\/CP\ Initial\ UE\ Message.}}
+\DoxyCodeLine{00156\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_initial\_ue\_message(asn1::ngap::init\_ue\_msg\_s\&\ \ \ \ \ \ asn1\_msg,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__initial__ue__message}{cu\_cp\_initial\_ue\_message}}\&\ msg,}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__context__t}{ngap\_context\_t}}\&\ \ \ \ \ \ \ \ \ \ \ context)}
+\DoxyCodeLine{00159\ \{}
+\DoxyCodeLine{00160\ \ \ asn1\_msg-\/>nas\_pdu\ =\ msg.nas\_pdu.copy();}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ asn1\_msg-\/>rrc\_establishment\_cause.value\ =}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \textcolor{keyword}{static\_cast}<asn1::ngap::rrc\_establishment\_cause\_opts::options>(msg.establishment\_cause);}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{auto}\&\ user\_loc\_info\_nr\ =\ asn1\_msg-\/>user\_location\_info.set\_user\_location\_info\_nr();}
+\DoxyCodeLine{00166\ \ \ user\_loc\_info\_nr\ \ \ \ \ \ \ =\ cu\_cp\_user\_location\_info\_to\_asn1(msg.user\_location\_info);}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ asn1\_msg-\/>ue\_context\_request\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00169\ \ \ asn1\_msg-\/>ue\_context\_request.value\ \ \ =\ asn1::ngap::ue\_context\_request\_opts::options::requested;}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordflow}{if}\ (msg.five\_g\_s\_tmsi.has\_value())\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ asn1\_msg-\/>five\_g\_s\_tmsi\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00173\ \ \ \ \ asn1\_msg-\/>five\_g\_s\_tmsi.amf\_set\_id.from\_number(context.current\_guami.amf\_set\_id);}
+\DoxyCodeLine{00174\ \ \ \ \ asn1\_msg-\/>five\_g\_s\_tmsi.amf\_pointer.from\_number(context.current\_guami.amf\_pointer);}
+\DoxyCodeLine{00175\ \ \ \ \ asn1\_msg-\/>five\_g\_s\_tmsi.five\_g\_tmsi.from\_number(msg.five\_g\_s\_tmsi.value().five\_g\_tmsi);}
+\DoxyCodeLine{00176\ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{//\ TODO:\ Add\ missing\ optional\ values}}
+\DoxyCodeLine{00179\ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ UL\ NAS\ Transport\ message\ to\ NGAP\ UL\ NAS\ Transport\ message.}}
+\DoxyCodeLine{00182\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_msg\ The\ ASN1\ NGAP\ UL\ NAS\ Transport\ message.}}
+\DoxyCodeLine{00183\ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ CU-\/CP\ UL\ NAS\ Transport\ message.}}
+\DoxyCodeLine{00184\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_ul\_nas\_transport(asn1::ngap::ul\_nas\_transport\_s\&\ asn1\_msg,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ul__nas__transport}{cu\_cp\_ul\_nas\_transport}}\&\ msg)}
+\DoxyCodeLine{00185\ \{}
+\DoxyCodeLine{00186\ \ \ asn1\_msg-\/>nas\_pdu\ =\ msg.nas\_pdu.copy();}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \textcolor{keyword}{auto}\&\ user\_loc\_info\_nr\ =\ asn1\_msg-\/>user\_location\_info.set\_user\_location\_info\_nr();}
+\DoxyCodeLine{00189\ \ \ user\_loc\_info\_nr\ \ \ \ \ \ \ =\ cu\_cp\_user\_location\_info\_to\_asn1(msg.user\_location\_info);}
+\DoxyCodeLine{00190\ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \textcolor{comment}{///\ Helper\ function\ to\ fill\ the\ CU-\/CP\ PDU\ Session\ Resource\ Setup\ Item\ for\ both,\ PDUSessionResourceSetupItemSUReq\ and}}
+\DoxyCodeLine{00193\ \textcolor{comment}{///\ PDUSessionResourceSetupItemCxtReq.\ Note\ that\ the\ NAS-\/PDU\ is\ added\ in\ separate\ functions}}
+\DoxyCodeLine{00194\ \textcolor{comment}{///\ \(\backslash\)param[out]\ setup\_item\ The\ cu\_cp\_pdu\_session\_res\_setup\_item\ struct\ to\ fill.}}
+\DoxyCodeLine{00195\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_session\_item\ The\ pdu\_session\_res\_setup\_item\_su\_req\_s\ or\ pdu\_session\_res\_setup\_item\_cxt\_req\_s\ ASN1}}
+\DoxyCodeLine{00196\ \textcolor{comment}{///\ struct.}}
+\DoxyCodeLine{00197\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{00198\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ template\_asn1\_item>}
+\DoxyCodeLine{00199\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ fill\_cu\_cp\_pdu\_session\_resource\_setup\_item\_base(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__res__setup__item}{cu\_cp\_pdu\_session\_res\_setup\_item}}\&\ setup\_item,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ template\_asn1\_item\&\ \ \ \ \ \ \ \ \ asn1\_session\_item,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_request\_transfer)}
+\DoxyCodeLine{00202\ \{}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{//\ pDUSessionID}}
+\DoxyCodeLine{00204\ \ \ setup\_item.pdu\_session\_id\ =\ uint\_to\_pdu\_session\_id(asn1\_session\_item.pdu\_session\_id);}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{//\ pDUSessionNAS-\/PDU\ /\ NAS-\/PDU\ will\ be\ added\ in\ a\ separate\ function}}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{//\ s-\/NSSAI}}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordflow}{if}\ (asn1\_session\_item.s\_nssai.sd\_present)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ setup\_item.s\_nssai.sd\ =\ asn1\_session\_item.s\_nssai.sd.to\_number();}
+\DoxyCodeLine{00211\ \ \ \}}
+\DoxyCodeLine{00212\ \ \ setup\_item.s\_nssai.sst\ =\ asn1\_session\_item.s\_nssai.sst.to\_number();}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{//\ pDUSessionResourceSetupRequestTransfer}}
+\DoxyCodeLine{00215\ \ \ asn1::ngap::pdu\_session\_res\_setup\_request\_transfer\_s\ asn1\_setup\_req\_transfer;}
+\DoxyCodeLine{00216\ \ \ asn1::\mbox{\hyperlink{structasn1_1_1cbit__ref}{cbit\_ref}}\ bref(\{asn1\_request\_transfer.begin(),\ asn1\_request\_transfer.end()\});}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \textcolor{keywordflow}{if}\ (asn1\_setup\_req\_transfer.unpack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00219\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}}).error(\textcolor{stringliteral}{"{}Couldn't\ unpack\ PDU\ Session\ Resource\ Setup\ Request\ Transfer\ PDU"{}});}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00221\ \ \ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordflow}{if}\ (asn1\_setup\_req\_transfer-\/>pdu\_session\_aggr\_max\_bit\_rate\_present)\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{comment}{//\ id-\/PDUSessionAggregateMaximumBitRate}}
+\DoxyCodeLine{00225\ \ \ \ \ setup\_item.pdu\_session\_aggregate\_maximum\_bit\_rate\_dl\ =}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ asn1\_setup\_req\_transfer-\/>pdu\_session\_aggr\_max\_bit\_rate.pdu\_session\_aggr\_max\_bit\_rate\_dl;}
+\DoxyCodeLine{00227\ \ \ \ \ setup\_item.pdu\_session\_aggregate\_maximum\_bit\_rate\_ul\ =}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ asn1\_setup\_req\_transfer-\/>pdu\_session\_aggr\_max\_bit\_rate.pdu\_session\_aggr\_max\_bit\_rate\_ul;}
+\DoxyCodeLine{00229\ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \textcolor{comment}{//\ id-\/UL-\/NGU-\/UP-\/TNLInformation}}
+\DoxyCodeLine{00232\ \ \ setup\_item.ul\_ngu\_up\_tnl\_info\ =\ asn1\_to\_up\_transport\_layer\_info(asn1\_setup\_req\_transfer-\/>ul\_ngu\_up\_tnl\_info);}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{//\ id-\/PDUSessionType}}
+\DoxyCodeLine{00235\ \ \ setup\_item.pdu\_session\_type\ =\ asn1\_setup\_req\_transfer-\/>pdu\_session\_type.to\_string();}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \textcolor{comment}{//\ id-\/SecurityIndication}}
+\DoxyCodeLine{00238\ \ \ \textcolor{keywordflow}{if}\ (asn1\_setup\_req\_transfer-\/>security\_ind\_present)\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1security__indication__t}{security\_indication\_t}}\ ind\ =\ \{\};}
+\DoxyCodeLine{00240\ \ \ \ \ asn1\_to\_security\_indication(ind,\ asn1\_setup\_req\_transfer-\/>security\_ind);}
+\DoxyCodeLine{00241\ \ \ \ \ setup\_item.security\_ind\ =\ ind;}
+\DoxyCodeLine{00242\ \ \ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{//\ id-\/QosFlowSetupRequestList}}
+\DoxyCodeLine{00245\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_flow\_item\ :\ asn1\_setup\_req\_transfer-\/>qos\_flow\_setup\_request\_list)\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ qos\_flow\_setup\_request\_item\ qos\_flow\_setup\_req\_item;}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{comment}{//\ qosFlowIdentifier}}
+\DoxyCodeLine{00249\ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_id\ =\ uint\_to\_qos\_flow\_id(asn1\_flow\_item.qos\_flow\_id);}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{comment}{//\ qosFlowLevelQosParameters}}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.type()\ ==}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ asn1::ngap::qos\_characteristics\_c::types::dyn5qi)\ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ dyn\_5qi\_descriptor\_t\ dyn\_5qi\ =\ \{\};}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn5qi().five\_qi\_present)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ dyn\_5qi.five\_qi\ =}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ uint\_to\_five\_qi(asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn5qi().five\_qi);}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \ \ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn\_5qi\ =\ dyn\_5qi;}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00264\ }
+\DoxyCodeLine{00265\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.type()\ ==}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1::ngap::qos\_characteristics\_c::types::non\_dyn5qi)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ non\_dyn\_5qi\_descriptor\_t\ non\_dyn\_5qi\ =\ \{\};}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ non\_dyn\_5qi.five\_qi\ =}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ uint\_to\_five\_qi(asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn5qi().five\_qi);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn\_5qi\ =\ non\_dyn\_5qi;}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00273\ \ \ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{comment}{//\ allocationAndRetentionPriority}}
+\DoxyCodeLine{00276\ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.prio\_level\_arp\ =}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.prio\_level\_arp;}
+\DoxyCodeLine{00278\ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_cap\ =}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_cap.to\_string();}
+\DoxyCodeLine{00280\ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_vulnerability\ =}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_vulnerability.to\_string();}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{comment}{//\ Optional\ Parameters}}
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.add\_qos\_flow\_info\_present)\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.add\_qos\_flow\_info\ =}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.add\_qos\_flow\_info.to\_string();}
+\DoxyCodeLine{00287\ \ \ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.gbr\_qos\_info\_present)\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ to\ common\ type}}
+\DoxyCodeLine{00291\ \ \ \ \ \}}
+\DoxyCodeLine{00292\ }
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.reflective\_qos\_attribute\_present)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ qos\_flow\_setup\_req\_item.qos\_flow\_level\_qos\_params.reflective\_qos\_attribute\ =}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ asn1::enum\_to\_bool(asn1\_flow\_item.qos\_flow\_level\_qos\_params.reflective\_qos\_attribute);}
+\DoxyCodeLine{00296\ \ \ \ \ \}}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.erab\_id\_present)\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ qos\_flow\_setup\_req\_item.erab\_id\ =\ asn1\_flow\_item.erab\_id;}
+\DoxyCodeLine{00300\ \ \ \ \ \}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \ \ setup\_item.qos\_flow\_setup\_request\_items.emplace(qos\_flow\_setup\_req\_item.qos\_flow\_id,\ qos\_flow\_setup\_req\_item);}
+\DoxyCodeLine{00303\ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00305\ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ PDU\ Session\ Resource\ Setup\ List\ SU\ REQ\ \ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00308\ \textcolor{comment}{///\ \(\backslash\)param[out]\ cu\_cp\_pdu\_session\_res\_setup\_msg\ The\ cu\_cp\_pdu\_session\_res\_setup\_msg\ struct\ to\ fill.}}
+\DoxyCodeLine{00309\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_pdu\_session\_res\_setup\_list\ The\ pdu\_session\_res\_setup\_list\_su\_req\ ASN1\ struct.}}
+\DoxyCodeLine{00310\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{00311\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ fill\_cu\_cp\_pdu\_session\_resource\_setup\_request(}
+\DoxyCodeLine{00312\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__request}{cu\_cp\_pdu\_session\_resource\_setup\_request}}\&\ cu\_cp\_pdu\_session\_resource\_setup\_msg,}
+\DoxyCodeLine{00313\ \ \ \ \ \textcolor{keyword}{const}\ asn1::\mbox{\hyperlink{structasn1_1_1dyn__seq__of}{dyn\_seq\_of}}<asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1pdu__session__res__setup__item__su__req__s}{pdu\_session\_res\_setup\_item\_su\_req\_s}},\ 1U,\ 256U,\ \textcolor{keyword}{true}>\&}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_res\_setup\_list)}
+\DoxyCodeLine{00315\ \{}
+\DoxyCodeLine{00316\ \ \ \textcolor{keywordflow}{if}\ (asn1\_pdu\_session\_res\_setup\_list.size()\ ==\ 0)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00318\ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_session\_item\ :\ asn1\_pdu\_session\_res\_setup\_list)\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ cu\_cp\_pdu\_session\_res\_setup\_item\ setup\_item;}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \ \ \ \ \textcolor{keywordflow}{if}\ (!fill\_cu\_cp\_pdu\_session\_resource\_setup\_item\_base(}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ setup\_item,\ asn1\_session\_item,\ asn1\_session\_item.pdu\_session\_res\_setup\_request\_transfer.copy()))\ \{}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00326\ \ \ \ \ \}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{comment}{//\ pDUSessionNAS-\/PDU}}
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keywordflow}{if}\ (!asn1\_session\_item.pdu\_session\_nas\_pdu.empty())\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ setup\_item.pdu\_session\_nas\_pdu.resize(asn1\_session\_item.pdu\_session\_nas\_pdu.size());}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ std::copy(asn1\_session\_item.pdu\_session\_nas\_pdu.begin(),}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_session\_item.pdu\_session\_nas\_pdu.end(),}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setup\_item.pdu\_session\_nas\_pdu.begin());}
+\DoxyCodeLine{00334\ \ \ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \ \ \ \ cu\_cp\_pdu\_session\_resource\_setup\_msg.pdu\_session\_res\_setup\_items.emplace(setup\_item.pdu\_session\_id,}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(setup\_item));}
+\DoxyCodeLine{00338\ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00340\ \}}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ PDU\ Session\ Resource\ Setup\ List\ CTX\ REQ}}
+\DoxyCodeLine{00343\ \textcolor{comment}{///\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00344\ \textcolor{comment}{///\ \(\backslash\)param[out]\ cu\_cp\_pdu\_session\_res\_setup\_msg\ The\ cu\_cp\_pdu\_session\_res\_setup\_msg\ struct\ to\ fill.}}
+\DoxyCodeLine{00345\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_pdu\_session\_res\_setup\_list\ The\ pdu\_session\_res\_setup\_item\_cxt\_req\_s\ ASN1\ struct.}}
+\DoxyCodeLine{00346\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{00347\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ fill\_cu\_cp\_pdu\_session\_resource\_setup\_request(}
+\DoxyCodeLine{00348\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__request}{cu\_cp\_pdu\_session\_resource\_setup\_request}}\&\ cu\_cp\_pdu\_session\_resource\_setup\_msg,}
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{keyword}{const}\ asn1::\mbox{\hyperlink{structasn1_1_1dyn__seq__of}{dyn\_seq\_of}}<asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1pdu__session__res__setup__item__cxt__req__s}{pdu\_session\_res\_setup\_item\_cxt\_req\_s}},\ 1U,\ 256U,\ \textcolor{keyword}{true}>\&}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_res\_setup\_list)}
+\DoxyCodeLine{00351\ \{}
+\DoxyCodeLine{00352\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_session\_item\ :\ asn1\_pdu\_session\_res\_setup\_list)\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ cu\_cp\_pdu\_session\_res\_setup\_item\ setup\_item;}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \ \ \textcolor{keywordflow}{if}\ (!fill\_cu\_cp\_pdu\_session\_resource\_setup\_item\_base(}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ setup\_item,\ asn1\_session\_item,\ asn1\_session\_item.pdu\_session\_res\_setup\_request\_transfer.copy()))\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00358\ \ \ \ \ \}}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{comment}{//\ NAS-\/PDU}}
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keywordflow}{if}\ (!asn1\_session\_item.nas\_pdu.empty())\ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ setup\_item.pdu\_session\_nas\_pdu.resize(asn1\_session\_item.nas\_pdu.size());}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ std::copy(}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ asn1\_session\_item.nas\_pdu.begin(),\ asn1\_session\_item.nas\_pdu.end(),\ setup\_item.pdu\_session\_nas\_pdu.begin());}
+\DoxyCodeLine{00365\ \ \ \ \ \}}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \ \ \ \ cu\_cp\_pdu\_session\_resource\_setup\_msg.pdu\_session\_res\_setup\_items.emplace(setup\_item.pdu\_session\_id,}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(setup\_item));}
+\DoxyCodeLine{00369\ \ \ \}}
+\DoxyCodeLine{00370\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00371\ \}}
+\DoxyCodeLine{00372\ }
+\DoxyCodeLine{00373\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ Init\ Context\ Setup\ Request\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00374\ \textcolor{comment}{///\ \(\backslash\)param[out]\ request\ The\ ngap\_init\_context\_setup\_request\ struct\ to\ fill.}}
+\DoxyCodeLine{00375\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_request\ The\ Init\ Context\ Setup\ Request\ ASN1\ struct.}}
+\DoxyCodeLine{00376\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ fill\_ngap\_initial\_context\_setup\_request(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__init__context__setup__request}{ngap\_init\_context\_setup\_request}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ request,}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ asn1::ngap::init\_context\_setup\_request\_s\&\ asn1\_request)}
+\DoxyCodeLine{00378\ \{}
+\DoxyCodeLine{00379\ \ \ \textcolor{comment}{//\ old\_amf}}
+\DoxyCodeLine{00380\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>old\_amf\_present)\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ request.old\_amf\ =\ asn1\_request-\/>old\_amf.to\_string();}
+\DoxyCodeLine{00382\ \ \ \}}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \ \ \textcolor{comment}{//\ ue\_aggr\_max\_bit\_rate}}
+\DoxyCodeLine{00385\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>ue\_aggr\_max\_bit\_rate\_present)\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ request.ue\_aggr\_max\_bit\_rate.emplace();}
+\DoxyCodeLine{00387\ \ \ \ \ request.ue\_aggr\_max\_bit\_rate.value().ue\_aggr\_max\_bit\_rate\_dl\ =}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ asn1\_request-\/>ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_dl;}
+\DoxyCodeLine{00389\ \ \ \ \ request.ue\_aggr\_max\_bit\_rate.value().ue\_aggr\_max\_bit\_rate\_ul\ =}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ asn1\_request-\/>ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_ul;}
+\DoxyCodeLine{00391\ \ \ \}}
+\DoxyCodeLine{00392\ }
+\DoxyCodeLine{00393\ \ \ \textcolor{comment}{//\ guami}}
+\DoxyCodeLine{00394\ \ \ request.guami\ =\ asn1\_to\_guami(asn1\_request-\/>guami);}
+\DoxyCodeLine{00395\ }
+\DoxyCodeLine{00396\ \ \ \textcolor{comment}{//\ pdu\_session\_res\_setup\_list\_cxt\_req}}
+\DoxyCodeLine{00397\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>pdu\_session\_res\_setup\_list\_cxt\_req\_present)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ request.pdu\_session\_res\_setup\_list\_cxt\_req.emplace();}
+\DoxyCodeLine{00399\ \ \ \ \ \textcolor{keywordflow}{if}\ (!fill\_cu\_cp\_pdu\_session\_resource\_setup\_request(request.pdu\_session\_res\_setup\_list\_cxt\_req.value(),}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_request-\/>pdu\_session\_res\_setup\_list\_cxt\_req))\ \{}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00402\ \ \ \ \ \}}
+\DoxyCodeLine{00403\ \ \ \}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \textcolor{comment}{//\ allowed\_nssai}}
+\DoxyCodeLine{00406\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_s\_nssai\ :\ asn1\_request-\/>allowed\_nssai)\ \{}
+\DoxyCodeLine{00407\ \ \ \ \ request.allowed\_nssai.push\_back(ngap\_asn1\_to\_s\_nssai(asn1\_s\_nssai.s\_nssai));}
+\DoxyCodeLine{00408\ \ \ \}}
+\DoxyCodeLine{00409\ }
+\DoxyCodeLine{00410\ \ \ \textcolor{comment}{//\ security\_context}}
+\DoxyCodeLine{00411\ \ \ copy\_asn1\_key(request.security\_context.k,\ asn1\_request-\/>security\_key);}
+\DoxyCodeLine{00412\ \ \ fill\_supported\_algorithms(request.security\_context.supported\_int\_algos,}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_request-\/>ue\_security\_cap.nr\_integrity\_protection\_algorithms);}
+\DoxyCodeLine{00414\ \ \ fill\_supported\_algorithms(request.security\_context.supported\_enc\_algos,}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_request-\/>ue\_security\_cap.nr\_encryption\_algorithms);}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \ \ \textcolor{comment}{//\ ue\_radio\_cap}}
+\DoxyCodeLine{00418\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>ue\_radio\_cap\_present)\ \{}
+\DoxyCodeLine{00419\ \ \ \ \ request.ue\_radio\_cap\ =\ asn1\_request-\/>ue\_radio\_cap.copy();}
+\DoxyCodeLine{00420\ \ \ \}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \ \ \textcolor{comment}{//\ idx\_to\_rfsp}}
+\DoxyCodeLine{00423\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>idx\_to\_rfsp\_present)\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ request.idx\_to\_rfsp\ =\ asn1\_request-\/>idx\_to\_rfsp;}
+\DoxyCodeLine{00425\ \ \ \}}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ \textcolor{comment}{//\ masked\_imeisv}}
+\DoxyCodeLine{00428\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>masked\_imeisv\_present)\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ request.masked\_imeisv\ =\ asn1\_request-\/>masked\_imeisv.to\_number();}
+\DoxyCodeLine{00430\ \ \ \}}
+\DoxyCodeLine{00431\ }
+\DoxyCodeLine{00432\ \ \ \textcolor{comment}{//\ nas\_pdu}}
+\DoxyCodeLine{00433\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>nas\_pdu\_present)\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ request.nas\_pdu\ =\ asn1\_request-\/>nas\_pdu.copy();}
+\DoxyCodeLine{00435\ \ \ \}}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \textcolor{comment}{//\ ue\_radio\_cap\_for\_paging}}
+\DoxyCodeLine{00438\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>ue\_radio\_cap\_for\_paging\_present)\ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__radio__cap__for__paging}{cu\_cp\_ue\_radio\_cap\_for\_paging}}\ ue\_radio\_cap\_for\_paging;}
+\DoxyCodeLine{00440\ \ \ \ \ ue\_radio\_cap\_for\_paging.ue\_radio\_cap\_for\_paging\_of\_nr\ =}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ asn1\_request-\/>ue\_radio\_cap\_for\_paging.ue\_radio\_cap\_for\_paging\_of\_nr.copy();}
+\DoxyCodeLine{00442\ }
+\DoxyCodeLine{00443\ \ \ \ \ request.ue\_radio\_cap\_for\_paging\ =\ ue\_radio\_cap\_for\_paging;}
+\DoxyCodeLine{00444\ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \ \ \textcolor{comment}{//\ TODO:\ Add\ missing\ optional\ values}}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00448\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00449\ \}}
+\DoxyCodeLine{00450\ }
+\DoxyCodeLine{00451\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ Initial\ Context\ Setup\ Response\ message\ to\ NGAP\ Initial\ Context\ Setup\ Response}}
+\DoxyCodeLine{00452\ \textcolor{comment}{///\ message.}}
+\DoxyCodeLine{00453\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_resp\ The\ ASN1\ NGAP\ Initial\ Context\ Setup\ Response\ message.}}
+\DoxyCodeLine{00454\ \textcolor{comment}{///\ \(\backslash\)param[in]\ resp\ The\ CU-\/CP\ Initial\ Context\ Setup\ Response\ message.}}
+\DoxyCodeLine{00455\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_initial\_context\_setup\_response(asn1::ngap::init\_context\_setup\_resp\_s\&\ \ asn1\_resp,}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__init__context__setup__response}{ngap\_init\_context\_setup\_response}}\&\ resp)}
+\DoxyCodeLine{00457\ \{}
+\DoxyCodeLine{00458\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Setup\ Response\ List}}
+\DoxyCodeLine{00459\ \ \ \textcolor{keywordflow}{if}\ (!resp.pdu\_session\_res\_setup\_response\_items.empty())\ \{}
+\DoxyCodeLine{00460\ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_setup\_list\_cxt\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ resp\_item\ :\ resp.pdu\_session\_res\_setup\_response\_items)\ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_setup\_item\_cxt\_res\_s\ asn1\_resp\_item;}
+\DoxyCodeLine{00464\ }
+\DoxyCodeLine{00465\ \ \ \ \ \ \ pdu\_session\_res\_setup\_response\_item\_to\_asn1(asn1\_resp\_item,\ resp\_item);}
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \ \ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_setup\_list\_cxt\_res.push\_back(asn1\_resp\_item);}
+\DoxyCodeLine{00468\ \ \ \ \ \}}
+\DoxyCodeLine{00469\ \ \ \}}
+\DoxyCodeLine{00470\ }
+\DoxyCodeLine{00471\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Failed\ to\ Setup\ List}}
+\DoxyCodeLine{00472\ \ \ \textcolor{keywordflow}{if}\ (!resp.pdu\_session\_res\_failed\_to\_setup\_items.empty())\ \{}
+\DoxyCodeLine{00473\ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_failed\_to\_setup\_list\_cxt\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00474\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ setup\_failed\_item\ :\ resp.pdu\_session\_res\_failed\_to\_setup\_items)\ \{}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_failed\_to\_setup\_item\_cxt\_res\_s\ asn1\_setup\_failed\_item;}
+\DoxyCodeLine{00476\ }
+\DoxyCodeLine{00477\ \ \ \ \ \ \ pdu\_session\_res\_setup\_failed\_item\_to\_asn1(asn1\_setup\_failed\_item,\ setup\_failed\_item);}
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_failed\_to\_setup\_list\_cxt\_res.push\_back(asn1\_setup\_failed\_item);}
+\DoxyCodeLine{00480\ \ \ \ \ \}}
+\DoxyCodeLine{00481\ \ \ \}}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00483\ \ \ \textcolor{comment}{//\ Fill\ Criticality\ Diagnostics}}
+\DoxyCodeLine{00484\ \ \ \textcolor{keywordflow}{if}\ (resp.crit\_diagnostics.has\_value())\ \{}
+\DoxyCodeLine{00485\ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{00486\ \ \ \}}
+\DoxyCodeLine{00487\ \}}
+\DoxyCodeLine{00488\ }
+\DoxyCodeLine{00489\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ Initial\ Context\ Setup\ Failure\ message\ to\ NGAP\ Initial\ Context\ Setup\ Failure}}
+\DoxyCodeLine{00490\ \textcolor{comment}{///\ message.}}
+\DoxyCodeLine{00491\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_fail\ The\ ASN1\ NGAP\ Initial\ Context\ Setup\ Failure\ message.}}
+\DoxyCodeLine{00492\ \textcolor{comment}{///\ \(\backslash\)param[in]\ fail\ The\ CU-\/CP\ Initial\ Context\ Setup\ Failure\ message.}}
+\DoxyCodeLine{00493\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_initial\_context\_setup\_failure(asn1::ngap::init\_context\_setup\_fail\_s\&\ asn1\_fail,}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__init__context__setup__failure}{ngap\_init\_context\_setup\_failure}}\&\ fail)}
+\DoxyCodeLine{00495\ \{}
+\DoxyCodeLine{00496\ \ \ \textcolor{comment}{//\ Fill\ cause}}
+\DoxyCodeLine{00497\ \ \ asn1\_fail-\/>cause\ =\ cause\_to\_asn1(fail.cause);}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Failed\ to\ Setup\ List}}
+\DoxyCodeLine{00500\ \ \ \textcolor{keywordflow}{if}\ (!fail.pdu\_session\_res\_failed\_to\_setup\_items.empty())\ \{}
+\DoxyCodeLine{00501\ \ \ \ \ asn1\_fail-\/>pdu\_session\_res\_failed\_to\_setup\_list\_cxt\_fail\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00502\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ setup\_failed\_item\ :\ fail.pdu\_session\_res\_failed\_to\_setup\_items)\ \{}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_failed\_to\_setup\_item\_cxt\_fail\_s\ asn1\_setup\_failed\_item;}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \ \ \ \ \ \ pdu\_session\_res\_setup\_failed\_item\_to\_asn1(asn1\_setup\_failed\_item,\ setup\_failed\_item);}
+\DoxyCodeLine{00506\ }
+\DoxyCodeLine{00507\ \ \ \ \ \ \ asn1\_fail-\/>pdu\_session\_res\_failed\_to\_setup\_list\_cxt\_fail.push\_back(asn1\_setup\_failed\_item);}
+\DoxyCodeLine{00508\ \ \ \ \ \}}
+\DoxyCodeLine{00509\ \ \ \}}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \textcolor{comment}{//\ Fill\ Criticality\ Diagnostics}}
+\DoxyCodeLine{00512\ \ \ \textcolor{keywordflow}{if}\ (fail.crit\_diagnostics.has\_value())\ \{}
+\DoxyCodeLine{00513\ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{00514\ \ \ \}}
+\DoxyCodeLine{00515\ \}}
+\DoxyCodeLine{00516\ }
+\DoxyCodeLine{00517\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ a\ NGAP\ ASN1\ modify\ item\ to\ commong\ type.}}
+\DoxyCodeLine{00518\ \textcolor{comment}{///\ \(\backslash\)param[out]\ modify\_item\ The\ flat/common\ version}}
+\DoxyCodeLine{00519\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_session\_item\ The\ ASN1\ struct\ to\ be\ converted.}}
+\DoxyCodeLine{00520\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_cu\_cp\_pdu\_session\_resource\_modify\_item\_base(}
+\DoxyCodeLine{00521\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__res__modify__item__mod__req}{cu\_cp\_pdu\_session\_res\_modify\_item\_mod\_req}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ modify\_item,}
+\DoxyCodeLine{00522\ \ \ \ \ \textcolor{keyword}{const}\ asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1pdu__session__res__modify__item__mod__req__s}{pdu\_session\_res\_modify\_item\_mod\_req\_s}}\&\ asn1\_session\_item)}
+\DoxyCodeLine{00523\ \{}
+\DoxyCodeLine{00524\ \ \ modify\_item.pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{uint\_to\_pdu\_session\_id}}\mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{(}}asn1\_session\_item.pdu\_session\_id\mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{)}};}
+\DoxyCodeLine{00525\ }
+\DoxyCodeLine{00526\ \ \ asn1::ngap::pdu\_session\_res\_modify\_request\_transfer\_s\ asn1\_modify\_req\_transfer;}
+\DoxyCodeLine{00527\ \ \ asn1::\mbox{\hyperlink{structasn1_1_1cbit__ref}{cbit\_ref}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bref(asn1\_session\_item.pdu\_session\_res\_modify\_request\_transfer);}
+\DoxyCodeLine{00528\ \ \ \textcolor{keywordflow}{if}\ (asn1\_modify\_req\_transfer.unpack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00529\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}}).error(\textcolor{stringliteral}{"{}Couldn't\ unpack\ PDU\ Session\ Resource\ Modify\ Request\ Transfer\ PDU."{}});}
+\DoxyCodeLine{00530\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00531\ \ \ \}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \textcolor{keywordflow}{if}\ (asn1\_modify\_req\_transfer-\/>qos\_flow\_add\_or\_modify\_request\_list\_present)\ \{}
+\DoxyCodeLine{00534\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_flow\_item\ :\ asn1\_modify\_req\_transfer-\/>qos\_flow\_add\_or\_modify\_request\_list)\ \{}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ cu\_cp\_qos\_flow\_add\_or\_mod\_item\ qos\_flow\_add\_item;}
+\DoxyCodeLine{00536\ }
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \textcolor{comment}{//\ qosFlowIdentifier}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_id\ =\ uint\_to\_qos\_flow\_id(asn1\_flow\_item.qos\_flow\_id);}
+\DoxyCodeLine{00539\ }
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \textcolor{comment}{//\ qosFlowLevelQosParameters}}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params\_present)\ \{}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.type()\ ==}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ asn1::ngap::qos\_characteristics\_c::types::dyn5qi)\ \{}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ dyn\_5qi\_descriptor\_t\ dyn\_5qi\ =\ \{\};}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn5qi().five\_qi\_present)\ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ dyn\_5qi.five\_qi\ =}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint\_to\_five\_qi(asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn5qi().five\_qi);}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00550\ }
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.dyn\_5qi\ =\ dyn\_5qi;}
+\DoxyCodeLine{00552\ }
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00554\ }
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.type()\ ==}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1::ngap::qos\_characteristics\_c::types::non\_dyn5qi)\ \{}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ non\_dyn\_5qi\_descriptor\_t\ non\_dyn\_5qi\ =\ \{\};}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ non\_dyn\_5qi.five\_qi\ =}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint\_to\_five\_qi(asn1\_flow\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn5qi().five\_qi);}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_level\_qos\_params.qos\_characteristics.non\_dyn\_5qi\ =\ non\_dyn\_5qi;}
+\DoxyCodeLine{00561\ }
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ optional\ values}}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ allocationAndRetentionPriority}}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.prio\_level\_arp\ =}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.prio\_level\_arp;}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_cap\ =}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_cap.to\_string();}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ qos\_flow\_add\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_vulnerability\ =}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_flow\_item.qos\_flow\_level\_qos\_params.alloc\_and\_retention\_prio.pre\_emption\_vulnerability.to\_string();}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00573\ }
+\DoxyCodeLine{00574\ \ \ \ \ \ \ modify\_item.transfer.qos\_flow\_add\_or\_modify\_request\_list.emplace(qos\_flow\_add\_item.qos\_flow\_id,}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ qos\_flow\_add\_item);}
+\DoxyCodeLine{00576\ \ \ \ \ \}}
+\DoxyCodeLine{00577\ \ \ \}}
+\DoxyCodeLine{00578\ }
+\DoxyCodeLine{00579\ \ \ \textcolor{keywordflow}{if}\ (asn1\_modify\_req\_transfer-\/>qos\_flow\_to\_release\_list\_present)\ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_flow\_item\ :\ asn1\_modify\_req\_transfer-\/>qos\_flow\_to\_release\_list)\ \{}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ cu\_cp\_qos\_flow\_with\_cause\_item\ qos\_flow\_release\_item;}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ qos\_flow\_release\_item.qos\_flow\_id\ =\ uint\_to\_qos\_flow\_id(asn1\_flow\_item.qos\_flow\_id);}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ qos\_flow\_release\_item.cause\ \ \ \ \ \ \ =\ asn1\_to\_cause(asn1\_flow\_item.cause);}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ modify\_item.transfer.qos\_flow\_to\_release\_list.emplace(qos\_flow\_release\_item.qos\_flow\_id,\ qos\_flow\_release\_item);}
+\DoxyCodeLine{00585\ \ \ \ \ \}}
+\DoxyCodeLine{00586\ \ \ \}}
+\DoxyCodeLine{00587\ }
+\DoxyCodeLine{00588\ \ \ \textcolor{keywordflow}{if}\ (!asn1\_session\_item.nas\_pdu.empty())\ \{}
+\DoxyCodeLine{00589\ \ \ \ \ modify\_item.nas\_pdu.resize(asn1\_session\_item.nas\_pdu.size());}
+\DoxyCodeLine{00590\ \ \ \ \ std::copy(asn1\_session\_item.nas\_pdu.begin(),\ asn1\_session\_item.nas\_pdu.end(),\ modify\_item.nas\_pdu.begin());}
+\DoxyCodeLine{00591\ \ \ \}}
+\DoxyCodeLine{00592\ \}}
+\DoxyCodeLine{00593\ }
+\DoxyCodeLine{00594\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ PDU\ Session\ Resource\ Modify\ List\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00595\ \textcolor{comment}{///\ \(\backslash\)param[out]\ cu\_cp\_pdu\_session\_resource\_modify\_msg\ The\ cu\_cp\_pdu\_session\_res\_modify\_msg\ struct\ to\ fill.}}
+\DoxyCodeLine{00596\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_pdu\_session\_res\_modify\_list\ The\ pdu\_session\_res\_modify\_list\ ASN1\ struct.}}
+\DoxyCodeLine{00597\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_cu\_cp\_pdu\_session\_resource\_modify\_request(}
+\DoxyCodeLine{00598\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__modify__request}{cu\_cp\_pdu\_session\_resource\_modify\_request}}\&\ cu\_cp\_pdu\_session\_resource\_modify\_msg,}
+\DoxyCodeLine{00599\ \ \ \ \ \textcolor{keyword}{const}\ asn1::\mbox{\hyperlink{structasn1_1_1dyn__seq__of}{dyn\_seq\_of}}<asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1pdu__session__res__modify__item__mod__req__s}{pdu\_session\_res\_modify\_item\_mod\_req\_s}},\ 1,\ 256,\ \textcolor{keyword}{true}>\&}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_res\_modify\_list)}
+\DoxyCodeLine{00601\ \{}
+\DoxyCodeLine{00602\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_session\_item\ :\ asn1\_pdu\_session\_res\_modify\_list)\ \{}
+\DoxyCodeLine{00603\ \ \ \ \ cu\_cp\_pdu\_session\_res\_modify\_item\_mod\_req\ modify\_item;}
+\DoxyCodeLine{00604\ \ \ \ \ fill\_cu\_cp\_pdu\_session\_resource\_modify\_item\_base(modify\_item,\ asn1\_session\_item);}
+\DoxyCodeLine{00605\ \ \ \ \ cu\_cp\_pdu\_session\_resource\_modify\_msg.pdu\_session\_res\_modify\_items.emplace(modify\_item.pdu\_session\_id,}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(modify\_item));}
+\DoxyCodeLine{00607\ \ \ \}}
+\DoxyCodeLine{00608\ \}}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00610\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ PDU\ Session\ Resource\ Setup\ Response\ message\ to\ NGAP\ PDU\ Session\ Resource\ Setup\ Response}}
+\DoxyCodeLine{00611\ \textcolor{comment}{///\ message.}}
+\DoxyCodeLine{00612\ \textcolor{comment}{///\ \(\backslash\)param[out]\ resp\ The\ ASN1\ NGAP\ PDU\ Session\ Resource\ Setup\ Response\ message.}}
+\DoxyCodeLine{00613\ \textcolor{comment}{///\ \(\backslash\)param[in]\ cu\_cp\_resp\ The\ CU-\/CP\ PDU\ Session\ Resource\ Setup\ Response\ message.}}
+\DoxyCodeLine{00614\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_pdu\_session\_res\_setup\_response(asn1::ngap::pdu\_session\_res\_setup\_resp\_s\&\ \ \ \ \ \ \ resp,}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__setup__response}{cu\_cp\_pdu\_session\_resource\_setup\_response}}\ cu\_cp\_resp)}
+\DoxyCodeLine{00616\ \{}
+\DoxyCodeLine{00617\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Setup\ Response\ List}}
+\DoxyCodeLine{00618\ \ \ \textcolor{keywordflow}{if}\ (!cu\_cp\_resp.pdu\_session\_res\_setup\_response\_items.empty())\ \{}
+\DoxyCodeLine{00619\ \ \ \ \ resp-\/>pdu\_session\_res\_setup\_list\_su\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00620\ }
+\DoxyCodeLine{00621\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cu\_cp\_resp\_item\ :\ cu\_cp\_resp.pdu\_session\_res\_setup\_response\_items)\ \{}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_setup\_item\_su\_res\_s\ resp\_item;}
+\DoxyCodeLine{00623\ }
+\DoxyCodeLine{00624\ \ \ \ \ \ \ pdu\_session\_res\_setup\_response\_item\_to\_asn1(resp\_item,\ cu\_cp\_resp\_item);}
+\DoxyCodeLine{00625\ }
+\DoxyCodeLine{00626\ \ \ \ \ \ \ resp-\/>pdu\_session\_res\_setup\_list\_su\_res.push\_back(resp\_item);}
+\DoxyCodeLine{00627\ \ \ \ \ \}}
+\DoxyCodeLine{00628\ \ \ \}}
+\DoxyCodeLine{00629\ }
+\DoxyCodeLine{00630\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Failed\ to\ Setup\ List}}
+\DoxyCodeLine{00631\ \ \ \textcolor{keywordflow}{if}\ (!cu\_cp\_resp.pdu\_session\_res\_failed\_to\_setup\_items.empty())\ \{}
+\DoxyCodeLine{00632\ \ \ \ \ resp-\/>pdu\_session\_res\_failed\_to\_setup\_list\_su\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00633\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cu\_cp\_setup\_failed\_item\ :\ cu\_cp\_resp.pdu\_session\_res\_failed\_to\_setup\_items)\ \{}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!cu\_cp\_setup\_failed\_item.unsuccessful\_transfer.cause.valueless\_by\_exception(),}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Failed\ cause\ must\ not\ be\ null."{}});}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_failed\_to\_setup\_item\_su\_res\_s\ setup\_failed\_item;}
+\DoxyCodeLine{00637\ }
+\DoxyCodeLine{00638\ \ \ \ \ \ \ pdu\_session\_res\_setup\_failed\_item\_to\_asn1(setup\_failed\_item,\ cu\_cp\_setup\_failed\_item);}
+\DoxyCodeLine{00639\ }
+\DoxyCodeLine{00640\ \ \ \ \ \ \ resp-\/>pdu\_session\_res\_failed\_to\_setup\_list\_su\_res.push\_back(setup\_failed\_item);}
+\DoxyCodeLine{00641\ \ \ \ \ \}}
+\DoxyCodeLine{00642\ \ \ \}}
+\DoxyCodeLine{00643\ \}}
+\DoxyCodeLine{00644\ }
+\DoxyCodeLine{00645\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ PDU\ Session\ Resource\ Modify\ Response\ message\ to\ NGAP\ PDU\ Session\ Resource\ Modify}}
+\DoxyCodeLine{00646\ \textcolor{comment}{///\ Response\ message.\ \(\backslash\)param[out]\ resp\ The\ ASN1\ NGAP\ PDU\ Session\ Resource\ Modify\ Response\ message.\ \(\backslash\)param[in]}}
+\DoxyCodeLine{00647\ \textcolor{comment}{///\ cu\_cp\_resp\ The\ CU-\/CP\ PDU\ Session\ Resource\ Modify\ Response\ message.}}
+\DoxyCodeLine{00648\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_pdu\_session\_res\_modify\_response(asn1::ngap::pdu\_session\_res\_modify\_resp\_s\&\ \ \ \ \ \ \ resp,}
+\DoxyCodeLine{00649\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__modify__response}{cu\_cp\_pdu\_session\_resource\_modify\_response}}\ cu\_cp\_resp)}
+\DoxyCodeLine{00650\ \{}
+\DoxyCodeLine{00651\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ Modify\ Response\ List}}
+\DoxyCodeLine{00652\ \ \ \textcolor{keywordflow}{if}\ (!cu\_cp\_resp.pdu\_session\_res\_modify\_list.empty())\ \{}
+\DoxyCodeLine{00653\ \ \ \ \ resp-\/>pdu\_session\_res\_modify\_list\_mod\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00654\ }
+\DoxyCodeLine{00655\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cu\_cp\_resp\_item\ :\ cu\_cp\_resp.pdu\_session\_res\_modify\_list)\ \{}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_modify\_item\_mod\_res\_s\ resp\_item;}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ pdu\_session\_res\_modify\_response\_item\_to\_asn1(resp\_item,\ cu\_cp\_resp\_item);}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ resp-\/>pdu\_session\_res\_modify\_list\_mod\_res.push\_back(resp\_item);}
+\DoxyCodeLine{00659\ \ \ \ \ \}}
+\DoxyCodeLine{00660\ \ \ \}}
+\DoxyCodeLine{00661\ }
+\DoxyCodeLine{00662\ \ \ \textcolor{comment}{//\ Fill\ PDU\ Session\ Resource\ failed\ to\ modify\ list}}
+\DoxyCodeLine{00663\ \ \ \textcolor{keywordflow}{if}\ (!cu\_cp\_resp.pdu\_session\_res\_failed\_to\_modify\_list.empty())\ \{}
+\DoxyCodeLine{00664\ \ \ \ \ resp-\/>pdu\_session\_res\_failed\_to\_modify\_list\_mod\_res\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00665\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cu\_cp\_resp\_item\ :\ cu\_cp\_resp.pdu\_session\_res\_failed\_to\_modify\_list)\ \{}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_failed\_to\_modify\_item\_mod\_res\_s\ resp\_item;}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ pdu\_session\_res\_failed\_to\_modify\_item\_to\_asn1(resp\_item,\ cu\_cp\_resp\_item);}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ resp-\/>pdu\_session\_res\_failed\_to\_modify\_list\_mod\_res.push\_back(resp\_item);}
+\DoxyCodeLine{00669\ \ \ \ \ \}}
+\DoxyCodeLine{00670\ \ \ \}}
+\DoxyCodeLine{00671\ \}}
+\DoxyCodeLine{00672\ }
+\DoxyCodeLine{00673\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ UE\ Context\ Release\ Request\ to\ NGAP\ UE\ Context\ Release\ Request.}}
+\DoxyCodeLine{00674\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_msg\ The\ ASN1\ NGAP\ UE\ Context\ Release\ Request.}}
+\DoxyCodeLine{00675\ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ CU-\/CP\ UE\ Context\ Release\ Request.}}
+\DoxyCodeLine{00676\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_ue\_context\_release\_request(asn1::ngap::ue\_context\_release\_request\_s\&\ asn1\_msg,}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__request}{cu\_cp\_ue\_context\_release\_request}}\&\ \ \ msg)}
+\DoxyCodeLine{00678\ \{}
+\DoxyCodeLine{00679\ \ \ \textcolor{comment}{//\ Add\ PDU\ Session\ IDs}}
+\DoxyCodeLine{00680\ \ \ \textcolor{keywordflow}{if}\ (!msg.pdu\_session\_res\_list\_cxt\_rel\_req.empty())\ \{}
+\DoxyCodeLine{00681\ \ \ \ \ asn1\_msg-\/>pdu\_session\_res\_list\_cxt\_rel\_req\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00682\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ session\_id\ :\ msg.pdu\_session\_res\_list\_cxt\_rel\_req)\ \{}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_item\_cxt\_rel\_req\_s\ pdu\_session\_item;}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ pdu\_session\_item.pdu\_session\_id\ =\ pdu\_session\_id\_to\_uint(session\_id);}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ asn1\_msg-\/>pdu\_session\_res\_list\_cxt\_rel\_req.push\_back(pdu\_session\_item);}
+\DoxyCodeLine{00686\ \ \ \ \ \}}
+\DoxyCodeLine{00687\ \ \ \}}
+\DoxyCodeLine{00688\ }
+\DoxyCodeLine{00689\ \ \ asn1\_msg-\/>cause\ =\ cause\_to\_asn1(msg.cause);}
+\DoxyCodeLine{00690\ \}}
+\DoxyCodeLine{00691\ }
+\DoxyCodeLine{00692\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ PDU\ Session\ Resource\ Release\ Comman\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00693\ \textcolor{comment}{///\ \(\backslash\)param[out]\ pdu\_session\_resource\_release\_cmd\ The\ cu\_cp\_pdu\_session\_resource\_release\_command\ struct\ to\ fill.}}
+\DoxyCodeLine{00694\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_pdu\_session\_resource\_release\_cmd\ The\ pdu\_session\_res\_release\_cmd\ ASN1\ struct.}}
+\DoxyCodeLine{00695\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_cu\_cp\_pdu\_session\_resource\_release\_command(}
+\DoxyCodeLine{00696\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__release__command}{cu\_cp\_pdu\_session\_resource\_release\_command}}\&\ \ \ \ \ \ pdu\_session\_resource\_release\_cmd,}
+\DoxyCodeLine{00697\ \ \ \ \ \textcolor{keyword}{const}\ asn1::ngap::pdu\_session\_res\_release\_cmd\_s\&\ asn1\_pdu\_session\_resource\_release\_cmd)}
+\DoxyCodeLine{00698\ \{}
+\DoxyCodeLine{00699\ \ \ \textcolor{keywordflow}{if}\ (asn1\_pdu\_session\_resource\_release\_cmd-\/>ran\_paging\_prio\_present)\ \{}
+\DoxyCodeLine{00700\ \ \ \ \ pdu\_session\_resource\_release\_cmd.ran\_paging\_prio\ =\ asn1\_pdu\_session\_resource\_release\_cmd-\/>ran\_paging\_prio;}
+\DoxyCodeLine{00701\ \ \ \}}
+\DoxyCodeLine{00702\ }
+\DoxyCodeLine{00703\ \ \ \textcolor{keywordflow}{if}\ (asn1\_pdu\_session\_resource\_release\_cmd-\/>nas\_pdu\_present)\ \{}
+\DoxyCodeLine{00704\ \ \ \ \ pdu\_session\_resource\_release\_cmd.nas\_pdu\ =\ asn1\_pdu\_session\_resource\_release\_cmd-\/>nas\_pdu.copy();}
+\DoxyCodeLine{00705\ \ \ \}}
+\DoxyCodeLine{00706\ }
+\DoxyCodeLine{00707\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pdu\_session\_res\_to\_release\_item\ :}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ asn1\_pdu\_session\_resource\_release\_cmd-\/>pdu\_session\_res\_to\_release\_list\_rel\_cmd)\ \{}
+\DoxyCodeLine{00709\ \ \ \ \ cu\_cp\_pdu\_session\_res\_to\_release\_item\_rel\_cmd\ pdu\_session\_res\_to\_release\_item\_rel\_cmd;}
+\DoxyCodeLine{00710\ \ \ \ \ pdu\_session\_res\_to\_release\_item\_rel\_cmd.pdu\_session\_id\ =}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ uint\_to\_pdu\_session\_id(pdu\_session\_res\_to\_release\_item.pdu\_session\_id);}
+\DoxyCodeLine{00712\ }
+\DoxyCodeLine{00713\ \ \ \ \ asn1::ngap::pdu\_session\_res\_release\_cmd\_transfer\_s\ asn1\_pdu\_session\_res\_release\_cmd\_transfer;}
+\DoxyCodeLine{00714\ \ \ \ \ asn1::cbit\_ref\ bref(pdu\_session\_res\_to\_release\_item.pdu\_session\_res\_release\_cmd\_transfer);}
+\DoxyCodeLine{00715\ }
+\DoxyCodeLine{00716\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_pdu\_session\_res\_release\_cmd\_transfer.unpack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}}).error(\textcolor{stringliteral}{"{}Couldn't\ unpack\ PDU\ Session\ Resource\ Release\ Command\ Transfer\ PDU."{}});}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00719\ \ \ \ \ \}}
+\DoxyCodeLine{00720\ }
+\DoxyCodeLine{00721\ \ \ \ \ pdu\_session\_res\_to\_release\_item\_rel\_cmd.pdu\_session\_res\_release\_cmd\_transfer.cause\ =}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ asn1\_to\_cause(asn1\_pdu\_session\_res\_release\_cmd\_transfer.cause);}
+\DoxyCodeLine{00723\ }
+\DoxyCodeLine{00724\ \ \ \ \ pdu\_session\_resource\_release\_cmd.pdu\_session\_res\_to\_release\_list\_rel\_cmd.emplace(}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ pdu\_session\_res\_to\_release\_item\_rel\_cmd.pdu\_session\_id,\ pdu\_session\_res\_to\_release\_item\_rel\_cmd);}
+\DoxyCodeLine{00726\ \ \ \}}
+\DoxyCodeLine{00727\ \}}
+\DoxyCodeLine{00728\ }
+\DoxyCodeLine{00729\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ PDU\ Session\ Resource\ Release\ Response\ message\ to\ NGAP\ PDU\ Session\ Resource\ Release}}
+\DoxyCodeLine{00730\ \textcolor{comment}{///\ Response\ \(\backslash\)param[out]\ resp\ The\ ASN1\ NGAP\ PDU\ Session\ Resource\ Release\ Response\ message.}}
+\DoxyCodeLine{00731\ \textcolor{comment}{///\ \(\backslash\)param[in]\ cu\_cp\_resp\ The\ CU-\/CP\ PDU\ Session\ Resource\ Release\ Response\ message.}}
+\DoxyCodeLine{00732\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00733\ fill\_asn1\_pdu\_session\_resource\_release\_response(asn1::ngap::pdu\_session\_res\_release\_resp\_s\&\ \ \ \ \ \ \ \ resp,}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__pdu__session__resource__release__response}{cu\_cp\_pdu\_session\_resource\_release\_response}}\&\ cu\_cp\_resp)}
+\DoxyCodeLine{00735\ \{}
+\DoxyCodeLine{00736\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cu\_cp\_pdu\_session\_res\_released\_item\ :\ cu\_cp\_resp.pdu\_session\_res\_released\_list\_rel\_res)\ \{}
+\DoxyCodeLine{00737\ \ \ \ \ asn1::ngap::pdu\_session\_res\_released\_item\_rel\_res\_s\ asn1\_pdu\_session\_res\_released\_item;}
+\DoxyCodeLine{00738\ \ \ \ \ asn1\_pdu\_session\_res\_released\_item.pdu\_session\_id\ =}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ pdu\_session\_id\_to\_uint(cu\_cp\_pdu\_session\_res\_released\_item.pdu\_session\_id);}
+\DoxyCodeLine{00740\ }
+\DoxyCodeLine{00741\ \ \ \ \ asn1::ngap::pdu\_session\_res\_release\_resp\_transfer\_s\ res\_release\_resp\_transfer;}
+\DoxyCodeLine{00742\ }
+\DoxyCodeLine{00743\ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.secondary\_rat\_usage\_info}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \ \ \ \ .has\_value())\ \{}
+\DoxyCodeLine{00745\ \ \ \ \ \ \ res\_release\_resp\_transfer.ext\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00746\ }
+\DoxyCodeLine{00747\ \ \ \ \ \ \ asn1::protocol\_ext\_field\_s<asn1::ngap::pdu\_session\_res\_release\_resp\_transfer\_ext\_ies\_o>}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \ \ \ \ res\_release\_resp\_transfer\_ext;}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_secondary\_rat\_usage\_info\ =\ res\_release\_resp\_transfer\_ext.value().secondary\_rat\_usage\_info();}
+\DoxyCodeLine{00750\ }
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.secondary\_rat\_usage\_info.value()}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .pdu\_session\_usage\_report.has\_value())\ \{}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ asn1\_secondary\_rat\_usage\_info.pdu\_session\_usage\_report\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00754\ }
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pdu\_session\_usage\_report\ =}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.secondary\_rat\_usage\_info.value()}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .pdu\_session\_usage\_report.value();}
+\DoxyCodeLine{00758\ }
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ asn1::string\_to\_enum(asn1\_secondary\_rat\_usage\_info.pdu\_session\_usage\_report.rat\_type,}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_usage\_report.rat\_type);}
+\DoxyCodeLine{00761\ }
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ pdu\_session\_usage\_timed\_item\ :\ pdu\_session\_usage\_report.pdu\_session\_timed\_report\_list)\ \{}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ asn1::ngap::volume\_timed\_report\_item\_s\ asn1\_pdu\_session\_usage\_timed\_item;}
+\DoxyCodeLine{00764\ }
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_usage\_timed\_item.start\_time\_stamp.from\_number(pdu\_session\_usage\_timed\_item.start\_time\_stamp);}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_usage\_timed\_item.end\_time\_stamp.from\_number(pdu\_session\_usage\_timed\_item.end\_time\_stamp);}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_usage\_timed\_item.usage\_count\_ul\ =\ pdu\_session\_usage\_timed\_item.usage\_count\_ul;}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_usage\_timed\_item.usage\_count\_dl\ =\ pdu\_session\_usage\_timed\_item.usage\_count\_dl;}
+\DoxyCodeLine{00769\ }
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ asn1\_secondary\_rat\_usage\_info.pdu\_session\_usage\_report.pdu\_session\_timed\_report\_list.push\_back(}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_usage\_timed\_item);}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00774\ }
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ qos\_flows\_usage\_report\_item\ :}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.secondary\_rat\_usage\_info.value()}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .qos\_flows\_usage\_report\_list)\ \{}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ asn1::ngap::qos\_flows\_usage\_report\_item\_s\ asn1\_qos\_flows\_usage\_report\_item;}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ asn1\_qos\_flows\_usage\_report\_item.qos\_flow\_id\ =\ qos\_flow\_id\_to\_uint(qos\_flows\_usage\_report\_item.qos\_flow\_id);}
+\DoxyCodeLine{00780\ }
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ asn1::string\_to\_enum(asn1\_qos\_flows\_usage\_report\_item.rat\_type,\ qos\_flows\_usage\_report\_item.rat\_type);}
+\DoxyCodeLine{00782\ }
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ qos\_flow\_timed\_report\_item\ :\ qos\_flows\_usage\_report\_item.qos\_flows\_timed\_report\_list)\ \{}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ asn1::ngap::volume\_timed\_report\_item\_s\ asn1\_qos\_flow\_timed\_report\_item;}
+\DoxyCodeLine{00785\ }
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ asn1\_qos\_flow\_timed\_report\_item.start\_time\_stamp.from\_number(qos\_flow\_timed\_report\_item.start\_time\_stamp);}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ asn1\_qos\_flow\_timed\_report\_item.end\_time\_stamp.from\_number(qos\_flow\_timed\_report\_item.end\_time\_stamp);}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ asn1\_qos\_flow\_timed\_report\_item.usage\_count\_ul\ =\ qos\_flow\_timed\_report\_item.usage\_count\_ul;}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ asn1\_qos\_flow\_timed\_report\_item.usage\_count\_dl\ =\ qos\_flow\_timed\_report\_item.usage\_count\_dl;}
+\DoxyCodeLine{00790\ }
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ asn1\_qos\_flows\_usage\_report\_item.qos\_flows\_timed\_report\_list.push\_back(asn1\_qos\_flow\_timed\_report\_item);}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00793\ }
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ asn1\_secondary\_rat\_usage\_info.qos\_flows\_usage\_report\_list.push\_back(asn1\_qos\_flows\_usage\_report\_item);}
+\DoxyCodeLine{00795\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00796\ }
+\DoxyCodeLine{00797\ \ \ \ \ \ \ res\_release\_resp\_transfer.ie\_exts.push\_back(res\_release\_resp\_transfer\_ext);}
+\DoxyCodeLine{00798\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ res\_release\_resp\_transfer.ext\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00800\ \ \ \ \ \}}
+\DoxyCodeLine{00801\ }
+\DoxyCodeLine{00802\ \ \ \ \ \textcolor{comment}{//\ Pack\ pdu\_session\_res\_release\_resp\_transfer\_s}}
+\DoxyCodeLine{00803\ \ \ \ \ byte\_buffer\ pdu\ =\ pack\_into\_pdu(res\_release\_resp\_transfer);}
+\DoxyCodeLine{00804\ }
+\DoxyCodeLine{00805\ \ \ \ \ asn1\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.resize(pdu.length());}
+\DoxyCodeLine{00806\ \ \ \ \ std::copy(pdu.begin(),\ pdu.end(),\ asn1\_pdu\_session\_res\_released\_item.pdu\_session\_res\_release\_resp\_transfer.begin());}
+\DoxyCodeLine{00807\ }
+\DoxyCodeLine{00808\ \ \ \ \ resp-\/>pdu\_session\_res\_released\_list\_rel\_res.push\_back(asn1\_pdu\_session\_res\_released\_item);}
+\DoxyCodeLine{00809\ \ \ \}}
+\DoxyCodeLine{00810\ }
+\DoxyCodeLine{00811\ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_resp.user\_location\_info.has\_value())\ \{}
+\DoxyCodeLine{00812\ \ \ \ \ resp-\/>user\_location\_info\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00813\ \ \ \ \ resp-\/>user\_location\_info.set\_user\_location\_info\_nr()\ =}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ cu\_cp\_user\_location\_info\_to\_asn1(cu\_cp\_resp.user\_location\_info.value());}
+\DoxyCodeLine{00815\ \ \ \}}
+\DoxyCodeLine{00816\ \}}
+\DoxyCodeLine{00817\ }
+\DoxyCodeLine{00818\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ UE\ Context\ Release\ Command\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00819\ \textcolor{comment}{///\ \(\backslash\)param[out]\ cu\_cp\_ngap\_ue\_context\_release\_cmd\ The\ cu\_cp\_ngap\_ue\_context\_release\_cmd\ struct\ to\ fill.}}
+\DoxyCodeLine{00820\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_ue\_context\_release\_cmd\ The\ UE\ Context\ Release\ Command\ ASN1\ struct.}}
+\DoxyCodeLine{00821\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00822\ fill\_cu\_cp\_ue\_context\_release\_command(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__command}{cu\_cp\_ue\_context\_release\_command}}\&\ \ \ \ \ \ \ \ \ \ \ cu\_cp\_ue\_context\_release\_cmd,}
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ asn1::ngap::ue\_context\_release\_cmd\_s\&\ asn1\_ue\_context\_release\_cmd)}
+\DoxyCodeLine{00824\ \{}
+\DoxyCodeLine{00825\ \ \ cu\_cp\_ue\_context\_release\_cmd.cause\ =\ asn1\_to\_cause(asn1\_ue\_context\_release\_cmd-\/>cause);}
+\DoxyCodeLine{00826\ \}}
+\DoxyCodeLine{00827\ }
+\DoxyCodeLine{00828\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ common\ type\ UE\ Context\ Release\ Complete\ message\ to\ NGAP\ ASN1\ UE\ Context\ Release\ Complete}}
+\DoxyCodeLine{00829\ \textcolor{comment}{///\ message.}}
+\DoxyCodeLine{00830\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_resp\ The\ ASN1\ NGAP\ UE\ Context\ Release\ Complete\ message.}}
+\DoxyCodeLine{00831\ \textcolor{comment}{///\ \(\backslash\)param[in]\ cu\_cp\_resp\ The\ CU-\/CP\ UE\ Context\ Release\ Complete\ message.}}
+\DoxyCodeLine{00832\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_ue\_context\_release\_complete(asn1::ngap::ue\_context\_release\_complete\_s\&\ asn1\_resp,}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__complete}{cu\_cp\_ue\_context\_release\_complete}}\ \ \ \ cu\_cp\_resp)}
+\DoxyCodeLine{00834\ \{}
+\DoxyCodeLine{00835\ \ \ \textcolor{comment}{//\ add\ user\ location\ info}}
+\DoxyCodeLine{00836\ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_resp.user\_location\_info.has\_value())\ \{}
+\DoxyCodeLine{00837\ \ \ \ \ asn1\_resp-\/>user\_location\_info\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00838\ \ \ \ \ asn1\_resp-\/>user\_location\_info.set\_user\_location\_info\_nr()\ =}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ cu\_cp\_user\_location\_info\_to\_asn1(cu\_cp\_resp.user\_location\_info.value());}
+\DoxyCodeLine{00840\ \ \ \}}
+\DoxyCodeLine{00841\ }
+\DoxyCodeLine{00842\ \ \ \textcolor{comment}{//\ add\ info\ on\ recommended\ cells\ and\ ran\ nodes\ for\ paging}}
+\DoxyCodeLine{00843\ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_resp.info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging.has\_value())\ \{}
+\DoxyCodeLine{00844\ \ \ \ \ asn1\_resp-\/>info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00845\ }
+\DoxyCodeLine{00846\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ cu\_cp\_recommended\_cell\_item\ :\ cu\_cp\_resp.info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging.value()}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .recommended\_cells\_for\_paging.recommended\_cell\_list)\ \{}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ asn1::ngap::recommended\_cell\_item\_s\ asn1\_recommended\_cell\_item;}
+\DoxyCodeLine{00849\ }
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ ngran\ cgi}}
+\DoxyCodeLine{00851\ \ \ \ \ \ \ asn1\_recommended\_cell\_item.ngran\_cgi.set\_nr\_cgi().nr\_cell\_id.from\_number(}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \ \ cu\_cp\_recommended\_cell\_item.ngran\_cgi.nci);}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ asn1\_recommended\_cell\_item.ngran\_cgi.set\_nr\_cgi().plmn\_id.from\_string(}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \ \ cu\_cp\_recommended\_cell\_item.ngran\_cgi.plmn\_hex);}
+\DoxyCodeLine{00855\ }
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ time\ stayed\ in\ cell}}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_recommended\_cell\_item.time\_stayed\_in\_cell.has\_value())\ \{}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ asn1\_recommended\_cell\_item.time\_stayed\_in\_cell\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ asn1\_recommended\_cell\_item.time\_stayed\_in\_cell\ =\ cu\_cp\_recommended\_cell\_item.time\_stayed\_in\_cell.value();}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00861\ }
+\DoxyCodeLine{00862\ \ \ \ \ \ \ asn1\_resp-\/>info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging.recommended\_cells\_for\_paging.recommended\_cell\_list}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ \ \ .push\_back(asn1\_recommended\_cell\_item);}
+\DoxyCodeLine{00864\ \ \ \ \ \}}
+\DoxyCodeLine{00865\ }
+\DoxyCodeLine{00866\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ cu\_cp\_recommended\_ran\_node\_item\ :\ cu\_cp\_resp.info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging.value()}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .recommended\_ran\_nodes\_for\_paging.recommended\_ran\_node\_list)\ \{}
+\DoxyCodeLine{00868\ \ \ \ \ \ \ asn1::ngap::recommended\_ran\_node\_item\_s\ asn1\_recommended\_ran\_node\_item;}
+\DoxyCodeLine{00869\ }
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ amf\ paging\ target}}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.is\_global\_ran\_node\_id)\ \{}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ global\ gnb\ id}}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_global\_ran\_node\_id\ =\ asn1\_recommended\_ran\_node\_item.amf\_paging\_target.set\_global\_ran\_node\_id();}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ asn1\_global\_ran\_node\_id.set\_global\_gnb\_id().plmn\_id.from\_string(}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.global\_ran\_node\_id.value().plmn\_id);}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ asn1\_global\_ran\_node\_id.global\_gnb\_id().gnb\_id.set\_gnb\_id().from\_number(}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.global\_ran\_node\_id.value().gnb\_id);}
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.is\_tai)\ \{}
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ tai}}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ asn1\_tai\ =\ asn1\_recommended\_ran\_node\_item.amf\_paging\_target.set\_tai();}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ asn1\_tai.plmn\_id.from\_string(cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.tai.value().plmn\_id);}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ asn1\_tai.tac.from\_number(cu\_cp\_recommended\_ran\_node\_item.amf\_paging\_target.tai.value().tac);}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ asn1\_recommended\_ran\_node\_item.amf\_paging\_target.set(asn1::ngap::amf\_paging\_target\_c::types\_opts::nulltype);}
+\DoxyCodeLine{00885\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00886\ }
+\DoxyCodeLine{00887\ \ \ \ \ \ \ asn1\_resp-\/>info\_on\_recommended\_cells\_and\_ran\_nodes\_for\_paging.recommend\_ran\_nodes\_for\_paging}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ .recommended\_ran\_node\_list.push\_back(asn1\_recommended\_ran\_node\_item);}
+\DoxyCodeLine{00889\ \ \ \ \ \}}
+\DoxyCodeLine{00890\ \ \ \}}
+\DoxyCodeLine{00891\ }
+\DoxyCodeLine{00892\ \ \ \textcolor{comment}{//\ add\ pdu\ session\ res\ list\ context\ release\ complete}}
+\DoxyCodeLine{00893\ \ \ \textcolor{keywordflow}{if}\ (!cu\_cp\_resp.pdu\_session\_res\_list\_cxt\_rel\_cpl.empty())\ \{}
+\DoxyCodeLine{00894\ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_list\_cxt\_rel\_cpl\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00895\ }
+\DoxyCodeLine{00896\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ pdu\_session\_id\ :\ cu\_cp\_resp.pdu\_session\_res\_list\_cxt\_rel\_cpl)\ \{}
+\DoxyCodeLine{00897\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_item\_cxt\_rel\_cpl\_s\ asn1\_rel\_item;}
+\DoxyCodeLine{00898\ \ \ \ \ \ \ asn1\_rel\_item.pdu\_session\_id\ =\ pdu\_session\_id\_to\_uint(pdu\_session\_id);}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ asn1\_resp-\/>pdu\_session\_res\_list\_cxt\_rel\_cpl.push\_back(asn1\_rel\_item);}
+\DoxyCodeLine{00900\ \ \ \ \ \}}
+\DoxyCodeLine{00901\ \ \ \}}
+\DoxyCodeLine{00902\ }
+\DoxyCodeLine{00903\ \ \ \textcolor{comment}{//\ add\ crit\ diagnostics}}
+\DoxyCodeLine{00904\ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_resp.crit\_diagnostics.has\_value())\ \{}
+\DoxyCodeLine{00905\ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{00906\ \ \ \}}
+\DoxyCodeLine{00907\ \}}
+\DoxyCodeLine{00908\ }
+\DoxyCodeLine{00909\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ NGAP\ ASN1\ Paging\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{00910\ \textcolor{comment}{///\ \(\backslash\)param[out]\ paging\ The\ cu\_cp\_paging\_message\ struct\ to\ fill.}}
+\DoxyCodeLine{00911\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_paging\ The\ Paging\ ASN1\ struct.}}
+\DoxyCodeLine{00912\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_cu\_cp\_paging\_message(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__paging__message}{cu\_cp\_paging\_message}}\&\ paging,\ \textcolor{keyword}{const}\ asn1::ngap::paging\_s\&\ asn1\_paging)}
+\DoxyCodeLine{00913\ \{}
+\DoxyCodeLine{00914\ \ \ \textcolor{comment}{//\ add\ ue\ paging\ id}}
+\DoxyCodeLine{00915\ \ \ paging.ue\_paging\_id.amf\_set\_id\ \ =\ asn1\_paging-\/>ue\_paging\_id.five\_g\_s\_tmsi().amf\_set\_id.to\_number();}
+\DoxyCodeLine{00916\ \ \ paging.ue\_paging\_id.amf\_pointer\ =\ asn1\_paging-\/>ue\_paging\_id.five\_g\_s\_tmsi().amf\_pointer.to\_number();}
+\DoxyCodeLine{00917\ \ \ paging.ue\_paging\_id.five\_g\_tmsi\ =\ asn1\_paging-\/>ue\_paging\_id.five\_g\_s\_tmsi().five\_g\_tmsi.to\_number();}
+\DoxyCodeLine{00918\ }
+\DoxyCodeLine{00919\ \ \ \textcolor{comment}{//\ add\ paging\ drx}}
+\DoxyCodeLine{00920\ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>paging\_drx\_present)\ \{}
+\DoxyCodeLine{00921\ \ \ \ \ paging.paging\_drx\ =\ asn1\_paging-\/>paging\_drx.to\_number();}
+\DoxyCodeLine{00922\ \ \ \}}
+\DoxyCodeLine{00923\ }
+\DoxyCodeLine{00924\ \ \ \textcolor{comment}{//\ add\ tai\ list\ for\ paging}}
+\DoxyCodeLine{00925\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_tai\_item\ :\ asn1\_paging-\/>tai\_list\_for\_paging)\ \{}
+\DoxyCodeLine{00926\ \ \ \ \ cu\_cp\_tai\_list\_for\_paging\_item\ tai\_item;}
+\DoxyCodeLine{00927\ \ \ \ \ tai\_item.tai.plmn\_id\ =\ asn1\_tai\_item.tai.plmn\_id.to\_string();}
+\DoxyCodeLine{00928\ \ \ \ \ tai\_item.tai.tac\ \ \ \ \ =\ asn1\_tai\_item.tai.tac.to\_number();}
+\DoxyCodeLine{00929\ }
+\DoxyCodeLine{00930\ \ \ \ \ paging.tai\_list\_for\_paging.push\_back(tai\_item);}
+\DoxyCodeLine{00931\ \ \ \}}
+\DoxyCodeLine{00932\ }
+\DoxyCodeLine{00933\ \ \ \textcolor{comment}{//\ add\ paging\ prio}}
+\DoxyCodeLine{00934\ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>paging\_prio\_present)\ \{}
+\DoxyCodeLine{00935\ \ \ \ \ paging.paging\_prio\ =\ asn1\_paging-\/>paging\_prio.to\_number();}
+\DoxyCodeLine{00936\ \ \ \}}
+\DoxyCodeLine{00937\ }
+\DoxyCodeLine{00938\ \ \ \textcolor{comment}{//\ add\ ue\ radio\ cap\ for\ paging}}
+\DoxyCodeLine{00939\ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>ue\_radio\_cap\_for\_paging\_present)\ \{}
+\DoxyCodeLine{00940\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__radio__cap__for__paging}{cu\_cp\_ue\_radio\_cap\_for\_paging}}\ ue\_radio\_cap\_for\_paging;}
+\DoxyCodeLine{00941\ \ \ \ \ ue\_radio\_cap\_for\_paging.ue\_radio\_cap\_for\_paging\_of\_nr\ =}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ asn1\_paging-\/>ue\_radio\_cap\_for\_paging.ue\_radio\_cap\_for\_paging\_of\_nr.copy();}
+\DoxyCodeLine{00943\ }
+\DoxyCodeLine{00944\ \ \ \ \ paging.ue\_radio\_cap\_for\_paging\ =\ ue\_radio\_cap\_for\_paging;}
+\DoxyCodeLine{00945\ \ \ \}}
+\DoxyCodeLine{00946\ }
+\DoxyCodeLine{00947\ \ \ \textcolor{comment}{//\ add\ paging\ origin}}
+\DoxyCodeLine{00948\ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>paging\_origin\_present)\ \{}
+\DoxyCodeLine{00949\ \ \ \ \ paging.paging\_origin\ =\ asn1\_paging-\/>paging\_origin.to\_string();}
+\DoxyCodeLine{00950\ \ \ \}}
+\DoxyCodeLine{00951\ }
+\DoxyCodeLine{00952\ \ \ \textcolor{comment}{//\ add\ assist\ data\ for\ paging}}
+\DoxyCodeLine{00953\ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>assist\_data\_for\_paging\_present)\ \{}
+\DoxyCodeLine{00954\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__assist__data__for__paging}{cu\_cp\_assist\_data\_for\_paging}}\ assist\_data\_for\_paging;}
+\DoxyCodeLine{00955\ }
+\DoxyCodeLine{00956\ \ \ \ \ \textcolor{comment}{//\ add\ assist\ data\ for\ recommended\ cells}}
+\DoxyCodeLine{00957\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>assist\_data\_for\_paging.assist\_data\_for\_recommended\_cells\_present)\ \{}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__assist__data__for__recommended__cells}{cu\_cp\_assist\_data\_for\_recommended\_cells}}\ assist\_data\_for\_recommended\_cells;}
+\DoxyCodeLine{00959\ }
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_recommended\_cell\ :\ asn1\_paging-\/>assist\_data\_for\_paging.assist\_data\_for\_recommended\_cells}
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .recommended\_cells\_for\_paging.recommended\_cell\_list)\ \{}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ cu\_cp\_recommended\_cell\_item\ recommended\_cell\_item;}
+\DoxyCodeLine{00963\ }
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ ngran\ cgi}}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ recommended\_cell\_item.ngran\_cgi.nci\ \ \ \ \ \ =\ asn1\_recommended\_cell.ngran\_cgi.nr\_cgi().nr\_cell\_id.to\_number();}
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ recommended\_cell\_item.ngran\_cgi.plmn\_hex\ =\ asn1\_recommended\_cell.ngran\_cgi.nr\_cgi().plmn\_id.to\_string();}
+\DoxyCodeLine{00967\ }
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ time\ stayed\ in\ cell}}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_recommended\_cell.time\_stayed\_in\_cell\_present)\ \{}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ recommended\_cell\_item.time\_stayed\_in\_cell\ =\ asn1\_recommended\_cell.time\_stayed\_in\_cell;}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00972\ }
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ assist\_data\_for\_recommended\_cells.recommended\_cells\_for\_paging.recommended\_cell\_list.push\_back(}
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \ \ \ \ recommended\_cell\_item);}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00976\ }
+\DoxyCodeLine{00977\ \ \ \ \ \ \ assist\_data\_for\_paging.assist\_data\_for\_recommended\_cells\ =\ assist\_data\_for\_recommended\_cells;}
+\DoxyCodeLine{00978\ \ \ \ \ \}}
+\DoxyCodeLine{00979\ }
+\DoxyCodeLine{00980\ \ \ \ \ \textcolor{comment}{//\ add\ paging\ attempt\ info}}
+\DoxyCodeLine{00981\ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>assist\_data\_for\_paging.paging\_attempt\_info\_present)\ \{}
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__paging__attempt__info}{cu\_cp\_paging\_attempt\_info}}\ paging\_attempt\_info;}
+\DoxyCodeLine{00983\ }
+\DoxyCodeLine{00984\ \ \ \ \ \ \ paging\_attempt\_info.paging\_attempt\_count\ =}
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \ \ \ \ asn1\_paging-\/>assist\_data\_for\_paging.paging\_attempt\_info.paging\_attempt\_count;}
+\DoxyCodeLine{00986\ \ \ \ \ \ \ paging\_attempt\_info.intended\_nof\_paging\_attempts\ =}
+\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ \ \ asn1\_paging-\/>assist\_data\_for\_paging.paging\_attempt\_info.intended\_nof\_paging\_attempts;}
+\DoxyCodeLine{00988\ }
+\DoxyCodeLine{00989\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (asn1\_paging-\/>assist\_data\_for\_paging.paging\_attempt\_info.next\_paging\_area\_scope\_present)\ \{}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ paging\_attempt\_info.next\_paging\_area\_scope\ =}
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_paging-\/>assist\_data\_for\_paging.paging\_attempt\_info.next\_paging\_area\_scope.to\_string();}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00993\ }
+\DoxyCodeLine{00994\ \ \ \ \ \ \ assist\_data\_for\_paging.paging\_attempt\_info\ =\ paging\_attempt\_info;}
+\DoxyCodeLine{00995\ \ \ \ \ \}}
+\DoxyCodeLine{00996\ }
+\DoxyCodeLine{00997\ \ \ \ \ paging.assist\_data\_for\_paging\ =\ assist\_data\_for\_paging;}
+\DoxyCodeLine{00998\ \ \ \}}
+\DoxyCodeLine{00999\ \}}
+\DoxyCodeLine{01000\ }
+\DoxyCodeLine{01001\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ Handover\ Request\ ASN1\ struct\ to\ common\ type.}}
+\DoxyCodeLine{01002\ \textcolor{comment}{///\ \(\backslash\)param[out]\ request\ The\ ngap\_handover\_request\ struct\ to\ fill.}}
+\DoxyCodeLine{01003\ \textcolor{comment}{///\ \(\backslash\)param[in]\ asn1\_request\ The\ Handover\ Request\ ASN1\ struct.}}
+\DoxyCodeLine{01004\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{01005\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ fill\_ngap\_handover\_request(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__request}{ngap\_handover\_request}}\&\ request,\ \textcolor{keyword}{const}\ asn1::ngap::ho\_request\_s\&\ asn1\_request)}
+\DoxyCodeLine{01006\ \{}
+\DoxyCodeLine{01007\ \ \ \textcolor{comment}{//\ handov\ type}}
+\DoxyCodeLine{01008\ \ \ asn1\_to\_handov\_type(request.handov\_type,\ asn1\_request-\/>handov\_type);}
+\DoxyCodeLine{01009\ }
+\DoxyCodeLine{01010\ \ \ \textcolor{comment}{//\ cause}}
+\DoxyCodeLine{01011\ \ \ request.cause\ =\ asn1\_to\_cause(asn1\_request-\/>cause);}
+\DoxyCodeLine{01012\ }
+\DoxyCodeLine{01013\ \ \ \textcolor{comment}{//\ ue\ aggr\ max\ bit\ rate}}
+\DoxyCodeLine{01014\ \ \ request.ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_dl\ =\ asn1\_request-\/>ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_dl;}
+\DoxyCodeLine{01015\ \ \ request.ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_ul\ =\ asn1\_request-\/>ue\_aggr\_max\_bit\_rate.ue\_aggr\_max\_bit\_rate\_ul;}
+\DoxyCodeLine{01016\ }
+\DoxyCodeLine{01017\ \ \ \textcolor{comment}{//\ core\ network\ assist\ info\ for\ inactive}}
+\DoxyCodeLine{01018\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01019\ }
+\DoxyCodeLine{01020\ \ \ \textcolor{comment}{//\ ue\ security\ cap\ \&\ security\ context}}
+\DoxyCodeLine{01021\ \ \ asn1\_to\_security\_context(request.security\_context,\ asn1\_request-\/>ue\_security\_cap,\ asn1\_request-\/>security\_context);}
+\DoxyCodeLine{01022\ }
+\DoxyCodeLine{01023\ \ \ \textcolor{comment}{//\ new\ security\ context\ ind}}
+\DoxyCodeLine{01024\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>new\_security\_context\_ind\_present)\ \{}
+\DoxyCodeLine{01025\ \ \ \ \ request.new\_security\_context\_ind\ =\ asn1::enum\_to\_bool(asn1\_request-\/>new\_security\_context\_ind);}
+\DoxyCodeLine{01026\ \ \ \}}
+\DoxyCodeLine{01027\ }
+\DoxyCodeLine{01028\ \ \ \textcolor{comment}{//\ nasc}}
+\DoxyCodeLine{01029\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>nasc\_present)\ \{}
+\DoxyCodeLine{01030\ \ \ \ \ request.nasc\ =\ asn1\_request-\/>nasc.copy();}
+\DoxyCodeLine{01031\ \ \ \}}
+\DoxyCodeLine{01032\ }
+\DoxyCodeLine{01033\ \ \ \textcolor{comment}{//\ pdu\ session\ res\ setup\ list\ ho\ req}}
+\DoxyCodeLine{01034\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_pdu\_session\_res\_setup\_item\ :\ asn1\_request-\/>pdu\_session\_res\_setup\_list\_ho\_req)\ \{}
+\DoxyCodeLine{01035\ \ \ \ \ cu\_cp\_pdu\_session\_res\_setup\_item\ pdu\_session\_res\_setup\_item;}
+\DoxyCodeLine{01036\ \ \ \ \ \textcolor{keywordflow}{if}\ (!fill\_cu\_cp\_pdu\_session\_resource\_setup\_item\_base(pdu\_session\_res\_setup\_item,}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_res\_setup\_item,}
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_pdu\_session\_res\_setup\_item.ho\_request\_transfer.copy()))\ \{}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}}).error(\textcolor{stringliteral}{"{}Couldn't\ convert\ PDU\ Session\ Resource\ Setup\ List\ HO\ Request."{}});}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01041\ \ \ \ \ \}}
+\DoxyCodeLine{01042\ }
+\DoxyCodeLine{01043\ \ \ \ \ request.pdu\_session\_res\_setup\_list\_ho\_req.emplace(pdu\_session\_res\_setup\_item.pdu\_session\_id,}
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu\_session\_res\_setup\_item);}
+\DoxyCodeLine{01045\ \ \ \}}
+\DoxyCodeLine{01046\ }
+\DoxyCodeLine{01047\ \ \ \textcolor{comment}{//\ allowed\ nssai}}
+\DoxyCodeLine{01048\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ asn1\_s\_nssai\ :\ asn1\_request-\/>allowed\_nssai)\ \{}
+\DoxyCodeLine{01049\ \ \ \ \ request.allowed\_nssai.push\_back(ngap\_asn1\_to\_s\_nssai(asn1\_s\_nssai.s\_nssai));}
+\DoxyCodeLine{01050\ \ \ \}}
+\DoxyCodeLine{01051\ }
+\DoxyCodeLine{01052\ \ \ \textcolor{comment}{//\ trace\ activation}}
+\DoxyCodeLine{01053\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01054\ }
+\DoxyCodeLine{01055\ \ \ \textcolor{comment}{//\ masked\ imeisv}}
+\DoxyCodeLine{01056\ \ \ \textcolor{keywordflow}{if}\ (asn1\_request-\/>masked\_imeisv\_present)\ \{}
+\DoxyCodeLine{01057\ \ \ \ \ request.masked\_imeisv\ =\ asn1\_request-\/>masked\_imeisv.to\_number();}
+\DoxyCodeLine{01058\ \ \ \}}
+\DoxyCodeLine{01059\ }
+\DoxyCodeLine{01060\ \ \ \textcolor{comment}{//\ source\ to\ target\ transparent\ container}}
+\DoxyCodeLine{01061\ \ \ asn1::\mbox{\hyperlink{structasn1_1_1cbit__ref}{cbit\_ref}}\ bref(asn1\_request-\/>source\_to\_target\_transparent\_container);}
+\DoxyCodeLine{01062\ \ \ asn1::ngap::\mbox{\hyperlink{structasn1_1_1ngap_1_1source__ngran__node__to__target__ngran__node__transparent__container__s}{source\_ngran\_node\_to\_target\_ngran\_node\_transparent\_container\_s}}\ asn1\_transparent\_container;}
+\DoxyCodeLine{01063\ \ \ \textcolor{keywordflow}{if}\ (asn1\_transparent\_container.unpack(bref)\ !=\ asn1::SRSASN\_SUCCESS)\ \{}
+\DoxyCodeLine{01064\ \ \ \ \ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}NGAP"{}}).error(\textcolor{stringliteral}{"{}Couldn't\ unpack\ Source\ to\ Target\ Transparent\ Container."{}});}
+\DoxyCodeLine{01065\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01066\ \ \ \}}
+\DoxyCodeLine{01067\ \ \ asn1\_to\_source\_to\_target\_transport\_container(request.source\_to\_target\_transparent\_container,}
+\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_transparent\_container);}
+\DoxyCodeLine{01069\ }
+\DoxyCodeLine{01070\ \ \ \textcolor{comment}{//\ mob\ restrict\ list}}
+\DoxyCodeLine{01071\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01072\ }
+\DoxyCodeLine{01073\ \ \ \textcolor{comment}{//\ location\ report\ request\ type}}
+\DoxyCodeLine{01074\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01075\ }
+\DoxyCodeLine{01076\ \ \ \textcolor{comment}{//\ rrc\ inactive\ transition\ report\ request}}
+\DoxyCodeLine{01077\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01078\ }
+\DoxyCodeLine{01079\ \ \ \textcolor{comment}{//\ guami}}
+\DoxyCodeLine{01080\ \ \ request.guami\ =\ asn1\_to\_guami(asn1\_request-\/>guami);}
+\DoxyCodeLine{01081\ }
+\DoxyCodeLine{01082\ \ \ \textcolor{comment}{//\ redirection\ voice\ fallback}}
+\DoxyCodeLine{01083\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01084\ }
+\DoxyCodeLine{01085\ \ \ \textcolor{comment}{//\ cn\ assisted\ ran\ tuning}}
+\DoxyCodeLine{01086\ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{01087\ }
+\DoxyCodeLine{01088\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01089\ \}}
+\DoxyCodeLine{01090\ }
+\DoxyCodeLine{01091\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ \(\backslash\)c\ ngap\_handover\_resource\_allocation\_response\ common\ type\ struct\ to\ ASN.1.}}
+\DoxyCodeLine{01092\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_ho\_request\_ack\ The\ Handover\ Request\ Ack\ ASN1\ struct\ to\ fill.}}
+\DoxyCodeLine{01093\ \textcolor{comment}{///\ \(\backslash\)param[in]\ ho\_response\ The\ ngap\_handover\_resource\_allocation\_response\ common\ type\ struct.}}
+\DoxyCodeLine{01094\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{01095\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{01096\ fill\_asn1\_handover\_resource\_allocation\_response(asn1::ngap::ho\_request\_ack\_s\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_ho\_request\_ack,}
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__resource__allocation__response}{ngap\_handover\_resource\_allocation\_response}}\&\ ho\_response)}
+\DoxyCodeLine{01098\ \{}
+\DoxyCodeLine{01099\ \ \ \textcolor{keywordflow}{if}\ (ho\_response.success\ ==\ \textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{01100\ \ \ \ \ \textcolor{comment}{//\ pdu\ session\ res\ admitted\ list}}
+\DoxyCodeLine{01101\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ admitted\_item\ :\ ho\_response.pdu\_session\_res\_admitted\_list)\ \{}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_admitted\_item\_s\ asn1\_admitted\_item;}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pdu\_session\_res\_admitted\_item\_to\_asn1(asn1\_admitted\_item,\ admitted\_item))\ \{}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ asn1\_ho\_request\_ack-\/>pdu\_session\_res\_admitted\_list.push\_back(asn1\_admitted\_item);}
+\DoxyCodeLine{01107\ \ \ \ \ \}}
+\DoxyCodeLine{01108\ }
+\DoxyCodeLine{01109\ \ \ \ \ \textcolor{comment}{//\ pdu\ session\ res\ failed\ to\ setup\ list\ ho\ ack}}
+\DoxyCodeLine{01110\ \ \ \ \ \textcolor{keywordflow}{if}\ (!ho\_response.pdu\_session\_res\_failed\_to\_setup\_list\_ho\_ack.empty())\ \{}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ asn1\_ho\_request\_ack-\/>pdu\_session\_res\_failed\_to\_setup\_list\_ho\_ack\_present\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ failed\_item\ :\ ho\_response.pdu\_session\_res\_failed\_to\_setup\_list\_ho\_ack)\ \{}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ asn1::ngap::pdu\_session\_res\_failed\_to\_setup\_item\_ho\_ack\_s\ asn1\_failed\_item;}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!pdu\_session\_res\_failed\_to\_setup\_item\_ho\_ack\_to\_asn1(asn1\_failed\_item,\ failed\_item))\ \{}
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ asn1\_ho\_request\_ack-\/>pdu\_session\_res\_failed\_to\_setup\_list\_ho\_ack.push\_back(asn1\_failed\_item);}
+\DoxyCodeLine{01118\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01119\ \ \ \ \ \}}
+\DoxyCodeLine{01120\ }
+\DoxyCodeLine{01121\ \ \ \ \ \textcolor{comment}{//\ target\ to\ source\ transparent\ container}}
+\DoxyCodeLine{01122\ \ \ \ \ \textcolor{keywordflow}{if}\ (!target\_to\_source\_transport\_container\_to\_asn1(asn1\_ho\_request\_ack-\/>target\_to\_source\_transparent\_container,}
+\DoxyCodeLine{01123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ho\_response.target\_to\_source\_transparent\_container))\ \{}
+\DoxyCodeLine{01124\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01125\ \ \ \ \ \}}
+\DoxyCodeLine{01126\ }
+\DoxyCodeLine{01127\ \ \ \ \ \textcolor{comment}{//\ crit\ diagnostics}}
+\DoxyCodeLine{01128\ \ \ \ \ \textcolor{keywordflow}{if}\ (ho\_response.crit\_diagnostics.has\_value())\ \{}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{01130\ \ \ \ \ \}}
+\DoxyCodeLine{01131\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01132\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01133\ \ \ \}}
+\DoxyCodeLine{01134\ }
+\DoxyCodeLine{01135\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01136\ \}}
+\DoxyCodeLine{01137\ }
+\DoxyCodeLine{01138\ \textcolor{comment}{///\ \(\backslash\)brief\ Convert\ \(\backslash\)c\ ngap\_handover\_resource\_allocation\_response\ common\ type\ struct\ to\ ASN.1.}}
+\DoxyCodeLine{01139\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_ho\_failure\ The\ Handover\ Request\ Failure\ ASN1\ struct\ to\ fill.}}
+\DoxyCodeLine{01140\ \textcolor{comment}{///\ \(\backslash\)param[in]\ ho\_response\ The\ ngap\_handover\_resource\_allocation\_response\ common\ type\ struct.}}
+\DoxyCodeLine{01141\ \textcolor{comment}{///\ \(\backslash\)returns\ True\ if\ the\ conversion\ was\ successful,\ false\ otherwise.}}
+\DoxyCodeLine{01142\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}}
+\DoxyCodeLine{01143\ fill\_asn1\_handover\_resource\_allocation\_response(asn1::ngap::ho\_fail\_s\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asn1\_ho\_failure,}
+\DoxyCodeLine{01144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__resource__allocation__response}{ngap\_handover\_resource\_allocation\_response}}\&\ ho\_response)}
+\DoxyCodeLine{01145\ \{}
+\DoxyCodeLine{01146\ \ \ \textcolor{keywordflow}{if}\ (!ho\_response.success)\ \{}
+\DoxyCodeLine{01147\ \ \ \ \ \textcolor{comment}{//\ cause}}
+\DoxyCodeLine{01148\ \ \ \ \ asn1\_ho\_failure-\/>cause\ =\ cause\_to\_asn1(ho\_response.cause);}
+\DoxyCodeLine{01149\ }
+\DoxyCodeLine{01150\ \ \ \ \ \textcolor{comment}{//\ crit\ diagnostics}}
+\DoxyCodeLine{01151\ \ \ \ \ \textcolor{keywordflow}{if}\ (ho\_response.crit\_diagnostics.has\_value())\ \{}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ crit\ diagnostics}}
+\DoxyCodeLine{01153\ \ \ \ \ \}}
+\DoxyCodeLine{01154\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01155\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01156\ \ \ \}}
+\DoxyCodeLine{01157\ }
+\DoxyCodeLine{01158\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01159\ \}}
+\DoxyCodeLine{01160\ }
+\DoxyCodeLine{01161\ \textcolor{comment}{///\ \(\backslash\)brief\ Fill\ the\ Handover\ Notify\ to\ ASN.1\ struct.}}
+\DoxyCodeLine{01162\ \textcolor{comment}{///\ \(\backslash\)param[out]\ asn1\_msg\ The\ Handover\ Notify\ ASN1\ struct\ to\ fill.}}
+\DoxyCodeLine{01163\ \textcolor{comment}{///\ \(\backslash\)param[in]\ cgi\ The\ nr\_cell\_global\_id\ common\ type\ struct\ of\ the\ UE.}}
+\DoxyCodeLine{01164\ \textcolor{comment}{///\ \(\backslash\)param[in]\ tac\ The\ tac\ of\ the\ UE.}}
+\DoxyCodeLine{01165\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{01166\ fill\_asn1\_handover\_notify(asn1::ngap::ho\_notify\_s\&\ asn1\_msg,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1nr__cell__global__id__t}{nr\_cell\_global\_id\_t}}\&\ cgi,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ tac)}
+\DoxyCodeLine{01167\ \{}
+\DoxyCodeLine{01168\ \ \ \textcolor{keyword}{auto}\&\ user\_loc\_info\_nr\ \ =\ asn1\_msg-\/>user\_location\_info.set\_user\_location\_info\_nr();}
+\DoxyCodeLine{01169\ \ \ user\_loc\_info\_nr.nr\_cgi\ =\ nr\_cgi\_to\_ngap\_asn1(cgi);}
+\DoxyCodeLine{01170\ \ \ user\_loc\_info\_nr.tai.plmn\_id.from\_string(cgi.plmn\_hex);}
+\DoxyCodeLine{01171\ \ \ user\_loc\_info\_nr.tai.tac.from\_number(tac);}
+\DoxyCodeLine{01172\ \}}
+\DoxyCodeLine{01173\ }
+\DoxyCodeLine{01174\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{01175\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

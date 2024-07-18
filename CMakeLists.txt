@@ -31,7 +31,7 @@ endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 cmake_minimum_required(VERSION 3.14)
 project(srsran)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
@@ -63,14 +63,12 @@ option(ENABLE_UHD            "Enable UHD"                               ON)
 option(ENABLE_ZEROMQ         "Enable ZeroMQ"                            OFF)
 option(ENABLE_FFTW           "Enable FFTW"                              ON)
 option(ENABLE_DPDK           "Enable DPDK"                              OFF)
-option(ENABLE_LIBNUMA        "Enable LibNUMA"                           OFF)
 option(ENABLE_EXPORT         "Enable PIC and export libraries"          OFF)
 option(ENABLE_TRX_DRIVER     "Enable Amarisoft TRX driver library"      OFF)
 option(AUTO_DETECT_ISA       "Enable automatic ISA detection"           ON)
 option(BUILD_TESTS           "Compile tests"                            ON)
 option(ENABLE_GPROF          "Enable gprof"                             OFF)
 option(USE_PHY_TESTVECTORS   "Enable testvector PHY tests"              OFF)
-option(FORCE_DEBUG_INFO      "Add debug information to Release build"   OFF)
 
 # Set assertion level options and default value.
 set(ASSERT_LEVEL "AUTO" CACHE STRING "Assertion paranoia level")
@@ -87,10 +85,6 @@ if (ENABLE_WERROR)
         check_cxx_compiler_flag("-Wmaybe-uninitialized" HAS_MAYBE_UNINITIALIZED)
         if (HAS_MAYBE_UNINITIALIZED)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=maybe-uninitialized")
-        endif()
-        check_cxx_compiler_flag("-Wstringop-overflow" HAS_STRINGOP_OVERFLOW)
-        if (HAS_STRINGOP_OVERFLOW)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=stringop-overflow")
         endif()
     endif()
 endif ()
@@ -140,7 +134,7 @@ ADD_CXX_COMPILER_FLAG_IF_AVAILABLE(-Wnon-virtual-dtor HAVE_NON_VIRTUAL_DTOR)
 # Make sure all overridden methods are marked as override
 ADD_CXX_COMPILER_FLAG_IF_AVAILABLE(-Wsuggest-override HAVE_SUGGEST_OVERRIDE)
 
-# Avoid shadow variables which can be caused due to C code ported into C++
+## Avoid shadow variables which can be caused due to C code ported into C++
 ADD_CXX_COMPILER_FLAG_IF_AVAILABLE(-Wshadow HAVE_SHADOW)
 
 # Set compiler flags for different build types.
@@ -169,12 +163,7 @@ endif (ENABLE_ASAN)
 
 if (ENABLE_TSAN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-    add_definitions(-DENABLE_TSAN)
 endif (ENABLE_TSAN)
-
-if (FORCE_DEBUG_INFO)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-endif (FORCE_DEBUG_INFO)
 
 if (ENABLE_GCOV)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
@@ -273,14 +262,6 @@ if (ENABLE_ZEROMQ)
 else (ENABLE_ZEROMQ)
     unset(ZEROMQ_FOUND CACHE)
 endif (ENABLE_ZEROMQ)
-
-if (ENABLE_LIBNUMA)
-    find_package(NUMA)
-    if (NUMA_FOUND)
-        include_directories(${NUMA_INCLUDE_DIRS})
-        add_definitions(-DNUMA_SUPPORT)
-    endif (NUMA_FOUND)
-endif (ENABLE_LIBNUMA)
 
 # DPDK
 if (ENABLE_DPDK)

@@ -1,0 +1,76 @@
+\doxysection{sdap\+\_\+entity\+\_\+tx\+\_\+impl.\+h}
+\hypertarget{sdap__entity__tx__impl_8h_source}{}\label{sdap__entity__tx__impl_8h_source}\index{lib/sdap/sdap\_entity\_tx\_impl.h@{lib/sdap/sdap\_entity\_tx\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{sdap__session__logger_8h}{"{}sdap\_session\_logger.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/sdap/sdap.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srs\_cu\_up\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__entity__tx__impl}{sdap\_entity\_tx\_impl}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ sdap\_entity\_tx\_impl(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ psi,}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \ \ \ \ \ \ \ \ qfi\_,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\_,}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ \ \ \ \ \ \ \ \ ue\_inactivity\_timer\_,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier}{sdap\_tx\_pdu\_notifier}}\&\ pdu\_notifier\_)\ :}
+\DoxyCodeLine{00042\ \ \ \ \ logger(\textcolor{stringliteral}{"{}SDAP"{}},\ \{ue\_index,\ psi,\ qfi\_,\ drb\_id\_,\ \textcolor{stringliteral}{"{}DL"{}}\}),}
+\DoxyCodeLine{00043\ \ \ \ \ qfi(qfi\_),}
+\DoxyCodeLine{00044\ \ \ \ \ drb\_id(drb\_id\_),}
+\DoxyCodeLine{00045\ \ \ \ \ ue\_inactivity\_timer(ue\_inactivity\_timer\_),}
+\DoxyCodeLine{00046\ \ \ \ \ pdu\_notifier(pdu\_notifier\_)}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{void}\ handle\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ sdu)}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ pass\ through}}
+\DoxyCodeLine{00053\ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}TX\ PDU.\ \{\}\ pdu\_len=\{\}"{}},\ qfi,\ sdu.length());}
+\DoxyCodeLine{00054\ \ \ \ \ pdu\_notifier\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier_abe68b36e50fb44d6549238708b529383}{.}}\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier_abe68b36e50fb44d6549238708b529383}{on\_new\_pdu}}\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier_abe68b36e50fb44d6549238708b529383}{(}}std::move(sdu)\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier_abe68b36e50fb44d6549238708b529383}{)}};}
+\DoxyCodeLine{00055\ \ \ \ \ ue\_inactivity\_timer\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{.}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{run}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{(}}\mbox{\hyperlink{classsrsran_1_1unique__timer_af3fa2fce72a8058698b971e498e0c262}{)}};}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ drb\_id\_t\ get\_drb\_id()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ drb\_id;\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00061\ \ \ sdap\_session\_trx\_logger\ logger;}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ qfi;}
+\DoxyCodeLine{00063\ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id;}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\&\ \ \ \ \ \ \ \ \ \ \ ue\_inactivity\_timer;}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1sdap__tx__pdu__notifier}{sdap\_tx\_pdu\_notifier}}\&\ \ \ pdu\_notifier;}
+\DoxyCodeLine{00066\ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

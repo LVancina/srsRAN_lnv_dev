@@ -30,9 +30,9 @@
 #include "srsran/support/benchmark_utils.h"
 #include "srsran/support/complex_normal_random.h"
 #include "srsran/support/executors/task_worker_pool.h"
-#include "srsran/support/executors/unique_thread.h"
 #include "srsran/support/math_utils.h"
 #include "srsran/support/srsran_test.h"
+#include "srsran/support/unique_thread.h"
 #ifdef HWACC_PUSCH_ENABLED
 #include "srsran/hal/dpdk/bbdev/bbdev_acc.h"
 #include "srsran/hal/dpdk/bbdev/bbdev_acc_factory.h"
@@ -41,7 +41,9 @@
 #include "srsran/hal/phy/upper/channel_processors/pusch/hw_accelerator_factories.h"
 #include "srsran/hal/phy/upper/channel_processors/pusch/hw_accelerator_pusch_dec_factory.h"
 #endif // HWACC_PUSCH_ENABLED
+#include <condition_variable>
 #include <getopt.h>
+#include <mutex>
 #include <random>
 
 using namespace srsran;
@@ -119,6 +121,9 @@ static std::string                        ldpc_decoder_type           = "auto";
 static std::string                        rate_dematcher_type         = "auto";
 static bool                               enable_evm                  = false;
 static benchmark_modes                    benchmark_mode              = benchmark_modes::throughput_total;
+static unsigned                           nof_rx_ports                = 1;
+static constexpr unsigned                 max_nof_rx_ports            = 4;
+static unsigned                           nof_tx_layers               = 1;
 static unsigned                           nof_harq_ack                = 0;
 static unsigned                           nof_csi_part1               = 0;
 static unsigned                           nof_csi_part2               = 0;
@@ -131,9 +136,12 @@ static std::unique_ptr<task_worker_pool<concurrent_queue_policy::locking_mpmc>> 
 static std::unique_ptr<task_worker_pool_executor<concurrent_queue_policy::locking_mpmc>> executor    = nullptr;
 
 // Thread shared variables.
-static std::atomic<bool>     thread_quit   = {};
-static std::atomic<int>      pending_count = {0};
-static std::atomic<unsigned> finish_count  = {0};
+static std::mutex              mutex_pending_count;
+static std::mutex              mutex_finish_count;
+static std::condition_variable cvar_count;
+static std::atomic<bool>       thread_quit   = {};
+static unsigned                pending_count = 0;
+static unsigned                finish_count  = 0;
 
 #ifdef HWACC_PUSCH_ENABLED
 static bool        ext_softbuffer = true;
@@ -144,19 +152,17 @@ static std::string eal_arguments  = "";
 
 // Test profile structure, initialized with default profile values.
 struct test_profile {
-  std::string                      name           = "default";
-  std::string                      description    = "Runs all combinations.";
-  subcarrier_spacing               scs            = subcarrier_spacing::kHz15;
-  cyclic_prefix                    cp             = cyclic_prefix::NORMAL;
-  unsigned                         nof_symbols    = get_nsymb_per_slot(cyclic_prefix::NORMAL);
-  std::vector<unsigned>            nof_prb_set    = {25, 52, 106, 270};
-  std::vector<sch_mcs_description> mcs_set        = {{modulation_scheme::QPSK, 120.0F},
-                                                     {modulation_scheme::QAM16, 658.0F},
-                                                     {modulation_scheme::QAM64, 873.0F},
-                                                     {modulation_scheme::QAM256, 948.0F}};
-  std::vector<unsigned>            rv_set         = {0};
-  unsigned                         nof_rx_ports   = 1;
-  std::vector<unsigned>            nof_layers_set = {1};
+  std::string                      name        = "default";
+  std::string                      description = "Runs all combinations.";
+  subcarrier_spacing               scs         = subcarrier_spacing::kHz15;
+  cyclic_prefix                    cp          = cyclic_prefix::NORMAL;
+  unsigned                         nof_symbols = get_nsymb_per_slot(cyclic_prefix::NORMAL);
+  std::vector<unsigned>            nof_prb_set = {25, 52, 106, 270};
+  std::vector<sch_mcs_description> mcs_set     = {{modulation_scheme::QPSK, 120.0F},
+                                                  {modulation_scheme::QAM16, 658.0F},
+                                                  {modulation_scheme::QAM64, 873.0F},
+                                                  {modulation_scheme::QAM256, 948.0F}};
+  std::vector<unsigned>            rv_set      = {0, 2};
 };
 
 // Profile selected during test execution.
@@ -168,41 +174,86 @@ static const std::vector<test_profile> profile_set = {
         // Use default profile values.
     },
 
-    {"scs15_5MHz_qpsk_rv0_1port_1layer",
-     "Decodes PUSCH with 15 kHz SCS, 5 MHz of bandwidth, QPSK modulation, minimum code rate, RV 0, 1 port, "
-     "and 1 layer.",
+    {"pusch_scs15_5MHz_qpsk_min",
+     "Decodes PUSCH with 5 MHz of bandwidth and a 15 kHz SCS, QPSK modulation at minimum code rate.",
      subcarrier_spacing::kHz15,
      cyclic_prefix::NORMAL,
      get_nsymb_per_slot(cyclic_prefix::NORMAL),
      {25},
      {{modulation_scheme::QPSK, 120.0F}},
-     {0},
-     1,
-     {1}},
+     {0}},
 
-    {"scs30_100MHz_256qam_rv0_4port_nlayer",
-     "Decodes PUSCH with 30 kHz SCS, 100 MHz of bandwidth, 256-QAM modulation, maximum code rate, RV 0, 4 port, "
-     "and 1-2 layer.",
+    {"pusch_scs15_5MHz_256qam_max",
+     "Decodes PUSCH with 5 MHz of bandwidth and a 15 kHz SCS, 256-QAM modulation at maximum code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {25},
+     {{modulation_scheme::QAM256, 948.0F}},
+     {0}},
+
+    {"pusch_scs15_20MHz_qpsk_min",
+     "Decodes PUSCH with 20 MHz of bandwidth and a 15 kHz SCS, QPSK modulation at minimum code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {106},
+     {{modulation_scheme::QPSK, 120.0F}},
+     {0}},
+
+    {"pusch_scs15_20MHz_16qam_med",
+     "Decodes PUSCH with 20 MHz of bandwidth and a 15 kHz SCS, 16-QAM modulation at a medium code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {106},
+     {{modulation_scheme::QAM16, 658.0F}},
+     {0}},
+
+    {"pusch_scs15_50MHz_64qam_max",
+     "Decodes PUSCH with 50 MHz of bandwidth and a 15 kHz SCS, 64-QAM modulation at a high code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {270},
+     {{modulation_scheme::QAM64, 873.0F}},
+     {0}},
+
+    {"pusch_scs15_20MHz_256qam_max",
+     "Decodes PUSCH with 20 MHz of bandwidth and a 15 kHz SCS, 256-QAM modulation at maximum code rate",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {106},
+     {{modulation_scheme::QAM256, 948.0F}},
+     {0}},
+
+    {"pusch_scs15_50MHz_qpsk_min",
+     "Decodes PUSCH with 50 MHz of bandwidth and a 15 kHz SCS, QPSK modulation at minimum code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {270},
+     {{modulation_scheme::QPSK, 120.0F}},
+     {0}},
+
+    {"pusch_scs15_50MHz_256qam_max",
+     "Decodes PUSCH with 50 MHz of bandwidth and a 15 kHz SCS, 256-QAM modulation at maximum code rate.",
+     subcarrier_spacing::kHz15,
+     cyclic_prefix::NORMAL,
+     get_nsymb_per_slot(cyclic_prefix::NORMAL),
+     {270},
+     {{modulation_scheme::QAM256, 948.0F}},
+     {0}},
+
+    {"pusch_scs30_100MHz_256qam_max",
+     "Decodes PUSCH with 100 MHz of bandwidth and a 30 kHz SCS, 256-QAM modulation at maximum code rate.",
      subcarrier_spacing::kHz30,
      cyclic_prefix::NORMAL,
      get_nsymb_per_slot(cyclic_prefix::NORMAL),
      {273},
      {{modulation_scheme::QAM256, 948.0F}},
-     {0},
-     4,
-     {1, 2}},
-
-    {"scs30_100MHz_256qam_rvall_1port_1layer",
-     "Decodes PUSCH with 30 kHz SCS, 100 MHz of bandwidth, 256-QAM modulation, maximum code rate, RV 0-3, 1 port, "
-     "and 1 layer.",
-     subcarrier_spacing::kHz30,
-     cyclic_prefix::NORMAL,
-     get_nsymb_per_slot(cyclic_prefix::NORMAL),
-     {273},
-     {{modulation_scheme::QAM256, 948.0F}},
-     {0, 2, 3, 1},
-     1,
-     {1}},
+     {0, 2}},
 };
 
 static void usage(const char* prog)
@@ -225,11 +276,12 @@ static void usage(const char* prog)
              nof_pusch_decoder_threads,
              max_nof_threads);
   fmt::print("\t-D LDPC decoder type. [Default {}]\n", ldpc_decoder_type);
+  fmt::print("\t-p Number of RX ports. [Default {}, max. {}]\n", nof_rx_ports, max_nof_rx_ports);
   fmt::print("\t-M Rate dematcher type. [Default {}]\n", rate_dematcher_type);
   fmt::print("\t-E Toggle EVM enable/disable. [Default {}]\n", enable_evm ? "enable" : "disable");
   fmt::print("\t-P Benchmark profile. [Default {}]\n", selected_profile_name);
   for (const test_profile& profile : profile_set) {
-    fmt::print("\t\t {:<40} {}\n", profile.name, profile.description);
+    fmt::print("\t\t {:<30}{}\n", profile.name, profile.description);
   }
 #ifdef HWACC_PUSCH_ENABLED
   fmt::print("\t-x       Use the host's memory for the soft-buffer [Default {}]\n", !ext_softbuffer);
@@ -277,7 +329,7 @@ static std::string capture_eal_args(int* argc, char*** argv)
 static int parse_args(int argc, char** argv)
 {
   int opt = 0;
-  while ((opt = getopt(argc, argv, "R:T:t:B:D:M:EP:m:xyz:h")) != -1) {
+  while ((opt = getopt(argc, argv, "R:T:t:p:B:D:M:EP:m:xyz:h")) != -1) {
     switch (opt) {
       case 'R':
         nof_repetitions = std::strtol(optarg, nullptr, 10);
@@ -287,6 +339,9 @@ static int parse_args(int argc, char** argv)
         break;
       case 't':
         nof_pusch_decoder_threads = std::min(max_nof_threads, static_cast<unsigned>(std::strtol(optarg, nullptr, 10)));
+        break;
+      case 'p':
+        nof_rx_ports = std::min(max_nof_rx_ports, static_cast<unsigned>(std::strtol(optarg, nullptr, 10)));
         break;
       case 'B':
         batch_size_per_thread = std::strtol(optarg, nullptr, 10);
@@ -357,48 +412,46 @@ static std::vector<test_case_type> generate_test_cases(const test_profile& profi
   for (sch_mcs_description mcs : profile.mcs_set) {
     for (unsigned nof_prb : profile.nof_prb_set) {
       for (unsigned rv : profile.rv_set) {
-        for (unsigned nof_layers : profile.nof_layers_set) {
-          // Determine the Transport Block Size.
-          tbs_calculator_configuration tbs_config = {};
-          tbs_config.mcs_descr                    = mcs;
-          tbs_config.n_prb                        = nof_prb;
-          tbs_config.nof_layers                   = nof_layers;
-          tbs_config.nof_symb_sh                  = profile.nof_symbols;
-          tbs_config.nof_dmrs_prb = dmrs.nof_dmrs_per_rb() * dmrs_symbol_mask.count() * nof_cdm_groups_without_data;
-          unsigned tbs            = tbs_calculator_calculate(tbs_config);
+        // Determine the Transport Block Size.
+        tbs_calculator_configuration tbs_config = {};
+        tbs_config.mcs_descr                    = mcs;
+        tbs_config.n_prb                        = nof_prb;
+        tbs_config.nof_layers                   = nof_tx_layers;
+        tbs_config.nof_symb_sh                  = profile.nof_symbols;
+        tbs_config.nof_dmrs_prb = dmrs.nof_dmrs_per_rb() * dmrs_symbol_mask.count() * nof_cdm_groups_without_data;
+        unsigned tbs            = tbs_calculator_calculate(tbs_config);
 
-          // Build the PUSCH PDU configuration.
-          pusch_processor::pdu_t config = {};
-          config.slot                   = slot_point(to_numerology_value(profile.scs), 0);
-          config.rnti                   = 1;
-          config.bwp_size_rb            = nof_prb;
-          config.bwp_start_rb           = 0;
-          config.cp                     = profile.cp;
-          config.mcs_descr              = mcs;
-          config.codeword.emplace(pusch_processor::codeword_description{
-              rv, get_ldpc_base_graph(mcs.get_normalised_target_code_rate(), units::bits(tbs)), true});
-          config.uci.alpha_scaling         = 1.0;
-          config.uci.beta_offset_harq_ack  = 5.0;
-          config.uci.beta_offset_csi_part1 = 5.0;
-          config.uci.beta_offset_csi_part2 = 5.0;
-          config.uci.nof_harq_ack          = nof_harq_ack;
-          config.uci.nof_csi_part1         = nof_csi_part1;
-          config.uci.csi_part2_size        = uci_part2_size_description(nof_csi_part2);
-          config.n_id                      = 0;
-          config.nof_tx_layers             = nof_layers;
-          config.rx_ports.resize(profile.nof_rx_ports);
-          std::iota(config.rx_ports.begin(), config.rx_ports.end(), 0);
-          config.dmrs_symbol_mask            = dmrs_symbol_mask;
-          config.dmrs                        = dmrs;
-          config.scrambling_id               = 0;
-          config.nof_cdm_groups_without_data = nof_cdm_groups_without_data;
-          config.freq_alloc                  = rb_allocation::make_type1(config.bwp_start_rb, nof_prb);
-          config.start_symbol_index          = 0;
-          config.nof_symbols                 = profile.nof_symbols;
-          config.tbs_lbrm_bytes              = ldpc::MAX_CODEBLOCK_SIZE / 8;
+        // Build the PUSCH PDU configuration.
+        pusch_processor::pdu_t config = {};
+        config.slot                   = slot_point(to_numerology_value(profile.scs), 0);
+        config.rnti                   = 1;
+        config.bwp_size_rb            = nof_prb;
+        config.bwp_start_rb           = 0;
+        config.cp                     = profile.cp;
+        config.mcs_descr              = mcs;
+        config.codeword.emplace(pusch_processor::codeword_description{
+            rv, get_ldpc_base_graph(mcs.get_normalised_target_code_rate(), units::bits(tbs)), true});
+        config.uci.alpha_scaling         = 1.0;
+        config.uci.beta_offset_harq_ack  = 5.0;
+        config.uci.beta_offset_csi_part1 = 5.0;
+        config.uci.beta_offset_csi_part2 = 5.0;
+        config.uci.nof_harq_ack          = nof_harq_ack;
+        config.uci.nof_csi_part1         = nof_csi_part1;
+        config.uci.csi_part2_size        = uci_part2_size_description(nof_csi_part2);
+        config.n_id                      = 0;
+        config.nof_tx_layers             = nof_tx_layers;
+        config.rx_ports.resize(nof_rx_ports);
+        std::iota(config.rx_ports.begin(), config.rx_ports.end(), 0);
+        config.dmrs_symbol_mask            = dmrs_symbol_mask;
+        config.dmrs                        = dmrs;
+        config.scrambling_id               = 0;
+        config.nof_cdm_groups_without_data = nof_cdm_groups_without_data;
+        config.freq_alloc                  = rb_allocation::make_type1(config.bwp_start_rb, nof_prb);
+        config.start_symbol_index          = 0;
+        config.nof_symbols                 = profile.nof_symbols;
+        config.tbs_lbrm_bytes              = ldpc::MAX_CODEBLOCK_SIZE / 8;
 
-          test_case_set.emplace_back(std::tuple<pusch_processor::pdu_t, unsigned>(config, tbs));
-        }
+        test_case_set.emplace_back(std::tuple<pusch_processor::pdu_t, unsigned>(config, tbs));
       }
     }
   }
@@ -448,7 +501,7 @@ static std::shared_ptr<hal::hw_accelerator_pusch_dec_factory> create_hw_accelera
 
   // Interfacing to a shared external HARQ buffer context repository.
   unsigned nof_cbs                   = MAX_NOF_SEGMENTS;
-  uint64_t acc100_ext_harq_buff_size = bbdev_accelerator->get_harq_buff_size_bytes();
+  unsigned acc100_ext_harq_buff_size = bbdev_accelerator->get_harq_buff_size().value();
   std::shared_ptr<ext_harq_buffer_context_repository> harq_buffer_context =
       create_ext_harq_buffer_context_repository(nof_cbs, acc100_ext_harq_buff_size, false);
   TESTASSERT(harq_buffer_context);
@@ -523,13 +576,9 @@ static pusch_processor_factory& get_pusch_processor_factory()
   }
   TESTASSERT(dft_factory, "Cannot create DFT factory.");
 
-  std::shared_ptr<time_alignment_estimator_factory> ta_estimator_factory =
-      create_time_alignment_estimator_dft_factory(dft_factory);
-  TESTASSERT(ta_estimator_factory, "Cannot create TA estimator factory.");
-
   // Create port channel estimator factory.
   std::shared_ptr<port_channel_estimator_factory> port_chan_estimator_factory =
-      create_port_channel_estimator_factory_sw(ta_estimator_factory);
+      create_port_channel_estimator_factory_sw(dft_factory);
   TESTASSERT(port_chan_estimator_factory);
 
   // Create DM-RS for PUSCH channel estimator.
@@ -554,7 +603,7 @@ static pusch_processor_factory& get_pusch_processor_factory()
   // Note that currently hardware-acceleration is limited to "generic" processor types.
   if (nof_pusch_decoder_threads != 0 && ldpc_decoder_type != "acc100" && rate_dematcher_type != "acc100") {
     worker_pool = std::make_unique<task_worker_pool<concurrent_queue_policy::locking_mpmc>>(
-        "decoder", nof_pusch_decoder_threads, 1024);
+        nof_pusch_decoder_threads, 1024, "decoder");
     executor = std::make_unique<task_worker_pool_executor<concurrent_queue_policy::locking_mpmc>>(*worker_pool);
   }
 
@@ -573,23 +622,22 @@ static pusch_processor_factory& get_pusch_processor_factory()
 
   // Create PUSCH processor.
   pusch_processor_factory_sw_configuration pusch_proc_factory_config;
-  pusch_proc_factory_config.estimator_factory                   = dmrs_pusch_chan_estimator_factory;
-  pusch_proc_factory_config.demodulator_factory                 = pusch_demod_factory;
-  pusch_proc_factory_config.demux_factory                       = demux_factory;
-  pusch_proc_factory_config.decoder_factory                     = pusch_dec_factory;
-  pusch_proc_factory_config.uci_dec_factory                     = uci_dec_factory;
-  pusch_proc_factory_config.ch_estimate_dimensions.nof_prb      = MAX_RB;
-  pusch_proc_factory_config.ch_estimate_dimensions.nof_symbols  = MAX_NSYMB_PER_SLOT;
-  pusch_proc_factory_config.ch_estimate_dimensions.nof_rx_ports = selected_profile.nof_rx_ports;
-  pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers =
-      std::min(selected_profile.nof_rx_ports, pusch_constants::MAX_NOF_LAYERS);
-  pusch_proc_factory_config.dec_nof_iterations         = 2;
-  pusch_proc_factory_config.dec_enable_early_stop      = true;
-  pusch_proc_factory_config.max_nof_concurrent_threads = nof_threads;
-  pusch_proc_factory                                   = create_pusch_processor_factory_sw(pusch_proc_factory_config);
+  pusch_proc_factory_config.estimator_factory                    = dmrs_pusch_chan_estimator_factory;
+  pusch_proc_factory_config.demodulator_factory                  = pusch_demod_factory;
+  pusch_proc_factory_config.demux_factory                        = demux_factory;
+  pusch_proc_factory_config.decoder_factory                      = pusch_dec_factory;
+  pusch_proc_factory_config.uci_dec_factory                      = uci_dec_factory;
+  pusch_proc_factory_config.ch_estimate_dimensions.nof_prb       = MAX_RB;
+  pusch_proc_factory_config.ch_estimate_dimensions.nof_symbols   = MAX_NSYMB_PER_SLOT;
+  pusch_proc_factory_config.ch_estimate_dimensions.nof_rx_ports  = nof_rx_ports;
+  pusch_proc_factory_config.ch_estimate_dimensions.nof_tx_layers = nof_tx_layers;
+  pusch_proc_factory_config.dec_nof_iterations                   = 2;
+  pusch_proc_factory_config.dec_enable_early_stop                = true;
+  pusch_proc_factory_config.max_nof_concurrent_threads           = nof_threads;
+  pusch_proc_factory = create_pusch_processor_factory_sw(pusch_proc_factory_config);
   TESTASSERT(pusch_proc_factory);
 
-  pusch_proc_factory = create_pusch_processor_pool(std::move(pusch_proc_factory), nof_threads, true);
+  pusch_proc_factory = create_pusch_processor_pool(std::move(pusch_proc_factory), nof_threads);
   TESTASSERT(pusch_proc_factory);
 
   return *pusch_proc_factory;
@@ -616,6 +664,8 @@ static void thread_process(pusch_processor&              proc,
                            unsigned                      tbs,
                            const resource_grid_reader&   grid)
 {
+  pusch_processor_result_notifier_adaptor result_notifier;
+
   // Compute the number of codeblocks.
   unsigned nof_codeblocks = ldpc::compute_nof_codeblocks(units::bits(tbs), config.codeword.value().ldpc_base_graph);
 
@@ -636,26 +686,33 @@ static void thread_process(pusch_processor&              proc,
   // Prepare receive data buffer.
   std::vector<uint8_t> data(tbs / 8);
 
+  // Notify finish count.
+  {
+    std::unique_lock<std::mutex> lock(mutex_finish_count);
+    finish_count++;
+    cvar_count.notify_all();
+  }
+
   while (!thread_quit) {
-    // If the pending count is equal to or lower than zero, wait for a new start.
-    while (pending_count.fetch_sub(1) <= 0) {
-      // Wait for pending to non-negative.
-      while (pending_count.load() <= 0) {
-        // Sleep.
-        std::this_thread::sleep_for(std::chrono::microseconds(10));
+    // Wait for pending.
+    {
+      std::unique_lock<std::mutex> lock(mutex_pending_count);
+      while (pending_count == 0) {
+        cvar_count.wait_until(lock, std::chrono::system_clock::now() + std::chrono::milliseconds(2));
 
         // Quit if signaled.
         if (thread_quit) {
           return;
         }
       }
+      pending_count--;
     }
-
-    // Prepare notifier.
-    pusch_processor_result_notifier_adaptor result_notifier;
 
     // Reserve buffer.
     unique_rx_buffer rm_buffer = buffer_pool->get_pool().reserve(config.slot, buffer_id, nof_codeblocks, true);
+
+    // Reset notifier.
+    result_notifier.reset();
 
     // Process PDU.
     proc.process(data, std::move(rm_buffer), result_notifier, grid, config);
@@ -664,7 +721,11 @@ static void thread_process(pusch_processor&              proc,
     result_notifier.wait_for_completion();
 
     // Notify finish count.
-    ++finish_count;
+    {
+      std::unique_lock<std::mutex> lock(mutex_finish_count);
+      finish_count++;
+      cvar_count.notify_all();
+    }
   }
 }
 
@@ -698,7 +759,7 @@ int main(int argc, char** argv)
     ldpc_decoder_type   = "acc100";
     rate_dematcher_type = "acc100";
     srslog::sink* log_sink =
-        std_out_sink ? srslog::create_stdout_sink() : srslog::create_file_sink("processor_benchmark.log");
+        std_out_sink ? srslog::create_stdout_sink() : srslog::create_file_sink("pusch_processor_benchmark.log");
     srslog::set_default_sink(*log_sink);
     srslog::init();
     srslog::basic_logger& logger = srslog::fetch_basic_logger("EAL", false);
@@ -730,11 +791,10 @@ int main(int argc, char** argv)
   unsigned grid_nof_subcs   = MAX_RB * NRE;
 
   // Create resource grid.
-  std::unique_ptr<resource_grid> grid =
-      create_resource_grid(pusch_constants::MAX_NOF_LAYERS, grid_nof_symbols, grid_nof_subcs);
+  std::unique_ptr<resource_grid> grid = create_resource_grid(nof_rx_ports, grid_nof_symbols, grid_nof_subcs);
   TESTASSERT(grid);
 
-  unsigned nof_grid_re = grid_nof_subcs * grid_nof_symbols * selected_profile.nof_rx_ports;
+  unsigned nof_grid_re = grid_nof_subcs * grid_nof_symbols * nof_rx_ports;
 
   // Create a vector to hold the randomly generated RE.
   std::vector<cf_t> random_re(nof_grid_re);
@@ -750,7 +810,7 @@ int main(int argc, char** argv)
 
   // Fill the grid with the random RE.
   span<const cf_t> re_view(random_re);
-  for (unsigned i_rx_port = 0; i_rx_port != selected_profile.nof_rx_ports; ++i_rx_port) {
+  for (unsigned i_rx_port = 0; i_rx_port != nof_rx_ports; ++i_rx_port) {
     for (unsigned i_symbol = 0; i_symbol != grid_nof_symbols; ++i_symbol) {
       re_view = grid->get_writer().put(i_rx_port, i_symbol, 0, re_mask, re_view);
     }
@@ -774,9 +834,8 @@ int main(int argc, char** argv)
     TESTASSERT(validator->is_valid(config));
 
     // Reset finish counter.
-    finish_count  = 0;
-    pending_count = 0;
-    thread_quit   = false;
+    finish_count = 0;
+    thread_quit  = false;
 
     // Prepare threads for the current case.
     std::vector<unique_thread> threads(nof_threads);
@@ -791,8 +850,11 @@ int main(int argc, char** argv)
     }
 
     // Wait for finish thread init.
-    while (pending_count.load() != -static_cast<int>(nof_threads)) {
-      std::this_thread::sleep_for(std::chrono::microseconds(10));
+    {
+      std::unique_lock<std::mutex> lock(mutex_finish_count);
+      while (finish_count != nof_threads) {
+        cvar_count.wait_until(lock, std::chrono::system_clock::now() + std::chrono::milliseconds(2));
+      }
     }
 
     // Calculate the peak throughput, considering that the number of bits is for a slot.
@@ -802,23 +864,29 @@ int main(int argc, char** argv)
     // Measurement description.
     fmt::memory_buffer meas_description;
     fmt::format_to(meas_description,
-                   "PUSCH RB={:<3} Mod={:<6} R={:<5.3f} rv={} n_layers={} - {:>5.1f} Mbps",
+                   "PUSCH RB={:<3} Mod={:<6} R={:<5.3f} rv={} - {:>5.1f} Mbps",
                    config.freq_alloc.get_nof_rb(),
                    to_string(config.mcs_descr.modulation),
                    config.mcs_descr.get_normalised_target_code_rate(),
                    config.codeword.value().rv,
-                   config.nof_tx_layers,
                    peak_throughput_Mbps);
 
     // Run the benchmark.
-    perf_meas.new_measure(to_string(meas_description), nof_threads * batch_size_per_thread * tbs, []() mutable {
+    perf_meas.new_measure(to_string(meas_description), nof_threads * batch_size_per_thread * tbs, []() {
       // Notify start.
-      finish_count  = 0;
-      pending_count = nof_threads * batch_size_per_thread;
+      {
+        std::unique_lock<std::mutex> lock(mutex_pending_count);
+        pending_count = nof_threads * batch_size_per_thread;
+        finish_count  = 0;
+        cvar_count.notify_all();
+      }
 
       // Wait for finish.
-      while (finish_count.load() != (nof_threads * batch_size_per_thread)) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      {
+        std::unique_lock<std::mutex> lock(mutex_finish_count);
+        while (finish_count != (nof_threads * batch_size_per_thread)) {
+          cvar_count.wait_until(lock, std::chrono::system_clock::now() + std::chrono::milliseconds(2));
+        }
       }
     });
 

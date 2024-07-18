@@ -1,0 +1,93 @@
+\doxysection{pdsch\+\_\+modulator\+\_\+impl.\+h}
+\hypertarget{pdsch__modulator__impl_8h_source}{}\label{pdsch__modulator__impl_8h_source}\index{lib/phy/upper/channel\_processors/pdsch\_modulator\_impl.h@{lib/phy/upper/channel\_processors/pdsch\_modulator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/re\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_mapper.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdsch\_modulator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdsch/pdsch\_constants.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Describes\ a\ generic\ implementation\ of\ a\ PDSCH\ modulator,\ defined\ by\ TS\ 38.211\ section\ 7.3.1}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl}{pdsch\_modulator\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator}{pdsch\_modulator}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00037\ \ \ std::unique\_ptr<modulation\_mapper>\ \ \ \ \ \ \ modulator;}
+\DoxyCodeLine{00038\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ scrambler;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Scrambles\ a\ codeword.\ Implements\ TS\ 38.211\ section\ 7.3.1.1\ Scrambling.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ b\ Inputs\ bits\ to\ scramble.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ q\ Codeword\ index\ \{0,1\}.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Provides\ the\ scrambler\ configuration.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Output\ bits\ after\ scrambling.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{const}\ bit\_buffer\&\ scramble(\textcolor{keyword}{const}\ bit\_buffer\&\ b,\ \textcolor{keywordtype}{unsigned}\ q,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__modulator_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Modulates\ a\ codeword.\ Implements\ TS\ 38.211\ section\ 7.3.1.2\ Modulation.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ d\_pdsch\ Output\ symbols.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ b\_hat\ Inputs\ bits\ to\ perform\ the\ modulation\ mapping.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ modulation\ Indicates\ the\ modulation\ scheme\ (QPSK,\ 16QAM,\ ...).}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ modulation\ scaling\ factor.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{float}\ modulate(span<ci8\_t>\ d\_pdsch,\ \textcolor{keyword}{const}\ bit\_buffer\&\ b\_hat,\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ modulation);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Maps\ resource\ elements\ into\ the\ resource\ grid.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Implements\ TS\ 38.211\ sections\ 7.3.1.4\ Antenna\ port\ mapping,\ 7.3.1.5\ Layer\ mapping,\ 7.3.1.5\ Mapping\ to\ virtual}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ resource\ blocks\ and\ 7.3.1.6\ Mapping\ from\ virtual\ to\ physical\ resource\ blocks.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ mapper\ Resource\ grid\ mapping\ interface.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ data\_re\ PDSCH\ resource\ elements.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ PDSCH\ modulator\ configuration\ parameters.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ number\ of\ layers\ and\ codewords\ is\ deduced\ from\ the\ parameters.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ map(resource\_grid\_mapper\&\ mapper,\ span<\textcolor{keyword}{const}\ ci8\_t>\ data\_re,\ \textcolor{keywordtype}{float}\ scaling,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__modulator_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ Temporary\ buffer\ for\ scrambled\ sequence.}}
+\DoxyCodeLine{00068\ \ \ static\_bit\_buffer<pdsch\_constants::CODEWORD\_MAX\_SIZE.value()>\ temp\_b\_hat;}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Temporary\ buffer\ for\ the\ PDSCH\ modulated\ symbols.}}
+\DoxyCodeLine{00070\ \ \ std::array<ci8\_t,\ pdsch\_constants::CODEWORD\_MAX\_SYMBOLS>\ temp\_pdsch\_symbols;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generic\ PDSCH\ modulator\ instance\ constructor.}}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{pdsch\_modulator\_impl}}(std::unique\_ptr<modulation\_mapper>\ \ \ \ \ \ \ modulator\_,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pseudo\_random\_generator>\ scrambler\_)\ :}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{modulator}}(\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{std}}::\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{move}}(\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{modulator\_}})),\ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{scrambler}}(\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{std}}::\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{move}}(\mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a824f2f0dec56b430695ba8b26f56bcba}{scrambler\_}}))}
+\DoxyCodeLine{00077\ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(modulator,\ \textcolor{stringliteral}{"{}Invalid\ modulator"{}});}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(scrambler,\ \textcolor{stringliteral}{"{}Invalid\ scrambler"{}});}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__modulator__impl_a9a7ce5c896c06475342907f3f2c03aef}{modulate}}(resource\_grid\_mapper\&\ mapper,\ \mbox{\hyperlink{namespacesrsran}{srsran}}::span<\textcolor{keyword}{const}\ bit\_buffer>\ codewords,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__modulator_1_1config__t}{config\_t}}\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00085\ \};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

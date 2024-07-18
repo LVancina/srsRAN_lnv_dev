@@ -39,19 +39,20 @@ ngap_test::ngap_test() : ngap_ue_task_scheduler(timers, ctrl_worker)
   ngap_logger.set_level(srslog::basic_levels::debug);
   srslog::init();
 
-  cfg.gnb_id        = {411, 22};
+  cfg.gnb_id        = 411;
   cfg.ran_node_name = "srsgnb01";
   cfg.plmn          = "00101";
   cfg.tac           = 7;
   s_nssai_t slice_cfg;
   slice_cfg.sst = 1;
   cfg.slice_configurations.push_back(slice_cfg);
-  cfg.pdu_session_setup_timeout = std::chrono::seconds(2);
+  cfg.ue_context_setup_timeout = std::chrono::seconds(2);
 
   ngap = create_ngap(
-      cfg, cu_cp_notifier, cu_cp_paging_notifier, ngap_ue_task_scheduler, ue_mng, msg_notifier, ctrl_worker);
+      cfg, ngap_ue_creation_notifier, cu_cp_paging_notifier, ngap_ue_task_scheduler, ue_mng, msg_notifier, ctrl_worker);
 
-  cu_cp_notifier.connect_ngap(ngap->get_ngap_ue_context_removal_handler());
+  du_processor_notifier =
+      std::make_unique<dummy_ngap_du_processor_notifier>(ngap->get_ngap_ue_context_removal_handler());
 }
 
 ngap_test::~ngap_test()
@@ -75,7 +76,8 @@ ue_index_t ngap_test::create_ue(rnti_t rnti)
   test_ue& new_test_ue = test_ues.at(ue_index);
 
   // Add UE to NGAP notifier
-  cu_cp_notifier.add_ue(ue_index, new_test_ue.rrc_ue_notifier, new_test_ue.rrc_ue_notifier);
+  ngap_ue_creation_notifier.add_ue(
+      ue_index, new_test_ue.rrc_ue_notifier, new_test_ue.rrc_ue_notifier, *du_processor_notifier);
 
   // generate and inject valid initial ue message
   cu_cp_initial_ue_message msg = generate_initial_ue_message(ue_index);
@@ -102,7 +104,8 @@ ue_index_t ngap_test::create_ue_without_init_ue_message(rnti_t rnti)
   test_ue& new_test_ue = test_ues.at(ue_index);
 
   // Add UE to NGAP notifier
-  cu_cp_notifier.add_ue(ue_index, new_test_ue.rrc_ue_notifier, new_test_ue.rrc_ue_notifier);
+  ngap_ue_creation_notifier.add_ue(
+      ue_index, new_test_ue.rrc_ue_notifier, new_test_ue.rrc_ue_notifier, *du_processor_notifier);
 
   return ue_index;
 }

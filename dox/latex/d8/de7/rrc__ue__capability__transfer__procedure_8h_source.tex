@@ -1,0 +1,102 @@
+\doxysection{rrc\+\_\+ue\+\_\+capability\+\_\+transfer\+\_\+procedure.\+h}
+\hypertarget{rrc__ue__capability__transfer__procedure_8h_source}{}\label{rrc__ue__capability__transfer__procedure_8h_source}\index{lib/rrc/ue/procedures/rrc\_ue\_capability\_transfer\_procedure.h@{lib/rrc/ue/procedures/rrc\_ue\_capability\_transfer\_procedure.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../rrc\_ue\_context.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../rrc\_ue\_logger.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rrc__ue__event__manager_8h}{"{}rrc\_ue\_event\_manager.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/rrc\_nr/rrc\_nr.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/rrc/rrc\_du.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/rrc/rrc\_ue.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/eager\_async\_task.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ srs\_cu\_cp\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)brief\ Handles\ the\ setup\ of\ UE\ capabilities\ in\ the\ RRC\ UE.}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__capability__transfer__procedure}{rrc\_ue\_capability\_transfer\_procedure}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ rrc\_ue\_capability\_transfer\_procedure(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__context__t}{rrc\_ue\_context\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context\_,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__security__mode__command__proc__notifier}{rrc\_ue\_security\_mode\_command\_proc\_notifier}}\&\ rrc\_ue\_notifier\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__event__manager}{rrc\_ue\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ev\_mng\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ operator()(coro\_context<async\_task<\textcolor{keywordtype}{bool}>>\&\ ctx);}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RRC\ UE\ Capability\ Transfer\ Procedure"{}};\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Send\ RRC\ UE\ Capability\ Enquiry,\ see\ section\ 5.6.1.1\ in\ TS\ 38.331}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ send\_rrc\_ue\_capability\_enquiry();}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__context__t}{rrc\_ue\_context\_t}}\&\ context;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__security__mode__command__proc__notifier}{rrc\_ue\_security\_mode\_command\_proc\_notifier}}\&\ rrc\_ue;\ \ \ \ \textcolor{comment}{//\ handler\ to\ the\ parent\ RRC\ UE\ object}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__event__manager}{rrc\_ue\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ event\_mng;\ \textcolor{comment}{//\ event\ manager\ for\ the\ RRC\ UE\ entity}}
+\DoxyCodeLine{00058\ \ \ rrc\_ue\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ rrc\_transaction\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction;}
+\DoxyCodeLine{00061\ \ \ \mbox{\hyperlink{classsrsran_1_1eager__async__task}{eager\_async\_task}}<rrc\_outcome>\ task;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{bool}\ procedure\_result\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00064\ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{comment}{///\ \(\backslash\)brief\ Fills\ ASN.1\ RRC\ UE\ Capability\ Enquiry\ struct.}}
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ \(\backslash\)param[out]\ rrc\_ue\_cap\_enquiry\ The\ RRC\ UE\ Capability\ Enquiry\ ASN.1\ struct\ to\ fill.}}
+\DoxyCodeLine{00068\ \textcolor{comment}{///\ \(\backslash\)param[in]\ rrc\_transaction\_id\ The\ RRC\ transaction\ id.}}
+\DoxyCodeLine{00069\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ fill\_asn1\_rrc\_ue\_capability\_enquiry(asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ue__cap__enquiry__s}{ue\_cap\_enquiry\_s}}\&\ rrc\_ue\_cap\_enquiry,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_transaction\_id,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<nr\_band>\ \ \ \ \ \ \ \ \ \ \ \ bands)}
+\DoxyCodeLine{00072\ \{}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{using}\ \textcolor{keyword}{namespace}\ asn1::rrc\_nr;}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ue__cap__enquiry__ies__s}{ue\_cap\_enquiry\_ies\_s}}\&\ ue\_cap\_ies\ \ \ \ \ \ =\ rrc\_ue\_cap\_enquiry.crit\_exts.set\_ue\_cap\_enquiry();}
+\DoxyCodeLine{00075\ \ \ rrc\_ue\_cap\_enquiry.rrc\_transaction\_id\ =\ rrc\_transaction\_id;}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ue__cap__rat__request__s}{ue\_cap\_rat\_request\_s}}\ ue\_cap\_rat\_request;}
+\DoxyCodeLine{00078\ \ \ ue\_cap\_rat\_request.rat\_type\ =\ asn1::rrc\_nr::rat\_type\_e::nr;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{structasn1_1_1rrc__nr_1_1ue__cap__request__filt__nr__s}{ue\_cap\_request\_filt\_nr\_s}}\ filter;}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ band\ :\ bands)\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ freq\_band\_info\_c\ band\_info;}
+\DoxyCodeLine{00083\ \ \ \ \ band\_info.set\_band\_info\_nr().band\_nr\ =\ nr\_band\_to\_uint(band);}
+\DoxyCodeLine{00084\ \ \ \ \ filter.freq\_band\_list\_filt.push\_back(band\_info);}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \ \ filter\_packed;}
+\DoxyCodeLine{00088\ \ \ asn1::\mbox{\hyperlink{structasn1_1_1bit__ref}{bit\_ref}}\ bref(filter\_packed);}
+\DoxyCodeLine{00089\ \ \ filter.pack(bref);\ \textcolor{comment}{//\ possible\ packing\ error\ fill\ be\ shown\ in\ ASN1\ logs}}
+\DoxyCodeLine{00090\ \ \ ue\_cap\_rat\_request.cap\_request\_filt\ =\ std::move(filter\_packed);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ ue\_cap\_ies.ue\_cap\_rat\_request\_list.push\_back(ue\_cap\_rat\_request);}
+\DoxyCodeLine{00093\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00096\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -138,18 +138,17 @@ public:
   };
 
   /// Create a searcher for UE PDSCH parameters.
-  ue_pdsch_param_candidate_searcher(const ue&             ue_ref_,
-                                    ue_cell_index_t       cell_index,
-                                    bool                  is_retx_,
-                                    slot_point            pdcch_slot_,
-                                    srslog::basic_logger& logger_) :
-    ue_ref(ue_ref_), ue_cc(ue_ref.get_cell(cell_index)), is_retx(is_retx_), pdcch_slot(pdcch_slot_), logger(logger_)
+  ue_pdsch_param_candidate_searcher(const ue&       ue_ref_,
+                                    ue_cell_index_t cell_index,
+                                    bool            is_retx_,
+                                    slot_point      pdcch_slot_) :
+    ue_ref(ue_ref_), ue_cc(ue_ref.get_cell(cell_index)), is_retx(is_retx_), pdcch_slot(pdcch_slot_)
   {
     if (is_retx) {
       // Create list of DL HARQ processes with pending retx, sorted from oldest to newest.
       for (unsigned i = 0; i != ue_cc.harqs.nof_dl_harqs(); ++i) {
         const dl_harq_process& h = ue_cc.harqs.dl_harq(i);
-        if (h.has_pending_retx() and (not h.last_alloc_params().is_fallback)) {
+        if (h.has_pending_retx()) {
           dl_harq_candidates.push_back(&h);
         }
       }
@@ -157,9 +156,9 @@ public:
           dl_harq_candidates.begin(),
           dl_harq_candidates.end(),
           [](const dl_harq_process* lhs, const dl_harq_process* rhs) { return lhs->slot_ack() < rhs->slot_ack(); });
-    } else if (ue_cc.is_active()) {
-      // If there are no pending new Tx bytes or UE in fallback, return.
-      if (ue_cc.is_in_fallback_mode() or (not ue_ref.has_pending_dl_newtx_bytes())) {
+    } else if (ue_ref.get_cell(cell_index).is_active()) {
+      // If there are no pending new Tx bytes, return.
+      if (not ue_ref.has_pending_dl_newtx_bytes()) {
         return;
       }
 
@@ -167,23 +166,6 @@ public:
       const dl_harq_process* h = ue_cc.harqs.find_empty_dl_harq();
       if (h != nullptr) {
         dl_harq_candidates.push_back(h);
-      } else {
-        // No empty HARQs are available. Log this occurrence.
-        if (ue_cc.harqs.find_dl_harq_waiting_ack() == nullptr) {
-          // A HARQ is already being retransmitted, or all HARQs are waiting for a grant for a retransmission.
-          logger.debug("ue={} rnti={} PDSCH allocation skipped. Cause: No available HARQs for new transmissions.",
-                       ue_cc.ue_index,
-                       ue_cc.rnti());
-        } else {
-          // All HARQs are waiting for their respective HARQ-ACK. This may be a symptom of a long RTT for the PDSCH
-          // and HARQ-ACK.
-          logger.warning(
-              "ue={} rnti={} PDSCH allocation skipped. Cause: All the HARQs are allocated and waiting for their "
-              "respective HARQ-ACK. Check if any HARQ-ACK went missing in the lower layers or is arriving too late to "
-              "the scheduler.",
-              ue_cc.ue_index,
-              ue_cc.rnti());
-        }
       }
     }
   }
@@ -211,9 +193,10 @@ private:
 
     // Check which RNTI Type is preferred for this UE and HARQ.
     optional<dci_dl_rnti_config_type> preferred_rnti_type;
-    // NOTE: At this point UE is no longer in fallback mode.
     if (is_retx) {
       preferred_rnti_type = harq_of_ss_list->last_alloc_params().dci_cfg_type;
+    } else if (ue_ref.is_conres_ce_pending()) {
+      preferred_rnti_type = dci_dl_rnti_config_type::tc_rnti_f1_0;
     }
 
     if (prev_h != nullptr and preferred_rnti_type == current_rnti_type) {
@@ -259,14 +242,14 @@ private:
       generate_ss_candidates(current.harq_it);
 
       for (; current.ss_it != ss_candidate_list.end(); ++current.ss_it) {
-        // NOTE: At this point UE is no longer in fallback mode.
-        if ((*current.ss_it)
-                ->get_pdcch_candidates(
-                    ue_cc.get_aggregation_level(
-                        ue_cc.link_adaptation_controller().get_effective_cqi(), **current.ss_it, true),
-                    pdcch_slot)
+        if (not ue_cc.is_in_fallback_mode() and current_rnti_type != dci_dl_rnti_config_type::tc_rnti_f1_0 and
+            (*current.ss_it)
+                ->get_pdcch_candidates(ue_cc.get_aggregation_level(
+                                           ue_cc.channel_state_manager().get_wideband_cqi(), **current.ss_it, true),
+                                       pdcch_slot)
                 .empty()) {
-          // Skip SearchSpaces without PDCCH candidates to be monitored in this slot.
+          // For the case when dedicated UE config is used, skip SearchSpaces without PDCCH candidates being monitored
+          // in this slot.
           continue;
         }
 
@@ -307,9 +290,6 @@ private:
 
   // PDCCH slot point used to verify if the PDSCH fits a DL slot.
   slot_point pdcch_slot;
-
-  // Logger
-  srslog::basic_logger& logger;
 };
 
 } // namespace srsran

@@ -1,0 +1,239 @@
+\doxysection{pucch\+\_\+processor.\+h}
+\hypertarget{pucch__processor_8h_source}{}\label{pucch__processor_8h_source}\index{include/srsran/phy/upper/channel\_processors/pucch\_processor.h@{include/srsran/phy/upper/channel\_processors/pucch\_processor.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pucch\_processor\_result.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pucch\_uci\_message.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pucch/pucch\_context.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/sch/modulation\_scheme.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ resource\_grid\_reader;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)brief\ PUCCH\ processor\ interface\ for\ all\ formats.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)remark\ \(\backslash\)anchor\ PUCCH\_payload\_size\ The\ total\ payload\ size\ for\ Formats\ 2,\ 3\ and\ 4\ shall\ not\ exceed\ 1706.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ Specifically,\ one\ should\ have\ <tt>nof\_sr\ +\ nof\_harq\_ack\ +\ nof\_csi\_part1\ +\ nof\_csi\_part2\ <=\ 1706</tt>.}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Collects\ specific\ PUCCH\ Format\ 0\ parameters.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration}{format0\_configuration}}\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration\ for\ the\ slot.}}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration_a46d17ff1ed7ed198b16a47f6a09cec2e}{cp}};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{///\ Initial\ cyclic\ shift\ \{0,\ ...,\ 11\}.}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration_ab299b39c8cdf39afa5b0b2fa1702a92e}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ for\ the\ PUCCH\ transmission\ \{1,\ 2\}.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration_a5bb9a82e6fa3e95a3e9989ab4ecc7e84}{nof\_symbols}};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{///\ Start\ symbol\ index\ \{0,\ ...,\ 13\}.}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration_a76e15c739cbdacb47e6702cbf0bc2bcb}{start\_symbol\_index}};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{///\ Slot\ and\ numerology,\ for\ logging.}}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration_a282f3a9cca88a83f1faa762a07077ab2}{slot}};}
+\DoxyCodeLine{00058\ \ \ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Collects\ PUCCH\ Format\ 1\ parameters.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration}{format1\_configuration}}\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{///\ Context\ information.}}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{classsrsran_1_1pucch__context}{pucch\_context}}>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_ab08376610e3c38dde23b8e41bfffa58f}{context}};}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{///\ Slot\ and\ numerology.}}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a5f7d9dc36adb94d1ecb36fb8757f570a}{slot}};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ contiguous\ PRBs\ allocated\ to\ the\ BWP\ \{1,\ ...,\ 275\}.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a6e8dc581f4e3b0ccc732b0509d059cc8}{bwp\_size\_rb}};}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{///\ BWP\ start\ RB\ index\ from\ Point\ A\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a8788aafb9247684feba749ce0cb5098c}{bwp\_start\_rb}};}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration\ for\ the\ slot.}}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_ac014b2ca1e61c28c5cc19c32c51529df}{cp}};}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Lowest\ PRB\ index\ used\ for\ the\ PUCCH\ transmission\ within\ the\ BWP\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{///\ Index\ of\ the\ first\ PRB\ prior\ to\ frequency\ hopping\ or\ for\ no\ frequency\ hopping\ as\ per\ TS38.213\ Section\ 9.2.1.}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a1d1270e3549d6902dcf0d2ebb8e1a75a}{starting\_prb}};}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Index\ of\ the\ first\ PRB\ after\ frequency\ hopping\ as\ per\ TS38.213\ Section\ 9.2.1.}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{///\ Lowest\ PRB\ index\ used\ for\ the\ PUCCH\ transmission\ within\ the\ BWP\ \{0,\ ...,\ 274\}\ if\ intra-\/slot\ frequency\ hopping\ is}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{///\ enabled,\ empty\ otherwise.}}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{unsigned}>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a3d3f438aaa20c1417fffb694a8d335a4}{second\_hop\_prb}};}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Parameter\ \(\backslash\)f\$n\_\{\(\backslash\)textup\{ID\}\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.3.2.2.1\ \{0,\ ...,\ 1023\}.}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{///\ It\ must\ be\ set\ to\ the\ higher\ layer\ parameter\ \(\backslash\)e\ hoppingID\ given\ by\ TS38.331\ Section\ 6.3.2,\ Information\ Element}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)e\ PUCCH-\/ConfigCommon,\ if\ it\ is\ configured.\ Otherwise,\ it\ must\ be\ equal\ to\ the\ physical\ cell\ identifier}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{\(\backslash\)textup\{ID\}\}\string^\{\(\backslash\)textup\{cell\}\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a52b231d88d8cd554aaa5c895b59c0954}{n\_id}};}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ expected\ HARQ-\/ACK\ bits\ \{0,\ 1,\ 2\}\ (see\ also\ \(\backslash\)ref\ PUCCH\_payload\_size\ "{}here"{}).}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_ac20f2c0e4c3e03dd77e23ab904d02799}{nof\_harq\_ack}};}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{///\ Port\ indexes\ used\ for\ the\ PUCCH\ reception.}}
+\DoxyCodeLine{00090\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ MAX\_PORTS>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_af1192493fa124ce1bf3d0da70e52fb05}{ports}};}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{///\ Initial\ cyclic\ shift\ \{0,\ ...,\ 11\}.}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_a0104f0048a2129d52d121199161da875}{initial\_cyclic\_shift}};}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ for\ the\ PUCCH\ transmission\ \{4,\ ...,\ 14\}.}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_aea45ee60c09b050a1493d3a2ae181136}{nof\_symbols}};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{///\ Start\ symbol\ index\ \{0,\ ...,\ 10\}.}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_ad38e4c70dce441658c6430f78575b32c}{start\_symbol\_index}};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{///\ Time\ domain\ orthogonal\ cyclic\ code\ \{0,\ ...,\ 6\}.}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration_ab4cceb3ce53f8bff7a8645ce150acd91}{time\_domain\_occ}};}
+\DoxyCodeLine{00099\ \ \ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Collects\ PUCCH\ Format\ 2\ parameters.}}
+\DoxyCodeLine{00102\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration}{format2\_configuration}}\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{comment}{///\ Context\ information.}}
+\DoxyCodeLine{00104\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{classsrsran_1_1pucch__context}{pucch\_context}}>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a228793df6a34af8824d3cf617ef19e2c}{context}};}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{comment}{///\ Slot\ and\ numerology.}}
+\DoxyCodeLine{00106\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a47cf1745c7d0ce36dab3b0afbbd1581d}{slot}};}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration\ for\ the\ slot.}}
+\DoxyCodeLine{00108\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_af148178fbdc92c9571f66578ed8c23c0}{cp}};}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{///\ Port\ indexes\ used\ for\ the\ PUCCH\ reception.}}
+\DoxyCodeLine{00110\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<uint8\_t,\ MAX\_PORTS>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a9f8d83c32aceb0e312824bdff8c81113}{ports}};}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ contiguous\ PRBs\ allocated\ to\ the\ BWP\ \{1,\ ...,\ 275\}.}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a04bbc247408cccf5656651c574732fc9}{bwp\_size\_rb}};}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{comment}{///\ BWP\ start\ RB\ index\ from\ Point\ A\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a817bb6a4ae35cdd490f2530ed8226769}{bwp\_start\_rb}};}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Lowest\ PRB\ index\ used\ for\ the\ PUCCH\ transmission\ within\ the\ BWP\ \{0,\ ...,\ 274\}.}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{///\ Index\ of\ the\ first\ PRB\ prior\ to\ frequency\ hopping\ or\ for\ no\ frequency\ hopping\ as\ per\ TS38.213\ Section\ 9.2.1.}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_af5f9ea053718abe8548a2bbb9d33374e}{starting\_prb}};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Index\ of\ the\ first\ PRB\ after\ frequency\ hopping\ as\ per\ TS38.213\ Section\ 9.2.1.}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{///\ Lowest\ PRB\ index\ used\ for\ the\ PUCCH\ transmission\ within\ the\ BWP\ \{0,\ ...,\ 274\}\ if\ intra-\/slot\ frequency\ hopping\ is}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{comment}{///\ enabled,\ empty\ otherwise.}}
+\DoxyCodeLine{00123\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{unsigned}>\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a3f13ff14f74875424850c0e49cb7bf2a}{second\_hop\_prb}};}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ PRB\ \{1,\ ...,\ 16\}.}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{comment}{///\ This\ parameter\ is\ equivalent\ to\ parameter\ \(\backslash\)f\$N\string^\(\backslash\)textup\{PUCCH,\ 2\}\_\(\backslash\)textup\{PRB\}\(\backslash\)f\$\ in\ TS38.212\ Section\ 6.3.1.4,}}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{comment}{///\ and\ parameter\ \(\backslash\)f\$M\string^\(\backslash\)textup\{PUCCH\}\_\(\backslash\)textup\{RB,min\}\(\backslash\)f\$\ in\ TS38.213\ Section\ 9.2.5.2.}}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a2637404adccee083994ceaebbd6a53c8}{nof\_prb}};}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{///\ Start\ symbol\ index\ \{0,\ ...,\ 12\}.}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_ac94cd56303701d0f2608226b2e7e38af}{start\_symbol\_index}};}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ for\ the\ PUCCH\ transmission\ \{1,\ 2\}.}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a3628a4021b25cb98fadc14f5d094705f}{nof\_symbols}};}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{///\ Radio\ Network\ Temporary\ Identifier,\ see\ parameter\ \(\backslash\)f\$n\_\{RNTI\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.3.2.5.1.}}
+\DoxyCodeLine{00134\ \ \ \ \ uint16\_t\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a0ba187c11b5779b318911c5a478837d4}{rnti}};}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{comment}{///\ Scrambling\ identifier,\ see\ parameter\ \(\backslash\)f\$n\_\{ID\}\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.3.2.5.1.\ Range\ is\ \{0,\ ...,\ 1023\}.}}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_af3846aa71f97703604833547dc4f537c}{n\_id}};}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ DM-\/RS\ scrambling\ identity\ \{0,\ ...,\ 65535\}.}}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{comment}{///\ Corresponds\ to\ parameter\ \(\backslash\)f\$N\_\{\(\backslash\)textup\{ID\}\}\string^0\(\backslash\)f\$\ in\ TS38.211\ Section\ 6.4.1.3.2.1.}}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{comment}{///\ It\ must\ be\ set\ to\ the\ higher\ layer\ parameter\ \(\backslash\)e\ scramblingID0\ given\ by\ TS38.331\ Section\ 6.3.2,\ Information}}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{comment}{///\ Element\ \(\backslash\)e\ DMRS-\/UplinkConfig,\ if\ it\ is\ configured.\ Otherwise,\ it\ must\ be\ equal\ to\ the\ physical\ cell\ identifier}}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)f\$N\_\{\(\backslash\)textup\{ID\}\}\string^\{\(\backslash\)textup\{cell\}\}\(\backslash\)f\$.}}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_ab201c7c128a8f160feb96efba112421b}{n\_id\_0}};}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ expected\ HARQ-\/ACK\ bits\ \{0,\ ...,\ 1706\}\ (see\ also\ \(\backslash\)ref\ PUCCH\_payload\_size\ "{}here"{}).}}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a8a7ee11d6cf4b6a8ecafa759227a8e3f}{nof\_harq\_ack}};}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ expected\ SR\ bits\ \{0,\ ...,\ 4\}.}}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a437e0606e1de88f562652ee976788d5e}{nof\_sr}};}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ expected\ CSI\ Part\ 1\ bits\ \{0,\ ...,\ 1706\}\ (see\ also\ \(\backslash\)ref\ PUCCH\_payload\_size\ "{}here"{}).}}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_aa2680b537dfdb436d155047417464176}{nof\_csi\_part1}};}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ expected\ CSI\ Part\ 2\ bits\ \{0,\ ...,\ 1706\}\ (see\ also\ \(\backslash\)ref\ PUCCH\_payload\_size\ "{}here"{}).}}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration_a9e7b19f7f042dba37641eb8d2d1d9fb7}{nof\_csi\_part2}};}
+\DoxyCodeLine{00153\ \ \ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{///\ Collects\ specific\ PUCCH\ Format\ 3\ parameters.}}
+\DoxyCodeLine{00156\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format3__configuration}{format3\_configuration}}\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration\ for\ the\ slot.}}
+\DoxyCodeLine{00158\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format3__configuration_a630a24da4e59b875ceb8c400e1342404}{cp}};}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{comment}{///\ Slot\ and\ numerology,\ for\ logging.}}
+\DoxyCodeLine{00160\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format3__configuration_aefac63e7d90da75ef21233dfda049584}{slot}};}
+\DoxyCodeLine{00161\ \ \ \};}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{comment}{///\ Collects\ specific\ PUCCH\ Format\ 4\ parameters.}}
+\DoxyCodeLine{00164\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format4__configuration}{format4\_configuration}}\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix\ configuration\ for\ the\ slot.}}
+\DoxyCodeLine{00166\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format4__configuration_a24ae9dbc34244198f3ee9b39932f88d7}{cp}};}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{comment}{///\ Slot\ and\ numerology,\ for\ logging.}}
+\DoxyCodeLine{00168\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format4__configuration_a21afcffe1f6e362f1987660742829f73}{slot}};}
+\DoxyCodeLine{00169\ \ \ \};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00172\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pucch__processor_a80e7669d96ff05539c7cc3478978eef1}{pucch\_processor}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PUCCH\ Format\ 0\ message.}}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ \ \ \ Resource\ grid.}}
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ PUCCH\ Format\ 0\ configuration.}}
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00178\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor__result}{pucch\_processor\_result}}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor_a6f97b6496bc125fd29fb00c9ea057207}{process}}(\textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration}{format0\_configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PUCCH\ Format\ 1\ message.}}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ \ \ \ Resource\ grid.}}
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ PUCCH\ Format\ 1\ configuration.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00184\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor__result}{pucch\_processor\_result}}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor_a2146aa56c7b6e2bd333cc3e1ef914862}{process}}(\textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration}{format1\_configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PUCCH\ Format\ 2\ message.}}
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ \ \ \ Resource\ grid.}}
+\DoxyCodeLine{00188\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ PUCCH\ Format\ 2\ configuration.}}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00190\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor__result}{pucch\_processor\_result}}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor_abb1f25c046643557e420c7aec8b094aa}{process}}(\textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration}{format2\_configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PUCCH\ Format\ 3\ message.}}
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ grid\ \ \ \ Resource\ grid.}}
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ PUCCH\ Format\ 3\ configuration.}}
+\DoxyCodeLine{00195\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor__result}{pucch\_processor\_result}}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor_ad90bd9716bb608c2fa5ef354ace2c451}{process}}(\textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format3__configuration}{format3\_configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Processes\ a\ PUCCH\ Format\ 4\ message.}}
+\DoxyCodeLine{00199\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ indication\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ \ \ \ PUCCH\ Format\ 4\ configuration.}}
+\DoxyCodeLine{00201\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ PUCCH\ process\ result.}}
+\DoxyCodeLine{00202\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor__result}{pucch\_processor\_result}}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor_a4c81a8a42d5957c60569332814ce6278}{process}}(\textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format4__configuration}{format4\_configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00203\ \};}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ the\ PUCCH\ processor\ validator\ interface.}}
+\DoxyCodeLine{00206\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator}{pucch\_pdu\_validator}}}
+\DoxyCodeLine{00207\ \{}
+\DoxyCodeLine{00208\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00210\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_ac6ad5f5c8b5cb8ee0026e60da61eb4bf}{pucch\_pdu\_validator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PUCCH\ Format\ 0\ configuration\ parameters.}}
+\DoxyCodeLine{00213\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ config\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_aa300ea0d839033ea0bac5a8b9ff790aa}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format0__configuration}{format0\_configuration}}\&\ config)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PUCCH\ Format\ 1\ configuration\ parameters.}}
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ config\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00218\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_aa06d165766e11c005561fc21ff081735}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format1__configuration}{format1\_configuration}}\&\ config)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PUCCH\ Format\ 2\ configuration\ parameters.}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ config\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00222\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_aa5d5829c22fa45c050d01d89b465bf2f}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format2__configuration}{format2\_configuration}}\&\ config)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PUCCH\ Format\ 3\ configuration\ parameters.}}
+\DoxyCodeLine{00225\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ config\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00226\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_ab973888729a12d2fc2e3b148de5393cc}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format3__configuration}{format3\_configuration}}\&\ config)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Validates\ PUCCH\ Format\ 4\ configuration\ parameters.}}
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ parameters\ contained\ in\ \(\backslash\)c\ config\ are\ supported,\ false\ otherwise.}}
+\DoxyCodeLine{00230\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1pucch__pdu__validator_ab141a1114796b62f9cd02457fdf4e6fa}{is\_valid}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pucch__processor}{pucch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pucch__processor_1_1format4__configuration}{format4\_configuration}}\&\ config)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00231\ \};}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,2160 @@
+\doxysection{simd.\+h}
+\hypertarget{simd_8h_source}{}\label{simd_8h_source}\index{lib/srsvec/simd.h@{lib/srsvec/simd.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ Enables\ intel\ intrinsics,\ it\ includes\ AVX,\ AVX2,\ FMA,\ AVX512.}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ Enables\ optimizations\ in\ this\ file.}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifndef\ \_\_OPTIMIZE\_\_}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ \_\_OPTIMIZE\_\_}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_\_OPTIMIZE\_\_}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ gcc-\/12\ gives\ a\ likely\ false\ alarm\ when\ including\ AVX512\ intrinsics.\ Disable\ maybe-\/uninitialized\ diagnostics.}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#ifndef\ \_\_clang\_\_}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ push}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ ignored\ "{}-\/Wmaybe-\/uninitialized"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_\_clang\_\_}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ <immintrin.h>}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#ifndef\ \_\_clang\_\_}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ pop}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_\_clang\_\_}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ HAVE\_SSE}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#include\ <arm\_neon.h>}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ HAVE\_NEON}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ is\_simd\_addr\_aligned(\textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ addr,\ uintptr\_t\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})}
+\DoxyCodeLine{00055\ \{}
+\DoxyCodeLine{00056\ \ \ uintptr\_t\ addr\_i\ =\ \textcolor{keyword}{reinterpret\_cast<}uintptr\_t\textcolor{keyword}{>}(addr);}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{return}\ (addr\_i\ \&\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})\ ==\ 0;}
+\DoxyCodeLine{00058\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00061\ \textcolor{comment}{\ *\ SIMD\ Vector\ bit\ alignment}}
+\DoxyCodeLine{00062\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00063\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00064\ \textcolor{preprocessor}{\#define\ SIMD\_BYTE\_ALIGN\ 64}}
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\#define\ SIMD\_IS\_ALIGNED(PTR)\ is\_simd\_addr\_aligned(PTR,\ 0x3f)}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00068\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX}}
+\DoxyCodeLine{00069\ \textcolor{preprocessor}{\#define\ SIMD\_BYTE\_ALIGN\ 32}}
+\DoxyCodeLine{00070\ \textcolor{preprocessor}{\#define\ SIMD\_IS\_ALIGNED(PTR)\ is\_simd\_addr\_aligned(PTR,\ 0x1f)}}
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00073\ \textcolor{preprocessor}{\#define\ SIMD\_BYTE\_ALIGN\ 16}}
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#define\ SIMD\_IS\_ALIGNED(PTR)\ is\_simd\_addr\_aligned(PTR,\ 0x0f)}}
+\DoxyCodeLine{00075\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#define\ SIMD\_BYTE\_ALIGN\ 16}}
+\DoxyCodeLine{00077\ \textcolor{preprocessor}{\#define\ SIMD\_IS\_ALIGNED(PTR)\ (true)}}
+\DoxyCodeLine{00078\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{comment}{/*\ Memory\ Sizes\ for\ Single\ Floating\ Point\ and\ fixed\ point\ */}}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_F\_SIZE\ 16}}
+\DoxyCodeLine{00086\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_CF\_SIZE\ 16}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_I\_SIZE\ 16}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_B\_SIZE\ 64}}
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_S\_SIZE\ 32}}
+\DoxyCodeLine{00092\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 0}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00095\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_F\_SIZE\ 8}}
+\DoxyCodeLine{00098\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_CF\_SIZE\ 8}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_I\_SIZE\ 8}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_B\_SIZE\ 32}}
+\DoxyCodeLine{00103\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_S\_SIZE\ 16}}
+\DoxyCodeLine{00104\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 16}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00107\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_F\_SIZE\ 4}}
+\DoxyCodeLine{00110\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_CF\_SIZE\ 4}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_I\_SIZE\ 4}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_B\_SIZE\ 16}}
+\DoxyCodeLine{00115\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_S\_SIZE\ 8}}
+\DoxyCodeLine{00116\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 8}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00119\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_F\_SIZE\ 4}}
+\DoxyCodeLine{00122\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_CF\_SIZE\ 4}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_I\_SIZE\ 4}}
+\DoxyCodeLine{00125\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_B\_SIZE\ 16}}
+\DoxyCodeLine{00126\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_S\_SIZE\ 8}}
+\DoxyCodeLine{00127\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 8}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00130\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_F\_SIZE\ 0}}
+\DoxyCodeLine{00131\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_CF\_SIZE\ 0}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_I\_SIZE\ 0}}
+\DoxyCodeLine{00134\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_B\_SIZE\ 0}}
+\DoxyCodeLine{00135\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_S\_SIZE\ 0}}
+\DoxyCodeLine{00136\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 0}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00139\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00140\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00141\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \textcolor{preprocessor}{\#ifndef\ ENABLE\_C16}}
+\DoxyCodeLine{00144\ \textcolor{preprocessor}{\#undef\ SRSRAN\_SIMD\_C16\_SIZE}}
+\DoxyCodeLine{00145\ \textcolor{preprocessor}{\#define\ SRSRAN\_SIMD\_C16\_SIZE\ 0}}
+\DoxyCodeLine{00146\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ ENABLE\_C16\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_F\_SIZE}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \textcolor{comment}{/*\ Data\ types\ */}}
+\DoxyCodeLine{00151\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00152\ \textcolor{keyword}{typedef}\ \_\_m512\ simd\_f\_t;}
+\DoxyCodeLine{00153\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00154\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00155\ \textcolor{keyword}{typedef}\ \_\_m256\ simd\_f\_t;}
+\DoxyCodeLine{00156\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00157\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00158\ \textcolor{keyword}{typedef}\ \_\_m128\ simd\_f\_t;}
+\DoxyCodeLine{00159\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00160\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00161\ \textcolor{keyword}{typedef}\ float32x4\_t\ simd\_f\_t;}
+\DoxyCodeLine{00162\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00163\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00164\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00165\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \textcolor{comment}{/*\ Single\ precision\ Floating\ point\ functions\ */}}
+\DoxyCodeLine{00168\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_load(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ ptr)}
+\DoxyCodeLine{00169\ \{}
+\DoxyCodeLine{00170\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_load\_ps(ptr);}
+\DoxyCodeLine{00172\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00173\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_load\_ps(ptr);}
+\DoxyCodeLine{00175\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00176\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00177\ \ \ \textcolor{keywordflow}{return}\ \_mm\_load\_ps(ptr);}
+\DoxyCodeLine{00178\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00179\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00180\ \ \ \textcolor{keywordflow}{return}\ vld1q\_f32(ptr);}
+\DoxyCodeLine{00181\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00182\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00183\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00184\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00185\ \}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_loadu(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ ptr)}
+\DoxyCodeLine{00188\ \{}
+\DoxyCodeLine{00189\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_loadu\_ps(ptr);}
+\DoxyCodeLine{00191\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00192\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00193\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_loadu\_ps(ptr);}
+\DoxyCodeLine{00194\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00195\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordflow}{return}\ \_mm\_loadu\_ps(ptr);}
+\DoxyCodeLine{00197\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00198\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordflow}{return}\ vld1q\_f32(ptr);}
+\DoxyCodeLine{00200\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00201\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00202\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00203\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00204\ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_f\_store(\textcolor{keywordtype}{float}*\ ptr,\ simd\_f\_t\ simdreg)}
+\DoxyCodeLine{00207\ \{}
+\DoxyCodeLine{00208\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00209\ \ \ \_mm512\_store\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00210\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00211\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00212\ \ \ \_mm256\_store\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00213\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00214\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00215\ \ \ \_mm\_store\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00216\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00217\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00218\ \ \ vst1q\_f32(ptr,\ simdreg);}
+\DoxyCodeLine{00219\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00220\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00221\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00222\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00223\ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_f\_storeu(\textcolor{keywordtype}{float}*\ ptr,\ simd\_f\_t\ simdreg)}
+\DoxyCodeLine{00226\ \{}
+\DoxyCodeLine{00227\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00228\ \ \ \_mm512\_storeu\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00229\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00230\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00231\ \ \ \_mm256\_storeu\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00232\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00233\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00234\ \ \ \_mm\_storeu\_ps(ptr,\ simdreg);}
+\DoxyCodeLine{00235\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00236\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00237\ \ \ vst1q\_f32(ptr,\ simdreg);}
+\DoxyCodeLine{00238\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00239\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00240\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00241\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00242\ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_set1(\textcolor{keywordtype}{float}\ x)}
+\DoxyCodeLine{00245\ \{}
+\DoxyCodeLine{00246\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_set1\_ps(x);}
+\DoxyCodeLine{00248\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00249\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00250\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_set1\_ps(x);}
+\DoxyCodeLine{00251\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00252\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00253\ \ \ \textcolor{keywordflow}{return}\ \_mm\_set1\_ps(x);}
+\DoxyCodeLine{00254\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00255\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00256\ \ \ \textcolor{keywordflow}{return}\ vdupq\_n\_f32(x);}
+\DoxyCodeLine{00257\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00258\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00259\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00260\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00261\ \}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_mul(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00264\ \{}
+\DoxyCodeLine{00265\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00266\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_mul\_ps(a,\ b);}
+\DoxyCodeLine{00267\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00268\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00269\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_mul\_ps(a,\ b);}
+\DoxyCodeLine{00270\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00271\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00272\ \ \ \textcolor{keywordflow}{return}\ \_mm\_mul\_ps(a,\ b);}
+\DoxyCodeLine{00273\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00274\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00275\ \ \ \textcolor{keywordflow}{return}\ vmulq\_f32(a,\ b);}
+\DoxyCodeLine{00276\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00277\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00278\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00279\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00280\ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_rcp(simd\_f\_t\ a)}
+\DoxyCodeLine{00283\ \{}
+\DoxyCodeLine{00284\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00285\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_rcp14\_ps(a);}
+\DoxyCodeLine{00286\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00287\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00288\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_rcp\_ps(a);}
+\DoxyCodeLine{00289\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00290\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00291\ \ \ \textcolor{keywordflow}{return}\ \_mm\_rcp\_ps(a);}
+\DoxyCodeLine{00292\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00293\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00294\ \ \ \textcolor{keywordflow}{return}\ vmulq\_f32(vrecpeq\_f32(a),\ vrecpsq\_f32(vrecpeq\_f32(a),\ a));}
+\DoxyCodeLine{00295\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00296\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00297\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00298\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00299\ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_addsub(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00302\ \{}
+\DoxyCodeLine{00303\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00304\ \ \ \_\_m512\ r\ =\ \_mm512\_add\_ps(a,\ b);}
+\DoxyCodeLine{00305\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_mask\_sub\_ps(r,\ 0b0101010101010101,\ a,\ b);}
+\DoxyCodeLine{00306\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00307\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00308\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_addsub\_ps(a,\ b);}
+\DoxyCodeLine{00309\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00310\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00311\ \ \ \textcolor{keywordflow}{return}\ \_mm\_addsub\_ps(a,\ b);}
+\DoxyCodeLine{00312\ \textcolor{preprocessor}{\#else\ \ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00313\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON\ }\textcolor{comment}{//\ CURRENTLY\ USES\ GENERIC\ IMPLEMENTATION\ FOR\ NEON}}
+\DoxyCodeLine{00314\ \ \ \textcolor{keywordtype}{float}*\ \ \ a\_ptr\ =\ (\textcolor{keywordtype}{float}*)\&a;}
+\DoxyCodeLine{00315\ \ \ \textcolor{keywordtype}{float}*\ \ \ b\_ptr\ =\ (\textcolor{keywordtype}{float}*)\&b;}
+\DoxyCodeLine{00316\ \ \ simd\_f\_t\ ret;}
+\DoxyCodeLine{00317\ \ \ \textcolor{keywordtype}{float}*\ \ \ c\_ptr\ =\ (\textcolor{keywordtype}{float}*)\&ret;}
+\DoxyCodeLine{00318\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ 4;\ i++)\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ \%\ 2\ ==\ 0)\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ c\_ptr[i]\ =\ a\_ptr[i]\ -\/\ b\_ptr[i];}
+\DoxyCodeLine{00321\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ c\_ptr[i]\ =\ a\_ptr[i]\ +\ b\_ptr[i];}
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \ \ \}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00327\ \textcolor{preprocessor}{\#endif\ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00328\ \textcolor{preprocessor}{\#endif\ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00329\ \textcolor{preprocessor}{\#endif\ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00330\ \textcolor{preprocessor}{\#endif\ \ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00331\ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_sub(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00334\ \{}
+\DoxyCodeLine{00335\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00336\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_sub\_ps(a,\ b);}
+\DoxyCodeLine{00337\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00338\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00339\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_sub\_ps(a,\ b);}
+\DoxyCodeLine{00340\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00341\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00342\ \ \ \textcolor{keywordflow}{return}\ \_mm\_sub\_ps(a,\ b);}
+\DoxyCodeLine{00343\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00344\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00345\ \ \ \textcolor{keywordflow}{return}\ vsubq\_f32(a,\ b);}
+\DoxyCodeLine{00346\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00347\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00348\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00349\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00350\ \}}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_add(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00353\ \{}
+\DoxyCodeLine{00354\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00355\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_add\_ps(a,\ b);}
+\DoxyCodeLine{00356\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00357\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00358\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_add\_ps(a,\ b);}
+\DoxyCodeLine{00359\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00360\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00361\ \ \ \textcolor{keywordflow}{return}\ \_mm\_add\_ps(a,\ b);}
+\DoxyCodeLine{00362\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00363\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00364\ \ \ \textcolor{keywordflow}{return}\ vaddq\_f32(a,\ b);}
+\DoxyCodeLine{00365\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00366\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00367\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00368\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00369\ \}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_fma(simd\_f\_t\ acc,\ simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00372\ \{}
+\DoxyCodeLine{00373\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00374\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_fmadd\_ps(a,\ b,\ acc);}
+\DoxyCodeLine{00375\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00376\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00377\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_fmadd\_ps(a,\ b,\ acc);}
+\DoxyCodeLine{00378\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00379\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00380\ \ \ \textcolor{keywordflow}{return}\ \_mm\_fmadd\_ps(a,\ b,\ acc);}
+\DoxyCodeLine{00381\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00382\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00383\ \ \ \textcolor{keywordflow}{return}\ vmlaq\_f32(acc,\ a,\ b);}
+\DoxyCodeLine{00384\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00385\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00386\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00387\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00388\ \}}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_zero(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{00391\ \{}
+\DoxyCodeLine{00392\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00393\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_setzero\_ps();}
+\DoxyCodeLine{00394\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00395\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00396\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_setzero\_ps();}
+\DoxyCodeLine{00397\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00398\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00399\ \ \ \textcolor{keywordflow}{return}\ \_mm\_setzero\_ps();}
+\DoxyCodeLine{00400\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00401\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00402\ \ \ \textcolor{keywordflow}{return}\ vdupq\_n\_f32(0);}
+\DoxyCodeLine{00403\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00404\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00405\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00406\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00407\ \}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_swap(simd\_f\_t\ a)}
+\DoxyCodeLine{00410\ \{}
+\DoxyCodeLine{00411\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00412\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_permute\_ps(a,\ 0b10110001);}
+\DoxyCodeLine{00413\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00414\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00415\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_permute\_ps(a,\ 0b10110001);}
+\DoxyCodeLine{00416\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00417\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00418\ \ \ \textcolor{keywordflow}{return}\ \_mm\_shuffle\_ps(a,\ a,\ 0b10110001);}
+\DoxyCodeLine{00419\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00420\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00421\ \ \ \textcolor{keywordflow}{return}\ vcombine\_f32(vrev64\_f32(vget\_low\_f32(a)),\ vrev64\_f32(vget\_high\_f32(a)));}
+\DoxyCodeLine{00422\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00423\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00424\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00425\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00426\ \}}
+\DoxyCodeLine{00427\ }
+\DoxyCodeLine{00428\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_hadd(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00429\ \{}
+\DoxyCodeLine{00430\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00431\ \ \ \textcolor{keyword}{const}\ \_\_m512i\ idx1\ =\ \_mm512\_setr\_epi32((0b00000),}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b00010),}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b00100),}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b00110),}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b01000),}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b01010),}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b01100),}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b01110),}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b10000),}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b10010),}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b10100),}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b10110),}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b11000),}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b11010),}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b11100),}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (0b11110));}
+\DoxyCodeLine{00447\ \ \ \textcolor{keyword}{const}\ \_\_m512i\ idx2\ =\ \_mm512\_or\_epi32(idx1,\ \_mm512\_set1\_epi32(1));}
+\DoxyCodeLine{00448\ }
+\DoxyCodeLine{00449\ \ \ simd\_f\_t\ a1\ =\ \_mm512\_permutex2var\_ps(a,\ idx1,\ b);}
+\DoxyCodeLine{00450\ \ \ simd\_f\_t\ b1\ =\ \_mm512\_permutex2var\_ps(a,\ idx2,\ b);}
+\DoxyCodeLine{00451\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_add\_ps(a1,\ b1);}
+\DoxyCodeLine{00452\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00453\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00454\ \ \ simd\_f\_t\ a1\ =\ \_mm256\_permute2f128\_ps(a,\ b,\ 0b00100000);}
+\DoxyCodeLine{00455\ \ \ simd\_f\_t\ b1\ =\ \_mm256\_permute2f128\_ps(a,\ b,\ 0b00110001);}
+\DoxyCodeLine{00456\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_hadd\_ps(a1,\ b1);}
+\DoxyCodeLine{00457\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00458\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00459\ \ \ \textcolor{keywordflow}{return}\ \_mm\_hadd\_ps(a,\ b);}
+\DoxyCodeLine{00460\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00461\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00462\ \ \ \textcolor{keywordflow}{return}\ vcombine\_f32(vpadd\_f32(vget\_low\_f32(a),\ vget\_high\_f32(a)),\ vpadd\_f32(vget\_low\_f32(b),\ vget\_high\_f32(b)));}
+\DoxyCodeLine{00463\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00464\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00465\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00466\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00467\ \}}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_sqrt(simd\_f\_t\ a)}
+\DoxyCodeLine{00470\ \{}
+\DoxyCodeLine{00471\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00472\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_sqrt\_ps(a);}
+\DoxyCodeLine{00473\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00474\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00475\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_sqrt\_ps(a);}
+\DoxyCodeLine{00476\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00477\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00478\ \ \ \textcolor{keywordflow}{return}\ \_mm\_sqrt\_ps(a);}
+\DoxyCodeLine{00479\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00480\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00481\ \ \ float32x4\_t\ sqrt\_reciprocal\ =\ vrsqrteq\_f32(a);}
+\DoxyCodeLine{00482\ \ \ sqrt\_reciprocal\ \ \ \ =\ vmulq\_f32(vrsqrtsq\_f32(vmulq\_f32(a,\ sqrt\_reciprocal),\ sqrt\_reciprocal),\ sqrt\_reciprocal);}
+\DoxyCodeLine{00483\ \ \ float32x4\_t\ result\ =\ vmulq\_f32(a,\ sqrt\_reciprocal);}
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \ \ \textcolor{comment}{/*\ Detect\ zeros\ in\ NEON\ 1/sqrtf\ for\ preventing\ NaN\ */}}
+\DoxyCodeLine{00486\ \ \ float32x4\_t\ zeros\ =\ vmovq\_n\_f32(0);\ \ \ \ \ \ \textcolor{comment}{/*\ Zero\ vector\ */}}
+\DoxyCodeLine{00487\ \ \ uint32x4\_t\ \ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}\ \ =\ vceqq\_f32(a,\ zeros);\ \textcolor{comment}{/*\ Zero\ vector\ mask\ */}}
+\DoxyCodeLine{00488\ \ \ \textcolor{keywordflow}{return}\ vbslq\_f32(\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ zeros,\ result);\ \ \ \textcolor{comment}{/*\ Force\ zero\ results\ and\ return\ */}}
+\DoxyCodeLine{00489\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00490\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00491\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00492\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00493\ \}}
+\DoxyCodeLine{00494\ }
+\DoxyCodeLine{00495\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_neg(simd\_f\_t\ a)}
+\DoxyCodeLine{00496\ \{}
+\DoxyCodeLine{00497\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00498\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_xor\_ps(\_mm512\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00499\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00500\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00501\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_xor\_ps(\_mm256\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00502\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00503\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00504\ \ \ \textcolor{keywordflow}{return}\ \_mm\_xor\_ps(\_mm\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00505\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00506\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00507\ \ \ \textcolor{keywordflow}{return}\ vnegq\_f32(a);}
+\DoxyCodeLine{00508\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00509\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00510\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00511\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00512\ \}}
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_neg\_mask(simd\_f\_t\ a,\ simd\_f\_t\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})}
+\DoxyCodeLine{00515\ \{}
+\DoxyCodeLine{00516\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00517\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_xor\_ps(\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ a);}
+\DoxyCodeLine{00518\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00519\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00520\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_xor\_ps(\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ a);}
+\DoxyCodeLine{00521\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00522\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00523\ \ \ \textcolor{keywordflow}{return}\ \_mm\_xor\_ps(\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ a);}
+\DoxyCodeLine{00524\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00525\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00526\ \ \ \textcolor{keywordflow}{return}\ (float32x4\_t)veorq\_s32((int32x4\_t)a,\ (int32x4\_t)\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}});}
+\DoxyCodeLine{00527\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00528\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00529\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00530\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00531\ \}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_abs(simd\_f\_t\ a)}
+\DoxyCodeLine{00534\ \{}
+\DoxyCodeLine{00535\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00536\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_andnot\_ps(\_mm512\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00537\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00538\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00539\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_andnot\_ps(\_mm256\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00540\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00541\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00542\ \ \ \textcolor{keywordflow}{return}\ \_mm\_andnot\_ps(\_mm\_set1\_ps(-\/0.0f),\ a);}
+\DoxyCodeLine{00543\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00544\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00545\ \ \ \textcolor{keywordflow}{return}\ vabsq\_f32(a);}
+\DoxyCodeLine{00546\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00547\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00548\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00549\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00550\ \}}
+\DoxyCodeLine{00551\ }
+\DoxyCodeLine{00552\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_f\_fprintf(FILE*\ stream,\ simd\_f\_t\ a)}
+\DoxyCodeLine{00553\ \{}
+\DoxyCodeLine{00554\ \ \ \textcolor{keywordtype}{float}\ x[SRSRAN\_SIMD\_F\_SIZE];}
+\DoxyCodeLine{00555\ }
+\DoxyCodeLine{00556\ \ \ srsran\_simd\_f\_storeu(x,\ a);}
+\DoxyCodeLine{00557\ }
+\DoxyCodeLine{00558\ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}["{}});}
+\DoxyCodeLine{00559\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ SRSRAN\_SIMD\_F\_SIZE;\ i++)\ \{}
+\DoxyCodeLine{00560\ \ \ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}\%+2.5f,\ "{}},\ x[i]);}
+\DoxyCodeLine{00561\ \ \ \}}
+\DoxyCodeLine{00562\ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}];\(\backslash\)n"{}});}
+\DoxyCodeLine{00563\ \}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_F\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00566\ }
+\DoxyCodeLine{00567\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_CF\_SIZE}}
+\DoxyCodeLine{00568\ }
+\DoxyCodeLine{00569\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00570\ \textcolor{keyword}{typedef}\ float32x4x2\_t\ simd\_cf\_t;}
+\DoxyCodeLine{00571\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00572\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00573\ \ \ simd\_f\_t\ re;}
+\DoxyCodeLine{00574\ \ \ simd\_f\_t\ im;}
+\DoxyCodeLine{00575\ \}\ simd\_cf\_t;}
+\DoxyCodeLine{00576\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00577\ }
+\DoxyCodeLine{00578\ \textcolor{comment}{/*\ Complex\ Single\ precission\ Floating\ point\ functions\ */}}
+\DoxyCodeLine{00579\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cfi\_load(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ ptr)}
+\DoxyCodeLine{00580\ \{}
+\DoxyCodeLine{00581\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00582\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00583\ \ \ \_\_m512\ in1\ =\ \_mm512\_load\_ps((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00584\ \ \ \_\_m512\ in2\ =\ \_mm512\_load\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ SRSRAN\_SIMD\_CF\_SIZE\ /\ 2));}
+\DoxyCodeLine{00585\ \ \ ret.re\ \ \ \ \ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ in1,}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x02,\ 0x04,\ 0x06,\ 0x08,\ 0x0a,\ 0x0c,\ 0x0e,\ 0x10,\ 0x12,\ 0x14,\ 0x16,\ 0x18,\ 0x1a,\ 0x1c,\ 0x1e),}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ in2);}
+\DoxyCodeLine{00589\ \ \ ret.im\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ in1,}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x01,\ 0x03,\ 0x05,\ 0x07,\ 0x09,\ 0x0b,\ 0x0d,\ 0x0f,\ 0x11,\ 0x13,\ 0x15,\ 0x17,\ 0x19,\ 0x1b,\ 0x1d,\ 0x1f),}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ in2);}
+\DoxyCodeLine{00593\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00594\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00595\ \ \ \_\_m256\ in1\ \ =\ \_mm256\_permute\_ps(\_mm256\_load\_ps((\textcolor{keywordtype}{float}*)(ptr)),\ 0b11011000);}
+\DoxyCodeLine{00596\ \ \ \_\_m256\ in2\ \ =\ \_mm256\_permute\_ps(\_mm256\_load\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 4)),\ 0b11011000);}
+\DoxyCodeLine{00597\ \ \ ret.re\ \ \ \ \ \ =\ \_mm256\_unpacklo\_ps(in1,\ in2);}
+\DoxyCodeLine{00598\ \ \ ret.im\ \ \ \ \ \ =\ \_mm256\_unpackhi\_ps(in1,\ in2);}
+\DoxyCodeLine{00599\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00600\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00601\ \ \ \_\_m128\ i1\ =\ \_mm\_load\_ps((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00602\ \ \ \_\_m128\ i2\ =\ \_mm\_load\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 2));}
+\DoxyCodeLine{00603\ \ \ ret.re\ \ \ \ =\ \_mm\_shuffle\_ps(i1,\ i2,\ \_MM\_SHUFFLE(2,\ 0,\ 2,\ 0));}
+\DoxyCodeLine{00604\ \ \ ret.im\ \ \ \ =\ \_mm\_shuffle\_ps(i1,\ i2,\ \_MM\_SHUFFLE(3,\ 1,\ 3,\ 1));}
+\DoxyCodeLine{00605\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00606\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00607\ \ \ ret\ \ \ \ \ \ \ \ =\ vld2q\_f32((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00608\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00609\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00610\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00611\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00612\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00613\ \}}
+\DoxyCodeLine{00614\ }
+\DoxyCodeLine{00615\ \textcolor{comment}{/*\ Complex\ Single\ precission\ Floating\ point\ functions\ */}}
+\DoxyCodeLine{00616\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cfi\_loadu(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ ptr)}
+\DoxyCodeLine{00617\ \{}
+\DoxyCodeLine{00618\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00619\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00620\ \ \ \_\_m512\ in1\ =\ \_mm512\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00621\ \ \ \_\_m512\ in2\ =\ \_mm512\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ SRSRAN\_SIMD\_CF\_SIZE\ /\ 2));}
+\DoxyCodeLine{00622\ \ \ ret.re\ \ \ \ \ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ in1,}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x02,\ 0x04,\ 0x06,\ 0x08,\ 0x0a,\ 0x0c,\ 0x0e,\ 0x10,\ 0x12,\ 0x14,\ 0x16,\ 0x18,\ 0x1a,\ 0x1c,\ 0x1e),}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ in2);}
+\DoxyCodeLine{00626\ \ \ ret.im\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ in1,}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x01,\ 0x03,\ 0x05,\ 0x07,\ 0x09,\ 0x0b,\ 0x0d,\ 0x0f,\ 0x11,\ 0x13,\ 0x15,\ 0x17,\ 0x19,\ 0x1b,\ 0x1d,\ 0x1f),}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ in2);}
+\DoxyCodeLine{00630\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00631\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00632\ \ \ \_\_m256\ in1\ \ =\ \_mm256\_permute\_ps(\_mm256\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr)),\ 0b11011000);}
+\DoxyCodeLine{00633\ \ \ \_\_m256\ in2\ \ =\ \_mm256\_permute\_ps(\_mm256\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 4)),\ 0b11011000);}
+\DoxyCodeLine{00634\ \ \ ret.re\ \ \ \ \ \ =\ \_mm256\_unpacklo\_ps(in1,\ in2);}
+\DoxyCodeLine{00635\ \ \ ret.im\ \ \ \ \ \ =\ \_mm256\_unpackhi\_ps(in1,\ in2);}
+\DoxyCodeLine{00636\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00637\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00638\ \ \ \_\_m128\ i1\ =\ \_mm\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00639\ \ \ \_\_m128\ i2\ =\ \_mm\_loadu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 2));}
+\DoxyCodeLine{00640\ \ \ ret.re\ \ \ \ =\ \_mm\_shuffle\_ps(i1,\ i2,\ \_MM\_SHUFFLE(2,\ 0,\ 2,\ 0));}
+\DoxyCodeLine{00641\ \ \ ret.im\ \ \ \ =\ \_mm\_shuffle\_ps(i1,\ i2,\ \_MM\_SHUFFLE(3,\ 1,\ 3,\ 1));}
+\DoxyCodeLine{00642\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00643\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00644\ \ \ ret\ \ \ \ \ \ \ \ =\ vld2q\_f32((\textcolor{keywordtype}{float}*)(ptr));}
+\DoxyCodeLine{00645\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00646\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00647\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00648\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00649\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00650\ \}}
+\DoxyCodeLine{00651\ }
+\DoxyCodeLine{00652\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_load(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ re,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ im)}
+\DoxyCodeLine{00653\ \{}
+\DoxyCodeLine{00654\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00655\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00656\ \ \ ret.re\ =\ \_mm512\_load\_ps(re);}
+\DoxyCodeLine{00657\ \ \ ret.im\ =\ \_mm512\_load\_ps(im);}
+\DoxyCodeLine{00658\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00659\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00660\ \ \ ret.re\ \ \ \ \ \ =\ \_mm256\_load\_ps(re);}
+\DoxyCodeLine{00661\ \ \ ret.im\ \ \ \ \ \ =\ \_mm256\_load\_ps(im);}
+\DoxyCodeLine{00662\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00663\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00664\ \ \ ret.re\ \ \ \ =\ \_mm\_load\_ps(re);}
+\DoxyCodeLine{00665\ \ \ ret.im\ \ \ \ =\ \_mm\_load\_ps(im);}
+\DoxyCodeLine{00666\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00667\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00668\ \ \ ret.val[0]\ =\ vld1q\_f32(re);}
+\DoxyCodeLine{00669\ \ \ ret.val[1]\ =\ vld1q\_f32(im);}
+\DoxyCodeLine{00670\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00671\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00672\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00673\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00674\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00675\ \}}
+\DoxyCodeLine{00676\ }
+\DoxyCodeLine{00677\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_loadu(\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ re,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}*\ im)}
+\DoxyCodeLine{00678\ \{}
+\DoxyCodeLine{00679\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00680\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00681\ \ \ ret.re\ =\ \_mm512\_loadu\_ps(re);}
+\DoxyCodeLine{00682\ \ \ ret.im\ =\ \_mm512\_loadu\_ps(im);}
+\DoxyCodeLine{00683\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00684\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00685\ \ \ ret.re\ \ \ \ \ \ =\ \_mm256\_loadu\_ps(re);}
+\DoxyCodeLine{00686\ \ \ ret.im\ \ \ \ \ \ =\ \_mm256\_loadu\_ps(im);}
+\DoxyCodeLine{00687\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00688\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00689\ \ \ ret.re\ \ \ \ =\ \_mm\_loadu\_ps(re);}
+\DoxyCodeLine{00690\ \ \ ret.im\ \ \ \ =\ \_mm\_loadu\_ps(im);}
+\DoxyCodeLine{00691\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00692\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00693\ \ \ ret.val[0]\ =\ vld1q\_f32(re);}
+\DoxyCodeLine{00694\ \ \ ret.val[1]\ =\ vld1q\_f32(im);}
+\DoxyCodeLine{00695\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00696\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00697\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00698\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00699\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00700\ \}}
+\DoxyCodeLine{00701\ }
+\DoxyCodeLine{00702\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_cfi\_store(\mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ ptr,\ simd\_cf\_t\ simdreg)}
+\DoxyCodeLine{00703\ \{}
+\DoxyCodeLine{00704\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00705\ \ \ \_\_m512\ s1\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ simdreg.re,}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x10,\ 0x01,\ 0x11,\ 0x02,\ 0x12,\ 0x03,\ 0x13,\ 0x04,\ 0x14,\ 0x05,\ 0x15,\ 0x06,\ 0x16,\ 0x07,\ 0x17),}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ simdreg.im);}
+\DoxyCodeLine{00709\ \ \ \_\_m512\ s2\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ simdreg.re,}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x08,\ 0x18,\ 0x09,\ 0x19,\ 0x0a,\ 0x1a,\ 0x0b,\ 0x1b,\ 0x0c,\ 0x1c,\ 0x0d,\ 0x1d,\ 0x0e,\ 0x1e,\ 0x0f,\ 0x1f),}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ simdreg.im);}
+\DoxyCodeLine{00713\ \ \ \_mm512\_store\_ps((\textcolor{keywordtype}{float}*)(ptr),\ s1);}
+\DoxyCodeLine{00714\ \ \ \_mm512\_store\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 8),\ s2);}
+\DoxyCodeLine{00715\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00716\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00717\ \ \ \_\_m256\ out1\ =\ \_mm256\_permute\_ps(simdreg.re,\ 0b11011000);}
+\DoxyCodeLine{00718\ \ \ \_\_m256\ out2\ =\ \_mm256\_permute\_ps(simdreg.im,\ 0b11011000);}
+\DoxyCodeLine{00719\ \ \ \_mm256\_store\_ps((\textcolor{keywordtype}{float}*)(ptr),\ \_mm256\_unpacklo\_ps(out1,\ out2));}
+\DoxyCodeLine{00720\ \ \ \_mm256\_store\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 4),\ \_mm256\_unpackhi\_ps(out1,\ out2));}
+\DoxyCodeLine{00721\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00722\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00723\ \ \ \_mm\_store\_ps((\textcolor{keywordtype}{float}*)(ptr),\ \_mm\_unpacklo\_ps(simdreg.re,\ simdreg.im));}
+\DoxyCodeLine{00724\ \ \ \_mm\_store\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 2),\ \_mm\_unpackhi\_ps(simdreg.re,\ simdreg.im));}
+\DoxyCodeLine{00725\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00726\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00727\ \ \ vst2q\_f32((\textcolor{keywordtype}{float}*)(ptr),\ simdreg);}
+\DoxyCodeLine{00728\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00729\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00730\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00731\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00732\ \}}
+\DoxyCodeLine{00733\ }
+\DoxyCodeLine{00734\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_cfi\_storeu(\mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}*\ ptr,\ simd\_cf\_t\ simdreg)}
+\DoxyCodeLine{00735\ \{}
+\DoxyCodeLine{00736\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00737\ \ \ \_\_m512\ s1\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ simdreg.re,}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x10,\ 0x01,\ 0x11,\ 0x02,\ 0x12,\ 0x03,\ 0x13,\ 0x04,\ 0x14,\ 0x05,\ 0x15,\ 0x06,\ 0x16,\ 0x07,\ 0x17),}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ simdreg.im);}
+\DoxyCodeLine{00741\ \ \ \_\_m512\ s2\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ simdreg.re,}
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x08,\ 0x18,\ 0x09,\ 0x19,\ 0x0a,\ 0x1a,\ 0x0b,\ 0x1b,\ 0x0c,\ 0x1c,\ 0x0d,\ 0x1d,\ 0x0e,\ 0x1e,\ 0x0f,\ 0x1f),}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ simdreg.im);}
+\DoxyCodeLine{00745\ \ \ \_mm512\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr),\ s1);}
+\DoxyCodeLine{00746\ \ \ \_mm512\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 8),\ s2);}
+\DoxyCodeLine{00747\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00748\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00749\ \ \ \_\_m256\ out1\ =\ \_mm256\_permute\_ps(simdreg.re,\ 0b11011000);}
+\DoxyCodeLine{00750\ \ \ \_\_m256\ out2\ =\ \_mm256\_permute\_ps(simdreg.im,\ 0b11011000);}
+\DoxyCodeLine{00751\ \ \ \_mm256\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr),\ \_mm256\_unpacklo\_ps(out1,\ out2));}
+\DoxyCodeLine{00752\ \ \ \_mm256\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 4),\ \_mm256\_unpackhi\_ps(out1,\ out2));}
+\DoxyCodeLine{00753\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00754\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00755\ \ \ \_mm\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr),\ \_mm\_unpacklo\_ps(simdreg.re,\ simdreg.im));}
+\DoxyCodeLine{00756\ \ \ \_mm\_storeu\_ps((\textcolor{keywordtype}{float}*)(ptr\ +\ 2),\ \_mm\_unpackhi\_ps(simdreg.re,\ simdreg.im));}
+\DoxyCodeLine{00757\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00758\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00759\ \ \ vst2q\_f32((\textcolor{keywordtype}{float}*)(ptr),\ simdreg);}
+\DoxyCodeLine{00760\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00761\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00762\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00763\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00764\ \}}
+\DoxyCodeLine{00765\ }
+\DoxyCodeLine{00766\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_cf\_store(\textcolor{keywordtype}{float}*\ re,\ \textcolor{keywordtype}{float}*\ im,\ simd\_cf\_t\ simdreg)}
+\DoxyCodeLine{00767\ \{}
+\DoxyCodeLine{00768\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00769\ \ \ \_mm512\_store\_ps(re,\ simdreg.re);}
+\DoxyCodeLine{00770\ \ \ \_mm512\_store\_ps(im,\ simdreg.im);}
+\DoxyCodeLine{00771\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00772\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00773\ \ \ \_mm256\_store\_ps(re,\ simdreg.re);}
+\DoxyCodeLine{00774\ \ \ \_mm256\_store\_ps(im,\ simdreg.im);}
+\DoxyCodeLine{00775\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00776\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00777\ \ \ \_mm\_store\_ps((\textcolor{keywordtype}{float}*)re,\ simdreg.re);}
+\DoxyCodeLine{00778\ \ \ \_mm\_store\_ps((\textcolor{keywordtype}{float}*)im,\ simdreg.im);}
+\DoxyCodeLine{00779\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00780\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00781\ \ \ vst1q\_f32((\textcolor{keywordtype}{float}*)re,\ simdreg.val[0]);}
+\DoxyCodeLine{00782\ \ \ vst1q\_f32((\textcolor{keywordtype}{float}*)im,\ simdreg.val[1]);}
+\DoxyCodeLine{00783\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00784\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00785\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00786\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00787\ \}}
+\DoxyCodeLine{00788\ }
+\DoxyCodeLine{00789\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_cf\_storeu(\textcolor{keywordtype}{float}*\ re,\ \textcolor{keywordtype}{float}*\ im,\ simd\_cf\_t\ simdreg)}
+\DoxyCodeLine{00790\ \{}
+\DoxyCodeLine{00791\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00792\ \ \ \_mm512\_storeu\_ps(re,\ simdreg.re);}
+\DoxyCodeLine{00793\ \ \ \_mm512\_storeu\_ps(im,\ simdreg.im);}
+\DoxyCodeLine{00794\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00795\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00796\ \ \ \_mm256\_storeu\_ps(re,\ simdreg.re);}
+\DoxyCodeLine{00797\ \ \ \_mm256\_storeu\_ps(im,\ simdreg.im);}
+\DoxyCodeLine{00798\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00799\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00800\ \ \ \_mm\_storeu\_ps((\textcolor{keywordtype}{float}*)re,\ simdreg.re);}
+\DoxyCodeLine{00801\ \ \ \_mm\_storeu\_ps((\textcolor{keywordtype}{float}*)im,\ simdreg.im);}
+\DoxyCodeLine{00802\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00803\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00804\ \ \ vst1q\_f32((\textcolor{keywordtype}{float}*)re,\ simdreg.val[0]);}
+\DoxyCodeLine{00805\ \ \ vst1q\_f32((\textcolor{keywordtype}{float}*)im,\ simdreg.val[1]);}
+\DoxyCodeLine{00806\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00807\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00808\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00809\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00810\ \}}
+\DoxyCodeLine{00811\ }
+\DoxyCodeLine{00812\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_cf\_re(simd\_cf\_t\ in)}
+\DoxyCodeLine{00813\ \{}
+\DoxyCodeLine{00814\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00815\ \ \ simd\_f\_t\ out\ =\ in.val[0];}
+\DoxyCodeLine{00816\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00817\ \ \ simd\_f\_t\ out\ \ \ \ \ \ =\ in.re;}
+\DoxyCodeLine{00818\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00819\ \textcolor{preprocessor}{\#ifndef\ HAVE\_AVX512}}
+\DoxyCodeLine{00820\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00821\ \ \ \textcolor{comment}{/*\ Permute\ for\ AVX\ registers\ (mis\ SSE\ registers)\ */}}
+\DoxyCodeLine{00822\ \ \ \textcolor{keyword}{const}\ \_\_m256i\ idx\ =\ \_mm256\_setr\_epi32(0,\ 2,\ 4,\ 6,\ 1,\ 3,\ 5,\ 7);}
+\DoxyCodeLine{00823\ \ \ out\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_permutevar8x32\_ps(out,\ idx);}
+\DoxyCodeLine{00824\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00825\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00826\ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{00827\ \}}
+\DoxyCodeLine{00828\ }
+\DoxyCodeLine{00829\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_cf\_im(simd\_cf\_t\ in)}
+\DoxyCodeLine{00830\ \{}
+\DoxyCodeLine{00831\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00832\ \ \ simd\_f\_t\ out\ =\ in.val[1];}
+\DoxyCodeLine{00833\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00834\ \ \ simd\_f\_t\ out\ \ \ \ \ \ =\ in.im;}
+\DoxyCodeLine{00835\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00836\ \textcolor{preprocessor}{\#ifndef\ HAVE\_AVX512}}
+\DoxyCodeLine{00837\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00838\ \ \ \textcolor{comment}{/*\ Permute\ for\ AVX\ registers\ (mis\ SSE\ registers)\ */}}
+\DoxyCodeLine{00839\ \ \ \textcolor{keyword}{const}\ \_\_m256i\ idx\ =\ \_mm256\_setr\_epi32(0,\ 2,\ 4,\ 6,\ 1,\ 3,\ 5,\ 7);}
+\DoxyCodeLine{00840\ \ \ out\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_permutevar8x32\_ps(out,\ idx);}
+\DoxyCodeLine{00841\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00842\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00843\ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{00844\ \}}
+\DoxyCodeLine{00845\ }
+\DoxyCodeLine{00846\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_set1(\mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ x)}
+\DoxyCodeLine{00847\ \{}
+\DoxyCodeLine{00848\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00849\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00850\ \ \ ret.re\ =\ \_mm512\_set1\_ps(x.real());}
+\DoxyCodeLine{00851\ \ \ ret.im\ =\ \_mm512\_set1\_ps(x.imag());}
+\DoxyCodeLine{00852\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00853\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00854\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_set1\_ps(x.real());}
+\DoxyCodeLine{00855\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_set1\_ps(x.imag());}
+\DoxyCodeLine{00856\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00857\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00858\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_set1\_ps(x.real());}
+\DoxyCodeLine{00859\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_set1\_ps(x.imag());}
+\DoxyCodeLine{00860\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00861\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00862\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vdupq\_n\_f32(x.real());}
+\DoxyCodeLine{00863\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vdupq\_n\_f32(x.imag());}
+\DoxyCodeLine{00864\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00865\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00866\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00867\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00868\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00869\ \}}
+\DoxyCodeLine{00870\ }
+\DoxyCodeLine{00871\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_prod(simd\_cf\_t\ a,\ simd\_cf\_t\ b)}
+\DoxyCodeLine{00872\ \{}
+\DoxyCodeLine{00873\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00874\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00875\ \ \ ret.re\ =\ \_mm512\_sub\_ps(\_mm512\_mul\_ps(a.re,\ b.re),\ \_mm512\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00876\ \ \ ret.im\ =\ \_mm512\_add\_ps(\_mm512\_mul\_ps(a.re,\ b.im),\ \_mm512\_mul\_ps(a.im,\ b.re));}
+\DoxyCodeLine{00877\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00878\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00879\ \textcolor{preprocessor}{\#ifdef\ HAVE\_FMA}}
+\DoxyCodeLine{00880\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_fmsub\_ps(a.re,\ b.re,\ \_mm256\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00881\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_fmadd\_ps(a.re,\ b.im,\ \_mm256\_mul\_ps(a.im,\ b.re));}
+\DoxyCodeLine{00882\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{/*\ HAVE\_FMA\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00883\ \ \ ret.re\ =\ \_mm256\_sub\_ps(\_mm256\_mul\_ps(a.re,\ b.re),\ \_mm256\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00884\ \ \ ret.im\ =\ \_mm256\_add\_ps(\_mm256\_mul\_ps(a.re,\ b.im),\ \_mm256\_mul\_ps(a.im,\ b.re));}
+\DoxyCodeLine{00885\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_FMA\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00886\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00887\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00888\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_sub\_ps(\_mm\_mul\_ps(a.re,\ b.re),\ \_mm\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00889\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_add\_ps(\_mm\_mul\_ps(a.re,\ b.im),\ \_mm\_mul\_ps(a.im,\ b.re));}
+\DoxyCodeLine{00890\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00891\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00892\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vsubq\_f32(vmulq\_f32(a.val[0],\ b.val[0]),\ vmulq\_f32(a.val[1],\ b.val[1]));}
+\DoxyCodeLine{00893\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vaddq\_f32(vmulq\_f32(a.val[0],\ b.val[1]),\ vmulq\_f32(a.val[1],\ b.val[0]));}
+\DoxyCodeLine{00894\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00895\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00896\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00897\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00898\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00899\ \}}
+\DoxyCodeLine{00900\ }
+\DoxyCodeLine{00901\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_conjprod(simd\_cf\_t\ a,\ simd\_cf\_t\ b)}
+\DoxyCodeLine{00902\ \{}
+\DoxyCodeLine{00903\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00904\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00905\ \ \ ret.re\ =\ \_mm512\_add\_ps(\_mm512\_mul\_ps(a.re,\ b.re),\ \_mm512\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00906\ \ \ ret.im\ =\ \_mm512\_sub\_ps(\_mm512\_mul\_ps(a.im,\ b.re),\ \_mm512\_mul\_ps(a.re,\ b.im));}
+\DoxyCodeLine{00907\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00908\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00909\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_add\_ps(\_mm256\_mul\_ps(a.re,\ b.re),\ \_mm256\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00910\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_sub\_ps(\_mm256\_mul\_ps(a.im,\ b.re),\ \_mm256\_mul\_ps(a.re,\ b.im));}
+\DoxyCodeLine{00911\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00912\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00913\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_add\_ps(\_mm\_mul\_ps(a.re,\ b.re),\ \_mm\_mul\_ps(a.im,\ b.im));}
+\DoxyCodeLine{00914\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_sub\_ps(\_mm\_mul\_ps(a.im,\ b.re),\ \_mm\_mul\_ps(a.re,\ b.im));}
+\DoxyCodeLine{00915\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00916\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00917\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vaddq\_f32(vmulq\_f32(a.val[0],\ b.val[0]),\ vmulq\_f32(a.val[1],\ b.val[1]));}
+\DoxyCodeLine{00918\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vsubq\_f32(vmulq\_f32(a.val[1],\ b.val[0]),\ vmulq\_f32(a.val[0],\ b.val[1]));}
+\DoxyCodeLine{00919\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00920\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00921\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00922\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00923\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00924\ \}}
+\DoxyCodeLine{00925\ }
+\DoxyCodeLine{00926\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_add(simd\_cf\_t\ a,\ simd\_cf\_t\ b)}
+\DoxyCodeLine{00927\ \{}
+\DoxyCodeLine{00928\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00929\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00930\ \ \ ret.re\ =\ \_mm512\_add\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00931\ \ \ ret.im\ =\ \_mm512\_add\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00932\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00933\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00934\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_add\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00935\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_add\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00936\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00937\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00938\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_add\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00939\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_add\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00940\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00941\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00942\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vaddq\_f32(a.val[0],\ b.val[0]);}
+\DoxyCodeLine{00943\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vaddq\_f32(a.val[1],\ b.val[1]);}
+\DoxyCodeLine{00944\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00945\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00946\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00947\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00948\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00949\ \}}
+\DoxyCodeLine{00950\ }
+\DoxyCodeLine{00951\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_sub(simd\_cf\_t\ a,\ simd\_cf\_t\ b)}
+\DoxyCodeLine{00952\ \{}
+\DoxyCodeLine{00953\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00954\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00955\ \ \ ret.re\ =\ \_mm512\_sub\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00956\ \ \ ret.im\ =\ \_mm512\_sub\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00957\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00958\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00959\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_sub\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00960\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_sub\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00961\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00962\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00963\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_sub\_ps(a.re,\ b.re);}
+\DoxyCodeLine{00964\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_sub\_ps(a.im,\ b.im);}
+\DoxyCodeLine{00965\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00966\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00967\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vsubq\_f32(a.val[0],\ b.val[0]);}
+\DoxyCodeLine{00968\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vsubq\_f32(a.val[1],\ b.val[1]);}
+\DoxyCodeLine{00969\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00970\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00971\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00972\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00973\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00974\ \}}
+\DoxyCodeLine{00975\ }
+\DoxyCodeLine{00976\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_cf\_norm\_sq(simd\_cf\_t\ a)}
+\DoxyCodeLine{00977\ \{}
+\DoxyCodeLine{00978\ \ \ \textcolor{keywordflow}{return}\ srsran\_simd\_f\_fma(}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ srsran\_simd\_f\_mul(srsran\_simd\_cf\_re(a),\ srsran\_simd\_cf\_re(a)),\ srsran\_simd\_cf\_im(a),\ srsran\_simd\_cf\_im(a));}
+\DoxyCodeLine{00980\ \}}
+\DoxyCodeLine{00981\ }
+\DoxyCodeLine{00982\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_mul(simd\_cf\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{00983\ \{}
+\DoxyCodeLine{00984\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{00985\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{00986\ \ \ ret.re\ =\ \_mm512\_mul\_ps(a.re,\ b);}
+\DoxyCodeLine{00987\ \ \ ret.im\ =\ \_mm512\_mul\_ps(a.im,\ b);}
+\DoxyCodeLine{00988\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00989\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{00990\ \ \ b\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_permutevar8x32\_ps(b,\ \_mm256\_setr\_epi32(0,\ 4,\ 1,\ 5,\ 2,\ 6,\ 3,\ 7));}
+\DoxyCodeLine{00991\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_mul\_ps(a.re,\ b);}
+\DoxyCodeLine{00992\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_mul\_ps(a.im,\ b);}
+\DoxyCodeLine{00993\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00994\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{00995\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_mul\_ps(a.re,\ b);}
+\DoxyCodeLine{00996\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_mul\_ps(a.im,\ b);}
+\DoxyCodeLine{00997\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{00998\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{00999\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vmulq\_f32(a.val[0],\ b);}
+\DoxyCodeLine{01000\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vmulq\_f32(a.val[1],\ b);}
+\DoxyCodeLine{01001\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01002\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01003\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01004\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01005\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01006\ \}}
+\DoxyCodeLine{01007\ }
+\DoxyCodeLine{01008\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_rcp(simd\_cf\_t\ a)}
+\DoxyCodeLine{01009\ \{}
+\DoxyCodeLine{01010\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01011\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01012\ \ \ simd\_f\_t\ a2re\ \ \ \ \ =\ \_mm512\_mul\_ps(a.re,\ a.re);}
+\DoxyCodeLine{01013\ \ \ simd\_f\_t\ a2im\ \ \ \ \ =\ \_mm512\_mul\_ps(a.im,\ a.im);}
+\DoxyCodeLine{01014\ \ \ simd\_f\_t\ mod2\ \ \ \ \ =\ \_mm512\_add\_ps(a2re,\ a2im);}
+\DoxyCodeLine{01015\ \ \ simd\_f\_t\ rcp\ \ \ \ \ \ =\ \_mm512\_rcp14\_ps(mod2);}
+\DoxyCodeLine{01016\ \ \ simd\_f\_t\ neg\_a\_im\ =\ \_mm512\_xor\_ps(\_mm512\_set1\_ps(-\/0.0f),\ a.im);}
+\DoxyCodeLine{01017\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm512\_mul\_ps(a.re,\ rcp);}
+\DoxyCodeLine{01018\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm512\_mul\_ps(neg\_a\_im,\ rcp);}
+\DoxyCodeLine{01019\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01020\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01021\ \ \ simd\_f\_t\ a2re\ \ \ \ \ =\ \_mm256\_mul\_ps(a.re,\ a.re);}
+\DoxyCodeLine{01022\ \ \ simd\_f\_t\ a2im\ \ \ \ \ =\ \_mm256\_mul\_ps(a.im,\ a.im);}
+\DoxyCodeLine{01023\ \ \ simd\_f\_t\ mod2\ \ \ \ \ =\ \_mm256\_add\_ps(a2re,\ a2im);}
+\DoxyCodeLine{01024\ \ \ simd\_f\_t\ rcp\ \ \ \ \ \ =\ \_mm256\_rcp\_ps(mod2);}
+\DoxyCodeLine{01025\ \ \ simd\_f\_t\ neg\_a\_im\ =\ \_mm256\_xor\_ps(\_mm256\_set1\_ps(-\/0.0f),\ a.im);}
+\DoxyCodeLine{01026\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_mul\_ps(a.re,\ rcp);}
+\DoxyCodeLine{01027\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_mul\_ps(neg\_a\_im,\ rcp);}
+\DoxyCodeLine{01028\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01029\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01030\ \ \ simd\_f\_t\ a2re\ \ \ \ \ =\ \_mm\_mul\_ps(a.re,\ a.re);}
+\DoxyCodeLine{01031\ \ \ simd\_f\_t\ a2im\ \ \ \ \ =\ \_mm\_mul\_ps(a.im,\ a.im);}
+\DoxyCodeLine{01032\ \ \ simd\_f\_t\ mod2\ \ \ \ \ =\ \_mm\_add\_ps(a2re,\ a2im);}
+\DoxyCodeLine{01033\ \ \ simd\_f\_t\ rcp\ \ \ \ \ \ =\ \_mm\_rcp\_ps(mod2);}
+\DoxyCodeLine{01034\ \ \ simd\_f\_t\ neg\_a\_im\ =\ \_mm\_xor\_ps(\_mm\_set1\_ps(-\/0.0f),\ a.im);}
+\DoxyCodeLine{01035\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_mul\_ps(a.re,\ rcp);}
+\DoxyCodeLine{01036\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_mul\_ps(neg\_a\_im,\ rcp);}
+\DoxyCodeLine{01037\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01038\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01039\ \ \ simd\_f\_t\ a2re\ \ \ \ \ =\ vmulq\_f32(a.val[0],\ a.val[0]);}
+\DoxyCodeLine{01040\ \ \ simd\_f\_t\ a2im\ \ \ \ \ =\ vmulq\_f32(a.val[1],\ a.val[1]);}
+\DoxyCodeLine{01041\ \ \ simd\_f\_t\ mod2\ \ \ \ \ =\ vaddq\_f32(a2re,\ a2im);}
+\DoxyCodeLine{01042\ \ \ simd\_f\_t\ rcp\ \ \ \ \ \ =\ vmulq\_f32(vrecpeq\_f32(mod2),\ vrecpsq\_f32(vrecpeq\_f32(mod2),\ mod2));}
+\DoxyCodeLine{01043\ \ \ simd\_f\_t\ neg\_a\_im\ =\ vnegq\_f32(a.val[1]);}
+\DoxyCodeLine{01044\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vmulq\_f32(a.val[0],\ rcp);}
+\DoxyCodeLine{01045\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vmulq\_f32(neg\_a\_im,\ rcp);}
+\DoxyCodeLine{01046\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01047\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01048\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01049\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01050\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01051\ \}}
+\DoxyCodeLine{01052\ }
+\DoxyCodeLine{01053\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_neg(simd\_cf\_t\ a)}
+\DoxyCodeLine{01054\ \{}
+\DoxyCodeLine{01055\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01056\ \textcolor{preprocessor}{\#if\ HAVE\_NEON}}
+\DoxyCodeLine{01057\ \ \ ret.val[0]\ =\ srsran\_simd\_f\_neg(a.val[0]);}
+\DoxyCodeLine{01058\ \ \ ret.val[1]\ =\ srsran\_simd\_f\_neg(a.val[1]);}
+\DoxyCodeLine{01059\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01060\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg(a.re);}
+\DoxyCodeLine{01061\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg(a.im);}
+\DoxyCodeLine{01062\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01063\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01064\ \}}
+\DoxyCodeLine{01065\ }
+\DoxyCodeLine{01066\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_neg\_mask(simd\_cf\_t\ a,\ simd\_f\_t\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}})}
+\DoxyCodeLine{01067\ \{}
+\DoxyCodeLine{01068\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01069\ \textcolor{preprocessor}{\#ifndef\ HAVE\_AVX512}}
+\DoxyCodeLine{01070\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01071\ \ \ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}}\ =\ \_mm256\_permutevar8x32\_ps(\mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}},\ \_mm256\_setr\_epi32(0,\ 4,\ 1,\ 5,\ 2,\ 6,\ 3,\ 7));}
+\DoxyCodeLine{01072\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01073\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01074\ \textcolor{preprocessor}{\#if\ HAVE\_NEON}}
+\DoxyCodeLine{01075\ \ \ ret.val[0]\ =\ srsran\_simd\_f\_neg\_mask(a.val[0],\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}});}
+\DoxyCodeLine{01076\ \ \ ret.val[1]\ =\ srsran\_simd\_f\_neg\_mask(a.val[1],\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}});}
+\DoxyCodeLine{01077\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01078\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg\_mask(a.re,\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}});}
+\DoxyCodeLine{01079\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg\_mask(a.im,\ \mbox{\hyperlink{namespacesrsran_ad24c439c1013fdd70334019fc3d1d1fbaf2ce11ebf110993621bedd8e747d7b1b}{mask}});}
+\DoxyCodeLine{01080\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01081\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01082\ \}}
+\DoxyCodeLine{01083\ }
+\DoxyCodeLine{01084\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_conj(simd\_cf\_t\ a)}
+\DoxyCodeLine{01085\ \{}
+\DoxyCodeLine{01086\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01087\ \textcolor{preprocessor}{\#if\ HAVE\_NEON}}
+\DoxyCodeLine{01088\ \ \ ret.val[0]\ =\ a.val[0];}
+\DoxyCodeLine{01089\ \ \ ret.val[1]\ =\ srsran\_simd\_f\_neg(a.val[1]);}
+\DoxyCodeLine{01090\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01091\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ a.re;}
+\DoxyCodeLine{01092\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg(a.im);}
+\DoxyCodeLine{01093\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01094\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01095\ \}}
+\DoxyCodeLine{01096\ }
+\DoxyCodeLine{01097\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_mulj(simd\_cf\_t\ a)}
+\DoxyCodeLine{01098\ \{}
+\DoxyCodeLine{01099\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01100\ \textcolor{preprocessor}{\#if\ HAVE\_NEON}}
+\DoxyCodeLine{01101\ \ \ ret.val[0]\ =\ srsran\_simd\_f\_neg(a.val[1]);}
+\DoxyCodeLine{01102\ \ \ ret.val[1]\ =\ a.val[0];}
+\DoxyCodeLine{01103\ \textcolor{preprocessor}{\#else\ \ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01104\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ srsran\_simd\_f\_neg(a.im);}
+\DoxyCodeLine{01105\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ a.re;}
+\DoxyCodeLine{01106\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01107\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01108\ \}}
+\DoxyCodeLine{01109\ }
+\DoxyCodeLine{01110\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_zero(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{01111\ \{}
+\DoxyCodeLine{01112\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01113\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01114\ \ \ ret.re\ =\ \_mm512\_setzero\_ps();}
+\DoxyCodeLine{01115\ \ \ ret.im\ =\ \_mm512\_setzero\_ps();}
+\DoxyCodeLine{01116\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01117\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01118\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_setzero\_ps();}
+\DoxyCodeLine{01119\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm256\_setzero\_ps();}
+\DoxyCodeLine{01120\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01121\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01122\ \ \ ret.re\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_setzero\_ps();}
+\DoxyCodeLine{01123\ \ \ ret.im\ \ \ \ \ \ \ \ \ \ \ \ =\ \_mm\_setzero\_ps();}
+\DoxyCodeLine{01124\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01125\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01126\ \ \ ret.val[0]\ \ \ \ \ \ \ \ =\ vdupq\_n\_f32(0);}
+\DoxyCodeLine{01127\ \ \ ret.val[1]\ \ \ \ \ \ \ \ =\ vdupq\_n\_f32(0);}
+\DoxyCodeLine{01128\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01129\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01130\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01131\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01132\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01133\ \}}
+\DoxyCodeLine{01134\ }
+\DoxyCodeLine{01135\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_cf\_fprintf(FILE*\ stream,\ simd\_cf\_t\ a)}
+\DoxyCodeLine{01136\ \{}
+\DoxyCodeLine{01137\ \ \ \mbox{\hyperlink{namespacesrsran_adb0c7723c7e69c78add18ca453dd1dbc}{cf\_t}}\ x[SRSRAN\_SIMD\_CF\_SIZE];}
+\DoxyCodeLine{01138\ }
+\DoxyCodeLine{01139\ \ \ srsran\_simd\_cfi\_storeu(x,\ a);}
+\DoxyCodeLine{01140\ }
+\DoxyCodeLine{01141\ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}["{}});}
+\DoxyCodeLine{01142\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ SRSRAN\_SIMD\_CF\_SIZE;\ i++)\ \{}
+\DoxyCodeLine{01143\ \ \ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}\%+2.5f\%+2.5fi,\ "{}},\ x[i].real(),\ x[i].imag());}
+\DoxyCodeLine{01144\ \ \ \}}
+\DoxyCodeLine{01145\ \ \ fprintf(stream,\ \textcolor{stringliteral}{"{}];\(\backslash\)n"{}});}
+\DoxyCodeLine{01146\ \}}
+\DoxyCodeLine{01147\ }
+\DoxyCodeLine{01148\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_CF\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01149\ }
+\DoxyCodeLine{01150\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_I\_SIZE}}
+\DoxyCodeLine{01151\ }
+\DoxyCodeLine{01152\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01153\ \textcolor{keyword}{typedef}\ \_\_m512i\ \ \ simd\_i\_t;}
+\DoxyCodeLine{01154\ \textcolor{keyword}{typedef}\ \_\_mmask16\ simd\_sel\_t;}
+\DoxyCodeLine{01155\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01156\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01157\ \textcolor{keyword}{typedef}\ \_\_m256i\ simd\_i\_t;}
+\DoxyCodeLine{01158\ \textcolor{keyword}{typedef}\ \_\_m256\ \ simd\_sel\_t;}
+\DoxyCodeLine{01159\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01160\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01161\ \textcolor{keyword}{typedef}\ \_\_m128i\ simd\_i\_t;}
+\DoxyCodeLine{01162\ \textcolor{keyword}{typedef}\ \_\_m128\ \ simd\_sel\_t;}
+\DoxyCodeLine{01163\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01164\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01165\ \textcolor{keyword}{typedef}\ int32x4\_t\ \ simd\_i\_t;}
+\DoxyCodeLine{01166\ \textcolor{keyword}{typedef}\ uint32x4\_t\ simd\_sel\_t;}
+\DoxyCodeLine{01167\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01168\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01169\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01170\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01171\ }
+\DoxyCodeLine{01172\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_load(int32\_t*\ x)}
+\DoxyCodeLine{01173\ \{}
+\DoxyCodeLine{01174\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01175\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_load\_epi32((\_\_m512i*)x);}
+\DoxyCodeLine{01176\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01177\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01178\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_load\_si256((\_\_m256i*)x);}
+\DoxyCodeLine{01179\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01180\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01181\ \ \ \textcolor{keywordflow}{return}\ \_mm\_load\_si128((\_\_m128i*)x);}
+\DoxyCodeLine{01182\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01183\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01184\ \ \ \textcolor{keywordflow}{return}\ vld1q\_s32((\textcolor{keywordtype}{int}*)x);}
+\DoxyCodeLine{01185\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01186\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01187\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01188\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01189\ \}}
+\DoxyCodeLine{01190\ }
+\DoxyCodeLine{01191\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_i\_store(int32\_t*\ x,\ simd\_i\_t\ reg)}
+\DoxyCodeLine{01192\ \{}
+\DoxyCodeLine{01193\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01194\ \ \ \_mm512\_store\_epi32((\_\_m512i*)x,\ reg);}
+\DoxyCodeLine{01195\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01196\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01197\ \ \ \_mm256\_store\_si256((\_\_m256i*)x,\ reg);}
+\DoxyCodeLine{01198\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01199\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01200\ \ \ \_mm\_store\_si128((\_\_m128i*)x,\ reg);}
+\DoxyCodeLine{01201\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01202\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01203\ \ \ vst1q\_s32((\textcolor{keywordtype}{int}*)x,\ reg);}
+\DoxyCodeLine{01204\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01205\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01206\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01207\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01208\ \}}
+\DoxyCodeLine{01209\ }
+\DoxyCodeLine{01210\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_set1(\textcolor{keywordtype}{int}\ x)}
+\DoxyCodeLine{01211\ \{}
+\DoxyCodeLine{01212\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01213\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_set1\_epi32(x);}
+\DoxyCodeLine{01214\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01215\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01216\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_set1\_epi32(x);}
+\DoxyCodeLine{01217\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01218\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01219\ \ \ \textcolor{keywordflow}{return}\ \_mm\_set1\_epi32(x);}
+\DoxyCodeLine{01220\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01221\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01222\ \ \ \textcolor{keywordflow}{return}\ vdupq\_n\_s32(x);}
+\DoxyCodeLine{01223\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01224\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01225\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01226\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01227\ \}}
+\DoxyCodeLine{01228\ }
+\DoxyCodeLine{01229\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_add(simd\_i\_t\ a,\ simd\_i\_t\ b)}
+\DoxyCodeLine{01230\ \{}
+\DoxyCodeLine{01231\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01232\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_add\_epi32(a,\ b);}
+\DoxyCodeLine{01233\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01234\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01235\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_add\_epi32(a,\ b);}
+\DoxyCodeLine{01236\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01237\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01238\ \ \ \textcolor{keywordflow}{return}\ \_mm\_add\_epi32(a,\ b);}
+\DoxyCodeLine{01239\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01240\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01241\ \ \ \textcolor{keywordflow}{return}\ vaddq\_s32(a,\ b);}
+\DoxyCodeLine{01242\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01243\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01244\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01245\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01246\ \}}
+\DoxyCodeLine{01247\ }
+\DoxyCodeLine{01248\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_mul(simd\_i\_t\ a,\ simd\_i\_t\ b)}
+\DoxyCodeLine{01249\ \{}
+\DoxyCodeLine{01250\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01251\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_mullo\_epi32(a,\ b);}
+\DoxyCodeLine{01252\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01253\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01254\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_mullo\_epi32(a,\ b);}
+\DoxyCodeLine{01255\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01256\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01257\ \ \ \textcolor{keywordflow}{return}\ \_mm\_mul\_epi32(a,\ b);}
+\DoxyCodeLine{01258\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01259\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01260\ \ \ \textcolor{keywordflow}{return}\ vmulq\_s32(a,\ b);}
+\DoxyCodeLine{01261\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01262\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01263\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01264\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01265\ \}}
+\DoxyCodeLine{01266\ }
+\DoxyCodeLine{01267\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_and(simd\_i\_t\ a,\ simd\_i\_t\ b)}
+\DoxyCodeLine{01268\ \{}
+\DoxyCodeLine{01269\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01270\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_and\_si512(a,\ b);}
+\DoxyCodeLine{01271\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01272\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01273\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_and\_si256(a,\ b);}
+\DoxyCodeLine{01274\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01275\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01276\ \ \ \textcolor{keywordflow}{return}\ \_mm\_and\_si128(a,\ b);}
+\DoxyCodeLine{01277\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01278\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01279\ \ \ \textcolor{keywordflow}{return}\ vandq\_s32(a,\ b);}
+\DoxyCodeLine{01280\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01281\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01282\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01283\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01284\ \}}
+\DoxyCodeLine{01285\ }
+\DoxyCodeLine{01286\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_sel\_t\ srsran\_simd\_sel\_and(simd\_sel\_t\ a,\ simd\_sel\_t\ b)}
+\DoxyCodeLine{01287\ \{}
+\DoxyCodeLine{01288\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01289\ \ \ \textcolor{keywordflow}{return}\ \_kand\_mask16(a,\ b);}
+\DoxyCodeLine{01290\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01291\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01292\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_and\_ps(a,\ b);}
+\DoxyCodeLine{01293\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01294\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01295\ \ \ \textcolor{keywordflow}{return}\ \_mm\_and\_ps(a,\ b);}
+\DoxyCodeLine{01296\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01297\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01298\ \ \ \textcolor{keywordflow}{return}\ vandq\_u32(a,\ b);}
+\DoxyCodeLine{01299\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01300\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01301\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01302\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01303\ \}}
+\DoxyCodeLine{01304\ }
+\DoxyCodeLine{01305\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_sel\_t\ srsran\_simd\_f\_max(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{01306\ \{}
+\DoxyCodeLine{01307\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01308\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_cmp\_ps\_mask(a,\ b,\ \_CMP\_GT\_OS);}
+\DoxyCodeLine{01309\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01310\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01311\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_cmp\_ps(a,\ b,\ \_CMP\_GT\_OS);}
+\DoxyCodeLine{01312\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01313\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01314\ \ \ \textcolor{keywordflow}{return}\ (simd\_sel\_t)\_mm\_cmpgt\_ps(a,\ b);}
+\DoxyCodeLine{01315\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01316\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01317\ \ \ \textcolor{keywordflow}{return}\ vcgtq\_f32(a,\ b);}
+\DoxyCodeLine{01318\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01319\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01320\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01321\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01322\ \}}
+\DoxyCodeLine{01323\ }
+\DoxyCodeLine{01324\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_sel\_t\ srsran\_simd\_f\_min(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{01325\ \{}
+\DoxyCodeLine{01326\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01327\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_cmp\_ps\_mask(a,\ b,\ \_CMP\_LT\_OS);}
+\DoxyCodeLine{01328\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01329\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01330\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_cmp\_ps(a,\ b,\ \_CMP\_LT\_OS);}
+\DoxyCodeLine{01331\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01332\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01333\ \ \ \textcolor{keywordflow}{return}\ (simd\_sel\_t)\_mm\_cmplt\_ps(a,\ b);}
+\DoxyCodeLine{01334\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01335\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01336\ \ \ \textcolor{keywordflow}{return}\ vcltq\_f32(a,\ b);}
+\DoxyCodeLine{01337\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01338\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01339\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01340\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01341\ \}}
+\DoxyCodeLine{01342\ }
+\DoxyCodeLine{01343\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_f\_t\ srsran\_simd\_f\_select(simd\_f\_t\ a,\ simd\_f\_t\ b,\ simd\_sel\_t\ selector)}
+\DoxyCodeLine{01344\ \{}
+\DoxyCodeLine{01345\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01346\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_mask\_blend\_ps(selector,\ (\_\_m512)a,\ (\_\_m512)b);}
+\DoxyCodeLine{01347\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01348\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01349\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_blendv\_ps(a,\ b,\ selector);}
+\DoxyCodeLine{01350\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01351\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01352\ \ \ \textcolor{keywordflow}{return}\ \_mm\_blendv\_ps(a,\ b,\ selector);}
+\DoxyCodeLine{01353\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01354\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01355\ \ \ \textcolor{keywordflow}{return}\ vbslq\_f32(selector,\ b,\ a);}
+\DoxyCodeLine{01356\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01357\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01358\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01359\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01360\ \}}
+\DoxyCodeLine{01361\ }
+\DoxyCodeLine{01362\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_cf\_t\ srsran\_simd\_cf\_select(simd\_cf\_t\ a,\ simd\_cf\_t\ b,\ simd\_sel\_t\ selector)}
+\DoxyCodeLine{01363\ \{}
+\DoxyCodeLine{01364\ \ \ simd\_cf\_t\ ret;}
+\DoxyCodeLine{01365\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01366\ \ \ ret.re\ =\ \_mm512\_mask\_blend\_ps(selector,\ a.re,\ b.re);}
+\DoxyCodeLine{01367\ \ \ ret.im\ =\ \_mm512\_mask\_blend\_ps(selector,\ a.im,\ b.im);}
+\DoxyCodeLine{01368\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01369\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01370\ \ \ \textcolor{comment}{/*\ Permute\ for\ AVX\ registers\ (mis\ SSE\ registers)\ */}}
+\DoxyCodeLine{01371\ \ \ selector\ =\ \_mm256\_permutevar8x32\_ps(selector,\ \_mm256\_setr\_epi32(0,\ 4,\ 1,\ 5,\ 2,\ 6,\ 3,\ 7));}
+\DoxyCodeLine{01372\ \ \ ret.re\ \ \ =\ \_mm256\_blendv\_ps(a.re,\ b.re,\ selector);}
+\DoxyCodeLine{01373\ \ \ ret.im\ \ \ =\ \_mm256\_blendv\_ps(a.im,\ b.im,\ selector);}
+\DoxyCodeLine{01374\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01375\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01376\ \ \ ret.re\ =\ \_mm\_blendv\_ps(a.re,\ b.re,\ selector);}
+\DoxyCodeLine{01377\ \ \ ret.im\ =\ \_mm\_blendv\_ps(a.im,\ b.im,\ selector);}
+\DoxyCodeLine{01378\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01379\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01380\ \ \ ret.val[0]\ =\ vbslq\_f32(selector,\ b.val[0],\ a.val[0]);}
+\DoxyCodeLine{01381\ \ \ ret.val[1]\ =\ vbslq\_f32(selector,\ b.val[1],\ a.val[1]);}
+\DoxyCodeLine{01382\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01383\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01384\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01385\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01386\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01387\ \}}
+\DoxyCodeLine{01388\ }
+\DoxyCodeLine{01389\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_i\_t\ srsran\_simd\_i\_select(simd\_i\_t\ a,\ simd\_i\_t\ b,\ simd\_sel\_t\ selector)}
+\DoxyCodeLine{01390\ \{}
+\DoxyCodeLine{01391\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01392\ \ \ \textcolor{keywordflow}{return}\ (\_\_m512i)\_mm512\_mask\_blend\_ps(selector,\ (\_\_m512)a,\ (\_\_m512)b);}
+\DoxyCodeLine{01393\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01394\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01395\ \ \ \textcolor{keywordflow}{return}\ (\_\_m256i)\_mm256\_blendv\_ps((\_\_m256)a,\ (\_\_m256)b,\ selector);}
+\DoxyCodeLine{01396\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01397\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01398\ \ \ \textcolor{keywordflow}{return}\ (\_\_m128i)\_mm\_blendv\_ps((\_\_m128)a,\ (\_\_m128)b,\ selector);}
+\DoxyCodeLine{01399\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01400\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01401\ \ \ \textcolor{keywordflow}{return}\ vbslq\_s32(selector,\ b,\ a);}
+\DoxyCodeLine{01402\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01403\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01404\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01405\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01406\ \}}
+\DoxyCodeLine{01407\ }
+\DoxyCodeLine{01408\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_I\_SIZE*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01409\ }
+\DoxyCodeLine{01410\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_S\_SIZE}}
+\DoxyCodeLine{01411\ }
+\DoxyCodeLine{01412\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01413\ \textcolor{keyword}{typedef}\ \_\_m512i\ simd\_s\_t;}
+\DoxyCodeLine{01414\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01415\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01416\ \textcolor{keyword}{typedef}\ \_\_m256i\ simd\_s\_t;}
+\DoxyCodeLine{01417\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01418\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01419\ \textcolor{keyword}{typedef}\ \_\_m128i\ simd\_s\_t;}
+\DoxyCodeLine{01420\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01421\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01422\ \textcolor{keyword}{typedef}\ int16x8\_t\ simd\_s\_t;}
+\DoxyCodeLine{01423\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01424\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01425\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01426\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01427\ }
+\DoxyCodeLine{01428\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_load(\textcolor{keyword}{const}\ int16\_t*\ ptr)}
+\DoxyCodeLine{01429\ \{}
+\DoxyCodeLine{01430\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01431\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_load\_si512(ptr);}
+\DoxyCodeLine{01432\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01433\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01434\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_load\_si256((\_\_m256i*)ptr);}
+\DoxyCodeLine{01435\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01436\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01437\ \ \ \textcolor{keywordflow}{return}\ \_mm\_load\_si128((\_\_m128i*)ptr);}
+\DoxyCodeLine{01438\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01439\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01440\ \ \ \textcolor{keywordflow}{return}\ vld1q\_s16(ptr);}
+\DoxyCodeLine{01441\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01442\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01443\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01444\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01445\ \}}
+\DoxyCodeLine{01446\ }
+\DoxyCodeLine{01447\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_loadu(\textcolor{keyword}{const}\ int16\_t*\ ptr)}
+\DoxyCodeLine{01448\ \{}
+\DoxyCodeLine{01449\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01450\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_loadu\_si512(ptr);}
+\DoxyCodeLine{01451\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01452\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01453\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_loadu\_si256((\_\_m256i*)ptr);}
+\DoxyCodeLine{01454\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01455\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01456\ \ \ \textcolor{keywordflow}{return}\ \_mm\_loadu\_si128((\_\_m128i*)ptr);}
+\DoxyCodeLine{01457\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01458\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01459\ \ \ \textcolor{keywordflow}{return}\ vld1q\_s16(ptr);}
+\DoxyCodeLine{01460\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01461\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01462\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01463\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01464\ \}}
+\DoxyCodeLine{01465\ }
+\DoxyCodeLine{01466\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_s\_store(int16\_t*\ ptr,\ simd\_s\_t\ simdreg)}
+\DoxyCodeLine{01467\ \{}
+\DoxyCodeLine{01468\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01469\ \ \ \_mm512\_store\_si512(ptr,\ simdreg);}
+\DoxyCodeLine{01470\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01471\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01472\ \ \ \_mm256\_store\_si256((\_\_m256i*)ptr,\ simdreg);}
+\DoxyCodeLine{01473\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01474\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01475\ \ \ \_mm\_store\_si128((\_\_m128i*)ptr,\ simdreg);}
+\DoxyCodeLine{01476\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01477\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01478\ \ \ vst1q\_s16(ptr,\ simdreg);}
+\DoxyCodeLine{01479\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01480\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01481\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01482\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01483\ \}}
+\DoxyCodeLine{01484\ }
+\DoxyCodeLine{01485\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_s\_storeu(int16\_t*\ ptr,\ simd\_s\_t\ simdreg)}
+\DoxyCodeLine{01486\ \{}
+\DoxyCodeLine{01487\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01488\ \ \ \_mm512\_storeu\_si512(ptr,\ simdreg);}
+\DoxyCodeLine{01489\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01490\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01491\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)ptr,\ simdreg);}
+\DoxyCodeLine{01492\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01493\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01494\ \ \ \_mm\_storeu\_si128((\_\_m128i*)ptr,\ simdreg);}
+\DoxyCodeLine{01495\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01496\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01497\ \ \ vst1q\_s16(ptr,\ simdreg);}
+\DoxyCodeLine{01498\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01499\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01500\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01501\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01502\ \}}
+\DoxyCodeLine{01503\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_zero(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{01504\ \{}
+\DoxyCodeLine{01505\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01506\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_setzero\_si512();}
+\DoxyCodeLine{01507\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01508\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01509\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_setzero\_si256();}
+\DoxyCodeLine{01510\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01511\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01512\ \ \ \textcolor{keywordflow}{return}\ \_mm\_setzero\_si128();}
+\DoxyCodeLine{01513\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01514\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01515\ \ \ \textcolor{keywordflow}{return}\ vdupq\_n\_s16(0);}
+\DoxyCodeLine{01516\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01517\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01518\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01519\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01520\ \}}
+\DoxyCodeLine{01521\ }
+\DoxyCodeLine{01522\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_mul(simd\_s\_t\ a,\ simd\_s\_t\ b)}
+\DoxyCodeLine{01523\ \{}
+\DoxyCodeLine{01524\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01525\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_mullo\_epi16(a,\ b);}
+\DoxyCodeLine{01526\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01527\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01528\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_mullo\_epi16(a,\ b);}
+\DoxyCodeLine{01529\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01530\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01531\ \ \ \textcolor{keywordflow}{return}\ \_mm\_mullo\_epi16(a,\ b);}
+\DoxyCodeLine{01532\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01533\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01534\ \ \ \textcolor{keywordflow}{return}\ vmulq\_s16(a,\ b);}
+\DoxyCodeLine{01535\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01536\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01537\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01538\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01539\ \}}
+\DoxyCodeLine{01540\ }
+\DoxyCodeLine{01541\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_neg(simd\_s\_t\ a,\ simd\_s\_t\ b)}
+\DoxyCodeLine{01542\ \{}
+\DoxyCodeLine{01543\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01544\ \ \ \_\_m256i\ a0\ =\ \_mm512\_extracti64x4\_epi64(a,\ 0);}
+\DoxyCodeLine{01545\ \ \ \_\_m256i\ a1\ =\ \_mm512\_extracti64x4\_epi64(a,\ 1);}
+\DoxyCodeLine{01546\ \ \ \_\_m256i\ b0\ =\ \_mm512\_extracti64x4\_epi64(b,\ 0);}
+\DoxyCodeLine{01547\ \ \ \_\_m256i\ b1\ =\ \_mm512\_extracti64x4\_epi64(b,\ 1);}
+\DoxyCodeLine{01548\ \ \ \_\_m256i\ r0\ =\ \_mm256\_sign\_epi16(a0,\ b0);}
+\DoxyCodeLine{01549\ \ \ \_\_m256i\ r1\ =\ \_mm256\_sign\_epi16(a1,\ b1);}
+\DoxyCodeLine{01550\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_inserti64x4(\_mm512\_broadcast\_i64x4(r0),\ r1,\ 1);}
+\DoxyCodeLine{01551\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01552\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01553\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_sign\_epi16(a,\ b);}
+\DoxyCodeLine{01554\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01555\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01556\ \ \ \textcolor{keywordflow}{return}\ \_mm\_sign\_epi16(a,\ b);}
+\DoxyCodeLine{01557\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01558\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01559\ \ \ \textcolor{comment}{/*\ Taken\ and\ modified\ from\ sse2neon.h\ licensed\ under\ MIT}}
+\DoxyCodeLine{01560\ \textcolor{comment}{\ \ \ *\ Source:\ https://github.com/DLTcollab/sse2neon}}
+\DoxyCodeLine{01561\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{01562\ \ \ int16x8\_t\ zero\ =\ vdupq\_n\_s16(0);}
+\DoxyCodeLine{01563\ \ \ \textcolor{comment}{//\ signed\ shift\ right:\ faster\ than\ vclt}}
+\DoxyCodeLine{01564\ \ \ \textcolor{comment}{//\ (b\ <\ 0)\ ?\ 0xffff\ :\ 0}}
+\DoxyCodeLine{01565\ \ \ uint16x8\_t\ ltMask\ =\ vreinterpretq\_u16\_s16(vshrq\_n\_s16(b,\ 15));}
+\DoxyCodeLine{01566\ \ \ \textcolor{comment}{//\ (b\ ==\ 0)\ ?\ 0xffff\ :\ 0}}
+\DoxyCodeLine{01567\ \ \ int16x8\_t\ zeroMask\ =\ vreinterpretq\_s16\_u16(vceqq\_s16(b,\ zero));}
+\DoxyCodeLine{01568\ \ \ \textcolor{comment}{//\ -\/a}}
+\DoxyCodeLine{01569\ \ \ int16x8\_t\ neg\ =\ vnegq\_s16(a);}
+\DoxyCodeLine{01570\ \ \ \textcolor{comment}{//\ bitwise\ select\ either\ a\ or\ neg\ based\ on\ ltMask}}
+\DoxyCodeLine{01571\ \ \ int16x8\_t\ masked\ =\ vbslq\_s16(ltMask,\ neg,\ a);}
+\DoxyCodeLine{01572\ \ \ \textcolor{comment}{//\ res\ =\ masked\ \&\ (\string~zeroMask)}}
+\DoxyCodeLine{01573\ \ \ int16x8\_t\ res\ =\ vbicq\_s16(masked,\ zeroMask);}
+\DoxyCodeLine{01574\ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{01575\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01576\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01577\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01578\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01579\ \}}
+\DoxyCodeLine{01580\ }
+\DoxyCodeLine{01581\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_add(simd\_s\_t\ a,\ simd\_s\_t\ b)}
+\DoxyCodeLine{01582\ \{}
+\DoxyCodeLine{01583\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01584\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_add\_epi16(a,\ b);}
+\DoxyCodeLine{01585\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01586\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01587\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_add\_epi16(a,\ b);}
+\DoxyCodeLine{01588\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01589\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01590\ \ \ \textcolor{keywordflow}{return}\ \_mm\_add\_epi16(a,\ b);}
+\DoxyCodeLine{01591\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01592\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01593\ \ \ \textcolor{keywordflow}{return}\ vaddq\_s16(a,\ b);}
+\DoxyCodeLine{01594\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01595\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01596\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01597\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01598\ \}}
+\DoxyCodeLine{01599\ }
+\DoxyCodeLine{01600\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_s\_sub(simd\_s\_t\ a,\ simd\_s\_t\ b)}
+\DoxyCodeLine{01601\ \{}
+\DoxyCodeLine{01602\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01603\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_sub\_epi16(a,\ b);}
+\DoxyCodeLine{01604\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01605\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01606\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_sub\_epi16(a,\ b);}
+\DoxyCodeLine{01607\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01608\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01609\ \ \ \textcolor{keywordflow}{return}\ \_mm\_sub\_epi16(a,\ b);}
+\DoxyCodeLine{01610\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01611\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01612\ \ \ \textcolor{keywordflow}{return}\ vsubq\_s16(a,\ b);}
+\DoxyCodeLine{01613\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01614\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01615\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01616\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01617\ \}}
+\DoxyCodeLine{01618\ }
+\DoxyCodeLine{01619\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_S\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01620\ }
+\DoxyCodeLine{01621\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_C16\_SIZE}}
+\DoxyCodeLine{01622\ }
+\DoxyCodeLine{01623\ \textcolor{keyword}{typedef}}
+\DoxyCodeLine{01624\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01625\ \ \ \ \ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{01626\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01627\ \ \ \ \ \_\_m512i\ m512;}
+\DoxyCodeLine{01628\ \ \ \ \ int16\_t\ i16[32];}
+\DoxyCodeLine{01629\ \ \ \}\ re;}
+\DoxyCodeLine{01630\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01631\ \ \ \ \ \_\_m512i\ m512;}
+\DoxyCodeLine{01632\ \ \ \ \ int16\_t\ i16[32];}
+\DoxyCodeLine{01633\ \ \ \}\ im;}
+\DoxyCodeLine{01634\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01635\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01636\ \ \ \ \ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{01637\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01638\ \ \ \ \ \_\_m256i\ m256;}
+\DoxyCodeLine{01639\ \ \ \ \ int16\_t\ i16[16];}
+\DoxyCodeLine{01640\ \ \ \}\ re;}
+\DoxyCodeLine{01641\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01642\ \ \ \ \ \_\_m256i\ m256;}
+\DoxyCodeLine{01643\ \ \ \ \ int16\_t\ i16[16];}
+\DoxyCodeLine{01644\ \ \ \}\ im;}
+\DoxyCodeLine{01645\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01646\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01647\ \ \ \ \ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{01648\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01649\ \ \ \ \ \_\_m128i\ m128;}
+\DoxyCodeLine{01650\ \ \ \ \ int16\_t\ i16[8];}
+\DoxyCodeLine{01651\ \ \ \}\ re;}
+\DoxyCodeLine{01652\ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01653\ \ \ \ \ \_\_m128i\ m128;}
+\DoxyCodeLine{01654\ \ \ \ \ int16\_t\ i16[8];}
+\DoxyCodeLine{01655\ \ \ \}\ im;}
+\DoxyCodeLine{01656\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01657\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01658\ \ \ \ \ \textcolor{keyword}{union\ }\{}
+\DoxyCodeLine{01659\ \ \ int16x8x2\_t\ m128;}
+\DoxyCodeLine{01660\ \ \ int16\_t\ \ \ \ \ i16[16];}
+\DoxyCodeLine{01661\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01662\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01663\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01664\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01665\ \}\ simd\_c16\_t;}
+\DoxyCodeLine{01666\ }
+\DoxyCodeLine{01667\ \textcolor{comment}{/*\ Fixed\ point\ precision\ (16-\/bit)\ functions\ */}}
+\DoxyCodeLine{01668\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16i\_load(\textcolor{keyword}{const}\ c16\_t*\ ptr)}
+\DoxyCodeLine{01669\ \{}
+\DoxyCodeLine{01670\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01671\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01672\ \ \ \_\_m512i\ in1\ =\ \_mm512\_load\_si512((\_\_m512i*)(ptr));}
+\DoxyCodeLine{01673\ \ \ \_\_m512i\ in2\ =\ \_mm512\_load\_si512((\_\_m512i*)(ptr\ +\ 8));}
+\DoxyCodeLine{01674\ \ \ ret.re.m512\ =\ \_mm512\_mask\_blend\_epi16(}
+\DoxyCodeLine{01675\ \ \ \ \ \ \ 0xaaaaaaaa,\ in1,\ \_mm512\_shufflelo\_epi16(\_mm512\_shufflehi\_epi16(in2,\ 0b10100000),\ 0b10100000));}
+\DoxyCodeLine{01676\ \ \ ret.im.m512\ =\ \_mm512\_mask\_blend\_epi16(}
+\DoxyCodeLine{01677\ \ \ \ \ \ \ 0xaaaaaaaa,\ \_mm512\_shufflelo\_epi16(\_mm512\_shufflehi\_epi16(in1,\ 0b11110101),\ 0b11110101),\ in2);}
+\DoxyCodeLine{01678\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01679\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01680\ \ \ \_\_m256i\ in1\ =\ \_mm256\_load\_si256((\_\_m256i*)(ptr));}
+\DoxyCodeLine{01681\ \ \ \_\_m256i\ in2\ =\ \_mm256\_load\_si256((\_\_m256i*)(ptr\ +\ 8));}
+\DoxyCodeLine{01682\ \ \ ret.re.m256\ =}
+\DoxyCodeLine{01683\ \ \ \ \ \ \ \_mm256\_blend\_epi16(in1,\ \_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(in2,\ 0b10100000),\ 0b10100000),\ 0b10101010);}
+\DoxyCodeLine{01684\ \ \ ret.im.m256\ =}
+\DoxyCodeLine{01685\ \ \ \ \ \ \ \_mm256\_blend\_epi16(\_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(in1,\ 0b11110101),\ 0b11110101),\ in2,\ 0b10101010);}
+\DoxyCodeLine{01686\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01687\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01688\ \ \ \_\_m128i\ in1\ =\ \_mm\_load\_si128((\_\_m128i*)(ptr));}
+\DoxyCodeLine{01689\ \ \ \_\_m128i\ in2\ =\ \_mm\_load\_si128((\_\_m128i*)(ptr\ +\ 8));}
+\DoxyCodeLine{01690\ \ \ ret.re.m128\ =\ \_mm\_blend\_epi16(in1,\ \_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(in2,\ 0b10100000),\ 0b10100000),\ 0b10101010);}
+\DoxyCodeLine{01691\ \ \ ret.im.m128\ =\ \_mm\_blend\_epi16(\_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(in1,\ 0b11110101),\ 0b11110101),\ in2,\ 0b10101010);}
+\DoxyCodeLine{01692\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01693\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01694\ \ \ ret.m128\ \ \ \ \ =\ vld2q\_s16((int16\_t*)(ptr));}
+\DoxyCodeLine{01695\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01696\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01697\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01698\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01699\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01700\ \}}
+\DoxyCodeLine{01701\ }
+\DoxyCodeLine{01702\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16\_load(\textcolor{keyword}{const}\ int16\_t*\ re,\ \textcolor{keyword}{const}\ int16\_t*\ im)}
+\DoxyCodeLine{01703\ \{}
+\DoxyCodeLine{01704\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01705\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01706\ \ \ ret.re.m256\ =\ \_mm256\_load\_si256((\_\_m256i*)(re));}
+\DoxyCodeLine{01707\ \ \ ret.im.m256\ =\ \_mm256\_load\_si256((\_\_m256i*)(im));}
+\DoxyCodeLine{01708\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01709\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01710\ \ \ ret.re.m128\ \ \ =\ \_mm\_load\_si128((\_\_m128i*)(re));}
+\DoxyCodeLine{01711\ \ \ ret.im.m128\ \ \ =\ \_mm\_load\_si128((\_\_m128i*)(im));}
+\DoxyCodeLine{01712\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01713\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01714\ \ \ ret.m128.val[0]\ =\ vld1q\_s16((int16\_t*)(re));}
+\DoxyCodeLine{01715\ \ \ ret.m128.val[1]\ =\ vld1q\_s16((int16\_t*)(im));}
+\DoxyCodeLine{01716\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01717\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01718\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01719\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01720\ \}}
+\DoxyCodeLine{01721\ }
+\DoxyCodeLine{01722\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16\_loadu(\textcolor{keyword}{const}\ int16\_t*\ re,\ \textcolor{keyword}{const}\ int16\_t*\ im)}
+\DoxyCodeLine{01723\ \{}
+\DoxyCodeLine{01724\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01725\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01726\ \ \ ret.re.m256\ =\ \_mm256\_loadu\_si256((\_\_m256i*)(re));}
+\DoxyCodeLine{01727\ \ \ ret.im.m256\ =\ \_mm256\_loadu\_si256((\_\_m256i*)(im));}
+\DoxyCodeLine{01728\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01729\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01730\ \ \ ret.re.m128\ \ \ =\ \_mm\_loadu\_si128((\_\_m128i*)(re));}
+\DoxyCodeLine{01731\ \ \ ret.im.m128\ \ \ =\ \_mm\_loadu\_si128((\_\_m128i*)(im));}
+\DoxyCodeLine{01732\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01733\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01734\ \ \ ret.m128.val[0]\ =\ vld1q\_s16((int16\_t*)(re));}
+\DoxyCodeLine{01735\ \ \ ret.m128.val[1]\ =\ vld1q\_s16((int16\_t*)(im));}
+\DoxyCodeLine{01736\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01737\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01738\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01739\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01740\ \}}
+\DoxyCodeLine{01741\ }
+\DoxyCodeLine{01742\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_c16i\_store(c16\_t*\ ptr,\ simd\_c16\_t\ simdreg)}
+\DoxyCodeLine{01743\ \{}
+\DoxyCodeLine{01744\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01745\ \ \ \_\_m256i\ re\_sw\ =\ \_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(simdreg.re.m256,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01746\ \ \ \_\_m256i\ im\_sw\ =\ \_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(simdreg.im.m256,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01747\ \ \ \_mm256\_store\_si256((\_\_m256i*)(ptr),\ \_mm256\_blend\_epi16(simdreg.re.m256,\ im\_sw,\ 0b10101010));}
+\DoxyCodeLine{01748\ \ \ \_mm256\_store\_si256((\_\_m256i*)(ptr\ +\ 8),\ \_mm256\_blend\_epi16(re\_sw,\ simdreg.im.m256,\ 0b10101010));}
+\DoxyCodeLine{01749\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01750\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01751\ \ \ \_\_m128i\ re\_sw\ =\ \_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(simdreg.re.m128,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01752\ \ \ \_\_m128i\ im\_sw\ =\ \_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(simdreg.im.m128,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01753\ \ \ \_mm\_store\_si128((\_\_m128i*)(ptr),\ \_mm\_blend\_epi16(simdreg.re.m128,\ im\_sw,\ 0b10101010));}
+\DoxyCodeLine{01754\ \ \ \_mm\_store\_si128((\_\_m128i*)(ptr\ +\ 8),\ \_mm\_blend\_epi16(re\_sw,\ simdreg.im.m128,\ 0b10101010));}
+\DoxyCodeLine{01755\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01756\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01757\ \ \ vst2q\_s16((int16\_t*)(ptr),\ simdreg.m128);}
+\DoxyCodeLine{01758\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01759\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01760\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01761\ \}}
+\DoxyCodeLine{01762\ }
+\DoxyCodeLine{01763\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_c16i\_storeu(c16\_t*\ ptr,\ simd\_c16\_t\ simdreg)}
+\DoxyCodeLine{01764\ \{}
+\DoxyCodeLine{01765\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01766\ \ \ \_\_m256i\ re\_sw\ =\ \_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(simdreg.re.m256,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01767\ \ \ \_\_m256i\ im\_sw\ =\ \_mm256\_shufflelo\_epi16(\_mm256\_shufflehi\_epi16(simdreg.im.m256,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01768\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)(ptr),\ \_mm256\_blend\_epi16(simdreg.re.m256,\ im\_sw,\ 0b10101010));}
+\DoxyCodeLine{01769\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)(ptr\ +\ 8),\ \_mm256\_blend\_epi16(re\_sw,\ simdreg.im.m256,\ 0b10101010));}
+\DoxyCodeLine{01770\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01771\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01772\ \ \ \_\_m128i\ re\_sw\ =\ \_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(simdreg.re.m128,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01773\ \ \ \_\_m128i\ im\_sw\ =\ \_mm\_shufflelo\_epi16(\_mm\_shufflehi\_epi16(simdreg.im.m128,\ 0b10110001),\ 0b10110001);}
+\DoxyCodeLine{01774\ \ \ \_mm\_storeu\_si128((\_\_m128i*)(ptr),\ \_mm\_blend\_epi16(simdreg.re.m128,\ im\_sw,\ 0b10101010));}
+\DoxyCodeLine{01775\ \ \ \_mm\_storeu\_si128((\_\_m128i*)(ptr\ +\ 8),\ \_mm\_blend\_epi16(re\_sw,\ simdreg.im.m128,\ 0b10101010));}
+\DoxyCodeLine{01776\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*HAVE\_NEON*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01777\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01778\ \ \ vst2q\_s16((int16\_t*)(ptr),\ simdreg.m128);}
+\DoxyCodeLine{01779\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01780\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01781\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01782\ \}}
+\DoxyCodeLine{01783\ }
+\DoxyCodeLine{01784\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_c16\_store(int16\_t*\ re,\ int16\_t*\ im,\ simd\_c16\_t\ simdreg)}
+\DoxyCodeLine{01785\ \{}
+\DoxyCodeLine{01786\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01787\ \ \ \_mm256\_store\_si256((\_\_m256i*)re,\ simdreg.re.m256);}
+\DoxyCodeLine{01788\ \ \ \_mm256\_store\_si256((\_\_m256i*)im,\ simdreg.im.m256);}
+\DoxyCodeLine{01789\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01790\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01791\ \ \ \_mm\_store\_si128((\_\_m128i*)re,\ simdreg.re.m128);}
+\DoxyCodeLine{01792\ \ \ \_mm\_store\_si128((\_\_m128i*)im,\ simdreg.im.m128);}
+\DoxyCodeLine{01793\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01794\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01795\ \ \ vst1q\_s16((int16\_t*)re,\ simdreg.m128.val[0]);}
+\DoxyCodeLine{01796\ \ \ vst1q\_s16((int16\_t*)im,\ simdreg.m128.val[1]);}
+\DoxyCodeLine{01797\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01798\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01799\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01800\ \}}
+\DoxyCodeLine{01801\ }
+\DoxyCodeLine{01802\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_c16\_storeu(int16\_t*\ re,\ int16\_t*\ im,\ simd\_c16\_t\ simdreg)}
+\DoxyCodeLine{01803\ \{}
+\DoxyCodeLine{01804\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01805\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)re,\ simdreg.re.m256);}
+\DoxyCodeLine{01806\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)im,\ simdreg.im.m256);}
+\DoxyCodeLine{01807\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01808\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01809\ \ \ \_mm\_storeu\_si128((\_\_m128i*)re,\ simdreg.re.m128);}
+\DoxyCodeLine{01810\ \ \ \_mm\_storeu\_si128((\_\_m128i*)im,\ simdreg.im.m128);}
+\DoxyCodeLine{01811\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01812\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01813\ \ \ vst1q\_s16((int16\_t*)re,\ simdreg.m128.val[0]);}
+\DoxyCodeLine{01814\ \ \ vst1q\_s16((int16\_t*)im,\ simdreg.m128.val[1]);}
+\DoxyCodeLine{01815\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01816\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01817\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01818\ \}}
+\DoxyCodeLine{01819\ }
+\DoxyCodeLine{01820\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16\_prod(simd\_c16\_t\ a,\ simd\_c16\_t\ b)}
+\DoxyCodeLine{01821\ \{}
+\DoxyCodeLine{01822\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01823\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01824\ \ \ ret.re.m256\ =\ \_mm256\_sub\_epi16(\_mm256\_mulhrs\_epi16(a.re.m256,\ \_mm256\_slli\_epi16(b.re.m256,\ 1)),}
+\DoxyCodeLine{01825\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_mm256\_mulhrs\_epi16(a.im.m256,\ \_mm256\_slli\_epi16(b.im.m256,\ 1)));}
+\DoxyCodeLine{01826\ \ \ ret.im.m256\ =\ \_mm256\_add\_epi16(\_mm256\_mulhrs\_epi16(a.re.m256,\ \_mm256\_slli\_epi16(b.im.m256,\ 1)),}
+\DoxyCodeLine{01827\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_mm256\_mulhrs\_epi16(a.im.m256,\ \_mm256\_slli\_epi16(b.re.m256,\ 1)));}
+\DoxyCodeLine{01828\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01829\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01830\ \ \ ret.re.m128\ =\ \_mm\_sub\_epi16(\_mm\_mulhrs\_epi16(a.re.m128,\ \_mm\_slli\_epi16(b.re.m128,\ 1)),}
+\DoxyCodeLine{01831\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_mm\_mulhrs\_epi16(a.im.m128,\ \_mm\_slli\_epi16(b.im.m128,\ 1)));}
+\DoxyCodeLine{01832\ \ \ ret.im.m128\ =\ \_mm\_add\_epi16(\_mm\_mulhrs\_epi16(a.re.m128,\ \_mm\_slli\_epi16(b.im.m128,\ 1)),}
+\DoxyCodeLine{01833\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_mm\_mulhrs\_epi16(a.im.m128,\ \_mm\_slli\_epi16(b.re.m128,\ 1)));}
+\DoxyCodeLine{01834\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01835\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01836\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01837\ \}}
+\DoxyCodeLine{01838\ }
+\DoxyCodeLine{01839\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16\_add(simd\_c16\_t\ a,\ simd\_c16\_t\ b)}
+\DoxyCodeLine{01840\ \{}
+\DoxyCodeLine{01841\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01842\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01843\ \ \ ret.re.m256\ =\ \_mm256\_add\_epi16(a.re.m256,\ b.re.m256);}
+\DoxyCodeLine{01844\ \ \ ret.im.m256\ =\ \_mm256\_add\_epi16(a.im.m256,\ b.im.m256);}
+\DoxyCodeLine{01845\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01846\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01847\ \ \ ret.re.m128\ =\ \_mm\_add\_epi16(a.re.m128,\ b.re.m128);}
+\DoxyCodeLine{01848\ \ \ ret.im.m128\ =\ \_mm\_add\_epi16(a.im.m128,\ b.im.m128);}
+\DoxyCodeLine{01849\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01850\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01851\ \ \ ret.m128.val[0]\ =\ vaddq\_s16(a.m128.val[0],\ a.m128.val[0]);}
+\DoxyCodeLine{01852\ \ \ ret.m128.val[1]\ =\ vaddq\_s16(a.m128.val[1],\ a.m128.val[1]);}
+\DoxyCodeLine{01853\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01854\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01855\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01856\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01857\ \}}
+\DoxyCodeLine{01858\ }
+\DoxyCodeLine{01859\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_c16\_t\ srsran\_simd\_c16\_zero(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{01860\ \{}
+\DoxyCodeLine{01861\ \ \ simd\_c16\_t\ ret;}
+\DoxyCodeLine{01862\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01863\ \ \ ret.re.m256\ =\ \_mm256\_setzero\_si256();}
+\DoxyCodeLine{01864\ \ \ ret.im.m256\ =\ \_mm256\_setzero\_si256();}
+\DoxyCodeLine{01865\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01866\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01867\ \ \ ret.re.m128\ =\ \_mm\_setzero\_si128();}
+\DoxyCodeLine{01868\ \ \ ret.im.m128\ =\ \_mm\_setzero\_si128();}
+\DoxyCodeLine{01869\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01870\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01871\ \ \ ret.m128.val[0]\ =\ vdupq\_n\_s16(0);}
+\DoxyCodeLine{01872\ \ \ ret.m128.val[1]\ =\ vdupq\_n\_s16(0);}
+\DoxyCodeLine{01873\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ \ \ \ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01874\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ \ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01875\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01876\ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{01877\ \}}
+\DoxyCodeLine{01878\ }
+\DoxyCodeLine{01879\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_C16\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01880\ }
+\DoxyCodeLine{01881\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_F\_SIZE\ \&\&\ SRSRAN\_SIMD\_S\_SIZE}}
+\DoxyCodeLine{01882\ }
+\DoxyCodeLine{01883\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_convert\_2f\_s(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{01884\ \{}
+\DoxyCodeLine{01885\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01886\ \ \ \_\_m512\ aa\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{01887\ \ \ \ \ \ \ a,}
+\DoxyCodeLine{01888\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x01,\ 0x02,\ 0x03,\ 0x08,\ 0x09,\ 0x0a,\ 0x0b,\ 0x10,\ 0x11,\ 0x12,\ 0x13,\ 0x18,\ 0x19,\ 0x1a,\ 0x1b),}
+\DoxyCodeLine{01889\ \ \ \ \ \ \ b);}
+\DoxyCodeLine{01890\ \ \ \_\_m512\ bb\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{01891\ \ \ \ \ \ \ a,}
+\DoxyCodeLine{01892\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x04,\ 0x05,\ 0x06,\ 0x07,\ 0x0c,\ 0x0d,\ 0x0e,\ 0x0f,\ 0x14,\ 0x15,\ 0x16,\ 0x17,\ 0x1c,\ 0x1d,\ 0x1e,\ 0x1f),}
+\DoxyCodeLine{01893\ \ \ \ \ \ \ b);}
+\DoxyCodeLine{01894\ \ \ \_\_m512i\ ai\ =\ \_mm512\_cvttps\_epi32(aa);}
+\DoxyCodeLine{01895\ \ \ \_\_m512i\ bi\ =\ \_mm512\_cvttps\_epi32(bb);}
+\DoxyCodeLine{01896\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01897\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01898\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01899\ \ \ \_\_m256\ \ aa\ \ =\ \_mm256\_permute2f128\_ps(a,\ b,\ 0x20);}
+\DoxyCodeLine{01900\ \ \ \_\_m256\ \ bb\ \ =\ \_mm256\_permute2f128\_ps(a,\ b,\ 0x31);}
+\DoxyCodeLine{01901\ \ \ \_\_m256i\ ai\ \ =\ \_mm256\_cvttps\_epi32(aa);}
+\DoxyCodeLine{01902\ \ \ \_\_m256i\ bi\ \ =\ \_mm256\_cvttps\_epi32(bb);}
+\DoxyCodeLine{01903\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01904\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01905\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01906\ \ \ \_\_m128i\ ai\ \ \ \ \ \ =\ \_mm\_cvttps\_epi32(a);}
+\DoxyCodeLine{01907\ \ \ \_\_m128i\ bi\ \ \ \ \ \ =\ \_mm\_cvttps\_epi32(b);}
+\DoxyCodeLine{01908\ \ \ \textcolor{keywordflow}{return}\ \_mm\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01909\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01910\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01911\ \ \ int32x4\_t\ ai\ =\ vcvtq\_s32\_f32(a);}
+\DoxyCodeLine{01912\ \ \ int32x4\_t\ bi\ =\ vcvtq\_s32\_f32(b);}
+\DoxyCodeLine{01913\ \ \ \textcolor{keywordflow}{return}\ (simd\_s\_t)vcombine\_s16(vqmovn\_s32(ai),\ vqmovn\_s32(bi));}
+\DoxyCodeLine{01914\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01915\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01916\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01917\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01918\ \}}
+\DoxyCodeLine{01919\ }
+\DoxyCodeLine{01920\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_s\_t\ srsran\_simd\_convert\_2f\_s\_round(simd\_f\_t\ a,\ simd\_f\_t\ b)}
+\DoxyCodeLine{01921\ \{}
+\DoxyCodeLine{01922\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01923\ \ \ \_\_m512\ aa\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{01924\ \ \ \ \ \ \ a,}
+\DoxyCodeLine{01925\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x00,\ 0x01,\ 0x02,\ 0x03,\ 0x08,\ 0x09,\ 0x0a,\ 0x0b,\ 0x10,\ 0x11,\ 0x12,\ 0x13,\ 0x18,\ 0x19,\ 0x1a,\ 0x1b),}
+\DoxyCodeLine{01926\ \ \ \ \ \ \ b);}
+\DoxyCodeLine{01927\ \ \ \_\_m512\ bb\ =\ \_mm512\_permutex2var\_ps(}
+\DoxyCodeLine{01928\ \ \ \ \ \ \ a,}
+\DoxyCodeLine{01929\ \ \ \ \ \ \ \_mm512\_setr\_epi32(0x04,\ 0x05,\ 0x06,\ 0x07,\ 0x0c,\ 0x0d,\ 0x0e,\ 0x0f,\ 0x14,\ 0x15,\ 0x16,\ 0x17,\ 0x1c,\ 0x1d,\ 0x1e,\ 0x1f),}
+\DoxyCodeLine{01930\ \ \ \ \ \ \ b);}
+\DoxyCodeLine{01931\ \ \ \_\_m512i\ ai\ =\ \_mm512\_cvt\_roundps\_epi32(aa,\ \_MM\_FROUND\_TO\_NEAREST\_INT\ |\ \_MM\_FROUND\_NO\_EXC);}
+\DoxyCodeLine{01932\ \ \ \_\_m512i\ bi\ =\ \_mm512\_cvt\_roundps\_epi32(bb,\ \_MM\_FROUND\_TO\_NEAREST\_INT\ |\ \_MM\_FROUND\_NO\_EXC);}
+\DoxyCodeLine{01933\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01934\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01935\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01936\ \ \ \_\_m256\ \ aa\ =\ \_mm256\_round\_ps(\_mm256\_permute2f128\_ps(a,\ b,\ 0x20),\ \_MM\_FROUND\_NINT);}
+\DoxyCodeLine{01937\ \ \ \_\_m256\ \ bb\ =\ \_mm256\_round\_ps(\_mm256\_permute2f128\_ps(a,\ b,\ 0x31),\ \_MM\_FROUND\_NINT);}
+\DoxyCodeLine{01938\ \ \ \_\_m256i\ ai\ =\ \_mm256\_cvtps\_epi32(aa);}
+\DoxyCodeLine{01939\ \ \ \_\_m256i\ bi\ =\ \_mm256\_cvtps\_epi32(bb);}
+\DoxyCodeLine{01940\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01941\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01942\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01943\ \ \ \_\_m128\ \ aa\ =\ \_mm\_round\_ps(a,\ \_MM\_FROUND\_NINT);}
+\DoxyCodeLine{01944\ \ \ \_\_m128\ \ bb\ =\ \_mm\_round\_ps(b,\ \_MM\_FROUND\_NINT);}
+\DoxyCodeLine{01945\ \ \ \_\_m128i\ ai\ =\ \_mm\_cvtps\_epi32(aa);}
+\DoxyCodeLine{01946\ \ \ \_\_m128i\ bi\ =\ \_mm\_cvtps\_epi32(bb);}
+\DoxyCodeLine{01947\ \ \ \textcolor{keywordflow}{return}\ \_mm\_packs\_epi32(ai,\ bi);}
+\DoxyCodeLine{01948\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{01949\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01950\ \ \ int32x4\_t\ ai\ =\ vcvtnq\_s32\_f32(a);}
+\DoxyCodeLine{01951\ \ \ int32x4\_t\ bi\ =\ vcvtnq\_s32\_f32(b);}
+\DoxyCodeLine{01952\ \ \ \textcolor{keywordflow}{return}\ (simd\_s\_t)vcombine\_s16(vqmovn\_s32(ai),\ vqmovn\_s32(bi));}
+\DoxyCodeLine{01953\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01954\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01955\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01956\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01957\ \}}
+\DoxyCodeLine{01958\ }
+\DoxyCodeLine{01959\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SRSRAN\_SIMD\_F\_SIZE\ \&\&\ SRSRAN\_SIMD\_C16\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01960\ }
+\DoxyCodeLine{01961\ \textcolor{preprocessor}{\#if\ SRSRAN\_SIMD\_B\_SIZE}}
+\DoxyCodeLine{01962\ \textcolor{comment}{/*\ Data\ types\ */}}
+\DoxyCodeLine{01963\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01964\ \textcolor{keyword}{typedef}\ \_\_m512i\ simd\_b\_t;}
+\DoxyCodeLine{01965\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01966\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01967\ \textcolor{keyword}{typedef}\ \_\_m256i\ simd\_b\_t;}
+\DoxyCodeLine{01968\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01969\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01970\ \textcolor{keyword}{typedef}\ \_\_m128i\ simd\_b\_t;}
+\DoxyCodeLine{01971\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01972\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01973\ \textcolor{keyword}{typedef}\ int8x16\_t\ simd\_b\_t;}
+\DoxyCodeLine{01974\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01975\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01976\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01977\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01978\ }
+\DoxyCodeLine{01979\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_load(\textcolor{keyword}{const}\ int8\_t*\ ptr)}
+\DoxyCodeLine{01980\ \{}
+\DoxyCodeLine{01981\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{01982\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_load\_si512(ptr);}
+\DoxyCodeLine{01983\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01984\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{01985\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_load\_si256((\_\_m256i*)ptr);}
+\DoxyCodeLine{01986\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01987\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{01988\ \ \ \textcolor{keywordflow}{return}\ \_mm\_load\_si128((\_\_m128i*)ptr);}
+\DoxyCodeLine{01989\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01990\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{01991\ \ \ \textcolor{keywordflow}{return}\ vld1q\_s8(ptr);}
+\DoxyCodeLine{01992\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01993\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01994\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01995\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{01996\ \}}
+\DoxyCodeLine{01997\ }
+\DoxyCodeLine{01998\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_loadu(\textcolor{keyword}{const}\ int8\_t*\ ptr)}
+\DoxyCodeLine{01999\ \{}
+\DoxyCodeLine{02000\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02001\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_loadu\_si512(ptr);}
+\DoxyCodeLine{02002\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02003\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02004\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_loadu\_si256((\_\_m256i*)ptr);}
+\DoxyCodeLine{02005\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02006\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02007\ \ \ \textcolor{keywordflow}{return}\ \_mm\_loadu\_si128((\_\_m128i*)ptr);}
+\DoxyCodeLine{02008\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02009\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02010\ \ \ \textcolor{keywordflow}{return}\ vld1q\_s8(ptr);}
+\DoxyCodeLine{02011\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02012\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02013\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02014\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02015\ \}}
+\DoxyCodeLine{02016\ }
+\DoxyCodeLine{02017\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_b\_store(int8\_t*\ ptr,\ simd\_b\_t\ simdreg)}
+\DoxyCodeLine{02018\ \{}
+\DoxyCodeLine{02019\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02020\ \ \ \_mm512\_store\_si512(ptr,\ simdreg);}
+\DoxyCodeLine{02021\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02022\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02023\ \ \ \_mm256\_store\_si256((\_\_m256i*)ptr,\ simdreg);}
+\DoxyCodeLine{02024\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02025\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02026\ \ \ \_mm\_store\_si128((\_\_m128i*)ptr,\ simdreg);}
+\DoxyCodeLine{02027\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02028\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02029\ \ \ vst1q\_s8(ptr,\ simdreg);}
+\DoxyCodeLine{02030\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02031\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02032\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02033\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02034\ \}}
+\DoxyCodeLine{02035\ }
+\DoxyCodeLine{02036\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ srsran\_simd\_b\_storeu(int8\_t*\ ptr,\ simd\_b\_t\ simdreg)}
+\DoxyCodeLine{02037\ \{}
+\DoxyCodeLine{02038\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02039\ \ \ \_mm512\_storeu\_si512(ptr,\ simdreg);}
+\DoxyCodeLine{02040\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02041\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02042\ \ \ \_mm256\_storeu\_si256((\_\_m256i*)ptr,\ simdreg);}
+\DoxyCodeLine{02043\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02044\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02045\ \ \ \_mm\_storeu\_si128((\_\_m128i*)ptr,\ simdreg);}
+\DoxyCodeLine{02046\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02047\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02048\ \ \ vst1q\_s8(ptr,\ simdreg);}
+\DoxyCodeLine{02049\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02050\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02051\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02052\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02053\ \}}
+\DoxyCodeLine{02054\ }
+\DoxyCodeLine{02055\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_xor(simd\_b\_t\ a,\ simd\_b\_t\ b)}
+\DoxyCodeLine{02056\ \{}
+\DoxyCodeLine{02057\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02058\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_xor\_epi32(a,\ b);}
+\DoxyCodeLine{02059\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02060\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02061\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_xor\_si256(a,\ b);}
+\DoxyCodeLine{02062\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02063\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02064\ \ \ \textcolor{keywordflow}{return}\ \_mm\_xor\_si128(a,\ b);}
+\DoxyCodeLine{02065\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02066\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02067\ \ \ \textcolor{keywordflow}{return}\ veorq\_s8(a,\ b);}
+\DoxyCodeLine{02068\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02069\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02070\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02071\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02072\ \}}
+\DoxyCodeLine{02073\ }
+\DoxyCodeLine{02074\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_add(simd\_b\_t\ a,\ simd\_b\_t\ b)}
+\DoxyCodeLine{02075\ \{}
+\DoxyCodeLine{02076\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02077\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_adds\_epi8(a,\ b);}
+\DoxyCodeLine{02078\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02079\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02080\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_adds\_epi8(a,\ b);}
+\DoxyCodeLine{02081\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02082\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02083\ \ \ \textcolor{keywordflow}{return}\ \_mm\_adds\_epi8(a,\ b);}
+\DoxyCodeLine{02084\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02085\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02086\ \ \ \textcolor{keywordflow}{return}\ vqaddq\_s8(a,\ b);}
+\DoxyCodeLine{02087\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02088\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02089\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02090\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02091\ \}}
+\DoxyCodeLine{02092\ }
+\DoxyCodeLine{02093\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_sub(simd\_b\_t\ a,\ simd\_b\_t\ b)}
+\DoxyCodeLine{02094\ \{}
+\DoxyCodeLine{02095\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02096\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_subs\_epi8(a,\ b);}
+\DoxyCodeLine{02097\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02098\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02099\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_subs\_epi8(a,\ b);}
+\DoxyCodeLine{02100\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02101\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02102\ \ \ \textcolor{keywordflow}{return}\ \_mm\_subs\_epi8(a,\ b);}
+\DoxyCodeLine{02103\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02104\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02105\ \ \ \textcolor{keywordflow}{return}\ vqsubq\_s8(a,\ b);}
+\DoxyCodeLine{02106\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02107\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02108\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02109\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02110\ \}}
+\DoxyCodeLine{02111\ }
+\DoxyCodeLine{02112\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ simd\_b\_t\ srsran\_simd\_b\_neg(simd\_b\_t\ a,\ simd\_b\_t\ b)}
+\DoxyCodeLine{02113\ \{}
+\DoxyCodeLine{02114\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX512}}
+\DoxyCodeLine{02115\ \ \ \_\_m256i\ a0\ =\ \_mm512\_extracti64x4\_epi64(a,\ 0);}
+\DoxyCodeLine{02116\ \ \ \_\_m256i\ a1\ =\ \_mm512\_extracti64x4\_epi64(a,\ 1);}
+\DoxyCodeLine{02117\ \ \ \_\_m256i\ b0\ =\ \_mm512\_extracti64x4\_epi64(b,\ 0);}
+\DoxyCodeLine{02118\ \ \ \_\_m256i\ b1\ =\ \_mm512\_extracti64x4\_epi64(b,\ 1);}
+\DoxyCodeLine{02119\ \ \ \_\_m256i\ r0\ =\ \_mm256\_sign\_epi8(a0,\ b0);}
+\DoxyCodeLine{02120\ \ \ \_\_m256i\ r1\ =\ \_mm256\_sign\_epi8(a1,\ b1);}
+\DoxyCodeLine{02121\ \ \ \textcolor{keywordflow}{return}\ \_mm512\_inserti64x4(\_mm512\_broadcast\_i64x4(r0),\ r1,\ 1);}
+\DoxyCodeLine{02122\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02123\ \textcolor{preprocessor}{\#ifdef\ HAVE\_AVX2}}
+\DoxyCodeLine{02124\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_sign\_epi8(a,\ b);}
+\DoxyCodeLine{02125\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02126\ \textcolor{preprocessor}{\#ifdef\ HAVE\_SSE}}
+\DoxyCodeLine{02127\ \ \ \textcolor{keywordflow}{return}\ \_mm\_sign\_epi8(a,\ b);}
+\DoxyCodeLine{02128\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02129\ \textcolor{preprocessor}{\#ifdef\ HAVE\_NEON}}
+\DoxyCodeLine{02130\ \ \ \textcolor{comment}{/*\ Taken\ and\ modified\ from\ sse2neon.h\ licensed\ under\ MIT}}
+\DoxyCodeLine{02131\ \textcolor{comment}{\ \ \ *\ Source:\ https://github.com/DLTcollab/sse2neon}}
+\DoxyCodeLine{02132\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{02133\ \ \ int8x16\_t\ zero\ =\ vdupq\_n\_s8(0);}
+\DoxyCodeLine{02134\ \ \ \textcolor{comment}{//\ signed\ shift\ right:\ faster\ than\ vclt}}
+\DoxyCodeLine{02135\ \ \ \textcolor{comment}{//\ (b\ <\ 0)\ ?\ 0xff\ :\ 0}}
+\DoxyCodeLine{02136\ \ \ uint8x16\_t\ ltMask\ =\ vreinterpretq\_u8\_s8(vshrq\_n\_s8(b,\ 7));}
+\DoxyCodeLine{02137\ \ \ \textcolor{comment}{//\ (b\ ==\ 0)\ ?\ 0xff\ :\ 0}}
+\DoxyCodeLine{02138\ \ \ int8x16\_t\ zeroMask\ =\ vreinterpretq\_s8\_u8(vceqq\_s8(b,\ zero));}
+\DoxyCodeLine{02139\ \ \ \textcolor{comment}{//\ -\/a}}
+\DoxyCodeLine{02140\ \ \ int8x16\_t\ neg\ =\ vnegq\_s8(a);}
+\DoxyCodeLine{02141\ \ \ \textcolor{comment}{//\ bitwise\ select\ either\ a\ or\ neg\ based\ on\ ltMask}}
+\DoxyCodeLine{02142\ \ \ int8x16\_t\ masked\ =\ vbslq\_s8(ltMask,\ neg,\ a);}
+\DoxyCodeLine{02143\ \ \ \textcolor{comment}{//\ res\ =\ masked\ \&\ (\string~zeroMask)}}
+\DoxyCodeLine{02144\ \ \ int8x16\_t\ res\ =\ vbicq\_s8(masked,\ zeroMask);}
+\DoxyCodeLine{02145\ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{02146\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_NEON\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02147\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_SSE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02148\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX2\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02149\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ HAVE\_AVX512\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02150\ \}}
+\DoxyCodeLine{02151\ }
+\DoxyCodeLine{02152\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*SRSRAN\_SIMD\_B\_SIZE\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{02153\ }
+\DoxyCodeLine{02154\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,108 @@
+\doxysection{lib/ofh/compression/neon\+\_\+helpers.h File Reference}
+\hypertarget{ofh_2compression_2neon__helpers_8h}{}\label{ofh_2compression_2neon__helpers_8h}\index{lib/ofh/compression/neon\_helpers.h@{lib/ofh/compression/neon\_helpers.h}}
+
+
+NEON support for OFH Compression algorithms.  
+
+
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$arm\+\_\+neon.\+h$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+Include dependency graph for neon\+\_\+helpers.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=304pt]{d1/d46/ofh_2compression_2neon__helpers_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d4/dfe/ofh_2compression_2neon__helpers_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacesrsran}{srsran}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} \mbox{\hyperlink{ofh_2compression_2neon__helpers_8h_a4ebfed0c2b49b9cf477902a5e2204426}{srsran\+::ofh\+::neon\+::determine\+\_\+bfp\+\_\+exponent}} (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{int16x8x3\+\_\+t}} \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{vec\+\_\+s16x3}}, \mbox{\hyperlink{classunsigned}{unsigned}} data\+\_\+width)
+\begin{DoxyCompactList}\small\item\em Determines BFP exponent for the resource block passed in a vector of three NEON registers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+NEON support for OFH Compression algorithms. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{ofh_2compression_2neon__helpers_8h_a4ebfed0c2b49b9cf477902a5e2204426}\label{ofh_2compression_2neon__helpers_8h_a4ebfed0c2b49b9cf477902a5e2204426} 
+\index{neon\_helpers.h@{neon\_helpers.h}!determine\_bfp\_exponent@{determine\_bfp\_exponent}}
+\index{determine\_bfp\_exponent@{determine\_bfp\_exponent}!neon\_helpers.h@{neon\_helpers.h}}
+\doxysubsubsection{\texorpdfstring{determine\_bfp\_exponent()}{determine\_bfp\_exponent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint8__t}{uint8\+\_\+t}} srsran\+::ofh\+::neon\+::determine\+\_\+bfp\+\_\+exponent (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{int16x8x3\+\_\+t}}}]{vec\+\_\+s16x3,  }\item[{\mbox{\hyperlink{classunsigned}{unsigned}}}]{data\+\_\+width }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Determines BFP exponent for the resource block passed in a vector of three NEON registers. 
+
+The content of the three NEON registers is represented in the table below. Here REx stands for one component of a unique resource element (16 bits long)\+: \tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{5}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }\\\cline{1-5}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ }\\\cline{1-5}
+\endhead
+{\ttfamily reg0\+:}   &RE0 RE0   &RE1 RE1   &RE2 RE2   &RE3 RE3    \\\cline{1-5}
+{\ttfamily reg1\+:}   &RE4 RE4   &RE5 RE5   &RE6 RE6   &RE7 RE7    \\\cline{1-5}
+{\ttfamily reg2\+:}   &RE8 RE8   &RE9 RE9   &RE10 RE10   &RE11 RE11   \\\cline{1-5}
+\end{longtabu}
+
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em vec\+\_\+s16x3} & Vector of three NEON registers storing 16bit IQ pairs of the resource block. \\
+\hline
+\mbox{\texttt{ in}}  & {\em data\+\_\+width} & Compressed samples bit width.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Calculated exponent value. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ Max\ allowed\ exponent\ (accounts\ for\ the\ extra\ bit\ used\ for\ sign).}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{const}\ uint16\_t\ max\_lzcnt\ \ \ =\ (16\ -\/\ data\_width)\ +\ 1;}
+\DoxyCodeLine{00054\ \ \ uint16x4\_t\ \ \ \ \ vec\_max\_lzc\ =\ vdup\_n\_u16(max\_lzcnt);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{//\ Calculate\ maximum\ value\ in\ the\ resource\ block\ (following\ instructions\ perform\ three\ pairwise\ comparisons\ between}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ the\ three\ registers\ and\ then\ find\ a\ maximum\ value\ across\ resulting\ vector).}}
+\DoxyCodeLine{00058\ \ \ int16x8\_t\ tmp\_max\_s16\ =\ vmaxq\_s16(vmaxq\_s16(vec\_s16x3.val[0],\ vec\_s16x3.val[1]),\ vec\_s16x3.val[2]);}
+\DoxyCodeLine{00059\ \ \ int16\_t\ \ \ max\_s16\ \ \ \ \ =\ vmaxvq\_s16(tmp\_max\_s16);}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{//\ Calculate\ minimum\ value\ in\ the\ resource\ block\ (following\ instructions\ perform\ three\ pairwise\ comparisons\ between}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{//\ the\ three\ registers\ and\ then\ find\ a\ minimum\ value\ across\ resulting\ vector).}}
+\DoxyCodeLine{00063\ \ \ int16x8\_t\ tmp\_min\_s16\ =\ vminq\_s16(vminq\_s16(vec\_s16x3.val[0],\ vec\_s16x3.val[1]),\ vec\_s16x3.val[2]);}
+\DoxyCodeLine{00064\ \ \ int16\_t\ \ \ min\_s16\ \ \ \ \ =\ vminvq\_s16(tmp\_min\_s16);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ Calculate\ maximum\ absolute\ value.}}
+\DoxyCodeLine{00067\ \ \ uint16\_t\ max\_abs\ =\ std::max(std::abs(max\_s16),\ std::abs(min\_s16)\ -\/\ 1);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ Calculate\ number\ of\ leading\ zeros.}}
+\DoxyCodeLine{00070\ \ \ uint16x4\_t\ lzc\_u16\ =\ vclz\_u16(vdup\_n\_u16(max\_abs));}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ Calculate\ exponent.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classuint8__t}{uint8\_t}}\textcolor{keyword}{>}(vget\_lane\_u16(vsub\_u16(vec\_max\_lzc,\ lzc\_u16),\ 0));}
+\DoxyCodeLine{00074\ \}}
+
+\end{DoxyCode}

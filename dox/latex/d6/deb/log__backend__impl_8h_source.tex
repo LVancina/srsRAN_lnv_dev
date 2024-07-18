@@ -1,0 +1,77 @@
+\doxysection{log\+\_\+backend\+\_\+impl.\+h}
+\hypertarget{log__backend__impl_8h_source}{}\label{log__backend__impl_8h_source}\index{lib/srslog/log\_backend\_impl.h@{lib/srslog/log\_backend\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{backend__worker_8h}{"{}backend\_worker.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/detail/log\_backend.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ srslog\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ sink\_repository;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ This\ class\ implements\ the\ log\ backend\ interface.\ It\ internally\ manages\ a}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ worker\ thread\ to\ process\ incoming\ log\ entries.}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ NOTE:\ Thread\ safe\ class.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ log\_backend\_impl\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::\mbox{\hyperlink{classsrslog_1_1detail_1_1log__backend}{log\_backend}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{explicit}\ log\_backend\_impl(sink\_repository\&\ sink\_repo)\ :\ worker(sink\_repo,\ queue,\ arg\_pool)\ \{\}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ log\_backend\_impl(\textcolor{keyword}{const}\ log\_backend\_impl\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00041\ \ \ log\_backend\_impl\&\ operator=(\textcolor{keyword}{const}\ log\_backend\_impl\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{void}\ start(backend\_priority\ priority\ =\ backend\_priority::normal)\ \textcolor{keyword}{override}\ \{\ worker.start(priority);\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{bool}\ push(\mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::\mbox{\hyperlink{structsrslog_1_1detail_1_1log__entry}{log\_entry}}\&\&\ entry)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{auto}*\ arg\_store\ =\ entry.metadata.store;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{if}\ (!queue.push(std::move(entry)))\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ arg\_pool.dealloc(arg\_store);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ fmt::dynamic\_format\_arg\_store<fmt::format\_context>*\ alloc\_arg\_store()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ arg\_pool.alloc();\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ is\_running()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ worker.is\_running();\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Installs\ the\ specified\ error\ handler\ into\ the\ backend\ worker.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{void}\ set\_error\_handler(error\_handler\ err\_handler)\ \{\ worker.set\_error\_handler(std::move(err\_handler));\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Stops\ the\ backend\ worker\ thread.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}\ stop()\ \{\ worker.stop();\ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00066\ \ \ detail::work\_queue<detail::log\_entry>\ queue;}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{namespacesrslog_1_1detail}{detail}}::dyn\_arg\_store\_pool\ \ \ \ \ \ \ \ \ \ \ \ arg\_pool;}
+\DoxyCodeLine{00068\ \ \ backend\_worker\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worker;}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

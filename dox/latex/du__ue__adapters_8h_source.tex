@@ -1,0 +1,255 @@
+\doxysection{du\+\_\+ue\+\_\+adapters.\+h}
+\hypertarget{du__ue__adapters_8h_source}{}\label{du__ue__adapters_8h_source}\index{lib/du\_manager/du\_ue/du\_ue\_adapters.h@{lib/du\_manager/du\_ue/du\_ue\_adapters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/f1ap/du/f1c\_bearer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/f1ap/du/f1c\_rx\_sdu\_notifier.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/f1u/du/f1u\_bearer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/f1u/du/f1u\_rx\_sdu\_notifier.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/mac\_sdu\_handler.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/mac\_ue\_control\_information\_handler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_rx.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/rlc/rlc\_tx.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }srs\_du\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{//\ F1AP}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__rx__sdu__rlc__adapter}{f1c\_rx\_sdu\_rlc\_adapter}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__rx__sdu__notifier}{f1c\_rx\_sdu\_notifier}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\ rlc\_tx\_)\ \{\ rlc\_tx\ =\ \&rlc\_tx\_;\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{void}\ on\_new\_sdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu,\ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00048\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00049\ \ \ \ \ srsran\_assert(rlc\_tx\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ Tx\ PDU\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ rlc\_tx-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a3672e8658872f39bbcbb61afa9a05235}{handle\_sdu}}(\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\{std::move(pdu),\ pdcp\_sn\});}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}*\ rlc\_tx\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{//\ F1-\/U}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__rlc__sdu__adapter}{f1u\_rx\_rlc\_sdu\_adapter}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__sdu__notifier}{f1u\_rx\_sdu\_notifier}}}
+\DoxyCodeLine{00062\ \{}
+\DoxyCodeLine{00063\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}\&\ rlc\_tx\_)\ \{\ rlc\_tx\ =\ \&rlc\_tx\_;\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__rx__rlc__sdu__adapter_a61b71501de3ddd8d2b797833b3631f44}{disconnect}}();}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ on\_new\_sdu(\mbox{\hyperlink{structsrsran_1_1pdcp__tx__pdu}{pdcp\_tx\_pdu}}\ sdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00071\ \ \ \ \ srsran\_assert(rlc\_tx\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ Tx\ SDU\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00072\ \ \ \ \ rlc\_tx-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a3672e8658872f39bbcbb61afa9a05235}{handle\_sdu}}(\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\_sdu}}\{std::move(sdu.\mbox{\hyperlink{structsrsran_1_1pdcp__tx__pdu_a249c3fbd38dccf553d1a46e669dd4b62}{buf}}),\ sdu.\mbox{\hyperlink{structsrsran_1_1pdcp__tx__pdu_a82cdf0b08f73f924f0ec4fcef72ca8ef}{pdcp\_sn}}\});}
+\DoxyCodeLine{00073\ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ on\_discard\_sdu(uint32\_t\ pdcp\_sn)\textcolor{keyword}{\ override\ }\{\ rlc\_tx-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface_a349619ff887450259fa44a739d2980b6}{discard\_sdu}}(pdcp\_sn);\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__interface}{rlc\_tx\_upper\_layer\_data\_interface}}*\ rlc\_tx\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00079\ \};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{comment}{//\ RLC}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__rx__rrc__sdu__adapter}{rlc\_rx\_rrc\_sdu\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__upper__layer__data__notifier}{rlc\_rx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00084\ \{}
+\DoxyCodeLine{00085\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__bearer}{f1c\_bearer}}\&\ bearer\_)\ \{\ f1bearer\ =\ \&bearer\_;\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__rx__rrc__sdu__adapter_a698efa7fd03227e042f359f1ca799d9e}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ pdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00091\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00092\ \ \ \ \ srsran\_assert(f1bearer\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ Rx\ Bearer\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00093\ \ \ \ \ f1bearer-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__tx__sdu__handler_a3c64e5bdd43f0626ae9dc260d33c5d12}{handle\_sdu}}(std::move(pdu));}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__bearer}{f1c\_bearer}}*\ f1bearer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00098\ \};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1u__tx__sdu__adapter}{rlc\_f1u\_tx\_sdu\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__upper__layer__data__notifier}{rlc\_rx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}\&\ bearer\_)\ \{\ f1bearer\ =\ \&bearer\_;\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1u__tx__sdu__adapter_ac64be30e3ef6ad777914d4f2e2937743}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ sdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00108\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00109\ \ \ \ \ srsran\_assert(f1bearer\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ Rx\ bearer\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00110\ \ \ \ \ f1bearer-\/>handle\_sdu(std::move(sdu));}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00114\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__sdu__handler}{f1u\_tx\_sdu\_handler}}*\ f1bearer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1c__tx__data__notifier}{rlc\_f1c\_tx\_data\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{rlc\_tx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00118\ \{}
+\DoxyCodeLine{00119\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__bearer}{f1c\_bearer}}\&\ bearer\_)\ \{\ bearer\ =\ \&bearer\_;\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1c__tx__data__notifier_aafcd4a82b89d6edcbd36a989b2630888}{on\_transmitted\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00125\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00126\ \ \ \ \ srsran\_assert(bearer\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ to\ F1-\/C\ TX\ data\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00127\ \ \ \ \ bearer-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__tx__delivery__handler_ace3f17de85d61e57af60471d74720612}{handle\_transmit\_notification}}(max\_deliv\_pdcp\_sn);}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1c__tx__data__notifier_abe7b147f783b289085848d2f426ede60}{on\_delivered\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00131\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00132\ \ \ \ \ srsran\_assert(bearer\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ to\ F1-\/C\ TX\ data\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00133\ \ \ \ \ bearer-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__tx__delivery__handler_aae07eaada809969f97e1a806c24450bd}{handle\_delivery\_notification}}(max\_deliv\_pdcp\_sn);}
+\DoxyCodeLine{00134\ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1c__bearer}{f1c\_bearer}}*\ bearer\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00138\ \};}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1u__tx__data__notifier}{rlc\_f1u\_tx\_data\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__data__notifier}{rlc\_tx\_upper\_layer\_data\_notifier}}}
+\DoxyCodeLine{00141\ \{}
+\DoxyCodeLine{00142\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00143\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}}\&\ handler\_)\ \{\ handler\ =\ \&handler\_;\ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1u__tx__data__notifier_aabb8cbb26aacf76a29e7d0712e126919}{on\_transmitted\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00148\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00149\ \ \ \ \ srsran\_assert(handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ to\ F1-\/U\ TX\ data\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00150\ \ \ \ \ handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler_a7f42cd6141963025f77c9e8a31061e07}{handle\_transmit\_notification}}(max\_deliv\_pdcp\_sn);}
+\DoxyCodeLine{00151\ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__f1u__tx__data__notifier_a38f5cbd92f13f0c6f6070316feffd687}{on\_delivered\_sdu}}(uint32\_t\ max\_deliv\_pdcp\_sn)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00154\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00155\ \ \ \ \ srsran\_assert(handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ to\ F1-\/U\ TX\ data\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00156\ \ \ \ \ handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler_a8b088340fc71fbda7fa1c21408052763}{handle\_delivery\_notification}}(max\_deliv\_pdcp\_sn);}
+\DoxyCodeLine{00157\ \ \ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1f1u__tx__delivery__handler}{f1u\_tx\_delivery\_handler}}*\ handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00161\ \};}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__tx__control__notifier}{rlc\_tx\_control\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__upper__layer__control__notifier}{rlc\_tx\_upper\_layer\_control\_notifier}}}
+\DoxyCodeLine{00164\ \{}
+\DoxyCodeLine{00165\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00166\ \ \ \textcolor{keywordtype}{void}\ on\_protocol\_failure()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00167\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{00169\ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordtype}{void}\ on\_max\_retx()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00172\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{comment}{//\ TODO}}
+\DoxyCodeLine{00174\ \ \ \}}
+\DoxyCodeLine{00175\ \};}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__tx__mac__buffer__state__updater}{rlc\_tx\_mac\_buffer\_state\_updater}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__notifier}{rlc\_tx\_lower\_layer\_notifier}}}
+\DoxyCodeLine{00178\ \{}
+\DoxyCodeLine{00179\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00180\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index\_,\ \mbox{\hyperlink{namespacesrsran_a9fb768b4a14baadb9295634bcaf010bc}{lcid\_t}}\ lcid\_,\ \mbox{\hyperlink{classsrsran_1_1mac__ue__control__information__handler}{mac\_ue\_control\_information\_handler}}\&\ mac\_)}
+\DoxyCodeLine{00181\ \ \ \{}
+\DoxyCodeLine{00182\ \ \ \ \ srsran\_assert(ue\_index\_\ !=\ INVALID\_DU\_UE\_INDEX,\ \textcolor{stringliteral}{"{}Invalid\ UE\ index"{}});}
+\DoxyCodeLine{00183\ \ \ \ \ srsran\_assert(lcid\_\ !=\ INVALID\_LCID,\ \textcolor{stringliteral}{"{}Invalid\ UE\ index"{}});}
+\DoxyCodeLine{00184\ \ \ \ \ ue\_index\ =\ ue\_index\_;}
+\DoxyCodeLine{00185\ \ \ \ \ lcid\ \ \ \ \ =\ lcid\_;}
+\DoxyCodeLine{00186\ \ \ \ \ mac\ \ \ \ \ \ =\ \&mac\_;}
+\DoxyCodeLine{00187\ \ \ \}}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordtype}{void}\ disconnect()\ \{\ lcid\ =\ INVALID\_LCID;\ \}}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1rlc__tx__mac__buffer__state__updater_ae56821a74fb42d70c9f00c1aa8e3221e}{on\_buffer\_state\_update}}(\textcolor{keywordtype}{unsigned}\ bsr)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00192\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00193\ \ \ \ \ srsran\_assert(mac\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}RLC\ Tx\ Buffer\ State\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1mac__dl__buffer__state__indication__message}{mac\_dl\_buffer\_state\_indication\_message}}\ bs\{\};}
+\DoxyCodeLine{00195\ \ \ \ \ bs.ue\_index\ =\ ue\_index;}
+\DoxyCodeLine{00196\ \ \ \ \ bs.lcid\ \ \ \ \ =\ lcid.load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00197\ \ \ \ \ bs.bs\ \ \ \ \ \ \ =\ bsr;}
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{compiler_8h_a1bdfef20c1237666a841b5c9b9c8e69b}{SRSRAN\_UNLIKELY}}(bs.lcid\ ==\ INVALID\_LCID))\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \textcolor{comment}{//\ Discard.}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00201\ \ \ \ \ \}}
+\DoxyCodeLine{00202\ \ \ \ \ mac-\/>\mbox{\hyperlink{classsrsran_1_1mac__ue__control__information__handler_ae3d167b65dbb1c1656e8b6a2965d7701}{handle\_dl\_buffer\_state\_update}}(bs);}
+\DoxyCodeLine{00203\ \ \ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00206\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index\ =\ INVALID\_DU\_UE\_INDEX;}
+\DoxyCodeLine{00207\ \ \ std::atomic<lcid\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lcid\{INVALID\_LCID\};}
+\DoxyCodeLine{00208\ \ \ \mbox{\hyperlink{classsrsran_1_1mac__ue__control__information__handler}{mac\_ue\_control\_information\_handler}}*\ mac\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00209\ \};}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \textcolor{comment}{//\ MAC}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__sdu__rx__adapter}{mac\_sdu\_rx\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__sdu__rx__notifier}{mac\_sdu\_rx\_notifier}}}
+\DoxyCodeLine{00214\ \{}
+\DoxyCodeLine{00215\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00216\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1rlc__rx__lower__layer__interface}{rlc\_rx\_lower\_layer\_interface}}\&\ rlc\_rx\_)\ \{\ rlc\_handler\ =\ \&rlc\_rx\_;\ \}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \textcolor{keywordtype}{void}\ disconnect();}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__sdu__rx__adapter_ab433022b095f848a6636cfc1ebd165f3}{on\_new\_sdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ sdu)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00221\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00222\ \ \ \ \ srsran\_assert(rlc\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}MAC\ Rx\ SDU\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ rlc\_handler-\/>\mbox{\hyperlink{classsrsran_1_1rlc__rx__lower__layer__interface_afb0664e4a2ab9b981fbe79e47f54377c}{handle\_pdu}}(std::move(sdu));}
+\DoxyCodeLine{00224\ \ \ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00227\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__rx__lower__layer__interface}{rlc\_rx\_lower\_layer\_interface}}*\ rlc\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00228\ \};}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__sdu__tx__adapter}{mac\_sdu\_tx\_adapter}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__sdu__tx__builder}{mac\_sdu\_tx\_builder}}}
+\DoxyCodeLine{00231\ \{}
+\DoxyCodeLine{00232\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordtype}{void}\ connect(\mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}\&\ rlc\_tx)\ \{\ rlc\_handler\ =\ \&rlc\_tx;\ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__sdu__tx__adapter_a021a2e7eb991c3799aca74fdd9c1facc}{on\_new\_tx\_sdu}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ mac\_sdu\_buf)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00236\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00237\ \ \ \ \ srsran\_assert(rlc\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}MAC\ Rx\ SDU\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_handler-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface_acdd2d3757d55392f35627a2a05e1fbcf}{pull\_pdu}}(mac\_sdu\_buf);}
+\DoxyCodeLine{00239\ \ \ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1srs__du_1_1mac__sdu__tx__adapter_aaef82f5b6782e12a4dac2e8302026325}{on\_buffer\_state\_update}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00242\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00243\ \ \ \ \ srsran\_assert(rlc\_handler\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}MAC\ Rx\ SDU\ notifier\ is\ disconnected"{}});}
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keywordflow}{return}\ rlc\_handler-\/>\mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface_a7cbb36d4595cc433e55261341ccc641a}{get\_buffer\_state}}();}
+\DoxyCodeLine{00245\ \ \ \}}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00248\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__lower__layer__interface}{rlc\_tx\_lower\_layer\_interface}}*\ rlc\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00249\ \};}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \}\ \textcolor{comment}{//\ namespace\ srs\_du}}
+\DoxyCodeLine{00252\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

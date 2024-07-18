@@ -52,9 +52,10 @@ protected:
     bool test_1 = pdu_session_resource_setup_request.pdu.init_msg()
                       .value.pdu_session_res_setup_request()
                       ->pdu_session_res_setup_list_su_req.size() ==
-                  cu_cp_notifier.last_request.pdu_session_res_setup_items.size();
+                  du_processor_notifier->last_request.pdu_session_res_setup_items.size();
 
-    bool test_2 = cu_cp_notifier.last_request.pdu_session_res_setup_items[pdu_session_id].pdu_session_type == "ipv4";
+    bool test_2 =
+        du_processor_notifier->last_request.pdu_session_res_setup_items[pdu_session_id].pdu_session_type == "ipv4";
 
     return test_1 && test_2;
   }
@@ -76,23 +77,27 @@ protected:
 
   bool was_pdu_session_resource_setup_request_invalid() const
   {
-    // Check that AMF notifier was called with right type.
-    bool test_1 = msg_notifier.last_ngap_msgs.back().pdu.successful_outcome().value.type() ==
+    // Check that a UE release was requested from the AMF
+    bool test_1 = msg_notifier.last_ngap_msgs.back().pdu.init_msg().value.type() ==
+                  asn1::ngap::ngap_elem_procs_o::init_msg_c::types_opts::ue_context_release_request;
+
+    // Check that AMF notifier was called with right type
+    bool test_2 = msg_notifier.last_ngap_msgs.end()[-2].pdu.successful_outcome().value.type() ==
                   asn1::ngap::ngap_elem_procs_o::successful_outcome_c::types_opts::pdu_session_res_setup_resp;
 
     // Check that response doesn't contain PDU Session Resource Setup List
-    bool test_2 = !msg_notifier.last_ngap_msgs.back()
+    bool test_3 = !msg_notifier.last_ngap_msgs.end()[-2]
                        .pdu.successful_outcome()
                        .value.pdu_session_res_setup_resp()
                        ->pdu_session_res_setup_list_su_res_present;
 
     // Check that response contains PDU Session Resource Failed to Setup List
-    bool test_3 = msg_notifier.last_ngap_msgs.back()
+    bool test_4 = msg_notifier.last_ngap_msgs.end()[-2]
                       .pdu.successful_outcome()
                       .value.pdu_session_res_setup_resp()
                       ->pdu_session_res_failed_to_setup_list_su_res_present;
 
-    return test_1 && test_2 && test_3;
+    return test_1 && test_2 && test_3 && test_4;
   }
 
   bool was_error_indication_sent() const
@@ -101,33 +106,6 @@ protected:
            asn1::ngap::ngap_elem_procs_o::init_msg_c::types_opts::error_ind;
   }
 };
-
-/// Test missing PDU Session Resource Setup Request
-TEST_F(ngap_pdu_session_resource_setup_procedure_test,
-       when_pdu_session_resource_setup_request_is_not_received_then_ue_release_is_requested)
-{
-  ASSERT_EQ(ngap->get_nof_ues(), 0);
-
-  // Test preamble
-  this->start_procedure();
-
-  // check that initial context setup request was received to the AMF and that UE object has been created
-  ASSERT_EQ(msg_notifier.last_ngap_msgs.back().pdu.type().value,
-            asn1::ngap::ngap_pdu_c::types_opts::successful_outcome);
-  ASSERT_EQ(msg_notifier.last_ngap_msgs.back().pdu.successful_outcome().value.type(),
-            asn1::ngap::ngap_elem_procs_o::successful_outcome_c::types_opts::init_context_setup_resp);
-  ASSERT_EQ(ngap->get_nof_ues(), 1);
-
-  // tick timers
-  // Status: NGAP does not receive new PDU Session Resource Setup Request until pdu_session_setup_timer has ended.
-  for (unsigned msec_elapsed = 0; msec_elapsed < cfg.pdu_session_setup_timeout.count() * 1000; ++msec_elapsed) {
-    this->tick();
-  }
-
-  // check that UE release was requested
-  ASSERT_EQ(msg_notifier.last_ngap_msgs.back().pdu.init_msg().value.type(),
-            asn1::ngap::ngap_elem_procs_o::init_msg_c::types_opts::ue_context_release_request);
-}
 
 /// Test valid PDU Session Resource Setup Request
 TEST_F(ngap_pdu_session_resource_setup_procedure_test,

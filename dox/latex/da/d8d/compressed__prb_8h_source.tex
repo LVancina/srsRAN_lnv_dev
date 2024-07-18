@@ -1,0 +1,88 @@
+\doxysection{compressed\+\_\+prb.\+h}
+\hypertarget{compressed__prb_8h_source}{}\label{compressed__prb_8h_source}\index{include/srsran/ofh/compression/compressed\_prb.h@{include/srsran/ofh/compression/compressed\_prb.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bit\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/compression/compression\_params.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/resource\_block.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ the\ storage\ of\ one\ compressed\ PRB.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Compressed\ IQ\ samples\ are\ stored\ in\ packed\ format.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ compressed\_prb}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ Number\ of\ bits\ required\ to\ store\ compressed\ IQ\ samples\ of\ one\ PRB.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ size\_t\ CAPACITY\_BITS\ =\ NOF\_SUBCARRIERS\_PER\_RB\ *\ 2\ *\ MAX\_IQ\_WIDTH;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00041\ \ \ compressed\_prb()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Returns\ the\ compression\ parameter.}}
+\DoxyCodeLine{00044\ \ \ uint8\_t\ get\_compression\_param()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ comp\_param;\ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Sets\ the\ compression\ parameter.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keywordtype}{void}\ set\_compression\_param(uint8\_t\ param)\ \{\ comp\_param\ =\ param;\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Returns\ the\ internal\ bit\ buffer\ storage.}}
+\DoxyCodeLine{00050\ \ \ static\_bit\_buffer<CAPACITY\_BITS>\&\ get\_bit\_buffer()\ \{\ \textcolor{keywordflow}{return}\ data;\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Returns\ the\ internal\ bit\ buffer\ storage.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{const}\ static\_bit\_buffer<CAPACITY\_BITS>\&\ get\_bit\_buffer()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ data;\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Returns\ the\ internal\ buffer\ storage.}}
+\DoxyCodeLine{00056\ \ \ span<uint8\_t>\ get\_byte\_buffer()\ \{\ \textcolor{keywordflow}{return}\ data.get\_buffer();\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Returns\ the\ bit\ buffer\ storage.}}
+\DoxyCodeLine{00059\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ get\_byte\_buffer()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ data.get\_buffer();\ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Returns\ a\ span\ of\ bytes\ containing\ packed\ compressed\ IQ\ samples.}}
+\DoxyCodeLine{00062\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ get\_packed\_data()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(bytes\_used\ !=\ 0,\ \textcolor{stringliteral}{"{}No\ bytes\ yet\ packed"{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(bytes\_used\ *\ 8\ <=\ CAPACITY\_BITS,\ \textcolor{stringliteral}{"{}Bit\ buffer\ overflow"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{return}\ data.get\_buffer().first(bytes\_used);}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Sets\ the\ size,\ in\ bytes,\ of\ the\ compressed\ IQ\ samples.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ set\_stored\_size(\textcolor{keywordtype}{unsigned}\ bytes\_used\_)\ \{\ bytes\_used\ =\ bytes\_used\_;\ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Packed\ bits\ of\ compressed\ IQ\ samples.}}
+\DoxyCodeLine{00074\ \ \ static\_bit\_buffer<CAPACITY\_BITS>\ data\{CAPACITY\_BITS\};}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ Number\ of\ bytes\ of\ the\ internal\ bit\ buffer\ actually\ used\ by\ PRB\ samples.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{unsigned}\ bytes\_used\ =\ 0;}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Compression\ parameter\ specific\ for\ every\ compression\ type.}}
+\DoxyCodeLine{00078\ \ \ uint8\_t\ comp\_param\ =\ 0;}
+\DoxyCodeLine{00079\ \};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00082\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

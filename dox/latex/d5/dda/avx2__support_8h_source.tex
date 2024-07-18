@@ -1,0 +1,115 @@
+\doxysection{avx2\+\_\+support.\+h}
+\hypertarget{avx2__support_8h_source}{}\label{avx2__support_8h_source}\index{lib/phy/upper/channel\_coding/ldpc/avx2\_support.h@{lib/phy/upper/channel\_coding/ldpc/avx2\_support.h}}
+\mbox{\hyperlink{avx2__support_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ AVX2\ support\ for\ LDPC.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{///}}
+\DoxyCodeLine{00026\ \textcolor{comment}{///\ Builds\ upon\ \(\backslash\)ref\ simd\_support.h\ and\ specializes\ functions\ and\ templates\ for\ AVX2\ registers.}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{simd__support_8h}{"{}simd\_support.h"{}}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ simdWrapper,\ \textcolor{keyword}{typename}\ storageType>}
+\DoxyCodeLine{00037\ simd256\_type\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}<simdWrapper,\ storageType>::get\_at(help\_type<simd256\_wrapper>\ \textcolor{comment}{/**/},\ \textcolor{keywordtype}{unsigned}\ pos)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pos\ <\ view\_length,\ \textcolor{stringliteral}{"{}Index\ \{\}\ out\ of\ bound."{}},\ pos);}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordflow}{return}\ \_mm256\_loadu\_si256(\textcolor{keyword}{reinterpret\_cast}<\textcolor{keyword}{const}\ \_\_m256i*>(array\_ptr)\ +\ pos);}
+\DoxyCodeLine{00041\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ simdWrapper,\ \textcolor{keyword}{typename}\ storageType>}
+\DoxyCodeLine{00044\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}<simdWrapper,\ storageType>::\mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span_a552e621763fe226ef28a535fd94362c7}{set\_at}}(\textcolor{keywordtype}{unsigned}\ pos,\ simd256\_type\ val)}
+\DoxyCodeLine{00045\ \{}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static\_assert}(SIMD\_SIZE\_BYTE\ ==\ AVX2\_SIZE\_BYTE,\ \textcolor{stringliteral}{"{}Cannot\ set\ an\ AVX512\ vector\ with\ an\ AVX2\ vector."{}});}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(pos\ <\ view\_length,\ \textcolor{stringliteral}{"{}Index\ \{\}\ out\ of\ bound."{}},\ pos);}
+\DoxyCodeLine{00048\ \ \ \_mm256\_storeu\_si256(\textcolor{keyword}{reinterpret\_cast}<\_\_m256i*>(array\_ptr)\ +\ pos,\ val);}
+\DoxyCodeLine{00049\ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{namespace}\ mm256\ \{}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{using}\ avx2\_span\ \ \ \ \ \ \ =\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}<detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1simd256__wrapper}{simd256\_wrapper}},\ int8\_t>;}
+\DoxyCodeLine{00056\ \textcolor{keyword}{using}\ avx2\_const\_span\ =\ detail::\mbox{\hyperlink{classsrsran_1_1detail_1_1simd__span}{simd\_span}}<detail::\mbox{\hyperlink{structsrsran_1_1detail_1_1simd256__wrapper}{simd256\_wrapper}},\ \textcolor{keyword}{const}\ int8\_t>;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \(\backslash\)brief\ Scales\ packed\ 8-\/bit\ integers\ in\ \(\backslash\)c\ a\ by\ the\ scaling\ factor\ \(\backslash\)c\ sf.}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ Values\ of\ \(\backslash\)c\ a\ larger\ than\ \(\backslash\)c\ max\ or\ smaller\ than\ \(\backslash\)c\ -\/max\ are\ forwarded\ unaltered.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \(\backslash\)param[in]\ a\ \ \ Vector\ of\ packed\ 8-\/bit\ integers.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \(\backslash\)param[in]\ sf\ \ Scaling\ factor\ (0,\ 1].}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \(\backslash\)param[in]\ max\ Maximum\ input\ value\ (in\ absolute\ value)\ to\ which\ the\ scaling\ is\ applied\ [0,\ 127).}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ \(\backslash\)return\ \ \ \ Vector\ of\ packed\ 8-\/bit\ integers\ with\ the\ scaling\ result.}}
+\DoxyCodeLine{00065\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{\_\_m256i}}\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{scale\_epi8}}(\mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{\_\_m256i}}\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{a}},\ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{sf}},\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{uint8\_t}}\ \mbox{\hyperlink{avx2__support_8h_a248288efc817de94b1ca5db6a88de735}{max}})}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((sf\ >\ 0)\ \&\&\ (sf\ <=\ 1),\ \textcolor{stringliteral}{"{}Scaling\ factor\ out\ of\ range."{}});}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(max\ <\ 127,\ \textcolor{stringliteral}{"{}Parameter\ max\ out\ of\ range."{}});}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordflow}{if}\ (sf\ >=\ .9999)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{return}\ a;}
+\DoxyCodeLine{00072\ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \_\_m256i\ mask\_even\_epi8\ =\ \_mm256\_set1\_epi16(0x00ff);}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{//\ FLOAT2INT\ =\ 2\string^16\ =\ 65536}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ FLOAT2INT\ =\ 1U\ <<\ 16U;}
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{const}\ \_\_m256i\ \ \ \ \ \ \ \ \ \ \ \ \ MAX\_epi8\ \ =\ \_mm256\_set1\_epi8(max);}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{const}\ \_\_m256i\ \ \ \ \ \ \ \ \ \ \ \ \ MIN\_epi8\ \ =\ \_mm256\_set1\_epi8(-\/max);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ Create\ a\ register\ filled\ with\ copies\ of\ the\ scaling\ factor\ times\ FLOAT2INT.\ Note\ that\ the\ upper\ bound\ on\ sf\ implies}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{//\ that\ (sf\ *\ FLOAT2INT)\ can\ be\ represented\ over\ 16\ bits.}}
+\DoxyCodeLine{00082\ \ \ \_\_m256i\ sf\_epi16\ =\ \_mm256\_set1\_epi16(\textcolor{keyword}{static\_cast}<uint16\_t>(sf\ *\ FLOAT2INT));}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ Even\ bytes\ in\ a,\ alternated\ with\ a\ zero-\/valued\ byte.}}
+\DoxyCodeLine{00084\ \ \ \_\_m256i\ even\_epi16\ =\ \_mm256\_and\_si256(a,\ mask\_even\_epi8);}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ Odd\ bytes\ in\ a,\ moved\ to\ the\ even\ positions\ and\ alternated\ with\ a\ zero-\/valued\ byte.}}
+\DoxyCodeLine{00086\ \ \ \_\_m256i\ odd\_epi16\ =\ \_mm256\_srli\_epi16(a,\ 8);}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{//\ This\ is\ equivalent\ to\ multiply\ each\ byte\ by\ sf:\ indeed,\ we\ multiply\ each\ byte\ by\ (sf\ *\ FLOAT2INT),\ store\ the\ result}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ in\ over\ 32\ bit\ and\ pick\ only\ the\ 16\ most\ significant\ bits\ (i.e.,\ we\ divide\ by\ FLOAT2INT).}}
+\DoxyCodeLine{00090\ \ \ \_\_m256i\ p\_even\_epi16\ =\ \_mm256\_mulhi\_epu16(even\_epi16,\ sf\_epi16);}
+\DoxyCodeLine{00091\ \ \ \_\_m256i\ p\_odd\_epi16\ \ =\ \_mm256\_mulhi\_epu16(odd\_epi16,\ sf\_epi16);}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{//\ Move\ the\ odd\ bits\ back\ to\ their\ original\ positions.}}
+\DoxyCodeLine{00094\ \ \ p\_odd\_epi16\ =\ \_mm256\_slli\_epi16(p\_odd\_epi16,\ 8);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ Combine\ even\ and\ odd\ bits.\ Note\ that\ the\ "{}odd"{}\ bytes\ of\ p\_even\_epi16\ are\ equal\ to\ 0\ (the\ result\ of\ multiplying\ a}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{//\ byte\ by\ a\ 16-\/bit\ value\ will\ occupy\ at\ most\ 24\ of\ the\ 32\ bits).}}
+\DoxyCodeLine{00098\ \ \ \_\_m256i\ product\_epi8\ =\ \_mm256\_xor\_si256(p\_even\_epi16,\ p\_odd\_epi16);}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{//\ Replace\ values\ corresponding\ to\ "{}large"{}\ inputs\ with\ their\ original\ values.}}
+\DoxyCodeLine{00101\ \ \ \_\_m256i\ mask\_epi8\ =\ \_mm256\_cmpgt\_epi8(a,\ MAX\_epi8);}
+\DoxyCodeLine{00102\ \ \ product\_epi8\ \ \ \ \ \ =\ \_mm256\_blendv\_epi8(product\_epi8,\ a,\ mask\_epi8);}
+\DoxyCodeLine{00103\ \ \ mask\_epi8\ \ \ \ \ \ \ \ \ =\ \_mm256\_cmpgt\_epi8(MIN\_epi8,\ a);}
+\DoxyCodeLine{00104\ \ \ product\_epi8\ \ \ \ \ \ =\ \_mm256\_blendv\_epi8(product\_epi8,\ a,\ mask\_epi8);}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordflow}{return}\ product\_epi8;}
+\DoxyCodeLine{00106\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \}\ \textcolor{comment}{//\ namespace\ mm256}}
+\DoxyCodeLine{00109\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

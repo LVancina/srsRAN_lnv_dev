@@ -110,8 +110,7 @@ std::shared_ptr<pusch_processor_factory>
 create_pusch_processor_factory_sw(pusch_processor_factory_sw_configuration& config);
 
 std::shared_ptr<pusch_processor_factory> create_pusch_processor_pool(std::shared_ptr<pusch_processor_factory> factory,
-                                                                     unsigned max_nof_processors,
-                                                                     bool     blocking = false);
+                                                                     unsigned max_nof_processors);
 
 class ulsch_demultiplex_factory
 {

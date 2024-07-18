@@ -27,7 +27,6 @@
 #include "srsran/ran/csi_report/csi_report_on_pucch_helpers.h"
 #include "srsran/scheduler/harq_id.h"
 #include <functional>
-#include <utility>
 
 using namespace srsran;
 
@@ -35,7 +34,7 @@ using namespace srsran;
 // the largest TB possible.
 static const unsigned TEST_UE_DL_BUFFER_STATE_UPDATE_SIZE = 10000000;
 
-static expected<mac_rx_data_indication> create_test_pdu_with_bsr(slot_point sl_rx, rnti_t test_rnti, harq_id_t harq_id)
+static mac_rx_data_indication create_test_pdu_with_bsr(slot_point sl_rx, rnti_t test_rnti, harq_id_t harq_id)
 {
   // - 8-bit R/LCID MAC subheader.
   // - MAC CE with Long BSR.
@@ -47,12 +46,9 @@ static expected<mac_rx_data_indication> create_test_pdu_with_bsr(slot_point sl_r
   // |         Buffer Size 1         |  Octet 4
 
   // We pass BSR=254, which according to TS38.321 is the maximum value for the LBSR size.
-  auto buf = byte_buffer::create({0x3e, 0x02, 0x01, 254});
-  if (buf.is_error()) {
-    return default_error_t{};
-  }
-  return mac_rx_data_indication{
-      sl_rx, to_du_cell_index(0), mac_rx_pdu_list{mac_rx_pdu{test_rnti, 0, harq_id, std::move(buf.value())}}};
+  return mac_rx_data_indication{sl_rx,
+                                to_du_cell_index(0),
+                                mac_rx_pdu_list{mac_rx_pdu{test_rnti, 0, harq_id, byte_buffer{0x3e, 0x02, 0x01, 254}}}};
 }
 
 /// \brief Adapter for the MAC SDU TX builder that auto fills the DL buffer state update.
@@ -92,7 +88,7 @@ mac_test_mode_cell_adapter::mac_test_mode_cell_adapter(const srs_du::du_test_con
   pdu_handler(pdu_handler_),
   slot_handler(slot_handler_),
   result_notifier(result_notifier_),
-  dl_bs_notifier(std::move(dl_bs_notifier_)),
+  dl_bs_notifier(dl_bs_notifier_),
   logger(srslog::fetch_basic_logger("MAC")),
   ue_info_mgr(ue_info_mgr_)
 {
@@ -123,7 +119,7 @@ void mac_test_mode_cell_adapter::handle_slot_indication(slot_point sl_tx)
         // Force CRC=OK for test UE.
         crc_pdu.tb_crc_success = true;
         // Force UL SINR.
-        crc_pdu.ul_sinr_dB = 100;
+        crc_pdu.ul_sinr_metric = 100;
       }
 
       // Forward CRC to the real MAC.
@@ -202,7 +198,7 @@ void mac_test_mode_cell_adapter::handle_crc(const mac_crc_indication_message& ms
       // Intercept the CRC indication and force crc=OK and UL SNR.
       mac_crc_pdu test_crc    = crc;
       test_crc.tb_crc_success = true;
-      test_crc.ul_sinr_dB     = 100;
+      test_crc.ul_sinr_metric = 100;
       msg_copy.crcs.push_back(test_crc);
 
     } else {
@@ -218,7 +214,7 @@ void mac_test_mode_cell_adapter::handle_crc(const mac_crc_indication_message& ms
 void mac_test_mode_cell_adapter::fill_uci_pdu(mac_uci_pdu::pucch_f0_or_f1_type& pucch_ind,
                                               const pucch_info&                 pucch) const
 {
-  pucch_ind.ul_sinr_dB = 100;
+  pucch_ind.ul_sinr = 100;
   if (pucch.format_1.sr_bits != sr_nof_bits::no_sr) {
     // In test mode, SRs are never detected, and instead BSR is injected.
     pucch_ind.sr_info.emplace();
@@ -237,7 +233,7 @@ void mac_test_mode_cell_adapter::fill_uci_pdu(mac_uci_pdu::pucch_f0_or_f1_type& 
 void mac_test_mode_cell_adapter::fill_uci_pdu(mac_uci_pdu::pucch_f2_or_f3_or_f4_type& pucch_ind,
                                               const pucch_info&                       pucch) const
 {
-  pucch_ind.ul_sinr_dB = 100;
+  pucch_ind.ul_sinr = 100;
   if (pucch.format_2.sr_bits != sr_nof_bits::no_sr) {
     // Set SR to not detected.
     pucch_ind.sr_info.emplace();
@@ -260,7 +256,7 @@ void mac_test_mode_cell_adapter::fill_uci_pdu(mac_uci_pdu::pucch_f2_or_f3_or_f4_
 void mac_test_mode_cell_adapter::fill_uci_pdu(mac_uci_pdu::pusch_type& pusch_ind, const ul_sched_info& ul_grant) const
 {
   const uci_info& uci_info = *ul_grant.uci;
-  pusch_ind.ul_sinr_dB     = 100;
+  pusch_ind.ul_sinr        = 100;
   if (uci_info.harq.has_value() and uci_info.harq->harq_ack_nof_bits > 0) {
     pusch_ind.harq_info.emplace();
     pusch_ind.harq_info->is_valid = true;
@@ -281,7 +277,7 @@ static bool pucch_info_and_uci_ind_match(const pucch_info& pucch, const mac_uci_
   }
   if (pucch.format == pucch_format::FORMAT_1 and
       variant_holds_alternative<mac_uci_pdu::pucch_f0_or_f1_type>(uci_ind.pdu)) {
-    const auto& f1_ind = variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(uci_ind.pdu);
+    auto& f1_ind = variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(uci_ind.pdu);
     if (f1_ind.sr_info.has_value() != (pucch.format_1.sr_bits != sr_nof_bits::no_sr)) {
       return false;
     }
@@ -292,7 +288,7 @@ static bool pucch_info_and_uci_ind_match(const pucch_info& pucch, const mac_uci_
   }
   if (pucch.format == pucch_format::FORMAT_2 and
       variant_holds_alternative<mac_uci_pdu::pucch_f2_or_f3_or_f4_type>(uci_ind.pdu)) {
-    const auto& f2_ind = variant_get<mac_uci_pdu::pucch_f2_or_f3_or_f4_type>(uci_ind.pdu);
+    auto& f2_ind = variant_get<mac_uci_pdu::pucch_f2_or_f3_or_f4_type>(uci_ind.pdu);
     if (f2_ind.sr_info.has_value() != (pucch.format_2.sr_bits != sr_nof_bits::no_sr)) {
       return false;
     }
@@ -319,7 +315,7 @@ void mac_test_mode_cell_adapter::forward_uci_ind_to_mac(const mac_uci_indication
   // Update buffer states.
   for (const mac_uci_pdu& pdu : uci_msg.ucis) {
     if (ue_info_mgr.is_test_ue(pdu.rnti) and variant_holds_alternative<mac_uci_pdu::pucch_f0_or_f1_type>(pdu.pdu)) {
-      const auto& f1_ind = variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(pdu.pdu);
+      auto& f1_ind = variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(pdu.pdu);
 
       if (f1_ind.harq_info.has_value()) {
         // In case of PUCCH F1 with HARQ-ACK bits, we assume that the Msg4 has been received. At this point, we
@@ -331,13 +327,8 @@ void mac_test_mode_cell_adapter::forward_uci_ind_to_mac(const mac_uci_indication
           }
 
           if (test_ue_cfg.pusch_active) {
-            auto rx_pdu = create_test_pdu_with_bsr(uci_msg.sl_rx, pdu.rnti, to_harq_id(0));
-            if (rx_pdu.is_error()) {
-              logger.warning("Unable to create test PDU with BSR");
-              continue;
-            }
             // In case of PUSCH test mode is enabled, push a BSR to trigger the first PUSCH.
-            pdu_handler.handle_rx_data_indication(std::move(rx_pdu.value()));
+            pdu_handler.handle_rx_data_indication(create_test_pdu_with_bsr(uci_msg.sl_rx, pdu.rnti, to_harq_id(0)));
           }
           ue_info_mgr.msg4_rxed(pdu.rnti, true);
         }
@@ -364,13 +355,8 @@ void mac_test_mode_cell_adapter::forward_crc_ind_to_mac(const mac_crc_indication
       continue;
     }
 
-    auto rx_pdu = create_test_pdu_with_bsr(crc_msg.sl_rx, pdu.rnti, to_harq_id(pdu.harq_id));
-    if (rx_pdu.is_error()) {
-      logger.warning("Unable to create test PDU with BSR");
-      continue;
-    }
     // In case of test mode UE, auto-forward a positive BSR.
-    pdu_handler.handle_rx_data_indication(std::move(rx_pdu.value()));
+    pdu_handler.handle_rx_data_indication(create_test_pdu_with_bsr(crc_msg.sl_rx, pdu.rnti, to_harq_id(pdu.harq_id)));
   }
 }
 
@@ -385,39 +371,39 @@ void mac_test_mode_cell_adapter::handle_uci(const mac_uci_indication_message& ms
     if (not ue_info_mgr.is_test_ue(pdu.rnti)) {
       // non-test mode UE. Forward the original UCI indication PDU.
       msg_copy.ucis.push_back(pdu);
+    }
+
+    // test mode UE.
+    // Intercept the UCI indication and force HARQ-ACK=ACK and CSI.
+    msg_copy.ucis.push_back(pdu);
+    mac_uci_pdu& test_uci = msg_copy.ucis.back();
+
+    bool entry_found = false;
+    if (variant_holds_alternative<mac_uci_pdu::pusch_type>(test_uci.pdu)) {
+      for (const ul_sched_info& pusch : entry.puschs) {
+        if (pusch.pusch_cfg.rnti == pdu.rnti and pusch.uci.has_value()) {
+          fill_uci_pdu(variant_get<mac_uci_pdu::pusch_type>(test_uci.pdu), pusch);
+          entry_found = true;
+        }
+      }
     } else {
-      // test mode UE.
-      // Intercept the UCI indication and force HARQ-ACK=ACK and CSI.
-      msg_copy.ucis.push_back(pdu);
-      mac_uci_pdu& test_uci = msg_copy.ucis.back();
-
-      bool entry_found = false;
-      if (variant_holds_alternative<mac_uci_pdu::pusch_type>(test_uci.pdu)) {
-        for (const ul_sched_info& pusch : entry.puschs) {
-          if (pusch.pusch_cfg.rnti == pdu.rnti and pusch.uci.has_value()) {
-            fill_uci_pdu(variant_get<mac_uci_pdu::pusch_type>(test_uci.pdu), pusch);
-            entry_found = true;
+      // PUCCH case.
+      for (const pucch_info& pucch : entry.pucchs) {
+        if (pucch_info_and_uci_ind_match(pucch, test_uci)) {
+          // Intercept the UCI indication and force HARQ-ACK=ACK and UCI.
+          if (pucch.format == pucch_format::FORMAT_1) {
+            fill_uci_pdu(variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(test_uci.pdu), pucch);
+          } else {
+            fill_uci_pdu(variant_get<mac_uci_pdu::pucch_f2_or_f3_or_f4_type>(test_uci.pdu), pucch);
           }
-        }
-      } else {
-        // PUCCH case.
-        for (const pucch_info& pucch : entry.pucchs) {
-          if (pucch_info_and_uci_ind_match(pucch, test_uci)) {
-            // Intercept the UCI indication and force HARQ-ACK=ACK and UCI.
-            if (pucch.format == pucch_format::FORMAT_1) {
-              fill_uci_pdu(variant_get<mac_uci_pdu::pucch_f0_or_f1_type>(test_uci.pdu), pucch);
-            } else {
-              fill_uci_pdu(variant_get<mac_uci_pdu::pucch_f2_or_f3_or_f4_type>(test_uci.pdu), pucch);
-            }
-            entry_found = true;
-          }
+          entry_found = true;
         }
       }
+    }
 
-      if (not entry_found) {
-        msg_copy.ucis.pop_back();
-        logger.warning("c-rnti={}: Mismatch between provided UCI and expected UCI for slot_rx={}", pdu.rnti, msg.sl_rx);
-      }
+    if (not entry_found) {
+      msg_copy.ucis.pop_back();
+      logger.warning("c-rnti={}: Mismatch between provided UCI and expected UCI for slot_rx={}", pdu.rnti, msg.sl_rx);
     }
   }
 
@@ -615,7 +601,6 @@ async_task<mac_ue_create_response> mac_test_mode_adapter::handle_ue_create_reque
   if (ue_info_mgr.is_test_ue(cfg.crnti)) {
     // It is the test UE.
     mac_ue_create_request cfg_copy = cfg;
-    cfg_copy.initial_fallback      = false;
 
     // Save UE index and configuration of test mode UE.
     ue_info_mgr.add_ue(cfg.crnti, cfg_copy.ue_index, cfg_copy.sched_cfg);
@@ -656,11 +641,6 @@ async_task<mac_ue_delete_response> mac_test_mode_adapter::handle_ue_delete_reque
 bool mac_test_mode_adapter::handle_ul_ccch_msg(du_ue_index_t ue_index, byte_buffer pdu)
 {
   return mac_adapted->get_ue_configurator().handle_ul_ccch_msg(ue_index, std::move(pdu));
-}
-
-void mac_test_mode_adapter::handle_ue_config_applied(du_ue_index_t ue_idx)
-{
-  mac_adapted->get_ue_configurator().handle_ue_config_applied(ue_idx);
 }
 
 std::unique_ptr<mac_interface> srsran::create_du_high_mac(const mac_config&             mac_cfg,

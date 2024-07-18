@@ -118,22 +118,6 @@ bool uplane_message_decoder_impl::decode_header(uplane_message_params&          
   params.symbol_id        = slot_and_symbol & 0x3f;
   slot_id |= slot_and_symbol >> 6;
 
-  // No need to check the frame property, as its range is [0,256), and the slot_point frame range is [0,1024).
-
-  // Check the subframe property.
-  if (subframe >= NOF_SUBFRAMES_PER_FRAME) {
-    logger.info("Dropped received Open Fronthaul message as the decoded subframe property '{}' is invalid", subframe);
-
-    return false;
-  }
-
-  // Check the slot property.
-  if (slot_id >= slot_point(scs, 0).nof_slots_per_subframe()) {
-    logger.info("Dropped received Open Fronthaul message as the decoded slot property '{}' is invalid", slot_id);
-
-    return false;
-  }
-
   params.slot = slot_point(to_numerology_value(scs), frame, subframe, slot_id);
 
   return is_header_valid(params, logger, nof_symbols, version);
@@ -145,20 +129,8 @@ bool uplane_message_decoder_impl::decode_all_sections(uplane_message_decoder_res
   // Decode sections while the message has bytes remaining.
   while (deserializer.remaining_bytes()) {
     // Try to decode section.
-    decoded_section_status status = decode_section(results, deserializer);
-
-    // Incomplete sections force the exit of the loop.
-    if (status == decoded_section_status::incomplete) {
+    if (!decode_section(results, deserializer)) {
       break;
-    }
-
-    if (status == decoded_section_status::malformed) {
-      logger.info(
-          "Dropped received Open Fronthaul message as a malformed section was decoded for slot '{}' and symbol '{}'",
-          results.params.slot,
-          results.params.symbol_id);
-
-      return false;
     }
 
     if (results.sections.full()) {
@@ -183,120 +155,41 @@ bool uplane_message_decoder_impl::decode_all_sections(uplane_message_decoder_res
   return is_result_valid;
 }
 
-/// Fills the given User-Plane section parameters using the given decoded User-Plane section parameters.
-static void fill_results_from_decoder_section(uplane_section_params&               results,
-                                              const decoder_uplane_section_params& decoded_results)
+bool uplane_message_decoder_impl::decode_section(uplane_message_decoder_results&    results,
+                                                 network_order_binary_deserializer& deserializer)
 {
-  results.section_id                = decoded_results.section_id;
-  results.is_every_rb_used          = decoded_results.is_every_rb_used;
-  results.use_current_symbol_number = decoded_results.use_current_symbol_number;
-  results.start_prb                 = decoded_results.start_prb;
-  results.nof_prbs                  = decoded_results.nof_prbs;
-  results.ud_comp_hdr               = decoded_results.ud_comp_hdr;
-  results.ud_comp_len               = decoded_results.ud_comp_len;
-  results.ud_comp_param             = decoded_results.ud_comp_param;
-}
+  // Add a section to the results.
+  uplane_section_params ofh_up_section;
 
-/// Returns true if the compression parameter is present based on the given compression type.
-static bool is_ud_comp_param_present(compression_type comp)
-{
-  switch (comp) {
-    case compression_type::BFP:
-    case compression_type::block_scaling:
-    case compression_type::mu_law:
-    case compression_type::bfp_selective:
-    case compression_type::mod_selective:
-      return true;
-    case compression_type::none:
-    case compression_type::modulation:
-      return false;
-    default:
-      srsran_assert(0, "Invalid compression type '{}'", comp);
-  }
-
-  SRSRAN_UNREACHABLE;
-}
-
-/// \brief Returns true when the given deserializer contains enough bytes to decode the IQ samples defined by PRB IQ
-/// data size, otherwise false.
-///
-/// \param[out] nof_prb Number of PRBs.
-/// \param[in] deserializer Deserializer.
-/// \param[in] compression_params Compression parameters.
-/// \param[in] logger Logger.
-/// \return True on success, false otherwise.
-static bool check_iq_data_size(unsigned                           nof_prb,
-                               network_order_binary_deserializer& deserializer,
-                               const ru_compression_params&       compression_params,
-                               srslog::basic_logger&              logger)
-{
-  units::bytes prb_iq_data_size(
-      units::bits(NOF_SUBCARRIERS_PER_RB * 2 * compression_params.data_width).round_up_to_bytes().value());
-
-  // Add one byte when the udCompParam is present.
-  if (is_ud_comp_param_present(compression_params.type)) {
-    prb_iq_data_size = prb_iq_data_size + units::bytes(1);
-  }
-
-  if (deserializer.remaining_bytes() < prb_iq_data_size.value() * nof_prb) {
-    logger.info("Received Open Fronthaul message size is '{}' bytes and it is smaller than the expected IQ samples "
-                "size of '{}'",
-                deserializer.remaining_bytes(),
-                prb_iq_data_size.value() * nof_prb);
-
+  if (!decode_section_header(ofh_up_section, deserializer)) {
     return false;
   }
+
+  if (!decode_compression_header(ofh_up_section, deserializer, is_a_prach_message(results.params.filter_index))) {
+    return false;
+  }
+
+  if (!decode_compression_length(ofh_up_section, deserializer, ofh_up_section.ud_comp_hdr)) {
+    return false;
+  }
+
+  if (!decode_iq_data(ofh_up_section, deserializer, ofh_up_section.ud_comp_hdr)) {
+    return false;
+  }
+
+  results.sections.emplace_back(ofh_up_section);
 
   return true;
 }
 
-uplane_message_decoder_impl::decoded_section_status
-uplane_message_decoder_impl::decode_section(uplane_message_decoder_results&    results,
-                                            network_order_binary_deserializer& deserializer)
-{
-  // Add a section to the results.
-  decoder_uplane_section_params decoder_ofh_up_section;
-
-  decoded_section_status status = decode_section_header(decoder_ofh_up_section, deserializer);
-
-  if (status != decoded_section_status::ok) {
-    return status;
-  }
-
-  status = decode_compression_header(decoder_ofh_up_section, deserializer);
-  if (status != decoded_section_status::ok) {
-    return status;
-  }
-
-  status = decode_compression_length(decoder_ofh_up_section, deserializer, decoder_ofh_up_section.ud_comp_hdr);
-  if (status != decoded_section_status::ok) {
-    return status;
-  }
-
-  // Check the message contains the required IQ data.
-  if (!check_iq_data_size(decoder_ofh_up_section.nof_prbs, deserializer, decoder_ofh_up_section.ud_comp_hdr, logger)) {
-    return decoded_section_status::incomplete;
-  }
-
-  // Add new section.
-  auto& section = results.sections.emplace_back();
-  fill_results_from_decoder_section(section, decoder_ofh_up_section);
-
-  // Decode the IQ data.
-  decode_iq_data(section, deserializer, section.ud_comp_hdr);
-
-  return decoded_section_status::ok;
-}
-
-uplane_message_decoder_impl::decoded_section_status
-uplane_message_decoder_impl::decode_section_header(decoder_uplane_section_params&     results,
-                                                   network_order_binary_deserializer& deserializer)
+bool uplane_message_decoder_impl::decode_section_header(uplane_section_params&             results,
+                                                        network_order_binary_deserializer& deserializer)
 {
   if (deserializer.remaining_bytes() < SECTION_ID_HEADER_NO_COMPRESSION_SIZE) {
     logger.info("Received Open Fronthaul message size is '{}' bytes and is smaller than the section header size",
                 deserializer.remaining_bytes());
 
-    return decoded_section_status::incomplete;
+    return false;
   }
 
   results.section_id = 0;
@@ -315,20 +208,32 @@ uplane_message_decoder_impl::decode_section_header(decoder_uplane_section_params
   nof_prb           = deserializer.read<uint8_t>();
   nof_prb           = (nof_prb == 0) ? ru_nof_prbs : nof_prb;
 
-  return decoded_section_status::ok;
+  return true;
 }
 
-/// \brief Decodes the compressed PRBs from the deserializer.
+/// \brief Decodes the compressed PRBs from the deserializer and returns true on success, otherwise false.
 ///
 /// This function skips the udCompParam field.
 ///
 /// \param[out] comp_prb Compressed PRBs to decode.
 /// \param[in] deserializer Deserializer.
 /// \param[in] prb_iq_data_size PRB size in bits.
-static void decode_prbs_no_ud_comp_param_field(span<compressed_prb>               comp_prb,
+/// \param[in] logger Logger.
+/// \return True on success, false otherwise.
+static bool decode_prbs_no_ud_comp_param_field(span<compressed_prb>               comp_prb,
                                                network_order_binary_deserializer& deserializer,
-                                               units::bits                        prb_iq_data_size)
+                                               units::bits                        prb_iq_data_size,
+                                               srslog::basic_logger&              logger)
 {
+  if (deserializer.remaining_bytes() < prb_iq_data_size.round_up_to_bytes().value() * comp_prb.size()) {
+    logger.info("Received Open Fronthaul message size is '{}' bytes and it is smaller than the expected IQ samples "
+                "size of '{}'",
+                deserializer.remaining_bytes(),
+                prb_iq_data_size.round_up_to_bytes().value() * comp_prb.size());
+
+    return false;
+  }
+
   unsigned nof_bytes = prb_iq_data_size.round_up_to_bytes().value();
 
   // Read the samples from the deserializer.
@@ -339,36 +244,51 @@ static void decode_prbs_no_ud_comp_param_field(span<compressed_prb>             
     deserializer.read(prb.get_byte_buffer().first(nof_bytes));
     prb.set_stored_size(nof_bytes);
   }
+
+  return true;
 }
 
-/// \brief Decodes the compressed PRBs from the deserializer.
+/// \brief Decodes the compressed PRBs from the deserializer and returns true on success, otherwise false.
 ///
 /// This function decodes the udCompParam field.
 ///
 /// \param[out] comp_prb Compressed PRBs to decode.
 /// \param[in] deserializer Deserializer.
 /// \param[in] prb_iq_data_size PRB size in bits.
-static void decode_prbs_with_ud_comp_param_field(span<compressed_prb>               comp_prb,
+/// \param[in] logger Logger.
+/// \return True on success, false otherwise.
+static bool decode_prbs_with_ud_comp_param_field(span<compressed_prb>               comp_prb,
                                                  network_order_binary_deserializer& deserializer,
-                                                 units::bits                        prb_iq_data_size)
+                                                 units::bits                        prb_iq_data_size,
+                                                 srslog::basic_logger&              logger)
 {
+  // Add 1 byte to the PRB size as the udComParam must be decoded.
+  units::bytes prb_bytes = prb_iq_data_size.round_up_to_bytes() + units::bytes(1);
+  if (deserializer.remaining_bytes() < prb_bytes.value() * comp_prb.size()) {
+    logger.info(
+        "Received Open Fronthaul message size is '{}' bytes and is smaller than the expected IQ samples size of '{}'",
+        deserializer.remaining_bytes(),
+        prb_bytes.value() * comp_prb.size());
+
+    return false;
+  }
+
   unsigned nof_bytes = prb_iq_data_size.round_up_to_bytes().value();
 
   // For each PRB, udCompParam must be decoded.
   for (auto& prb : comp_prb) {
-    // Decode udComParam.
     prb.set_compression_param(deserializer.read<uint8_t>());
 
-    // Decode IQ data.
     deserializer.read(prb.get_byte_buffer().first(nof_bytes));
     prb.set_stored_size(nof_bytes);
   }
+
+  return true;
 }
 
-uplane_message_decoder_impl::decoded_section_status
-uplane_message_decoder_impl::decode_compression_length(decoder_uplane_section_params&     results,
-                                                       network_order_binary_deserializer& deserializer,
-                                                       const ru_compression_params&       compression_params)
+bool uplane_message_decoder_impl::decode_compression_length(uplane_section_params&             results,
+                                                            network_order_binary_deserializer& deserializer,
+                                                            const ru_compression_params&       compression_params)
 {
   switch (compression_params.type) {
     case compression_type::none:
@@ -376,7 +296,7 @@ uplane_message_decoder_impl::decode_compression_length(decoder_uplane_section_pa
     case compression_type::block_scaling:
     case compression_type::mu_law:
     case compression_type::modulation:
-      return decoded_section_status::ok;
+      return true;
     default:
       break;
   }
@@ -386,15 +306,15 @@ uplane_message_decoder_impl::decode_compression_length(decoder_uplane_section_pa
         "Received Open Fronthaul message size is '{}' bytes and is smaller than the user data compression length",
         deserializer.remaining_bytes());
 
-    return decoded_section_status::incomplete;
+    return false;
   }
 
   results.ud_comp_len.emplace(deserializer.read<uint16_t>());
 
-  return decoded_section_status::ok;
+  return true;
 }
 
-void uplane_message_decoder_impl::decode_iq_data(uplane_section_params&             results,
+bool uplane_message_decoder_impl::decode_iq_data(uplane_section_params&             results,
                                                  network_order_binary_deserializer& deserializer,
                                                  const ru_compression_params&       compression_params)
 {
@@ -403,18 +323,24 @@ void uplane_message_decoder_impl::decode_iq_data(uplane_section_params&         
   units::bits prb_iq_data_size_bits(NOF_SUBCARRIERS_PER_RB * 2 * compression_params.data_width);
 
   // udCompParam field is not present when compression type is none or modulation.
-  if (is_ud_comp_param_present(compression_params.type)) {
-    decode_prbs_with_ud_comp_param_field(comp_prbs, deserializer, prb_iq_data_size_bits);
+  if (compression_params.type == compression_type::none || compression_params.type == compression_type::modulation) {
+    if (!decode_prbs_no_ud_comp_param_field(comp_prbs, deserializer, prb_iq_data_size_bits, logger)) {
+      return false;
+    }
   } else {
-    decode_prbs_no_ud_comp_param_field(comp_prbs, deserializer, prb_iq_data_size_bits);
+    if (!decode_prbs_with_ud_comp_param_field(comp_prbs, deserializer, prb_iq_data_size_bits, logger)) {
+      return false;
+    }
   }
 
   // Decompress the samples.
   results.iq_samples.resize(results.nof_prbs * NOF_SUBCARRIERS_PER_RB);
   decompressor->decompress(results.iq_samples, comp_prbs, compression_params);
+
+  return true;
 }
 
-filter_index_type srsran::ofh::uplane_peeker::peek_filter_index(span<const uint8_t> message)
+filter_index_type uplane_message_decoder_impl::peek_filter_index(span<const uint8_t> message) const
 {
   if (message.empty()) {
     return filter_index_type::reserved;
@@ -424,9 +350,7 @@ filter_index_type srsran::ofh::uplane_peeker::peek_filter_index(span<const uint8
   return to_filter_index_type(message[0] & 0xf);
 }
 
-slot_symbol_point srsran::ofh::uplane_peeker::peek_slot_symbol_point(span<const uint8_t> message,
-                                                                     unsigned            nof_symbols,
-                                                                     subcarrier_spacing  scs)
+slot_symbol_point uplane_message_decoder_impl::peek_slot_symbol_point(span<const uint8_t> message) const
 {
   // Slot is codified in the first 4 bytes of the Open Fronthaul message.
   if (message.size() < 4) {
@@ -442,15 +366,6 @@ slot_symbol_point srsran::ofh::uplane_peeker::peek_slot_symbol_point(span<const 
   uint8_t  slot_and_symbol = message[3];
   unsigned symbol_id       = slot_and_symbol & 0x3f;
   slot_id |= slot_and_symbol >> 6;
-
-  if (subframe >= NOF_SUBFRAMES_PER_FRAME) {
-    return {slot_point{}, 0, nof_symbols};
-  }
-
-  // Check the slot property.
-  if (slot_id >= slot_point(scs, 0).nof_slots_per_subframe()) {
-    return {slot_point{}, 0, nof_symbols};
-  }
 
   return {slot_point(to_numerology_value(scs), frame, subframe, slot_id), symbol_id, nof_symbols};
 }

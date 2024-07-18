@@ -1,0 +1,66 @@
+\doxysection{hw\+\_\+accelerator.\+h}
+\hypertarget{hw__accelerator_8h_source}{}\label{hw__accelerator_8h_source}\index{include/srsran/hal/hw\_accelerator.h@{include/srsran/hal/hw\_accelerator.h}}
+\mbox{\hyperlink{hw__accelerator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Definition\ of\ an\ abstract\ interface\ to\ a\ hardware\ accelerator.}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ hal\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ This\ interface\ provides\ the\ basic\ functions\ to\ enqueue\ and\ dequeue\ an\ operation\ to\ hardware\ accelerator.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)tparam\ T\ Type\ of\ the\ input\ data,\ and\ of\ the\ packed\ codeword\ in\ the\ case\ of\ encoders\ or\ soft-\/data\ in\ case\ of}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ decoders,\ to\ the\ hardware\ accelerator.\ \(\backslash\)tparam\ U\ Type\ of\ the\ output\ data\ to\ the\ hardware\ accelerator.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Generic\ hardware\ accelerator\ interface\ definition.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ hw\_accelerator}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{virtual}\ \string~hw\_accelerator()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Enqueues\ an\ accelerated\ operation\ and\ provides\ the\ input\ data.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ data\ \ \ \ \ \ The\ input\ data\ to\ the\ hardware\ accelerator.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ aux\_data\ \ Optional\ soft\ combining\ data\ typically\ used\ by\ hardware-\/accelerated\ decoding\ operations.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ cb\_index\ \ Optional\ index\ of\ the\ CB\ within\ the\ TB.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ operation\ was\ successfully\ enqueued,\ false\ otherwise.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ enqueue\_operation(span<\textcolor{keyword}{const}\ T>\ data,\ span<\textcolor{keyword}{const}\ T>\ aux\_data\ =\ \{\},\ \textcolor{keywordtype}{unsigned}\ cb\_index\ =\ 0)\ =\ 0;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Dequeues\ an\ accelerated\ operation\ and\ retrieves\ both\ the\ output\ data,\ while\ using\ a\ soft-\/buffer.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ data\ \ \ \ \ \ \ \ \ \ The\ output\ data\ from\ the\ hardware\ accelerator.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ aux\_data\ \ \ \ \ \ Soft\ combining\ data\ for\ hardware-\/accelerated\ decoding\ operations,\ packed\ codeword\ for}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hardware-\/accelerated\ encoding\ operations.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ segment\_index\ Optional\ index\ of\ the\ segment\ within\ the\ TB.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ operation\ was\ successfully\ dequeued,\ false\ otherwise.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ dequeue\_operation(span<U>\ data,\ span<T>\ aux\_data\ =\ \{\},\ \textcolor{keywordtype}{unsigned}\ segment\_index\ =\ 0)\ =\ 0;}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \}\ \textcolor{comment}{//\ namespace\ hal}}
+\DoxyCodeLine{00060\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

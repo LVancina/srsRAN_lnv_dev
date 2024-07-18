@@ -1,0 +1,86 @@
+\doxysection{radio\+\_\+uhd\+\_\+rx\+\_\+stream.\+h}
+\hypertarget{radio__uhd__rx__stream_8h_source}{}\label{radio__uhd__rx__stream_8h_source}\index{lib/radio/uhd/radio\_uhd\_rx\_stream.h@{lib/radio/uhd/radio\_uhd\_rx\_stream.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}radio\_uhd\_exception\_handler.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}radio\_uhd\_multi\_usrp.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/baseband\_gateway\_receiver.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_writer.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/radio/radio\_configuration.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/radio/radio\_notification\_handler.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream}{radio\_uhd\_rx\_stream}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1uhd__exception__handler}{uhd\_exception\_handler}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__receiver}{baseband\_gateway\_receiver}}}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{double}\ RECEIVE\_TIMEOUT\_S\ =\ 0.2f;}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ ONE\_PACKET\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{enum\ class}\ states\ \{\ UNINITIALIZED,\ SUCCESSFUL\_INIT,\ STREAMING,\ STOP\ \};}
+\DoxyCodeLine{00047\ \ \ std::atomic<states>\ state\ =\ \{states::UNINITIALIZED\};}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{unsigned}\ id;}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{double}\ srate\_Hz;}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notifier;}
+\DoxyCodeLine{00055\ \ \ uhd::rx\_streamer::sptr\ stream;}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{unsigned}\ max\_packet\_size;}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_channels;}
+\DoxyCodeLine{00061\ \ \ std::mutex\ stream\_mutex;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{bool}\ receive\_block(\textcolor{keywordtype}{unsigned}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_rxd\_samples,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ buffs,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer\_offset,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uhd::rx\_metadata\_t\&\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__receiver_1_1metadata}{metadata}});}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description}{stream\_description}}\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description_ab9e55f09b4a0a0f745a8cf6d7d50db27}{id}};}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description_a160a068916afba455cecdd6e78d722e7}{srate\_Hz}};}
+\DoxyCodeLine{00082\ \ \ \ \ radio\_configuration::over\_the\_wire\_format\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description_aa813d3b67c95c0f8bcc5926326e4f605}{otw\_format}};}
+\DoxyCodeLine{00084\ \ \ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description_abf37805031be90db14ffb9095aa36429}{args}};}
+\DoxyCodeLine{00086\ \ \ \ \ std::vector<size\_t>\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description_a531feb877c4b39052df94d3459225cc1}{ports}};}
+\DoxyCodeLine{00087\ \ \ \};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_aca19749a06798b1a6067c1b1882fe39a}{radio\_uhd\_rx\_stream}}(uhd::usrp::multi\_usrp::sptr\&\ usrp,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1radio__uhd__rx__stream_1_1stream__description}{stream\_description}}\&\ \ \ \ description,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ \ notifier\_);}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_a549f75a1eb36ef92da670e98cd20cb0a}{start}}(\textcolor{keyword}{const}\ uhd::time\_spec\_t\&\ time\_spec);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_a4384a6fd84beab82e7c9a5429a7a723b}{get\_buffer\_size}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00106\ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__receiver_1_1metadata}{metadata}}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_a15c3e6db191b70f325f549b1a6b1c769}{receive}}(\mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__writer}{baseband\_gateway\_buffer\_writer}}\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_a82c9e149a00ff49f1b552f6a893f62d6}{stop}}();}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__rx__stream_ad32dc3140529e7c09e88131fe0204c0f}{wait\_stop}}();}
+\DoxyCodeLine{00114\ \};}
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

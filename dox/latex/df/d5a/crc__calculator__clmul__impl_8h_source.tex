@@ -1,0 +1,68 @@
+\doxysection{crc\+\_\+calculator\+\_\+clmul\+\_\+impl.\+h}
+\hypertarget{crc__calculator__clmul__impl_8h_source}{}\label{crc__calculator__clmul__impl_8h_source}\index{lib/phy/upper/channel\_coding/crc\_calculator\_clmul\_impl.h@{lib/phy/upper/channel\_coding/crc\_calculator\_clmul\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{crc__calculator__lut__impl_8h}{"{}crc\_calculator\_lut\_impl.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/crc\_calculator.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ \(\backslash\)brief\ CRC\ calculator\ implementation\ based\ on\ the\ \(\backslash\)e\ PCLMULQDQ\ instruction.}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Port\ of\ the\ \(\backslash\)e\ soft-\/crc\ implementation\ copyrighted\ by\ Intel\ Corporation\ and\ licensed\ under\ BSD.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Source:\ https://github.com/intel/soft-\/crc}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ "{}Fast\ CRC\ Computation\ for\ Generic\ Polynomials\ Using\ PCLMULQDQ\ Instruction"{}}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ URL:\ http://download.intel.com/design/intarch/papers/323102.pdf}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl}{crc\_calculator\_clmul\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1crc__calculator}{crc\_calculator}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Default\ constructor\ from\ a\ polynomial.}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl_a7f0b2fc21c4c291b7f5982fd1ec7df77}{crc\_calculator\_clmul\_impl}}(\mbox{\hyperlink{namespacesrsran_a435210edce480bf70bdd9d0c887c0c56}{crc\_generator\_poly}}\ poly\_)\ :\ poly(poly\_),\ crc\_calc\_lut\mbox{\hyperlink{classsrsran_1_1crc__calculator__lut__impl_ac592ef15cda8c9f96f66238f7e2315d7}{(}}poly\mbox{\hyperlink{classsrsran_1_1crc__calculator__lut__impl_ac592ef15cda8c9f96f66238f7e2315d7}{)}}\ \{\}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00044\ \ \ crc\_calculator\_checksum\_t\ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl_aa1181187dedaa1ce51a3bc4540800edb}{calculate\_byte}}(span<\textcolor{keyword}{const}\ uint8\_t>\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00047\ \ \ crc\_calculator\_checksum\_t\ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl_ab42db947457cf6b77f4eea55105b1332}{calculate\_bit}}(span<\textcolor{keyword}{const}\ uint8\_t>\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00050\ \ \ crc\_calculator\_checksum\_t\ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl_a633be6080383439381022374105ffb44}{calculate}}(\textcolor{keyword}{const}\ bit\_buffer\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{namespacesrsran_a435210edce480bf70bdd9d0c887c0c56}{crc\_generator\_poly}}\ \mbox{\hyperlink{classsrsran_1_1crc__calculator__clmul__impl_a12faf57c4f4d4a83fd869fe5593efc09}{get\_generator\_poly}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ poly;\ \};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Polynomial\ selection.}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{namespacesrsran_a435210edce480bf70bdd9d0c887c0c56}{crc\_generator\_poly}}\ poly;}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ CRC\ calculator\ based\ on\ look-\/up\ table\ for\ unsupported\ methods\ and\ polynomials.}}
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1crc__calculator__lut__impl}{crc\_calculator\_lut\_impl}}\ crc\_calc\_lut;}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

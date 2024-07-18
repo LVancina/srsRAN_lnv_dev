@@ -1,0 +1,93 @@
+\doxysection{port\+\_\+channel\+\_\+estimator\+\_\+average\+\_\+impl.\+h}
+\hypertarget{port__channel__estimator__average__impl_8h_source}{}\label{port__channel__estimator__average__impl_8h_source}\index{lib/phy/upper/signal\_processors/port\_channel\_estimator\_average\_impl.h@{lib/phy/upper/signal\_processors/port\_channel\_estimator\_average\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/generic\_functions/dft\_processor.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{interpolator_8h}{srsran/phy/support/interpolator.h}}"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{port__channel__estimator_8h}{srsran/phy/upper/signal\_processors/port\_channel\_estimator.h}}"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/signal\_processors/port\_channel\_estimator\_parameters.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl}{port\_channel\_estimator\_average\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator}{port\_channel\_estimator}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_a96288bf46248e5e336eb75b5d4a8e008}{DFT\_SIZE}}\ =\ 4096;}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_a369fbd0af26bc64725e5436d3fded5bc}{MAX\_SINR\_DB}}\ =\ 100;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_a584c03229cb5d5ed2a209d31332657a3}{port\_channel\_estimator\_average\_impl}}(std::unique\_ptr<interpolator>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interp,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<dft\_processor>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ idft\_proc,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_adc0f9086fd375c5668eb00620b3fab2e}{port\_channel\_estimator\_fd\_smoothing\_strategy}}\ fd\_smoothing\_strategy\_)\ :}
+\DoxyCodeLine{00054\ \ \ \ \ fd\_smoothing\_strategy(fd\_smoothing\_strategy\_),\ freq\_interpolator(std::move(interp)),\ idft(std::move(idft\_proc))}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ srsran\_assert(freq\_interpolator,\ \textcolor{stringliteral}{"{}Invalid\ interpolator."{}});}
+\DoxyCodeLine{00057\ \ \ \ \ srsran\_assert(idft-\/>get\_direction()\ ==\ \mbox{\hyperlink{classsrsran_1_1dft__processor_ad6d2dd1eff168ecf482b422a7c363d40a1955bdc302911f376074eb9b02e56639}{dft\_processor::direction::INVERSE}},}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ port\ channel\ estimator\ requires\ an\ inverse\ (not\ direct)\ DFT\ processor."{}});}
+\DoxyCodeLine{00059\ \ \ \ \ srsran\_assert(idft-\/>get\_size()\ ==\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_a96288bf46248e5e336eb75b5d4a8e008}{DFT\_SIZE}},}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ port\ channel\ estimator\ requires\ an\ iDFT\ of\ size\ \{\},\ provided\ \{\}."{}},}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\textcolor{keyword}{>}(\mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_a96288bf46248e5e336eb75b5d4a8e008}{DFT\_SIZE}}),}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ idft-\/>get\_size());}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator__average__impl_ab2661fe97af92cf61cd794a58eaca96e}{compute}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ \ \ \ \ \ \ \ \ \ \ estimate,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ grid,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1static__re__measurement}{dmrs\_symbol\_list}}\&\ \ \ \ \ pilots,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ configuration\&\ \ \ \ \ \ \ \ cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ compute\_layer\_hop(\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ \ \ \ \ \ \ \ \ \ \ estimate,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1resource__grid__reader}{resource\_grid\_reader}}\&\ grid,}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1static__re__measurement}{dmrs\_symbol\_list}}\&\ \ \ \ \ pilots,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ configuration\&\ \ \ \ \ \ \ \ cfg,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hop,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ layer);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00083\ \ \ \mbox{\hyperlink{namespacesrsran_adc0f9086fd375c5668eb00620b3fab2e}{port\_channel\_estimator\_fd\_smoothing\_strategy}}\ fd\_smoothing\_strategy;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00089\ \ \ std::unique\_ptr<interpolator>\ freq\_interpolator;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00092\ \ \ std::unique\_ptr<dft\_processor>\ idft;}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \ \ \mbox{\hyperlink{classsrsran_1_1static__re__measurement}{dmrs\_symbol\_list}}\ rx\_pilots;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00098\ \ \ std::array<cf\_t,\ MAX\_RB\ *\ NRE>\ freq\_response;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{keywordtype}{float}\ rsrp\ =\ 0;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{float}\ epre\ =\ 0;}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{float}\ noise\_var\ =\ 0;}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{float}\ time\_alignment\_s\ =\ 0;}
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

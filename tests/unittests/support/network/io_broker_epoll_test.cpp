@@ -22,11 +22,13 @@
 
 #include "srsran/adt/optional.h"
 #include "srsran/support/io/io_broker_factory.h"
-#include <condition_variable>
-#include <future>
+#include <functional> // for std::function/std::bind
 #include <gtest/gtest.h>
 #include <netinet/in.h>
+#include <stdio.h>
 #include <sys/socket.h>
+#include <sys/timerfd.h>
+#include <sys/types.h>
 #include <sys/un.h> // for unix sockets
 
 using namespace srsran;
@@ -36,29 +38,29 @@ static const std::string tx_buf = "hello world!";
 class io_broker_epoll : public ::testing::Test
 {
 protected:
-  io_broker_epoll()
-  {
-    srslog::init();
-    epoll_broker = create_io_broker(io_broker_type::epoll);
-  }
-  ~io_broker_epoll() { srslog::flush(); }
+  void SetUp() override { epoll_broker = create_io_broker(io_broker_type::epoll); }
 
-  void data_receive_callback()
+  void TearDown() override
   {
-    std::lock_guard<std::mutex> lock(rx_mutex);
+    EXPECT_TRUE(epoll_broker->unregister_fd(socket_fd));
+    if (socket_fd > 0) {
+      close(socket_fd);
+    }
+    socket_fd = 0;
+  }
+
+  void data_receive_callback(int fd)
+  {
     // receive data on provided fd
     char rx_buf[1024];
-    int  bytes = read(socket_fd, rx_buf, sizeof(rx_buf));
+    int  bytes = read(fd, rx_buf, sizeof(rx_buf));
 
     total_rx_bytes += bytes;
 
     if (socket_type == SOCK_DGRAM) {
       ASSERT_EQ(bytes, tx_buf.length());
     }
-    rx_cvar.notify_one();
   }
-
-  void error_callback(io_broker::error_code code) { error_count++; }
 
   void create_unix_sockets()
   {
@@ -96,7 +98,7 @@ protected:
     strncpy(client_addr_un.sun_path, socket_filename.c_str(), socket_filename.length());
 
     // connect client to server_filename
-    ret = connect(socket_fd, (struct sockaddr*)&client_addr_un, sizeof(client_addr_un));
+    ret = connect(socket_fd, (struct sockaddr*)&server_addr_un, sizeof(server_addr_un));
     // perror("socket failed");
     ASSERT_NE(ret, -1);
   }
@@ -170,48 +172,32 @@ protected:
 
   void add_socket_to_epoll()
   {
-    fd_handle = epoll_broker->register_fd(
-        socket_fd, [this]() { data_receive_callback(); }, [this](io_broker::error_code code) { error_callback(code); });
-    ASSERT_TRUE(fd_handle.registered());
+    ASSERT_TRUE(epoll_broker->register_fd(socket_fd, [this](int fd) { data_receive_callback(fd); }));
   }
 
-  void rem_socket_from_epoll()
-  {
-    if (socket_fd >= 0) {
-      EXPECT_TRUE(fd_handle.reset());
-      EXPECT_NE(close(socket_fd), -1);
-      socket_fd = -1;
-    }
-  }
-
-  void send_on_socket() const
+  void send_on_socket()
   {
     // send text
     int ret = send(socket_fd, tx_buf.c_str(), tx_buf.length(), 0);
     ASSERT_EQ(ret, tx_buf.length());
   }
 
-  void run_tx_rx_test(std::chrono::milliseconds timeout_ms = std::chrono::milliseconds(1000))
+  void run_tx_rx_test()
   {
     const int count = 5;
     int       run   = count;
     while (run-- > 0) {
       send_on_socket();
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
-
-    // wait until all bytes are received
-    std::unique_lock<std::mutex> lock(rx_mutex);
-    if (!rx_cvar.wait_for(lock, timeout_ms, [this]() { return total_rx_bytes >= tx_buf.length() * count; })) {
-      FAIL() << "Timeout: received only " << total_rx_bytes << " of " << tx_buf.length() * count << " Bytes.";
-    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
     ASSERT_EQ(total_rx_bytes, tx_buf.length() * count);
   }
 
+private:
   std::unique_ptr<io_broker> epoll_broker;
   int                        socket_fd   = 0;
   int                        socket_type = 0;
-
-  io_broker::subscriber fd_handle;
 
   // unix domain socket addresses (used by unix sockets only)
   struct sockaddr_un server_addr_un = {};
@@ -221,12 +207,7 @@ protected:
   struct sockaddr_in server_addr_in = {};
   struct sockaddr_in client_addr_in = {};
 
-  std::mutex              rx_mutex;
-  std::condition_variable rx_cvar;
-
-  std::atomic<int> error_count{0};
-
-  size_t total_rx_bytes = 0;
+  int total_rx_bytes = 0;
 };
 
 TEST_F(io_broker_epoll, unix_socket_trx_test)
@@ -234,7 +215,6 @@ TEST_F(io_broker_epoll, unix_socket_trx_test)
   create_unix_sockets();
   add_socket_to_epoll();
   run_tx_rx_test();
-  rem_socket_from_epoll();
 }
 
 TEST_F(io_broker_epoll, af_inet_socket_udp_trx_test)
@@ -242,7 +222,6 @@ TEST_F(io_broker_epoll, af_inet_socket_udp_trx_test)
   create_af_init_sockets(SOCK_DGRAM);
   add_socket_to_epoll();
   run_tx_rx_test();
-  rem_socket_from_epoll();
 }
 
 TEST_F(io_broker_epoll, af_inet_socket_tcp_trx_test)
@@ -250,54 +229,4 @@ TEST_F(io_broker_epoll, af_inet_socket_tcp_trx_test)
   create_af_init_sockets(SOCK_STREAM);
   add_socket_to_epoll();
   run_tx_rx_test();
-  rem_socket_from_epoll();
-}
-
-TEST_F(io_broker_epoll, reentrant_handle_and_deregistration)
-{
-  create_unix_sockets();
-
-  std::promise<bool>    p;
-  std::future<bool>     fut = p.get_future();
-  io_broker::subscriber handle;
-
-  handle = this->epoll_broker->register_fd(socket_fd, [&]() {
-    auto* p_copy = &p;
-    bool  ret    = handle.reset();
-    p_copy->set_value(ret);
-  });
-  ASSERT_TRUE(handle.registered());
-
-  send_on_socket();
-
-  ASSERT_EQ(fut.wait_for(std::chrono::seconds{100}), std::future_status::ready);
-  ASSERT_TRUE(fut.get());
-}
-
-TEST_F(io_broker_epoll, error_callback_called_when_epollhup)
-{
-  // Create pipe
-  int pipefd[2];
-  ASSERT_EQ(pipe(pipefd), 0);
-
-  std::promise<void> p;
-  std::future<void>  f = p.get_future();
-
-  // Subscribe pipe fd.
-  auto sub = this->epoll_broker->register_fd(
-      pipefd[0],
-      []() {},
-      [this, &p](io_broker::error_code code) {
-        this->error_count++;
-        p.set_value();
-      });
-  ASSERT_TRUE(sub.registered());
-
-  // Close pipe, while subscribed. This will cause an EPOLLHUP event.
-  ASSERT_EQ(this->error_count, 0);
-  close(pipefd[1]);
-
-  // Check if the error handler was called. The error can take some time to trigger the epoll.
-  f.wait();
-  ASSERT_EQ(this->error_count, 1);
 }

@@ -27,9 +27,9 @@
 #include "srsran/ran/sch/tbs_calculator.h"
 #include "srsran/support/benchmark_utils.h"
 #include "srsran/support/executors/task_worker_pool.h"
-#include "srsran/support/executors/unique_thread.h"
 #include "srsran/support/math_utils.h"
 #include "srsran/support/srsran_test.h"
+#include "srsran/support/unique_thread.h"
 #ifdef HWACC_PDSCH_ENABLED
 #include "srsran/hal/dpdk/bbdev/bbdev_acc.h"
 #include "srsran/hal/dpdk/bbdev/bbdev_acc_factory.h"
@@ -624,7 +624,7 @@ static pdsch_processor_factory& get_processor_factory()
     }
 
     worker_pool = std::make_unique<task_worker_pool<concurrent_queue_policy::locking_mpmc>>(
-        "pdsch_proc", nof_pdsch_processor_concurrent_threads, 1024);
+        nof_pdsch_processor_concurrent_threads, 1024, "pdsch_proc");
     executor = std::make_unique<task_worker_pool_executor<concurrent_queue_policy::locking_mpmc>>(*worker_pool);
 
     pdsch_proc_factory = create_pdsch_concurrent_processor_factory_sw(crc_calc_factory,
@@ -639,7 +639,7 @@ static pdsch_processor_factory& get_processor_factory()
   TESTASSERT(pdsch_proc_factory);
 
   // Create PDSCH processor pool.
-  pdsch_proc_factory = create_pdsch_processor_pool(std::move(pdsch_proc_factory), nof_threads, true);
+  pdsch_proc_factory = create_pdsch_processor_pool(std::move(pdsch_proc_factory), nof_threads);
   TESTASSERT(pdsch_proc_factory);
 
   return *pdsch_proc_factory;

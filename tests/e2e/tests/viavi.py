@@ -21,19 +21,17 @@
 """
 Launch tests in Viavi
 """
+
 import logging
-import operator
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Optional
 
 import pytest
-import yaml
-from pytest import mark
+from pytest import mark, param
 from requests import HTTPError
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
-from retina.launcher.public import MetricServerInfo, MetricsSummary
+from retina.launcher.public import MetricServerInfo
 from retina.launcher.utils import configure_artifacts
 from retina.protocol.base_pb2 import FiveGCDefinition, PLMN, StartInfo
 from retina.protocol.gnb_pb2 import GNBStartInfo
@@ -41,66 +39,9 @@ from retina.protocol.gnb_pb2_grpc import GNBStub
 from retina.viavi.client import CampaignStatusEnum, Viavi
 
 from .steps.configuration import configure_metric_server_for_gnb
-from .steps.stub import get_metrics, GNB_STARTUP_TIMEOUT, GnbMetrics, handle_start_error, stop
-
-_OMIT_VIAVI_FAILURE_LIST = ["authentication"]
-_POD_ERROR = "Error creating the pod"
+from .steps.stub import GNB_STARTUP_TIMEOUT, handle_start_error, stop
 
 
-# pylint: disable=too-many-instance-attributes
-@dataclass
-class _ViaviConfiguration:
-    """
-    Viavi configuration
-    """
-
-    campaign_filename: str = ""
-    test_name: str = ""
-    test_timeout: int = 0
-    gnb_extra_commands: str = ""
-    id: str = ""
-    max_pdschs_per_slot: int = 1
-    max_puschs_per_slot: int = 1
-    enable_qos_viavi: bool = False
-    # test/fail criteria
-    expected_ul_bitrate: float = 0
-    expected_dl_bitrate: float = 0
-    fail_if_kos: bool = True
-    warning_as_errors: bool = True
-
-
-def load_yaml_config(config_filename: str) -> List[_ViaviConfiguration]:
-    """
-    Load yaml config
-    """
-    test_declaration_list: List[_ViaviConfiguration] = []
-    config_filepath = Path(__file__).parent.joinpath("viavi", config_filename).absolute()
-    with open(config_filepath, "r", encoding="UTF-8") as file:
-        test_declaration_list_raw = yaml.safe_load(file)["tests"]
-
-    for test_declaration in test_declaration_list_raw:
-        test_declaration_list.append(
-            _ViaviConfiguration(
-                campaign_filename=test_declaration["campaign_filename"],
-                test_name=test_declaration["test_name"],
-                test_timeout=test_declaration["test_timeout"],
-                gnb_extra_commands=test_declaration["gnb_extra_commands"],
-                id=test_declaration["id"],
-                max_pdschs_per_slot=test_declaration["max_pdschs_per_slot"],
-                max_puschs_per_slot=test_declaration["max_pdschs_per_slot"],
-                enable_qos_viavi=test_declaration["enable_qos_viavi"],
-                expected_dl_bitrate=test_declaration["expected_dl_bitrate"],
-                expected_ul_bitrate=test_declaration["expected_ul_bitrate"],
-                fail_if_kos=test_declaration["fail_if_kos"],
-                warning_as_errors=test_declaration["warning_as_errors"],
-            )
-        )
-    return test_declaration_list
-
-
-################################################################################
-# Manual tests
-################################################################################
 @pytest.fixture
 def viavi_manual_campaign_filename(request):
     """
@@ -148,10 +89,6 @@ def test_viavi_manual(
     """
     Runs a test using Viavi
     """
-    test_declaration = get_viavi_configuration_from_testname(
-        viavi_manual_campaign_filename, viavi_manual_test_name, viavi_manual_test_timeout
-    )
-
     _test_viavi(
         # Retina
         retina_manager=retina_manager,
@@ -162,8 +99,9 @@ def test_viavi_manual(
         viavi=viavi,
         metrics_server=None,
         # Test info
-        metrics_summary=None,
-        test_declaration=test_declaration,
+        campaign_filename=viavi_manual_campaign_filename,
+        test_name=viavi_manual_test_name,
+        test_timeout=viavi_manual_test_timeout,
         # Test extra params
         always_download_artifacts=always_download_artifacts,
         gnb_startup_timeout=gnb_startup_timeout,
@@ -172,21 +110,20 @@ def test_viavi_manual(
     )
 
 
-################################################################################
-# CI tests
-################################################################################
-@pytest.mark.parametrize(
-    "test_declaration",
-    [
-        pytest.param(test_declaration, id=test_declaration.id)
-        for test_declaration in load_yaml_config("test_declaration.yml")
-    ],
+@mark.parametrize(
+    "campaign_filename, test_name, test_timeout, post_commands",
+    (
+        param("C:\\ci\\CI 4x4 ORAN-FH.xml", "1UE static DL + UL UDP - Dell", 45 * 60, "", id="1UE Bidirectional UDP"),
+        param(
+            "C:\\ci\\CI 4x4 ORAN-FH.xml",
+            "32UE static DL + UL UDP - Dell",
+            45 * 60,
+            "cell_cfg pdsch --max_rb_size 45",
+            id="32UE Bidirectional UDP",
+        ),
+    ),
 )
 @mark.viavi
-@mark.flaky(
-    reruns=2,
-    only_rerun=[_POD_ERROR],
-)
 # pylint: disable=too-many-arguments, too-many-locals
 def test_viavi(
     # Retina
@@ -198,8 +135,10 @@ def test_viavi(
     viavi: Viavi,
     metrics_server: MetricServerInfo,
     # Test info
-    metrics_summary: MetricsSummary,
-    test_declaration: _ViaviConfiguration,
+    campaign_filename: str,
+    test_name: str,
+    test_timeout: int,
+    post_commands: str,
     # Test extra params
     always_download_artifacts: bool = True,
     gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
@@ -219,67 +158,15 @@ def test_viavi(
         viavi=viavi,
         metrics_server=metrics_server,
         # Test info
-        metrics_summary=metrics_summary,
-        test_declaration=test_declaration,
+        campaign_filename=campaign_filename,
+        test_name=test_name,
+        test_timeout=test_timeout,
         # Test extra params
         always_download_artifacts=always_download_artifacts,
         gnb_startup_timeout=gnb_startup_timeout,
         gnb_stop_timeout=gnb_stop_timeout,
         log_search=log_search,
-    )
-
-
-@pytest.mark.parametrize(
-    "test_declaration",
-    [
-        pytest.param(test_declaration, id=test_declaration.id)
-        for test_declaration in load_yaml_config("test_declaration_debug.yml")
-    ],
-)
-@mark.viavi_debug
-@mark.flaky(
-    reruns=2,
-    only_rerun=[_POD_ERROR],
-)
-# pylint: disable=too-many-arguments, too-many-locals
-def test_viavi_debug(
-    # Retina
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    test_log_folder: str,
-    # Clients
-    gnb: GNBStub,
-    viavi: Viavi,
-    metrics_server: MetricServerInfo,
-    # Test info
-    metrics_summary: MetricsSummary,
-    test_declaration: _ViaviConfiguration,
-    # Test extra params
-    always_download_artifacts: bool = True,
-    gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
-    gnb_stop_timeout: int = 0,
-    log_search: bool = True,
-):
-    """
-    Runs a test using Viavi
-    """
-    _test_viavi(
-        # Retina
-        retina_manager=retina_manager,
-        retina_data=retina_data,
-        test_log_folder=test_log_folder,
-        # Clients
-        gnb=gnb,
-        viavi=viavi,
-        metrics_server=metrics_server,
-        # Test info
-        metrics_summary=metrics_summary,
-        test_declaration=test_declaration,
-        # Test extra params
-        always_download_artifacts=always_download_artifacts,
-        gnb_startup_timeout=gnb_startup_timeout,
-        gnb_stop_timeout=gnb_stop_timeout,
-        log_search=log_search,
+        post_commands=post_commands,
     )
 
 
@@ -294,13 +181,16 @@ def _test_viavi(
     viavi: Viavi,
     metrics_server: Optional[MetricServerInfo],
     # Test info
-    metrics_summary: Optional[MetricsSummary],
-    test_declaration: _ViaviConfiguration,
+    campaign_filename: str,
+    test_name: str,
+    test_timeout: int,
     # Test extra params
     always_download_artifacts: bool = True,
     gnb_startup_timeout: int = GNB_STARTUP_TIMEOUT,
     gnb_stop_timeout: int = 0,
     log_search: bool = True,
+    warning_as_errors: bool = False,
+    post_commands: str = "",
 ):
     """
     Runs a test using Viavi
@@ -311,21 +201,8 @@ def _test_viavi(
                 "gnb_id": 1,
                 "log_level": "warning",
                 "pcap": False,
-                "max_rb_size": -1,
-                "dl_arfcn": 625000,
-                "band": 78,
-                "bandwidth": 100,
-                "common_scs": 30,
-                "tac": 7,
-                "pci": 1,
-                "nof_antennas_dl": 4,
-                "nof_antennas_ul": 1,
-                "prach_config_index": 159,
-                "max_puschs_per_slot": test_declaration.max_puschs_per_slot,
-                "max_pdschs_per_slot": test_declaration.max_pdschs_per_slot,
-                "enable_qos_viavi": test_declaration.enable_qos_viavi,
             },
-            "templates": {"extra": str(Path(__file__).joinpath("../viavi/config.yml").resolve())},
+            "templates": {"cell": str(Path(__file__).joinpath("../viavi/config.yml").resolve())},
         },
     }
     if metrics_server is not None:
@@ -351,17 +228,14 @@ def _test_viavi(
                 fivegc_definition=FiveGCDefinition(amf_ip=amf_ip, amf_port=amf_port),
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,
-                    post_commands=test_declaration.gnb_extra_commands,
+                    post_commands=post_commands,
                 ),
             )
         )
 
     # Create campaign
-    logging.info(
-        f"Starting Campaign {test_declaration.campaign_filename}"
-        + (f" - Test {test_declaration.test_name}" if test_declaration.test_name is not None else "")
-    )
-    campaign_name = viavi.schedule_campaign(test_declaration.campaign_filename, test_declaration.test_name)
+    logging.info(f"Starting Campaign {campaign_filename}" + (f" - Test {test_name}" if test_name is not None else ""))
+    campaign_name = viavi.schedule_campaign(campaign_filename, test_name)
 
     # Start campaign
     viavi.run_campaign(campaign_name)
@@ -369,7 +243,7 @@ def _test_viavi(
 
     # Wait until end
     try:
-        info = viavi.wait_until_running_campaign_finishes(test_declaration.test_timeout)
+        info = viavi.wait_until_running_campaign_finishes(test_timeout)
         if info.status is not CampaignStatusEnum.PASS:
             pytest.fail(f"Viavi Test Failed: {info.message}")
         # Final stop
@@ -380,8 +254,8 @@ def _test_viavi(
             retina_data,
             gnb_stop_timeout=gnb_stop_timeout,
             log_search=log_search,
-            warning_as_errors=test_declaration.warning_as_errors,
-            fail_if_kos=test_declaration.fail_if_kos,
+            warning_as_errors=warning_as_errors,
+            fail_if_kos=False,
         )
 
     # This except and the finally should be inside the request, but the campaign_name makes it complicated
@@ -394,84 +268,7 @@ def _test_viavi(
         try:
             logging.info("Generating Viavi report")
             report_folder = viavi.generate_report(campaign_name)
-            logging.info("Folder with Viavi report: %s", report_folder)
             logging.info("Downloading Viavi report")
             viavi.download_directory(report_folder, Path(test_log_folder).joinpath("viavi"))
-            check_metrics_criteria(test_declaration, gnb, viavi, metrics_summary, test_declaration.fail_if_kos)
         except HTTPError:
             logging.error("Viavi Reports could not be downloaded")
-
-
-################################################################################
-# Helper functions
-################################################################################
-def check_metrics_criteria(
-    test_configuration: _ViaviConfiguration,
-    gnb: GNBStub,
-    viavi: Viavi,
-    metrics_summary: Optional[MetricsSummary],
-    fail_if_kos: bool,
-):
-    """
-    Check pass/fail criteria
-    """
-
-    is_ok = True
-
-    # Check metrics
-    gnb_metrics: GnbMetrics = get_metrics(gnb)
-
-    is_ok &= check_and_print_criteria(
-        "DL bitrate", gnb_metrics.dl_brate_agregate, test_configuration.expected_dl_bitrate, operator.gt
-    )
-    is_ok &= check_and_print_criteria(
-        "UL bitrate", gnb_metrics.ul_brate_agregate, test_configuration.expected_ul_bitrate, operator.gt
-    )
-    is_ok &= (
-        check_and_print_criteria("Number of KOs and/or retrxs", gnb_metrics.nof_kos_aggregate, 0, operator.eq)
-        or not fail_if_kos
-    )
-
-    # Save metrics
-    if metrics_summary is not None:
-        metrics_summary.write_metric("dl_bitrate", gnb_metrics.dl_brate_agregate)
-        metrics_summary.write_metric("ul_bitrate", gnb_metrics.ul_brate_agregate)
-        metrics_summary.write_metric("kos", gnb_metrics.nof_kos_aggregate)
-
-    # Check procedure table
-    viavi_failure_manager = viavi.get_test_failures()
-    viavi_failure_manager.print_failures(_OMIT_VIAVI_FAILURE_LIST)
-    is_ok &= viavi_failure_manager.get_number_of_failures(_OMIT_VIAVI_FAILURE_LIST) == 0
-
-    if not is_ok:
-        pytest.fail("Test didn't pass all the criteria")
-
-
-def check_and_print_criteria(
-    name: str, current: float, expected: float, operator_method: Callable[[float, float], bool]
-) -> bool:
-    """
-    Check and print criteria
-    """
-    is_ok = operator_method(current, expected)
-    (logging.info if is_ok else logging.error)(f"{name} expected: {expected}, actual: {current}")
-    return is_ok
-
-
-def get_viavi_configuration_from_testname(campaign_filename: str, test_name: str, timeout: int) -> _ViaviConfiguration:
-    """
-    Get Viavi configuration from dict
-    """
-    config = load_yaml_config("test_declaration.yml")
-    for test_config in config:
-        if test_config.test_name == test_name:
-            test_declaration = test_config
-            break
-
-    if test_declaration is None:
-        logging.warning("There is no config for the test: %s", test_name)
-        test_declaration = _ViaviConfiguration()
-
-    test_declaration.campaign_filename = campaign_filename
-    test_declaration.test_timeout = timeout
-    return test_declaration

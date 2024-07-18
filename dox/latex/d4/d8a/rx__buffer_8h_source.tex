@@ -1,0 +1,89 @@
+\doxysection{rx\+\_\+buffer.\+h}
+\hypertarget{rx__buffer_8h_source}{}\label{rx__buffer_8h_source}\index{include/srsran/phy/upper/rx\_buffer.h@{include/srsran/phy/upper/rx\_buffer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/log\_likelihood\_ratio.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class}\ bit\_buffer;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ a\ PUSCH\ rate\ matcher\ buffer.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ The\ aim\ is\ to\ provide\ the\ physical\ layer\ shared\ channel\ FEC\ with\ a\ persistent\ storage\ of\ CRC\ and\ soft\ bits\ buffer}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ among\ transmissions\ for\ a\ given\ user\ and\ HARQ\ process.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ The\ CRCs\ are\ set\ to\ \(\backslash\)c\ true\ if\ the\ codeblocks\ have\ been\ successfully\ decoded.\ \ By\ looking\ at\ these\ flags,\ codeblocks}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ decoded\ on\ a\ prior\ transmission\ do\ not\ require\ decoding.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ It\ is\ the\ responsibility\ of\ the\ shared\ channel\ receiver\ to\ reset\ CRCs\ and\ set\ to\ zero\ the\ soft\ bits\ when\ new\ data\ is}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ indicated.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{class}\ rx\_buffer}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{virtual}\ \string~rx\_buffer()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ Gets\ the\ number\ of\ codeblocks.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_nof\_codeblocks()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Resets\ all\ codeblocks\ CRCs.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ reset\_codeblocks\_crc()\ =\ 0;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ all\ codeblocks\ CRCs.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ view\ of\ the\ codeblocks\ CRCs:\ each\ entry\ represents\ the\ CRC\ state\ of\ a\ codeblock.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{virtual}\ span<\textcolor{keywordtype}{bool}>\ get\_codeblocks\_crc()\ =\ 0;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ the\ codeblock\ absolute\ identifier.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ The\ absolute\ codeblock\ identifier\ refers\ to\ the\ codeblock\ identifier\ within\ the\ common\ codeblock\ memory\ pool.\ It}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ is\ available\ for\ decoders\ which\ use\ external\ memory.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ codeblock\_id\ Indicates\ the\ codeblock\ identifier.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ codeblock\ identifier\ must\ not\ exceed\ get\_max\_nof\_codeblocks()-\/1.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{unsigned}\ get\_absolute\_codeblock\_id(\textcolor{keywordtype}{unsigned}\ codeblock\_id)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ codeblock\ soft-\/bit\ buffer.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ codeblock\_id\ Indicates\ the\ codeblock\ identifier.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ codeblock\_size\ Indicates\ the\ codeblock\ size.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ view\ of\ the\ codeblock\ soft\ bits.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ codeblock\ identifier\ must\ not\ exceed\ get\_max\_nof\_codeblocks()-\/1.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{virtual}\ span<\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ get\_codeblock\_soft\_bits(\textcolor{keywordtype}{unsigned}\ codeblock\_id,\ \textcolor{keywordtype}{unsigned}\ codeblock\_size)\ =\ 0;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ codeblock\ data-\/bit\ buffer.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ codeblock\_id\ Indicates\ the\ codeblock\ identifier.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ data\_size\ Indicates\ the\ data\ size,\ i.e.\ the\ number\ of\ data/information\ bits\ in\ the\ codeblock.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ view\ of\ the\ codeblock\ data\ bits\ (the\ information\ message).}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ codeblock\ identifier\ must\ not\ exceed\ get\_max\_nof\_codeblocks()-\/1.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ Data\ bits\ do\ not\ include\ filler\ bits,\ codeblock-\/specific\ CRC\ bits\ or\ zero-\/padding\ bits.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{virtual}\ bit\_buffer\ get\_codeblock\_data\_bits(\textcolor{keywordtype}{unsigned}\ codeblock\_id,\ \textcolor{keywordtype}{unsigned}\ data\_size)\ =\ 0;}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

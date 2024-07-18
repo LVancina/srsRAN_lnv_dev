@@ -1,0 +1,113 @@
+\doxysection{uci\+\_\+allocator\+\_\+impl.\+h}
+\hypertarget{uci__allocator__impl_8h_source}{}\label{uci__allocator__impl_8h_source}\index{lib/scheduler/uci\_scheduling/uci\_allocator\_impl.h@{lib/scheduler/uci\_scheduling/uci\_allocator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../pucch\_scheduling/pucch\_allocator.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{uci__allocator_8h}{"{}uci\_allocator.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/circular\_array.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Implementation\ of\ \(\backslash\)ref\ uci\_allocator\ interface.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ uci\_allocator\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1uci__allocator}{uci\_allocator}}}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{explicit}\ uci\_allocator\_impl(\mbox{\hyperlink{classsrsran_1_1pucch__allocator}{pucch\_allocator}}\&\ pucch\_alloc\_);}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_a84eb829ee60066ebf2e38f13386e45c8}{slot\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_tx)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \string~uci\_allocator\_impl()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1uci__allocation}{uci\_allocation}}>\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_acd2cfbdf8a259b7a56d61acd258dabc2}{alloc\_uci\_harq\_ue}}(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ \ \ \ \ res\_alloc,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\_cell\_configuration}}\&\ ue\_cell\_cfg,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k0,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \ \ \ \ \ \ \ \ \ k1\_list,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdcch__dl__information}{pdcch\_dl\_information}}*\ \ fallback\_dci\_info\ =\ \textcolor{keywordtype}{nullptr})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_a4fddfb180ae008720176729b6d33e862}{multiplex\_uci\_on\_pusch}}(\mbox{\hyperlink{structsrsran_1_1ul__sched__info}{ul\_sched\_info}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pusch\_grant,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ slot\_alloc,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\_cell\_configuration}}\&\ \ ue\_cell\_cfg,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_adc49dd1f1e934b61b239929608850414}{uci\_allocate\_sr\_opportunity}}(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ slot\_alloc,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\_cell\_configuration}}\&\ \ ue\_cell\_cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_a8822e6aa48eadc564e20f040e34e21dd}{uci\_allocate\_csi\_opportunity}}(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ slot\_alloc,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\_cell\_configuration}}\&\ \ ue\_cell\_cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ uint8\_t\ \mbox{\hyperlink{classsrsran_1_1uci__allocator__impl_a16dcd0eedda8fe1a34f419b1bec7c2f6}{get\_scheduled\_pdsch\_counter\_in\_ue\_uci}}(\mbox{\hyperlink{structsrsran_1_1cell__slot__resource__allocator}{cell\_slot\_resource\_allocator}}\&\ slot\_alloc,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ crnti)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Information\ cached\ by\ the\ UCI\ scheduler\ relative\ to\ the\ UCIs\ scheduled\ in\ the\ cell\ resource\ grid.\ Store}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ here\ any\ information\ that\ does\ not\ need\ to\ be\ stored\ in\ the\ PUCCH\ and\ PUSCH\ PDUs\ and\ does\ not\ need\ to\ be\ sent\ to}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ the\ PHY.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keyword}{struct}\ slot\_alloc\_list\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1uci__allocator__impl_1_1slot__alloc__list_1_1ue__uci}{ue\_uci}}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{comment}{///\ RNTI\ of\ this\ UCI.}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \mbox{\hyperlink{structsrsran_1_1uci__allocator__impl_1_1slot__alloc__list_1_1ue__uci_ac2c2405feab61fb7850cb71c2de77cce}{rnti}}\ =\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}::INVALID\_RNTI;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{comment}{///\ Number\ of\ DL\ PDCCH(s)\ scheduled\ for\ which\ UCI\ falls\ in\ same\ slot.}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1uci__allocator__impl_1_1slot__alloc__list_1_1ue__uci_a2b03488d13eddd3c717b4ecb5449c67b}{scheduled\_dl\_pdcch\_counter}}\ =\ 0;}
+\DoxyCodeLine{00073\ \ \ \ \ \};}
+\DoxyCodeLine{00074\ \ \ \ \ static\_vector<ue\_uci,\ MAX\_PUCCH\_PDUS\_PER\_SLOT>\ ucis;}
+\DoxyCodeLine{00075\ \ \ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Helper\ function\ that\ allocates\ the\ UCI\ for\ HARQ-\/ACK\ either\ on\ the\ PUSCH\ or\ PUCCH.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ In\ the\ case\ of\ UCI\ allocation\ on\ the\ PUCCH,\ the\ function\ decides\ weather\ to\ allocate\ the\ grant\ on\ common\ or}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{//\ dedicated\ resources.\ Refer\ to\ \(\backslash\)ref\ alloc\_uci\_harq\_ue\ for\ the\ inputs\ and\ output\ args.}}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{structsrsran_1_1uci__allocation}{uci\_allocation}}>\ alloc\_uci\_harq\_ue\_helper(\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\_resource\_allocator}}\&\ \ \ \ \ res\_alloc,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1ue__cell__configuration}{ue\_cell\_configuration}}\&\ ue\_cell\_cfg,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k0,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k1,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdcch__dl__information}{pdcch\_dl\_information}}*\ \ fallback\_dci\_info\ =\ \textcolor{keywordtype}{nullptr});}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Fetches\ UCI\ alloc\ information\ for\ a\ given\ slot\ and\ UE.\ Returns\ nullptr\ if\ no\ UCI\ allocation\ was\ found.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{//\ \(\backslash\)return\ The\ UE\ UCI\ information\ for\ a\ given\ UCI\ slot\ and\ RNTI.\ If\ no\ UCI\ exists\ with\ the\ provided\ params,}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{//\ returns\ nullptr.}}
+\DoxyCodeLine{00090\ \ \ slot\_alloc\_list::\mbox{\hyperlink{structsrsran_1_1uci__allocator__impl_1_1slot__alloc__list_1_1ue__uci}{ue\_uci}}*\ get\_uci\_alloc(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ uci\_slot,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Fetches\ minimum\ distance\ in\ nof.\ slots\ to\ be\ maintained\ between\ PDSCH\ slot\ and\ its\ UCI\ HARQ\ ACK\ slot.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{//\ This\ function\ is\ used\ in\ determining\ the\ k1\ value\ to\ be\ applied\ when\ scheduling\ a\ PDSCH.}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ \(\backslash\)return\ The\ minimum\ distance\ in\ nof.\ slots\ to\ be\ maintained\ between\ PDSCH\ slot\ and\ its\ UCI\ HARQ\ ACK\ slot.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{unsigned}\ get\_min\_pdsch\_to\_ack\_slot\_distance(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ pdsch\_slot,\ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti,\ \textcolor{keywordtype}{unsigned}\ min\_k1,\ \textcolor{keywordtype}{unsigned}\ max\_k1);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1pucch__allocator}{pucch\_allocator}}\&\ pucch\_alloc;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{//\ \(\backslash\)brief\ Ring\ of\ UCI\ allocations\ indexed\ by\ slot.}}
+\DoxyCodeLine{00104\ \ \ circular\_array<slot\_alloc\_list,\ cell\_resource\_allocator::RING\_ALLOCATOR\_SIZE>\ uci\_alloc\_grid;}
+\DoxyCodeLine{00105\ \};}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -22,9 +22,8 @@
 
 #pragma once
 
-#include "../du_processor/du_processor.h"
+#include "../du_processor/du_processor_impl_interface.h"
 #include "srsran/cu_cp/ue_manager.h"
-#include "srsran/e1ap/cu_cp/e1ap_cu_cp.h"
 #include "srsran/support/async/async_task.h"
 
 namespace srsran {
@@ -54,8 +53,8 @@ public:
                                      const ue_configuration&                         ue_cfg_,
                                      const srsran::security::sec_as_config&          security_cfg_,
                                      const security_indication_t&                    default_security_indication_,
-                                     e1ap_bearer_context_manager&                    e1ap_bearer_ctxt_mng_,
-                                     f1ap_ue_context_manager&                        f1ap_ue_ctxt_mng_,
+                                     du_processor_e1ap_control_notifier&             e1ap_ctrl_notif_,
+                                     du_processor_f1ap_ue_context_notifier&          f1ap_ue_ctxt_notif_,
                                      du_processor_rrc_ue_control_message_notifier&   rrc_ue_notifier_,
                                      up_resource_manager&                            rrc_ue_up_resource_manager_,
                                      srslog::basic_logger&                           logger_);
@@ -65,7 +64,7 @@ public:
   static const char* name() { return "PDU Session Resource Setup Routine"; }
 
 private:
-  bool fill_e1ap_bearer_context_setup_request(e1ap_bearer_context_setup_request& e1ap_request);
+  void fill_e1ap_bearer_context_setup_request(e1ap_bearer_context_setup_request& e1ap_request);
   void fill_initial_e1ap_bearer_context_modification_request(e1ap_bearer_context_modification_request& e1ap_request);
 
   cu_cp_pdu_session_resource_setup_response handle_pdu_session_resource_setup_result(bool success);
@@ -77,8 +76,8 @@ private:
 
   up_config_update next_config;
 
-  e1ap_bearer_context_manager&                  e1ap_bearer_ctxt_mng;       // to trigger bearer context setup at CU-UP
-  f1ap_ue_context_manager&                      f1ap_ue_ctxt_mng;           // to trigger UE context modification at DU
+  du_processor_e1ap_control_notifier&           e1ap_ctrl_notifier;         // to trigger bearer context setup at CU-UP
+  du_processor_f1ap_ue_context_notifier&        f1ap_ue_ctxt_notifier;      // to trigger UE context modification at DU
   du_processor_rrc_ue_control_message_notifier& rrc_ue_notifier;            // to trigger RRC Reconfiguration at UE
   up_resource_manager&                          rrc_ue_up_resource_manager; // to get RRC DRB config
   srslog::basic_logger&                         logger;

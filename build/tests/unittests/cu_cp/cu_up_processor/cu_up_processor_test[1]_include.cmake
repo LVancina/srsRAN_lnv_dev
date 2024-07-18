@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_cp/cu_up_processor/cu_up_processor_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/cu_cp/cu_up_processor/cu_up_processor_test[1]_tests.cmake")
+else()
+  add_test(cu_up_processor_test_NOT_BUILT cu_up_processor_test_NOT_BUILT)
+endif()

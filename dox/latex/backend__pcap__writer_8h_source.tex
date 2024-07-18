@@ -1,0 +1,100 @@
+\doxysection{backend\+\_\+pcap\+\_\+writer.\+h}
+\hypertarget{backend__pcap__writer_8h_source}{}\label{backend__pcap__writer_8h_source}\index{lib/pcap/backend\_pcap\_writer.h@{lib/pcap/backend\_pcap\_writer.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}pcap\_file\_writer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/unique\_function.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }task\_executor;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ payload\_)\ :\ payload\_buf(std::move(payload\_))\ \{\}}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}}\ context\_header,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ payload)}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ header\_buf.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a190484f4224c88acb2f1b3334b28421b}{append}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\{context\_header\}))\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00042\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ payload\_buf.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a190484f4224c88acb2f1b3334b28421b}{append}}(std::move(payload)))\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ header\_buf.\mbox{\hyperlink{classsrsran_1_1byte__buffer_a7c8882b6403ea3f246d63c64dd122f10}{clear}}();}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00046\ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \}}
+\DoxyCodeLine{00048\ \ \ \mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}(uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ src,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \ \ dest,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ \ layer\_str,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}}\ context\_header,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \ \ \ \ \ \ \ \ payload);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ header()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ header\_buf;\ \}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ payload()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ payload\_buf;\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ header\_buf;}
+\DoxyCodeLine{00059\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ payload\_buf;}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}(\textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ dlt\_,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ layer\_name\_,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ filename,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ backend\_exec\_);}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{\string~backend\_pcap\_writer}}();}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}(\mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ close();}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{bool}\ is\_write\_enabled()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ is\_open.load(std::memory\_order\_relaxed);\ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ write\_pdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ pdu);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ write\_pdu(\mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}\ pdu);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{void}\ write\_pdu\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ pdu);}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{void}\ write\_context\_pdu\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1pcap__pdu__data}{pcap\_pdu\_data}}\&\ pdu);}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ std::string\ \ \ \ \ \ \ \ \ \ \ layer\_name;}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ backend\_exec;}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{classsrsran_1_1pcap__file__writer}{pcap\_file\_writer}}\ \ writer;}
+\DoxyCodeLine{00093\ \ \ std::atomic<bool>\ is\_open\{\textcolor{keyword}{true}\};}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

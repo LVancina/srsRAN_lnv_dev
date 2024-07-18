@@ -31,10 +31,6 @@ namespace srsran {
 class scheduler_event_logger
 {
 public:
-  struct cell_creation_event {
-    du_cell_index_t cell_index;
-    pci_t           pci;
-  };
   struct prach_event {
     slot_point      slot_rx;
     du_cell_index_t cell_index;
@@ -49,10 +45,6 @@ public:
     du_cell_index_t pcell_index;
   };
   struct ue_reconf_event {
-    du_ue_index_t ue_index;
-    rnti_t        rnti;
-  };
-  struct ue_cfg_applied_event {
     du_ue_index_t ue_index;
     rnti_t        rnti;
   };
@@ -129,12 +121,13 @@ public:
 
 private:
   enum mode_t { none, info, debug };
+  srslog::basic_logger& logger;
+
+  mode_t mode = none;
 
   const char* separator() const;
 
   void log_impl();
-
-  void enqueue_impl(const cell_creation_event& cell_ev);
 
   void enqueue_impl(const prach_event& rach_ev);
   void enqueue_impl(const rach_indication_message& rach_ind);
@@ -142,7 +135,6 @@ private:
   void enqueue_impl(const ue_creation_event& ue_request);
   void enqueue_impl(const ue_reconf_event& ue_request);
   void enqueue_impl(const sched_ue_delete_message& ue_request);
-  void enqueue_impl(const ue_cfg_applied_event& ue_cfg_applied);
 
   void enqueue_impl(const error_indication_event& err_ind);
 
@@ -154,12 +146,6 @@ private:
   void enqueue_impl(const dl_mac_ce_indication& mac_ce);
   void enqueue_impl(const dl_buffer_state_indication_message& bs);
   void enqueue_impl(const phr_event& phr_ev);
-
-  srslog::basic_logger& logger;
-  mode_t                mode = none;
-
-  // Mapping of cell indexes to pcis.
-  std::array<pci_t, MAX_NOF_DU_CELLS> cell_pcis{INVALID_PCI};
 
   fmt::memory_buffer fmtbuf;
 };

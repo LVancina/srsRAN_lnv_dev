@@ -1,0 +1,115 @@
+\doxysection{rrc\+\_\+setup\+\_\+procedure.\+h}
+\hypertarget{rrc__setup__procedure_8h_source}{}\label{rrc__setup__procedure_8h_source}\index{lib/rrc/ue/procedures/rrc\_setup\_procedure.h@{lib/rrc/ue/procedures/rrc\_setup\_procedure.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../rrc\_ue\_context.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../rrc\_ue\_logger.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rrc__ue__event__manager_8h}{"{}rrc\_ue\_event\_manager.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/rrc/rrc\_du.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/rrc/rrc\_ue.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/eager\_async\_task.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ srs\_cu\_cp\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)brief\ Handles\ the\ creation\ of\ SRBs\ in\ the\ RRC\ UE.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \ \(\backslash\)startuml}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \ \ \ queue\ DU}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \ \ \ participant\ F1AP}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \ \ \ participant\ PDCP}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \ \ \ participant\ RRC}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ \ \ \ participant\ "{}DU\ processor"{}\ as\ DUMNG}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ \ \ \ DU-\/>F1AP:\ initial\ UL\ RRC\ message}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ \ \ \ activate\ F1AP}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \ \ \ F1AP-\/>DUMNG:\ ue\_creation\_request}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \ \ \ activate\ DUMNG}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \ \ \ Note\ over\ DUMNG:\ Allocate\ UE\ index}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ \ \ \ Note\ over\ DUMNG:\ Create\ UE\ object}}
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ \ \ \ Note\ over\ DUMNG:\ Create\ SRB0\ notifiers}}
+\DoxyCodeLine{00050\ \textcolor{comment}{///\ \ \ \ DUMNG-\/>RRC:\ create\_ue\ (with\ SRB0\ handle)}}
+\DoxyCodeLine{00051\ \textcolor{comment}{///\ \ \ \ DUMNG-\/-\/>F1AP:\ return\ of\ "{}ue\_creation\_request"{}\ (with\ UE\ index\ and\ SRB0\ handle)}}
+\DoxyCodeLine{00052\ \textcolor{comment}{///\ \ \ \ deactivate\ DUMNG}}
+\DoxyCodeLine{00053\ \textcolor{comment}{///\ \ \ \ Note\ over\ F1AP:\ Allocate\ F1AP-\/CU-\/UE-\/ID}}
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ \ \ \ Note\ over\ F1AP:\ Association\ of\ UE\ index\(\backslash\)nwith\ F1AP-\/CU-\/UE-\/ID}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ \ \ \ F1AP-\/>RRC:\ notify\_init\_ul\_rrc\_msg}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ \ \ \ deactivate\ F1AP}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \ \ \ Note\ over\ RRC:\ Decide\ RRC\ Setup\ vs\ Reject}}
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ \ \ \ activate\ RRC}}
+\DoxyCodeLine{00059\ \textcolor{comment}{///\ \ \ \ Note\ over\ RRC:\ Create\ SRB1\ (SRB1)}}
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ \ \ \ Note\ over\ RRC:\ Initiate\ RRCSetup\ procedure}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ \ \ \ RRC-\/>F1AP:\ send\_rrc\_setup}}
+\DoxyCodeLine{00062\ \textcolor{comment}{///\ \ \ \ F1AP-\/>DU:\ DL\ RRC\ Message\ Transfer}}
+\DoxyCodeLine{00063\ \textcolor{comment}{///\ \ \ \ DU-\/>F1AP:\ UL\ RRC\ Message\ Transfer}}
+\DoxyCodeLine{00064\ \textcolor{comment}{///\ \ \ \ F1AP-\/>RRC:\ rrc\_setup\_complete}}
+\DoxyCodeLine{00065\ \textcolor{comment}{///\ \ \ \ deactivate\ RRC}}
+\DoxyCodeLine{00066\ \textcolor{comment}{///\ \ \ \ Note\ over\ RRC:\ Decide\ next\ step}}
+\DoxyCodeLine{00067\ \textcolor{comment}{///\ \ \(\backslash\)enduml}}
+\DoxyCodeLine{00068\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__setup__procedure}{rrc\_setup\_procedure}}}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00071\ \ \ rrc\_setup\_procedure(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__context__t}{rrc\_ue\_context\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context\_,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ asn1::rrc\_nr::establishment\_cause\_e\&\ cause\_,}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_to\_cu\_container\_,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__setup__proc__notifier}{rrc\_ue\_setup\_proc\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_notifier\_,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__srb__handler}{rrc\_ue\_srb\_handler}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ srb\_notifier\_,}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__nas__notifier}{rrc\_ue\_nas\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nas\_notifier\_,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__event__manager}{rrc\_ue\_event\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ev\_mng\_,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_ue\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ operator()(coro\_context<async\_task<\textcolor{keywordtype}{void}>>\&\ ctx);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RRC\ Setup\ Procedure"{}};\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ Instruct\ DU\ processor\ to\ create\ SRB1\ bearer.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keywordtype}{void}\ create\_srb1();}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Send\ RRC\ Setup,\ see\ section\ 5.3.3\ in\ TS\ 36.331}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ send\_rrc\_setup();}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Forward\ the\ Initial\ UE\ Message\ to\ the\ NGAP}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{void}\ send\_initial\_ue\_msg(\textcolor{keyword}{const}\ asn1::rrc\_nr::\mbox{\hyperlink{structasn1_1_1rrc__nr_1_1rrc__setup__complete__s}{rrc\_setup\_complete\_s}}\&\ rrc\_setup\_complete\_msg);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__context__t}{rrc\_ue\_context\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ context;}
+\DoxyCodeLine{00095\ \ \ \textcolor{keyword}{const}\ asn1::rrc\_nr::establishment\_cause\_e\ cause;}
+\DoxyCodeLine{00096\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_to\_cu\_container;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__setup__proc__notifier}{rrc\_ue\_setup\_proc\_notifier}}\&\ rrc\_ue;\ \ \ \ \ \ \ \textcolor{comment}{//\ handler\ to\ the\ parent\ RRC\ UE\ object}}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__srb__handler}{rrc\_ue\_srb\_handler}}\&\ \ \ \ \ \ \ \ \ srb\_notifier;\ \textcolor{comment}{//\ for\ creation\ of\ SRBs}}
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__nas__notifier}{rrc\_ue\_nas\_notifier}}\&\ \ \ \ \ \ \ \ nas\_notifier;\ \textcolor{comment}{//\ notifier\ to\ the\ NGAP}}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__event__manager}{rrc\_ue\_event\_manager}}\&\ \ \ \ \ \ \ event\_mng;\ \ \ \ \textcolor{comment}{//\ event\ manager\ for\ the\ RRC\ UE\ entity}}
+\DoxyCodeLine{00102\ \ \ rrc\_ue\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ rrc\_transaction\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction;}
+\DoxyCodeLine{00105\ \ \ \mbox{\hyperlink{classsrsran_1_1eager__async__task}{eager\_async\_task}}<rrc\_outcome>\ task;}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00109\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

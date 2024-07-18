@@ -1,0 +1,437 @@
+\doxysection{security.\+h}
+\hypertarget{security_8h_source}{}\label{security_8h_source}\index{include/srsran/security/security.h@{include/srsran/security/security.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{00026\ \textcolor{comment}{\ *\ Common\ security\ header\ -\/\ wraps\ ciphering/integrity\ check\ algorithms.}}
+\DoxyCodeLine{00027\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pci.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{iomanip}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{iostream}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{sstream}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{namespace}\ security\ \{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ MAC-\/I\ length\ in\ bytes}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{constexpr}\ uint32\_t\ sec\_mac\_len\ =\ 4;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ Security\ Key\ length\ in\ bytes}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{constexpr}\ uint32\_t\ sec\_key\_len\ =\ 32;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{///\ Security\ Key\ length\ in\ bytes\ (for\ 128\ bit\ algorithms)}}
+\DoxyCodeLine{00050\ \textcolor{keyword}{constexpr}\ uint32\_t\ sec\_128\_key\_len\ =\ 16;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ ciphering\_algorithm\ \{}
+\DoxyCodeLine{00053\ \ \ nea0\ =\ 0,}
+\DoxyCodeLine{00054\ \ \ nea1,}
+\DoxyCodeLine{00055\ \ \ nea2,}
+\DoxyCodeLine{00056\ \ \ nea3,}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ to\_number(ciphering\_algorithm\ ciph\_algo)}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(ciph\_algo);}
+\DoxyCodeLine{00061\ \}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{inline}\ ciphering\_algorithm\ ciphering\_algorithm\_from\_number(\textcolor{keywordtype}{unsigned}\ ciph\_algo)}
+\DoxyCodeLine{00063\ \{}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ciph\_algo\ <\ 4,\ \textcolor{stringliteral}{"{}Error\ converting\ ciphering\ algorithm"{}});}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<ciphering\_algorithm>(ciph\_algo);}
+\DoxyCodeLine{00066\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ integrity\_algorithm\ \{}
+\DoxyCodeLine{00069\ \ \ nia0\ =\ 0,}
+\DoxyCodeLine{00070\ \ \ nia1,}
+\DoxyCodeLine{00071\ \ \ nia2,}
+\DoxyCodeLine{00072\ \ \ nia3,}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ to\_number(integrity\_algorithm\ int\_algo)}
+\DoxyCodeLine{00075\ \{}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(int\_algo);}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ \textcolor{keyword}{inline}\ integrity\_algorithm\ integrity\_algorithm\_from\_number(\textcolor{keywordtype}{unsigned}\ int\_algo)}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(int\_algo\ <\ 4,\ \textcolor{stringliteral}{"{}Error\ converting\ integrity\ algorithm"{}});}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<integrity\_algorithm>(int\_algo);}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ FC\ Values}}
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.1.2}}
+\DoxyCodeLine{00086\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ fc\_value\ \{}
+\DoxyCodeLine{00087\ \ \ algorithm\_key\_derivation\ =\ 0x69,\ \textcolor{comment}{///<\ Algorithm\ key\ derivation\ functions\ (Sec.\ A.8)}}
+\DoxyCodeLine{00088\ \ \ k\_ng\_ran\_star\_derivation\ =\ 0x70,\ \textcolor{comment}{///<\ KNG-\/RAN*\ derivation\ function\ for\ target\ gNB\ (Sec.\ A.11)}}
+\DoxyCodeLine{00089\ \};}
+\DoxyCodeLine{00090\ \textcolor{keyword}{constexpr}\ uint8\_t\ to\_number(fc\_value\ fc)}
+\DoxyCodeLine{00091\ \{}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(fc);}
+\DoxyCodeLine{00093\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{comment}{///\ Security\ Algorithm\ Distinguisher}}
+\DoxyCodeLine{00096\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.8,\ Table\ A.8-\/1}}
+\DoxyCodeLine{00097\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ security\_algo\_distinguisher\ \{}
+\DoxyCodeLine{00098\ \ \ rrc\_enc\_alg\ =\ 0x03,\ \textcolor{comment}{///<\ N-\/RRC-\/enc-\/alg}}
+\DoxyCodeLine{00099\ \ \ rrc\_int\_alg\ =\ 0x04,\ \textcolor{comment}{///<\ N-\/RRC-\/int-\/alg}}
+\DoxyCodeLine{00100\ \ \ up\_enc\_alg\ \ =\ 0x05,\ \textcolor{comment}{///<\ N-\/UP-\/enc-\/alg}}
+\DoxyCodeLine{00101\ \ \ up\_int\_alg\ \ =\ 0x06\ \ \textcolor{comment}{///<\ N-\/UP-\/int-\/alg}}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ \textcolor{keyword}{constexpr}\ uint8\_t\ to\_number(security\_algo\_distinguisher\ algo)}
+\DoxyCodeLine{00104\ \{}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(algo);}
+\DoxyCodeLine{00106\ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ security\_direction\ \{}
+\DoxyCodeLine{00109\ \ \ uplink\ \ \ =\ 0,}
+\DoxyCodeLine{00110\ \ \ downlink\ =\ 1,}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ \textcolor{keyword}{constexpr}\ uint8\_t\ to\_number(security\_direction\ direction)}
+\DoxyCodeLine{00113\ \{}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<uint8\_t>(direction);}
+\DoxyCodeLine{00115\ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \textcolor{comment}{///\ integrity/ciphering\ enabled}}
+\DoxyCodeLine{00118\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ integrity\_enabled\ \{\ off\ =\ 0,\ on\ =\ 1\ \};}
+\DoxyCodeLine{00119\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ ciphering\_enabled\ \{\ off\ =\ 0,\ on\ =\ 1\ \};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{keyword}{using}\ sec\_mac\ =\ std::array<uint8\_t,\ sec\_mac\_len>;}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \textcolor{keyword}{using}\ sec\_key\ \ \ \ \ =\ std::array<uint8\_t,\ sec\_key\_len>;}
+\DoxyCodeLine{00124\ \textcolor{keyword}{using}\ sec\_128\_key\ =\ std::array<uint8\_t,\ sec\_128\_key\_len>;}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \textcolor{comment}{///\ Helper\ types\ to\ communicate\ the\ preferred\ algorithm\ list.\ NIA/NEA0...3.}}
+\DoxyCodeLine{00127\ \textcolor{keyword}{constexpr}\ uint16\_t\ nof\_pref\_algos\ \ \ \ =\ 4;}
+\DoxyCodeLine{00128\ \textcolor{keyword}{using}\ preferred\_integrity\_algorithms\ =\ std::array<integrity\_algorithm,\ nof\_pref\_algos>;}
+\DoxyCodeLine{00129\ \textcolor{keyword}{using}\ preferred\_ciphering\_algorithms\ =\ std::array<ciphering\_algorithm,\ nof\_pref\_algos>;}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{comment}{///\ Helper\ types\ to\ communicate\ NIA/NEA1...3\ support.\ Support\ of\ NEA/NIA0\ is\ implicit.}}
+\DoxyCodeLine{00132\ \textcolor{keyword}{constexpr}\ uint16\_t\ nof\_supported\_algos\ =\ 3;}
+\DoxyCodeLine{00133\ \textcolor{keyword}{using}\ supported\_algorithms\ \ \ \ \ \ \ \ \ \ \ \ \ =\ std::array<\textcolor{keywordtype}{bool},\ nof\_supported\_algos>;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{comment}{///\ Security\ domain,\ whether\ applies\ to\ RRC\ or\ UP}}
+\DoxyCodeLine{00136\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ sec\_domain\ \{\ rrc\ =\ 0,\ up\ =\ 1\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__128__as__config}{sec\_128\_as\_config}}\ \{}
+\DoxyCodeLine{00139\ \ \ sec\_domain\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domain;}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<sec\_128\_key>\ \ \ \ \ \ \ \ \ k\_128\_int;\ \textcolor{comment}{//\ Optional\ in\ E1AP,\ see\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00141\ \ \ sec\_128\_key\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_128\_enc;}
+\DoxyCodeLine{00142\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<integrity\_algorithm>\ integ\_algo;\ \textcolor{comment}{//\ Optional\ in\ E1AP,\ see\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00143\ \ \ ciphering\_algorithm\ \ \ \ \ \ \ \ \ \ \ cipher\_algo;}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__128__as__config}{sec\_128\_as\_config}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00146\ \ \ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{if}\ (integ\_algo\ !=\ rhs.integ\_algo)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00149\ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordflow}{if}\ (cipher\_algo\ !=\ rhs.cipher\_algo)\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{if}\ (domain\ !=\ rhs.domain)\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{if}\ (k\_128\_int\ !=\ rhs.k\_128\_int)\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00158\ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{if}\ (k\_128\_enc\ !=\ rhs.k\_128\_enc)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00163\ \ \ \}}
+\DoxyCodeLine{00164\ \};}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{sec\_as\_config}}\ \{}
+\DoxyCodeLine{00167\ \ \ sec\_domain\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domain;}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<sec\_key>\ \ \ \ \ \ \ \ \ \ \ \ \ k\_int;\ \textcolor{comment}{//\ Optional\ in\ E1AP,\ see\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00169\ \ \ sec\_key\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_enc;}
+\DoxyCodeLine{00170\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<integrity\_algorithm>\ integ\_algo;\ \textcolor{comment}{//\ Optional\ in\ E1AP,\ see\ TS\ 38.463\ Sec.\ 9.4.5}}
+\DoxyCodeLine{00171\ \ \ ciphering\_algorithm\ \ \ \ \ \ \ \ \ \ \ cipher\_algo;}
+\DoxyCodeLine{00172\ \};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__selected__algos}{sec\_selected\_algos}}\ \{}
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ algos\_selected\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00176\ \ \ integrity\_algorithm\ integ\_algo;}
+\DoxyCodeLine{00177\ \ \ ciphering\_algorithm\ cipher\_algo;}
+\DoxyCodeLine{00178\ \};}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__keys}{sec\_as\_keys}}\ \{}
+\DoxyCodeLine{00181\ \ \ sec\_key\ k\_rrc\_int;}
+\DoxyCodeLine{00182\ \ \ sec\_key\ k\_rrc\_enc;}
+\DoxyCodeLine{00183\ \ \ sec\_key\ k\_up\_int;}
+\DoxyCodeLine{00184\ \ \ sec\_key\ k\_up\_enc;}
+\DoxyCodeLine{00185\ \};}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \textcolor{keyword}{using}\ sec\_short\_mac\_i\ =\ std::array<uint8\_t,\ 2>;}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security\_context}}\ \{}
+\DoxyCodeLine{00190\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ logger\ =\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{srslog}}::\mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{fetch\_basic\_logger}}(\textcolor{stringliteral}{"{}SEC"{}});}
+\DoxyCodeLine{00191\ \ \ security::sec\_key\ \ \ \ \ \ \ \ \ \ \ \ \ \ k;}
+\DoxyCodeLine{00192\ \ \ security::supported\_algorithms\ supported\_int\_algos;}
+\DoxyCodeLine{00193\ \ \ security::supported\_algorithms\ supported\_enc\_algos;}
+\DoxyCodeLine{00194\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__selected__algos}{sec\_selected\_algos}}\ \ \ \ \ \ \ \ \ \ \ \ \ sel\_algos;}
+\DoxyCodeLine{00195\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__keys}{sec\_as\_keys}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ as\_keys;}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ security\_context()\ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00198\ \ \ \string~security\_context()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00199\ \ \ security\_context(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security\_context}}\&\ sec\_ctxt)\ :}
+\DoxyCodeLine{00200\ \ \ \ \ k(sec\_ctxt.k),}
+\DoxyCodeLine{00201\ \ \ \ \ supported\_int\_algos(sec\_ctxt.supported\_int\_algos),}
+\DoxyCodeLine{00202\ \ \ \ \ supported\_enc\_algos(sec\_ctxt.supported\_enc\_algos),}
+\DoxyCodeLine{00203\ \ \ \ \ sel\_algos(sec\_ctxt.sel\_algos),}
+\DoxyCodeLine{00204\ \ \ \ \ as\_keys(sec\_ctxt.as\_keys)}
+\DoxyCodeLine{00205\ \ \ \{}
+\DoxyCodeLine{00206\ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security\_context}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security\_context}}\&\ sec\_ctxt)}
+\DoxyCodeLine{00208\ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ ==\ \&sec\_ctxt)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00211\ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ k\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ sec\_ctxt.k;}
+\DoxyCodeLine{00213\ \ \ \ \ supported\_int\_algos\ =\ sec\_ctxt.supported\_int\_algos;}
+\DoxyCodeLine{00214\ \ \ \ \ supported\_enc\_algos\ =\ sec\_ctxt.supported\_enc\_algos;}
+\DoxyCodeLine{00215\ \ \ \ \ sel\_algos\ \ \ \ \ \ \ \ \ \ \ =\ sec\_ctxt.sel\_algos;}
+\DoxyCodeLine{00216\ \ \ \ \ as\_keys\ \ \ \ \ \ \ \ \ \ \ \ \ =\ sec\_ctxt.as\_keys;}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00218\ \ \ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \textcolor{keywordtype}{bool}\ select\_algorithms(preferred\_integrity\_algorithms\ pref\_inte\_list,\ preferred\_ciphering\_algorithms\ pref\_ciph\_list);}
+\DoxyCodeLine{00221\ \ \ \textcolor{keywordtype}{void}\ generate\_as\_keys();}
+\DoxyCodeLine{00222\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{sec\_as\_config}}\ \ \ \ \ get\_as\_config(sec\_domain\ domain);}
+\DoxyCodeLine{00223\ \ \ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__128__as__config}{sec\_128\_as\_config}}\ get\_128\_as\_config(sec\_domain\ domain);}
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ horizontal\_key\_derivation(pci\_t\ target\_pci,\ \textcolor{keywordtype}{unsigned}\ target\_ssb\_arfcn);}
+\DoxyCodeLine{00225\ \};}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{00228\ \textcolor{comment}{\ *\ Helper\ Functions}}
+\DoxyCodeLine{00229\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \textcolor{comment}{///\ \(\backslash\)brief\ Fill\ tailing\ bits\ of\ the\ last\ byte\ of\ a\ contiguous\ memory\ with\ zeros.}}
+\DoxyCodeLine{00232\ \textcolor{comment}{///\ \(\backslash\)param[inout]\ data\ Pointer\ to\ the\ contiguous\ memory\ to\ operate\ on}}
+\DoxyCodeLine{00233\ \textcolor{comment}{///\ \(\backslash\)param[in]\ length\_bits\ Number\ of\ occupied\ bits\ in\ the\ whole\ memory\ buffer\ that\ shall\ not\ be\ zeroed}}
+\DoxyCodeLine{00234\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ zero\_tailing\_bits(uint8\_t*\ data,\ uint32\_t\ length\_bits)}
+\DoxyCodeLine{00235\ \{}
+\DoxyCodeLine{00236\ \ \ uint8\_t\ bits\ =\ (8\ -\/\ (length\_bits\ \&\ 0x07))\ \&\ 0x07;}
+\DoxyCodeLine{00237\ \ \ data[(length\_bits\ +\ 7)\ /\ 8\ -\/\ 1]\ \&=\ (uint8\_t)(0xff\ <<\ bits);}
+\DoxyCodeLine{00238\ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \textcolor{comment}{///\ \(\backslash\)brief\ Fill\ tailing\ bits\ of\ a\ given\ byte\ with\ zeros.}}
+\DoxyCodeLine{00241\ \textcolor{comment}{///\ \(\backslash\)param[inout]\ tail\_byte\ Reference\ to\ the\ byte\ to\ operate\ on}}
+\DoxyCodeLine{00242\ \textcolor{comment}{///\ \(\backslash\)param[in]\ length\_bits\ Number\ of\ occupied\ bits\ in\ the\ tail\_byte\ that\ shall\ not\ be\ zeroed}}
+\DoxyCodeLine{00243\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ zero\_tailing\_bits(uint8\_t\&\ tail\_byte,\ uint8\_t\ length\_bits)}
+\DoxyCodeLine{00244\ \{}
+\DoxyCodeLine{00245\ \ \ uint8\_t\ bits\ =\ (8\ -\/\ (length\_bits\ \&\ 0x07))\ \&\ 0x07;}
+\DoxyCodeLine{00246\ \ \ tail\_byte\ \&=\ (uint8\_t)(0xff\ <<\ bits);}
+\DoxyCodeLine{00247\ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{keyword}{inline}\ std::string\ sec\_as\_key\_to\_string(\textcolor{keyword}{const}\ sec\_key\&\ key)}
+\DoxyCodeLine{00250\ \{}
+\DoxyCodeLine{00251\ \ \ std::stringstream\ ss;}
+\DoxyCodeLine{00252\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ val\ :\ key)\ \{}
+\DoxyCodeLine{00253\ \ \ \ \ ss\ <<\ std::hex\ <<\ std::setw(2)\ <<\ std::setfill(\textcolor{stringliteral}{'0'})\ <<\ (\textcolor{keywordtype}{int})val;}
+\DoxyCodeLine{00254\ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \textcolor{keywordflow}{return}\ ss.str();}
+\DoxyCodeLine{00256\ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{00259\ \textcolor{comment}{\ *\ Key\ Generation}}
+\DoxyCodeLine{00260\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \textcolor{comment}{///\ Generic\ key\ derivation\ function}}
+\DoxyCodeLine{00263\ \textcolor{comment}{///\ Ref:\ TS\ 33.220\ Sec.\ B.2}}
+\DoxyCodeLine{00264\ \textcolor{keywordtype}{void}\ generic\_kdf(sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ key\_out,}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ key\_in,}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ fc\_value\ \ \ \ \ \ \ \ \ \ \ \ \ fc,}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ span<\textcolor{keyword}{const}\ uint8\_t>\&\ p0,}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ span<\textcolor{keyword}{const}\ uint8\_t>\&\ p1);}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \textcolor{comment}{///\ Algorithm\ key\ derivation\ function\ (RRC)}}
+\DoxyCodeLine{00271\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.8}}
+\DoxyCodeLine{00272\ \textcolor{keywordtype}{void}\ generate\_k\_rrc(sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_rrc\_enc,}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_rrc\_int,}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ k\_gnb,}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ciphering\_algorithm\ enc\_alg\_id,}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ integrity\_algorithm\ int\_alg\_id);}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \textcolor{comment}{///\ Algorithm\ key\ derivation\ function\ (UP)}}
+\DoxyCodeLine{00279\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.8}}
+\DoxyCodeLine{00280\ \textcolor{keywordtype}{void}\ generate\_k\_up(sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_up\_enc,}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_up\_int,}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ sec\_key\&\ \ \ \ \ \ \ \ \ \ \ \ k\_gnb,}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ ciphering\_algorithm\ enc\_alg\_id,}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ integrity\_algorithm\ int\_alg\_id);}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \textcolor{comment}{///\ K\_NG-\/RAN*\ derivation\ function\ for\ target\ gNB}}
+\DoxyCodeLine{00287\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.11}}
+\DoxyCodeLine{00288\ \textcolor{keywordtype}{void}\ generate\_k\_ng\_ran\_star(sec\_key\&\ \ \ \ \ \ \ k\_star,}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ sec\_key\&\ k,}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ pci\_t\&\ \ \ target\_pci\_,}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint32\_t\ target\_ssb\_arfcn\_);}
+\DoxyCodeLine{00292\ }
+\DoxyCodeLine{00293\ \textcolor{comment}{///\ Truncate\ 256-\/bit\ key\ to\ 128-\/bit\ key\ using\ the\ least\ significant\ bits.}}
+\DoxyCodeLine{00294\ \textcolor{comment}{///\ Ref:\ TS\ 33.501\ Sec.\ A.8}}
+\DoxyCodeLine{00295\ sec\_128\_key\ truncate\_key(\textcolor{keyword}{const}\ sec\_key\&\ key\_in);}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \textcolor{comment}{///\ Truncate\ 256-\/bit\ keys\ to\ 128-\/bit\ keys\ using\ the\ least\ significant\ bits,}}
+\DoxyCodeLine{00298\ \textcolor{comment}{///\ on\ a\ given\ security\ context.}}
+\DoxyCodeLine{00299\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__128__as__config}{sec\_128\_as\_config}}\ truncate\_config(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1sec__as__config}{sec\_as\_config}}\&\ cfg\_in);}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \}\ \textcolor{comment}{//\ namespace\ security}}
+\DoxyCodeLine{00302\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \textcolor{comment}{//}}
+\DoxyCodeLine{00305\ \textcolor{comment}{//\ Formatters}}
+\DoxyCodeLine{00306\ \textcolor{comment}{//}}
+\DoxyCodeLine{00307\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \textcolor{comment}{//\ Security\ direction}}
+\DoxyCodeLine{00310\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00311\ \textcolor{keyword}{struct}\ formatter<srsran::security::security\_direction>\ \{}
+\DoxyCodeLine{00312\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00313\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00314\ \ \ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00316\ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00319\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::security\_direction\ dir,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00321\ \ \ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}UL"{}},\ \textcolor{stringliteral}{"{}DL"{}}\};}
+\DoxyCodeLine{00323\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(dir)]);}
+\DoxyCodeLine{00324\ \ \ \}}
+\DoxyCodeLine{00325\ \};}
+\DoxyCodeLine{00326\ }
+\DoxyCodeLine{00327\ \textcolor{comment}{//\ Integrity\ enabled}}
+\DoxyCodeLine{00328\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00329\ \textcolor{keyword}{struct}\ formatter<srsran::security::integrity\_enabled>\ \{}
+\DoxyCodeLine{00330\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00331\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00332\ \ \ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00334\ \ \ \}}
+\DoxyCodeLine{00335\ }
+\DoxyCodeLine{00336\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00337\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::integrity\_enabled\ integrity\_flag,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00339\ \ \ \{}
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}off"{}},\ \textcolor{stringliteral}{"{}on"{}}\};}
+\DoxyCodeLine{00341\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(integrity\_flag)]);}
+\DoxyCodeLine{00342\ \ \ \}}
+\DoxyCodeLine{00343\ \};}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00345\ \textcolor{comment}{//\ Ciphering\ enabled}}
+\DoxyCodeLine{00346\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00347\ \textcolor{keyword}{struct}\ formatter<srsran::security::ciphering\_enabled>\ \{}
+\DoxyCodeLine{00348\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00349\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00350\ \ \ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00352\ \ \ \}}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00354\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00355\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::ciphering\_enabled\ ciphering\_flag,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00357\ \ \ \{}
+\DoxyCodeLine{00358\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}off"{}},\ \textcolor{stringliteral}{"{}on"{}}\};}
+\DoxyCodeLine{00359\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(ciphering\_flag)]);}
+\DoxyCodeLine{00360\ \ \ \}}
+\DoxyCodeLine{00361\ \};}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \textcolor{comment}{//\ Supported\ algorithms}}
+\DoxyCodeLine{00364\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00365\ \textcolor{keyword}{struct}\ formatter<srsran::security::supported\_algorithms>\ \{}
+\DoxyCodeLine{00366\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00367\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00368\ \ \ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00370\ \ \ \}}
+\DoxyCodeLine{00371\ }
+\DoxyCodeLine{00372\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00373\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::supported\_algorithms\ algos,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00375\ \ \ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}N[I|E]A1=\{\},\ N[I|E]A2=\{\},\ N[I|E]A3=\{\}"{}},\ algos[0],\ algos[1],\ algos[2]);}
+\DoxyCodeLine{00377\ \ \ \}}
+\DoxyCodeLine{00378\ \};}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \textcolor{comment}{//\ Preferred\ integrity\ protection\ algorithms\ list}}
+\DoxyCodeLine{00381\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00382\ \textcolor{keyword}{struct}\ formatter<srsran::security::preferred\_integrity\_algorithms>\ \{}
+\DoxyCodeLine{00383\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00384\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00385\ \ \ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00387\ \ \ \}}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00389\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00390\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::preferred\_integrity\_algorithms\ algos,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00392\ \ \ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}NIA\{\},\ NIA\{\},\ NIA\{\},\ NIA\{\}"{}},\ algos[0],\ algos[1],\ algos[2],\ algos[3]);}
+\DoxyCodeLine{00394\ \ \ \}}
+\DoxyCodeLine{00395\ \};}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \textcolor{comment}{//\ Preferred\ ciphering\ algorithms\ list}}
+\DoxyCodeLine{00398\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00399\ \textcolor{keyword}{struct}\ formatter<srsran::security::preferred\_ciphering\_algorithms>\ \{}
+\DoxyCodeLine{00400\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00401\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00402\ \ \ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00404\ \ \ \}}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00407\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::preferred\_ciphering\_algorithms\ algos,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00409\ \ \ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}NEA\{\},\ NEA\{\},\ NEA\{\},\ NEA\{\}"{}},\ algos[0],\ algos[1],\ algos[2],\ algos[3]);}
+\DoxyCodeLine{00411\ \ \ \}}
+\DoxyCodeLine{00412\ \};}
+\DoxyCodeLine{00413\ }
+\DoxyCodeLine{00414\ \textcolor{comment}{//\ Security\ domain}}
+\DoxyCodeLine{00415\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00416\ \textcolor{keyword}{struct}\ formatter<srsran::security::sec\_domain>\ \{}
+\DoxyCodeLine{00417\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00418\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00419\ \ \ \{}
+\DoxyCodeLine{00420\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00421\ \ \ \}}
+\DoxyCodeLine{00422\ }
+\DoxyCodeLine{00423\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00424\ \ \ \textcolor{keyword}{auto}\ format(srsran::security::sec\_domain\ domain,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00425\ \ \ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ options[]\ =\ \{\textcolor{stringliteral}{"{}RRC"{}},\ \textcolor{stringliteral}{"{}UP"{}}\};}
+\DoxyCodeLine{00427\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ options[\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(domain)]);}
+\DoxyCodeLine{00428\ \ \ \}}
+\DoxyCodeLine{00429\ \};}
+\DoxyCodeLine{00430\ }
+\DoxyCodeLine{00431\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

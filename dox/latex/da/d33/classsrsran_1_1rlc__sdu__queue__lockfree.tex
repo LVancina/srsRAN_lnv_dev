@@ -1,0 +1,350 @@
+\doxysection{srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree Class Reference}
+\hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree}{}\label{classsrsran_1_1rlc__sdu__queue__lockfree}\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+
+
+Lockfree RLC SDU queue.  
+
+
+
+
+{\ttfamily \#include $<$rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{dd/d46/classsrsran_1_1rlc__sdu__queue__lockfree__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_adb2630d9a4ef331848d6ef3b35c79540}{rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree}} (uint16\+\_\+t capacity\+\_\+, \mbox{\hyperlink{classsrsran_1_1prefixed__logger}{rlc\+\_\+bearer\+\_\+logger}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{logger\+\_\+}})
+\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a1a653b33da96f2caea9471794877464c}{write}} (\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\+\_\+sdu}} sdu)
+\begin{DoxyCompactList}\small\item\em Writes an RLC SDU (with optional PDCP SN) to the queue, if possible. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a5918fa48177cf34b10fef220c8fc719f}{try\+\_\+discard}} (\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} pdcp\+\_\+sn)
+\begin{DoxyCompactList}\small\item\em Marks an RLC SDU as "{}discarded"{}, if possible. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a5b2d6733746aaf17fd87a0743ba52501}{read}} (\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\+\_\+sdu}} \&sdu)
+\begin{DoxyCompactList}\small\item\em Reads an RLC SDU (with optional PDCP SN) from the queue, if possible. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a4c4aca80a693e78a7030d130e1116c09}{size\+\_\+sdus}} () \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Reads the number of buffered SDUs that are not marked as discarded. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_ab2d800cfef5a9542f480da984fc3e2d0}{size\+\_\+bytes}} () \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}}
+\begin{DoxyCompactList}\small\item\em Reads the number of buffered SDU bytes that are not marked as discarded. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a7ba1e310d8d662703f2922303c627a7a}{is\+\_\+empty}} ()
+\begin{DoxyCompactList}\small\item\em Checks if the internal queue is empty. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classbool}{bool}} \mbox{\hyperlink{classsrsran_1_1rlc__sdu__queue__lockfree_a68ac4760854df275260a793d0c71cf99}{is\+\_\+full}} ()
+\begin{DoxyCompactList}\small\item\em Checks if the internal queue is full. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Lockfree RLC SDU queue. 
+
+This class is used as FIFO buffer for RLC SDUs from upper layers that shall be transmitted by the RLC Tx entity. It implements SPSC (single producer single consumer) semantics, i.\+e. allows concurrent access by one upper-\/layer thread and one lower-\/layer thread. Internally, this class wraps a lock-\/free SPSC queue to store the actual SDUs and involves additional bookkeeping to support discard of SDUs and to track the amount of buffered SDUs and bytes.
+
+From the perspective of the upper-\/layer thread this class provides methods to write RLC SDUs (with or without PDCP SN) and to discard SDUs by their PDCP SN. SDUs without PDCP SN cannot be discarded. SDUs that are marked as discarded remain in the internal queue until they are popped (and dropped) via {\ttfamily read}. Writing to the queue fails if the internal queue is either full or the queue already contains an SDU (whether valid or marked as discarded) with the same value for \mbox{[}PDCP\+\_\+\+SN mod capacity\mbox{]}.
+
+From the perspective of the lower-\/layer thread it provides methods to read RLC SDUs and to query the total number of buffered SDUs and bytes. SDUs are read in the same order as they were written into the queue. There is no reordering by PDCP SN. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_adb2630d9a4ef331848d6ef3b35c79540}\label{classsrsran_1_1rlc__sdu__queue__lockfree_adb2630d9a4ef331848d6ef3b35c79540} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!rlc\_sdu\_queue\_lockfree@{rlc\_sdu\_queue\_lockfree}}
+\index{rlc\_sdu\_queue\_lockfree@{rlc\_sdu\_queue\_lockfree}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{rlc\_sdu\_queue\_lockfree()}{rlc\_sdu\_queue\_lockfree()}}
+{\footnotesize\ttfamily srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{capacity\+\_\+,  }\item[{\mbox{\hyperlink{classsrsran_1_1prefixed__logger}{rlc\+\_\+bearer\+\_\+logger}} \&}]{logger\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ logger(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{logger\_}}),\ capacity(capacity\_)}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ sdu\_states\ =\ std::make\_unique<std::atomic<uint32\_t>[]>(capacity);}
+\DoxyCodeLine{00053\ \ \ \ \ sdu\_sizes\ \ =\ std::make\_unique<std::atomic<size\_t>[]>(capacity);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{for}\ (uint16\_t\ i\ =\ 0;\ i\ <\ capacity;\ i++)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ sdu\_states[i].store(STATE\_FREE,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ queue\ =\ std::make\_unique<}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{concurrent\_queue<rlc\_sdu,\ concurrent\_queue\_policy::lockfree\_spsc,\ concurrent\_queue\_wait\_policy::non\_blocking>}}>(}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ capacity);}
+\DoxyCodeLine{00062\ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a7ba1e310d8d662703f2922303c627a7a}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a7ba1e310d8d662703f2922303c627a7a} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!is\_empty@{is\_empty}}
+\index{is\_empty@{is\_empty}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{is\_empty()}{is\_empty()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::is\+\_\+empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Checks if the internal queue is empty. 
+
+This function may be called by any thread.
+
+\begin{DoxyReturn}{Returns}
+True if the internal queue is empty, otherwise false. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00219\ \{\ \textcolor{keywordflow}{return}\ queue-\/>empty();\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a68ac4760854df275260a793d0c71cf99}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a68ac4760854df275260a793d0c71cf99} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!is\_full@{is\_full}}
+\index{is\_full@{is\_full}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{is\_full()}{is\_full()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::is\+\_\+full (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Checks if the internal queue is full. 
+
+This function may be called by any thread.
+
+\begin{DoxyReturn}{Returns}
+True if the internal queue is full, otherwise false. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00226\ \{\ \textcolor{keywordflow}{return}\ queue-\/>size()\ >=\ capacity;\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a5b2d6733746aaf17fd87a0743ba52501}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a5b2d6733746aaf17fd87a0743ba52501} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!read@{read}}
+\index{read@{read}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{read()}{read()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::read (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\+\_\+sdu}} \&}]{sdu }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reads an RLC SDU (with optional PDCP SN) from the queue, if possible. 
+
+This function may be called by the lower-\/layer thread.
+
+The read fails (returns false) in the following cases\+:
+\begin{DoxyItemize}
+\item The internal queue only contains SDUs that are marked as discarded.
+\item The internal queue is empty.
+\end{DoxyItemize}
+
+Each call of this function pops and drops SDUs that are marked as discarded from the internal queue in a loop until a valid SDU is popped (return true) or the queue is empty (returns false).
+
+
+\begin{DoxyParams}{Parameters}
+{\em sdu} & Reference to a {\ttfamily \doxylink{structsrsran_1_1rlc__sdu}{rlc\+\_\+sdu}} object that will be filled with the read RLC SDU. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if an RLC SDU was successfully read from the queue, otherwise false. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00173\ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_is\_valid}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \textcolor{comment}{//\ first\ try\ to\ pop\ front\ (SDU\ can\ still\ get\ discarded\ from\ upper\ layers)}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{popped}}\ =\ queue-\/>try\_pop(sdu);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{popped}})\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ queue\ is\ empty}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sdu.pdcp\_sn.has\_value())\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ if\ the\ SDU\ is\ still\ valid\ (i.e.\ the\ PDCP\ SN\ was\ not\ already\ discarded)\ and\ release\ the\ slot}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ pdcp\_sn\ =\ sdu.pdcp\_sn.value();}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_is\_valid}}\ \ \ \ \ \ \ \ \ \ \ =\ check\_and\_release(pdcp\_sn);\ \textcolor{comment}{//\ this\ also\ updates\ totals}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ SDUs\ without\ PDCP\ SN\ are\ alway\ valid\ as\ they\ can't\ be\ discarded}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_is\_valid}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ totals}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ n\_sdus.fetch\_sub(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ n\_bytes.fetch\_sub(sdu.buf.length(),\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \textcolor{comment}{//\ try\ again\ if\ SDU\ is\ not\ valid}}
+\DoxyCodeLine{00196\ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_is\_valid}});}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00198\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_ab2d800cfef5a9542f480da984fc3e2d0}\label{classsrsran_1_1rlc__sdu__queue__lockfree_ab2d800cfef5a9542f480da984fc3e2d0} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!size\_bytes@{size\_bytes}}
+\index{size\_bytes@{size\_bytes}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{size\_bytes()}{size\_bytes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::size\+\_\+bytes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reads the number of buffered SDU bytes that are not marked as discarded. 
+
+This function may be called by any thread.
+
+\begin{DoxyReturn}{Returns}
+The number of buffered SDU bytes that are not marked as discarded. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00212\ \{\ \textcolor{keywordflow}{return}\ n\_bytes.load(std::memory\_order\_relaxed);\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a4c4aca80a693e78a7030d130e1116c09}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a4c4aca80a693e78a7030d130e1116c09} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!size\_sdus@{size\_sdus}}
+\index{size\_sdus@{size\_sdus}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{size\_sdus()}{size\_sdus()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::size\+\_\+sdus (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reads the number of buffered SDUs that are not marked as discarded. 
+
+This function may be called by any thread.
+
+\begin{DoxyReturn}{Returns}
+The number of buffered SDUs that are not marked as discarded. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00205\ \{\ \textcolor{keywordflow}{return}\ n\_sdus.load(std::memory\_order\_relaxed);\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a5918fa48177cf34b10fef220c8fc719f}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a5918fa48177cf34b10fef220c8fc719f} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!try\_discard@{try\_discard}}
+\index{try\_discard@{try\_discard}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{try\_discard()}{try\_discard()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::try\+\_\+discard (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classuint32__t}{uint32\+\_\+t}}}]{pdcp\+\_\+sn }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Marks an RLC SDU as "{}discarded"{}, if possible. 
+
+This function may be called by the upper-\/layer thread.
+
+The function fails (returns false) in the following cases\+:
+\begin{DoxyItemize}
+\item The SDU with the PDCP SN is already marked as discarded.
+\item The SDU with the PDCP SN is not in the queue.
+\end{DoxyItemize}
+
+In case of success, the number of SDUs/bytes will be updated immediately. However, the actual SDU remains in the internal queue until it is popped and finally discarded via {\ttfamily read}. Meanwhile, no further SDU with the same value of \mbox{[}PDCP\+\_\+\+SN mod capacity\mbox{]} can be added to the queue.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcp\+\_\+sn} & The PDCP SN of the SDU that shall be discarded. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the RLC SDU was successfully discarded, otherwise false. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00128\ \ \ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{expected\_state}}\ =\ pdcp\_sn;}
+\DoxyCodeLine{00130\ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{desired\_state}}\ \ =\ STATE\_DISCARDED;}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{//\ set\ slot\ state\ as\ "{}discarded"{}\ only\ if\ it\ holds\ the\ PDCP\ SN;\ otherwise\ load\ the\ existing\ state}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{//\ -\/\ on\ success:\ memory\_order\_acquire\ ensures\ sdu\_size\ is\ up\ to\ date}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{//\ -\/\ on\ failure:\ memory\_order\_relaxed,\ don't\ care\ about\ value\ of\ sdu\_size}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordtype}{bool}\ success\ =\ sdu\_states[pdcp\_sn\ \%\ capacity].compare\_exchange\_strong(}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{expected\_state}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{desired\_state}},\ std::memory\_order\_acquire,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00136\ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_size}}\ =\ sdu\_sizes[pdcp\_sn\ \%\ capacity].load(std::memory\_order\_relaxed);}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ success)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{expected\_state}})\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ STATE\_DISCARDED:}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}SDU\ queue\ cannot\ discard\ pdcp\_sn=\{\}.\ Slot\ is\ already\ discarded"{}},\ pdcp\_sn);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ STATE\_FREE:}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}SDU\ queue\ cannot\ discard\ pdcp\_sn=\{\}.\ Slot\ is\ already\ free"{}},\ pdcp\_sn);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}SDU\ queue\ cannot\ discard\ pdcp\_sn=\{\}.\ Slot\ holds\ pdcp\_sn=\{\}"{}},\ pdcp\_sn,\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{expected\_state}});}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00151\ \ \ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{comment}{//\ update\ totals}}
+\DoxyCodeLine{00154\ \ \ \ \ n\_sdus.fetch\_sub(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00155\ \ \ \ \ n\_bytes.fetch\_sub(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_size}},\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00157\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{classsrsran_1_1rlc__sdu__queue__lockfree_a1a653b33da96f2caea9471794877464c}\label{classsrsran_1_1rlc__sdu__queue__lockfree_a1a653b33da96f2caea9471794877464c} 
+\index{srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}!write@{write}}
+\index{write@{write}!srsran::rlc\_sdu\_queue\_lockfree@{srsran::rlc\_sdu\_queue\_lockfree}}
+\doxysubsubsection{\texorpdfstring{write()}{write()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbool}{bool}} srsran\+::rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree\+::write (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structsrsran_1_1rlc__sdu}{rlc\+\_\+sdu}}}]{sdu }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Writes an RLC SDU (with optional PDCP SN) to the queue, if possible. 
+
+This function may be called by the upper-\/layer thread.
+
+The write fails (returns false) in the following cases\+:
+\begin{DoxyItemize}
+\item The internal queue is full.
+\item Another SDU with same value of \mbox{[}PDCP\+\_\+\+SN mod capacity\mbox{]} exists (either valid or discarded) in the queue.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sdu} & The RLC SDU that shall be written. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the RLC SDU was successfully written to the queue, otherwise false. 
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00075\ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{//\ if\ the\ SDU\ has\ a\ PDCP\ SN,\ first\ check\ the\ slot\ is\ available}}
+\DoxyCodeLine{00077\ \ \ \ \ optional<uint32\_t>\ pdcp\_sn\ \ =\ sdu.pdcp\_sn;}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_size}}\ =\ sdu.buf.length();}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcp\_sn.has\_value())\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}}\ =\ sdu.pdcp\_sn.value();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \textcolor{comment}{//\ load\ slot\ state\ (memory\_order\_acquire\ ensures\ sdu\_size\ is\ written\ after\ this)}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \mbox{\hyperlink{classuint32__t}{uint32\_t}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{slot\_state}}\ =\ sdu\_states[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}}\ \%\ capacity].load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{slot\_state}}\ !=\ STATE\_FREE)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}SDU\ queue\ failed\ to\ enqueue\ pdcp\_sn=\{\}.\ Slot\ holds\ pdcp\_sn=\{\}"{}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}},\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{slot\_state}});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{comment}{//\ slot\ is\ free,\ we\ can\ safely\ store\ the\ SDU\ size}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ sdu\_sizes[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}}\ \%\ capacity].store(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_size}},\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{comment}{//\ allocate\ slot\ by\ writing\ the\ PDCP\ SN\ into\ it\ (memory\_order\_relaxed,\ don't\ care\ about\ order\ because\ of\ "{}release"{}}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \textcolor{comment}{//\ semantics\ of\ the\ push\ to\ queue)}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ sdu\_states[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}}\ \%\ capacity].store(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pdcp\_sn\_value}},\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ push\ SDU\ to\ queue}}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pushed}}\ =\ queue-\/>try\_push(std::move(sdu));}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{pushed}})\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ logger.log\_debug(\textcolor{stringliteral}{"{}SDU\ queue\ failed\ to\ enqueue\ pdcp\_sn=\{\}.\ Queue\ is\ full"{}},\ pdcp\_sn);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{comment}{//\ if\ the\ SDU\ has\ a\ PDCP\ SN,\ release\ the\ slot\ (memory\_order\_relaxed,\ don't\ care\ about\ value\ of\ sdu\_size)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcp\_sn.has\_value())\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ sdu\_states[pdcp\_sn.value()\ \%\ capacity].store(STATE\_FREE,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ update\ totals}}
+\DoxyCodeLine{00108\ \ \ \ \ n\_sdus.fetch\_add(1,\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00109\ \ \ \ \ n\_bytes.fetch\_add(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sdu\_size}},\ std::memory\_order\_relaxed);}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00111\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+lib/rlc/rlc\+\_\+sdu\+\_\+queue\+\_\+lockfree.\+h\end{DoxyCompactItemize}

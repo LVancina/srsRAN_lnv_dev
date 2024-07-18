@@ -1,0 +1,90 @@
+\doxysection{psup\+\_\+message.\+h}
+\hypertarget{psup__message_8h_source}{}\label{psup__message_8h_source}\index{include/srsran/psup/psup\_message.h@{include/srsran/psup/psup\_message.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/cu\_types.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\ :\ uint8\_t\ \{\ dl\_pdu\_session\_information\ =\ 0,\ ul\_pdu\_session\_information\ =\ 1\ \};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint8\_t\ \mbox{\hyperlink{namespacesrsran_a8955ab8bb87a3ed947717cecb003d58a}{psup\_pdu\_type\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\ pdu\_type)}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(pdu\_type);}
+\DoxyCodeLine{00040\ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\ \mbox{\hyperlink{namespacesrsran_a360c60af32a4e090ec6d4104985ca5d5}{uint\_to\_psup\_pdu\_type}}(uint8\_t\ num)}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\textcolor{keyword}{>}(num);}
+\DoxyCodeLine{00046\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{comment}{//\ See\ TS\ 38.415\ Sec.\ 5.5.3.7:\ Pagin\ Policy\ Indicator\ (PPI)\ -\/\ value\ range:\ (0..7)}}
+\DoxyCodeLine{00049\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ uint8\_t\ MAX\_NOF\_PPI\ =\ 8;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespacesrsran_a83961b59c5446a2a54ca094304a585e4}{psup\_ppi}}\ :\ uint8\_t\ \{\ \mbox{\hyperlink{namespacesrsran_a2a7e19abbadc531788e0849e634c23c6}{min}}\ =\ 0,\ \mbox{\hyperlink{namespacesrsran_a2918c0347dde854fce1aaebb70a16c33}{max}}\ =\ MAX\_NOF\_PPI\ -\/\ 1,\ invalid\ =\ MAX\_NOF\_PPI\ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ uint8\_t\ \mbox{\hyperlink{namespacesrsran_a677830b953c043b4a57a1f5f7de704f8}{psup\_ppi\_to\_uint}}(\mbox{\hyperlink{namespacesrsran_a83961b59c5446a2a54ca094304a585e4}{psup\_ppi}}\ ppi)}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(ppi);}
+\DoxyCodeLine{00060\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a83961b59c5446a2a54ca094304a585e4}{psup\_ppi}}\ \mbox{\hyperlink{namespacesrsran_a34ed3c357baa4607cec767b0cc42ff5b}{uint\_to\_psup\_ppi}}(uint8\_t\ num)}
+\DoxyCodeLine{00064\ \{}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{namespacesrsran_a83961b59c5446a2a54ca094304a585e4}{psup\_ppi}}\textcolor{keyword}{>}(num);}
+\DoxyCodeLine{00066\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information}{psup\_dl\_pdu\_session\_information}}\ \{}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_aed7bace8e4bd3ba4c28f86fa2f28737b}{pdu\_type}}\ =\ psup\_pdu\_type::dl\_pdu\_session\_information;}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a94326b2c47fd3f7ff7a38757e531ac68}{rqi}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a39ac43439c1cb3012543bb7f0ba0eb9b}{qos\_flow\_id}}\ =\ qos\_flow\_id\_t::invalid;}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<psup\_ppi>}}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a3bd6ea383e9eaaf35d610c4403383148}{ppi}};}
+\DoxyCodeLine{00093\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint64\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a103fa9c1b3891e145e96acf429526ff5}{dl\_sending\_time\_stamp}};}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a022f0598c9f85f256738a365eb924054}{dl\_qfi\_sn}};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information}{psup\_dl\_pdu\_session\_information}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00099\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a94326b2c47fd3f7ff7a38757e531ac68}{rqi}}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.rqi\ \&\&\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a39ac43439c1cb3012543bb7f0ba0eb9b}{qos\_flow\_id}}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.qos\_flow\_id\ \&\&\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a3bd6ea383e9eaaf35d610c4403383148}{ppi}}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.ppi\ \&\&}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a103fa9c1b3891e145e96acf429526ff5}{dl\_sending\_time\_stamp}}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.dl\_sending\_time\_stamp\ \&\&\ \mbox{\hyperlink{structsrsran_1_1psup__dl__pdu__session__information_a022f0598c9f85f256738a365eb924054}{dl\_qfi\_sn}}\ ==\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.dl\_qfi\_sn;}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ \};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information}{psup\_ul\_pdu\_session\_information}}\ \{}
+\DoxyCodeLine{00112\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{namespacesrsran_a9457306b74d3dcde600d396950d906c8}{psup\_pdu\_type}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_aea72115c35cc66c93d448b0c3f80696e}{pdu\_type}}\ =\ psup\_pdu\_type::ul\_pdu\_session\_information;}
+\DoxyCodeLine{00116\ \ \ \mbox{\hyperlink{namespacesrsran_a925956f9fba30e5758ac8b39142a60b1}{qos\_flow\_id\_t}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_a522e2476aa2bcf652ddbb2c0cc37e7dd}{qos\_flow\_id}}\ =\ qos\_flow\_id\_t::invalid;}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint64\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_ac5bbdae42546efc8150deab96d4befbc}{dl\_sending\_time\_stamp\_repeated}};}
+\DoxyCodeLine{00129\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint64\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_a3aa3855fc3ad92dae20f63abe72c9025}{dl\_received\_time\_stamp}};}
+\DoxyCodeLine{00134\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint64\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_a204768df168b84840724fa9ff8cf6d55}{ul\_sending\_time\_stamp}};}
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_ae5f66d3aeb79ef93fc06871f7459e1a2}{dl\_delay\_result}};}
+\DoxyCodeLine{00146\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_a8ad66bd734e8c239a9a766c2f65a14e9}{ul\_delay\_result}};}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<uint32\_t>}}\ \mbox{\hyperlink{structsrsran_1_1psup__ul__pdu__session__information_a5f8fd4124e950e59bf4fa981f99022b8}{ul\_qfi\_sn}};}
+\DoxyCodeLine{00150\ \};}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

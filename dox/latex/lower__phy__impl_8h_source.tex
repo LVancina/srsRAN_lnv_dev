@@ -1,0 +1,84 @@
+\doxysection{lower\+\_\+phy\+\_\+impl.\+h}
+\hypertarget{lower__phy__impl_8h_source}{}\label{lower__phy__impl_8h_source}\index{lib/phy/lower/lower\_phy\_impl.h@{lib/phy/lower/lower\_phy\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}lower\_phy\_baseband\_processor.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}processors/adaptors/processor\_handler\_adaptor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}processors/adaptors/processor\_notifier\_adaptor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{circular__array_8h}{srsran/adt/circular\_array.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/baseband\_gateway.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{amplitude__controller_8h}{srsran/phy/lower/amplitude\_controller/amplitude\_controller.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_configuration.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_controller.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_error\_notifier.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_request\_handler.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_rg\_handler.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_rx\_symbol\_notifier.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/lower\_phy\_timing\_notifier.h"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/modulation/ofdm\_modulator.h"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/downlink/downlink\_processor.h"{}}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/uplink\_processor.h"{}}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/resource\_grid\_pool.h"{}}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{stats_8h}{srsran/support/stats.h}}"{}}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1lower__phy__impl}{lower\_phy\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1lower__phy}{lower\_phy}}}
+\DoxyCodeLine{00050\ \{}
+\DoxyCodeLine{00051\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ std::unique\_ptr<lower\_phy\_downlink\_processor>\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_a92f27cf41437b8c48d8fc91d6f481c70}{downlink\_proc}};}
+\DoxyCodeLine{00057\ \ \ \ \ std::unique\_ptr<lower\_phy\_uplink\_processor>\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_a820c45547756c008d3c8fa028551de72}{uplink\_proc}};}
+\DoxyCodeLine{00059\ \ \ \ \ std::unique\_ptr<lower\_phy\_controller>\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_aba4949fd77338ffbcd6ffc5f1a04111c}{controller}};}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__rx__symbol__notifier}{lower\_phy\_rx\_symbol\_notifier}}*\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_af4b41c95656f6cf54f7f045f6b1df657}{rx\_symbol\_notifier}};}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__timing__notifier}{lower\_phy\_timing\_notifier}}*\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_a10dd894b5596e328047c7c434ad0defa}{timing\_notifier}};}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__error__notifier}{lower\_phy\_error\_notifier}}*\ \mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration_a4889ca481a8991173e12140479e85643}{error\_notifier}};}
+\DoxyCodeLine{00066\ \ \ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a370677ad60bd2e5ff6da5f00ad86bb57}{lower\_phy\_impl}}(\mbox{\hyperlink{structsrsran_1_1lower__phy__impl_1_1configuration}{configuration}}\&\ config);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__controller}{lower\_phy\_controller}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a37c20756c394b63fa2a92e41123352ed}{get\_controller}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a2c002746c71271c5c6dfd373215a7821}{controller}};\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00075\ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__request__handler}{lower\_phy\_request\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a92f48a482999e35e527a2ea1ff75ac5a}{get\_request\_handler}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a94fde2cacf506dcd2da6ffc0d8e18171}{handler\_adaptor}}.\mbox{\hyperlink{classsrsran_1_1processor__handler__adaptor_a92cf3e7dc03792df386e4014b091168d}{get\_request\_handler}}();\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__rg__handler}{lower\_phy\_rg\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a9771221380c56bca78c5802ff34d26ad}{get\_rg\_handler}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a94fde2cacf506dcd2da6ffc0d8e18171}{handler\_adaptor}}.\mbox{\hyperlink{classsrsran_1_1processor__handler__adaptor_ae4ba10519189c85662bc6a7eafbb071f}{get\_rg\_handler}}();\ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00081\ \ \ std::unique\_ptr<lower\_phy\_downlink\_processor>\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a8ecb2164580c8ab709c2656275435b1e}{downlink\_proc}};}
+\DoxyCodeLine{00083\ \ \ std::unique\_ptr<lower\_phy\_uplink\_processor>\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_af8421ba18102d92625b354639db93f79}{uplink\_proc}};}
+\DoxyCodeLine{00085\ \ \ \mbox{\hyperlink{classsrsran_1_1processor__handler__adaptor}{processor\_handler\_adaptor}}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a94fde2cacf506dcd2da6ffc0d8e18171}{handler\_adaptor}};}
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsrsran_1_1processor__notifier__adaptor}{processor\_notifier\_adaptor}}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_ac9ea8dc071a9c367cf355d07d3376ac8}{notification\_adaptor}};}
+\DoxyCodeLine{00089\ \ \ std::unique\_ptr<lower\_phy\_controller>\ \mbox{\hyperlink{classsrsran_1_1lower__phy__impl_a2c002746c71271c5c6dfd373215a7821}{controller}};}
+\DoxyCodeLine{00090\ \};}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

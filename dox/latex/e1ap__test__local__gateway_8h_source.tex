@@ -1,0 +1,123 @@
+\doxysection{e1ap\+\_\+test\+\_\+local\+\_\+gateway.\+h}
+\hypertarget{e1ap__test__local__gateway_8h_source}{}\label{e1ap__test__local__gateway_8h_source}\index{tests/unittests/e1ap/cu\_cp/e1ap\_test\_local\_gateway.h@{tests/unittests/e1ap/cu\_cp/e1ap\_test\_local\_gateway.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/cu\_cp\_e1\_handler.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/e1ap/common/e1ap\_message.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/e1ap/cu\_up/e1ap\_connection\_client.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1test__e1ap__message__notifier}{test\_e1ap\_message\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1e1ap__message__notifier}{e1ap\_message\_notifier}}}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \mbox{\hyperlink{classsrsran_1_1test__e1ap__message__notifier}{test\_e1ap\_message\_notifier}}(\textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_to\_cu\_up\_dir\_,}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<e1ap\_message>*\ \ \ \ \ \ \ \ \ \ \ \ \ last\_pdus\_,}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<e1ap\_message\_notifier>\ decorated\ =\ \textcolor{keyword}{nullptr})\ :}
+\DoxyCodeLine{00038\ \ \ \ \ cu\_cp\_to\_cu\_up\_dir(cu\_cp\_to\_cu\_up\_dir\_),\ last\_pdus(last\_pdus\_),\ notifier(std::move(decorated))}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1test__e1ap__message__notifier_a79ae208c7272cd1961762a5df581011b}{on\_new\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__message}{e1ap\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_to\_cu\_up\_dir)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}E1AP\ Forwarding\ CU-\/CP\ >\ CU-\/UP:\ \{\}"{}},\ msg.pdu.type().to\_string());}
+\DoxyCodeLine{00046\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}E1AP\ Forwarding\ CU-\/UP\ >\ CU-\/CP:\ \{\}"{}},\ msg.pdu.type().to\_string());}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{if}\ (last\_pdus\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ last\_pdus-\/>push\_back(msg);}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{if}\ (notifier\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ notifier-\/>on\_new\_message(msg);}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00058\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_to\_cu\_up\_dir;}
+\DoxyCodeLine{00060\ \ \ std::vector<e1ap\_message>*\ \ \ \ \ \ \ \ \ \ \ \ \ last\_pdus;}
+\DoxyCodeLine{00061\ \ \ std::unique\_ptr<e1ap\_message\_notifier>\ notifier;}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1e1ap__test__local__gateway}{e1ap\_test\_local\_gateway}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__connection__client}{srs\_cu\_up::e1ap\_connection\_client}}}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1e1ap__test__local__gateway}{e1ap\_test\_local\_gateway}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1e1ap__test__local__gateway}{e1ap\_test\_local\_gateway}}(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__e1__handler}{srs\_cu\_cp::cu\_cp\_e1\_handler}}\&\ cu\_cp\_cu\_up\_mng\_)\ :\ cu\_cp\_cu\_up\_mng(\&cu\_cp\_cu\_up\_mng\_)}
+\DoxyCodeLine{00071\ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ attach\_cu\_cp\_cu\_up\_repo(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__e1__handler}{srs\_cu\_cp::cu\_cp\_e1\_handler}}\&\ cu\_cp\_cu\_up\_mng\_)\ \{\ cu\_cp\_cu\_up\_mng\ =\ \&cu\_cp\_cu\_up\_mng\_;\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ std::unique\_ptr<e1ap\_message\_notifier>}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1e1ap__test__local__gateway_a1f46ab5930d20f335b2eec38aa119f9e}{handle\_cu\_up\_connection\_request}}(std::unique\_ptr<e1ap\_message\_notifier>\ cu\_up\_rx\_pdu\_notifier)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00078\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00079\ \ \ \ \ connections.emplace\_back(std::make\_unique<cu\_up\_connection\_test\_context>());}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{auto}\&\ conn\ =\ connections.back();}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{auto}\ decorated\_cu\_up\_rx\_pdu\_notifier\ =}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ std::make\_unique<test\_e1ap\_message\_notifier>(\textcolor{keyword}{true},\ \&conn-\/>last\_cu\_up\_rx\_pdus,\ std::move(cu\_up\_rx\_pdu\_notifier));}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{auto}\ cu\_rx\_pdu\_notifier\ =\ cu\_cp\_cu\_up\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__e1__handler_afa00ee88d88d4df4aaef40456ba2f611}{handle\_new\_cu\_up\_connection}}(std::move(decorated\_cu\_up\_rx\_pdu\_notifier));}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<test\_e1ap\_message\_notifier>(}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{false},\ \&conn-\/>last\_cu\_cp\_rx\_pdus,\ std::move(cu\_rx\_pdu\_notifier));}
+\DoxyCodeLine{00089\ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ e1ap\_message>}}\ get\_last\_cu\_cp\_rx\_pdus(std::size\_t\ connection\_index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00092\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{return}\ connections.at(connection\_index)-\/>last\_cu\_cp\_rx\_pdus;}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ \ \ span<const\ e1ap\_message>\ get\_last\_cu\_cp\_tx\_pdus(std::size\_t\ connection\_index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00096\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{return}\ connections.at(connection\_index)-\/>last\_cu\_up\_rx\_pdus;}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ clear\_messages()}
+\DoxyCodeLine{00101\ \ \ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ connections.size();\ ++i)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ connections.at(i)-\/>last\_cu\_cp\_rx\_pdus.clear();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ connections.at(i)-\/>last\_cu\_up\_rx\_pdus.clear();}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{struct\ }cu\_up\_connection\_test\_context\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ std::vector<e1ap\_message>\ last\_cu\_cp\_rx\_pdus;}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00114\ \ \ \ \ std::vector<e1ap\_message>\ last\_cu\_up\_rx\_pdus;}
+\DoxyCodeLine{00115\ \ \ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ srs\_cu\_cp::cu\_cp\_e1\_handler*\ cu\_cp\_cu\_up\_mng\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ std::vector<std::unique\_ptr<cu\_up\_connection\_test\_context>>\ connections;}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

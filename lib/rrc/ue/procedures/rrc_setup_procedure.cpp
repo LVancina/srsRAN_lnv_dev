@@ -68,12 +68,9 @@ void rrc_setup_procedure::operator()(coro_context<async_task<void>>& ctx)
     logger.log_debug("\"{}\" finished successfully", name());
     context.state = rrc_state::connected;
     send_initial_ue_msg(transaction.response().msg.c1().rrc_setup_complete());
-  } else if (transaction.failure_cause() == protocol_transaction_failure::timeout) {
+  } else {
     logger.log_warning("\"{}\" timed out after {}ms", name(), context.cfg.rrc_procedure_timeout_ms);
     rrc_ue.on_ue_release_required(cause_protocol_t::unspecified);
-  } else {
-    logger.log_warning("\"{}\" cancelled", name());
-    // Do nothing. We are likely shutting down the DU processor.
   }
 
   CORO_RETURN();
@@ -94,10 +91,7 @@ void rrc_setup_procedure::send_rrc_setup()
   dl_ccch_msg_s dl_ccch_msg;
   dl_ccch_msg.msg.set_c1().set_rrc_setup();
   rrc_setup_s& rrc_setup = dl_ccch_msg.msg.c1().rrc_setup();
-  if (!fill_asn1_rrc_setup_msg(rrc_setup, du_to_cu_container, transaction.id())) {
-    logger.log_warning("ASN1 RRC setup message fill failed");
-    return;
-  }
+  fill_asn1_rrc_setup_msg(rrc_setup, du_to_cu_container, transaction.id());
   rrc_ue.on_new_dl_ccch(dl_ccch_msg);
 }
 
@@ -116,14 +110,6 @@ void rrc_setup_procedure::send_initial_ue_msg(const asn1::rrc_nr::rrc_setup_comp
     five_g_s_tmsi.five_g_tmsi = context.five_g_tmsi.value();
     // amf_pointer and amf_set_id will be set by NGAP
     init_ue_msg.five_g_s_tmsi = five_g_s_tmsi;
-  }
-
-  if (rrc_setup_complete_msg.crit_exts.rrc_setup_complete().registered_amf_present) {
-    cu_cp_amf_identifier_t amf_id =
-        asn1_to_amf_identifier(rrc_setup_complete_msg.crit_exts.rrc_setup_complete().registered_amf.amf_id);
-
-    init_ue_msg.amf_set_id = amf_id.amf_set_id;
-    // TODO: Handle PLMN ID
   }
 
   nas_notifier.on_initial_ue_message(init_ue_msg);

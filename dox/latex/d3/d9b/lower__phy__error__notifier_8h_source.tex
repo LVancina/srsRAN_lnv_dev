@@ -1,0 +1,82 @@
+\doxysection{lower\+\_\+phy\+\_\+error\+\_\+notifier.\+h}
+\hypertarget{lower__phy__error__notifier_8h_source}{}\label{lower__phy__error__notifier_8h_source}\index{include/srsran/phy/lower/lower\_phy\_error\_notifier.h@{include/srsran/phy/lower/lower\_phy\_error\_notifier.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer\_context.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__context}{resource\_grid\_context}};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Lower\ physical\ layer\ interface\ used\ to\ notify\ miscellaneous\ types\ of\ error\ events.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ lower\_phy\_error\_notifier}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{virtual}\ \string~lower\_phy\_error\_notifier()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ a\ resource\ grid\ outside\ the\ slot\ window.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ This\ error\ occurs\ when\ a\ resource\ grid\ transmission\ request\ for\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ received\ after\ the\ processing}}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ of\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ has\ started.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ The\ time\ window\ the\ lower\ physical\ layer\ can\ receive\ a\ resource\ grid\ for\ a\ slot\ starts\ with}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ lower\_phy\_timing\_notifier::on\_tti\_boundary()\ and\ finishes\ with\ the\ beginning\ of\ the\ processing\ of\ the\ first\ symbol}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ within\ the\ slot.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ context\ Context\ in\ which\ the\ resource\ grid\ is\ not\ available.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)sa\ lower\_phy\_rg\_handler::handle\_resource\_grid.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_late\_resource\_grid(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__context}{resource\_grid\_context}}\&\ context)\ =\ 0;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ a\ PRACH\ request\ outside\ the\ slot\ window.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ This\ error\ occurs\ when\ a\ PRACH\ request\ for\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ received\ after\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ started\ being}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ processed.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ context\ Context\ of\ the\ PRACH\ request\ raising\ the\ error\ notification.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_prach\_request\_late(\textcolor{keyword}{const}\ prach\_buffer\_context\&\ context)\ =\ 0;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ an\ excess\ of\ PRACH\ requests.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ This\ error\ occurs\ when\ the\ number\ of\ pending\ PRACH\ requests\ reaches\ the\ limit.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ context\ Context\ of\ the\ PRACH\ request\ raising\ the\ error\ notification.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_prach\_request\_overflow(\textcolor{keyword}{const}\ prach\_buffer\_context\&\ context)\ =\ 0;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notifies\ a\ PUxCH\ request\ outside\ the\ slot\ window.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ This\ error\ occurs\ when\ a\ PUxCH\ request\ for\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ is\ received\ after\ slot\ \(\backslash\)f\$n\(\backslash\)f\$\ started\ being}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ processed.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ context\ Context\ of\ the\ PUxCH\ request\ raising\ the\ error\ notification.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_puxch\_request\_late(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1resource__grid__context}{resource\_grid\_context}}\&\ context)\ =\ 0;}
+\DoxyCodeLine{00074\ \};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

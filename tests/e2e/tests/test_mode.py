@@ -27,12 +27,11 @@ import tempfile
 from pathlib import Path
 from time import sleep
 
-from google.protobuf.empty_pb2 import Empty
 from pytest import mark, param
 from retina.client.manager import RetinaTestManager
 from retina.launcher.artifacts import RetinaTestData
 from retina.launcher.utils import configure_artifacts
-from retina.protocol.base_pb2 import FiveGCDefinition, GNBDefinition, PLMN, StartInfo, UEDefinition
+from retina.protocol.base_pb2 import Empty, FiveGCDefinition, GNBDefinition, PLMN, StartInfo, UEDefinition
 from retina.protocol.fivegc_pb2 import FiveGCStartInfo
 from retina.protocol.fivegc_pb2_grpc import FiveGCStub
 from retina.protocol.gnb_pb2 import GNBStartInfo
@@ -44,13 +43,13 @@ from .steps.stub import FIVEGC_STARTUP_TIMEOUT, GNB_STARTUP_TIMEOUT, handle_star
 @mark.parametrize(
     "extra_config, nof_ant",
     (
-        param("test_mode test_ue --ri 1", 1, id="Test UE 1x1 Rank 1"),
-        param("test_mode test_ue --ri 1", 2, id="Test UE 2x2 Rank 1"),
-        param("test_mode test_ue --ri 2", 2, id="Test UE 2x2 Rank 2"),
-        param("test_mode test_ue --ri 1", 4, id="Test UE 4x4 Rank 1"),
-        param("test_mode test_ue --ri 2", 4, id="Test UE 4x4 Rank 2"),
-        param("test_mode test_ue --ri 3", 4, id="Test UE 4x4 Rank 3"),
-        param("test_mode test_ue --ri 4", 4, id="Test UE 4x4 Rank 4"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 1", 1, id="Test UE 1x1 Rank 1"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 1", 2, id="Test UE 2x2 Rank 1"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 2", 2, id="Test UE 2x2 Rank 2"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 1", 4, id="Test UE 4x4 Rank 1"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 2", 4, id="Test UE 4x4 Rank 2"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 3", 4, id="Test UE 4x4 Rank 3"),
+        param("test_mode test_ue --rnti 0x44 --cqi 15 --ri 4", 4, id="Test UE 4x4 Rank 4"),
     ),
 )
 @mark.test_mode
@@ -113,7 +112,7 @@ def test_ue(
         gnb.Start(
             GNBStartInfo(
                 plmn=PLMN(mcc="001", mnc="01"),
-                ue_definition=UEDefinition(zmq_ip=gnb_def.zmq_ip, zmq_port_array=gnb_def.zmq_port_array),
+                ue_definition=UEDefinition(zmq_ip=gnb_def.zmq_ip, zmq_port_array=gnb_def.zmq_port_array[:nof_ant]),
                 fivegc_definition=fivegc_def,
                 start_info=StartInfo(
                     timeout=gnb_startup_timeout,
@@ -141,36 +140,8 @@ def test_ue(
 
 
 @mark.test_mode
-def test_ru(
-    # Retina
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    # Clients
-    gnb: GNBStub,
-):
-    """
-    Run gnb in test mode ru dummy.
-    """
-    _test_ru(retina_manager, retina_data, gnb)
-
-
-@mark.test_mode_not_crash
-def test_ru_not_crash(
-    # Retina
-    retina_manager: RetinaTestManager,
-    retina_data: RetinaTestData,
-    # Clients
-    gnb: GNBStub,
-):
-    """
-    Run gnb with sanitizers in test mode ru dummy.
-    It ignores warnings and KOs, so it will fail if the gnb+sanitizer fails
-    """
-    _test_ru(retina_manager, retina_data, gnb, warning_as_errors=False, fail_if_kos=False)
-
-
 # pylint: disable=too-many-arguments
-def _test_ru(
+def test_ru(
     # Retina
     retina_manager: RetinaTestManager,
     retina_data: RetinaTestData,
@@ -187,6 +158,10 @@ def _test_ru(
     warning_as_errors: bool = True,
     fail_if_kos: bool = True,
 ):  # pylint: disable=too-many-locals
+    """
+    Run gnb in test mode.
+    """
+
     # Configuration
     with tempfile.NamedTemporaryFile(mode="w+") as tmp_file:
         tmp_file.write(" ")  # Make it not empty to overwrite default one

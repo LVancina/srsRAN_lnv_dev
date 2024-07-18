@@ -1,0 +1,113 @@
+\doxysection{srsran\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool\texorpdfstring{$<$}{<} Type \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classsrsran_1_1concurrent__thread__local__object__pool}{}\label{classsrsran_1_1concurrent__thread__local__object__pool}\index{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}}
+
+
+Concurrent pool of instances that are accessed depending on the thread.  
+
+
+
+
+{\ttfamily \#include $<$concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool.\+h$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_1_1custom__deleter}{custom\+\_\+deleter}}
+\begin{DoxyCompactList}\small\item\em Custom deleter that moves the ownership of the pointer back into the pool. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}\label{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a} 
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{using}} {\bfseries unique\+\_\+ptr} = std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}}, \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_1_1custom__deleter}{custom\+\_\+deleter}}$>$
+\begin{DoxyCompactList}\small\item\em Specify unique pointer with custom deleter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_abf59eb5f4efdd4ee13f311da0fdad20c}{concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool}} (std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$ $>$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{instances}})
+\begin{DoxyCompactList}\small\item\em Creates a concurrent instance pool from a list of instances. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename... Args$>$ }\\\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_ad15c45e0270232955b7a3313e5d3ae9f}{concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool}} (\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{unsigned}} \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{nof\+\_\+elements}}, \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Args}} \&\&... args)
+\begin{DoxyCompactList}\small\item\em Creates a concurrent instance pool with a specific number of elements. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_a8a79d83467230e23bb605c834c961cf2}\label{classsrsran_1_1concurrent__thread__local__object__pool_a8a79d83467230e23bb605c834c961cf2} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool} ()
+\begin{DoxyCompactList}\small\item\em Default destructor -\/ It triggers a failure if any instance has not been returned to que pool. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} \& \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_a3da4fdeea0426e1c616c78346de9d7b0}{get}} ()
+\begin{DoxyCompactList}\small\item\em Gets an instance from the pool. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_a18f44611332c1eb9c7a4d22ee59a8642}\label{classsrsran_1_1concurrent__thread__local__object__pool_a18f44611332c1eb9c7a4d22ee59a8642} 
+std\+::size\+\_\+t {\bfseries capacity} () \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{const}}
+\begin{DoxyCompactList}\small\item\em Gets the pool capacity. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{typename}} \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}}$>$\newline
+class srsran\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool$<$ Type $>$}
+Concurrent pool of instances that are accessed depending on the thread. 
+
+The pool contains a vector of instances that are assigned to threads the first time they call \doxylink{classsrsran_1_1concurrent__thread__local__object__pool_a3da4fdeea0426e1c616c78346de9d7b0}{get()}. The instances are returned to the pool when the thread is terminated.
+
+The main thread is a special case as it does not get deleted, in that case it is not returned to the pool.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Type} & Object pool type. \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_abf59eb5f4efdd4ee13f311da0fdad20c}\label{classsrsran_1_1concurrent__thread__local__object__pool_abf59eb5f4efdd4ee13f311da0fdad20c} 
+\index{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}!concurrent\_thread\_local\_object\_pool@{concurrent\_thread\_local\_object\_pool}}
+\index{concurrent\_thread\_local\_object\_pool@{concurrent\_thread\_local\_object\_pool}!srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{concurrent\_thread\_local\_object\_pool()}{concurrent\_thread\_local\_object\_pool()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{typename}} \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$ \\
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool}{srsran\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool}}$<$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$ $>$}]{instances }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a concurrent instance pool from a list of instances. 
+
+\begin{DoxyRemark}{Remarks}
+An assertion is triggered if the list of instances is empty or if one of the elements is a {\ttfamily nullptr}. 
+\end{DoxyRemark}
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_ad15c45e0270232955b7a3313e5d3ae9f}\label{classsrsran_1_1concurrent__thread__local__object__pool_ad15c45e0270232955b7a3313e5d3ae9f} 
+\index{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}!concurrent\_thread\_local\_object\_pool@{concurrent\_thread\_local\_object\_pool}}
+\index{concurrent\_thread\_local\_object\_pool@{concurrent\_thread\_local\_object\_pool}!srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{concurrent\_thread\_local\_object\_pool()}{concurrent\_thread\_local\_object\_pool()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{typename}} \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$ \\
+template$<$typename... Args$>$ \\
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool}{srsran\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool}}$<$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{unsigned}}}]{nof\+\_\+elements,  }\item[{\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Args}} \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Creates a concurrent instance pool with a specific number of elements. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Args} & Parameter pack used to construct the pool elements. \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em nof\+\_\+elements} & Number of pool elements to instantiate. \\
+\hline
+\mbox{\texttt{ in}}  & {\em args} & Element creation arguments. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1concurrent__thread__local__object__pool_a3da4fdeea0426e1c616c78346de9d7b0}\label{classsrsran_1_1concurrent__thread__local__object__pool_a3da4fdeea0426e1c616c78346de9d7b0} 
+\index{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}!get@{get}}
+\index{get@{get}!srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$@{srsran::concurrent\_thread\_local\_object\_pool$<$ Type $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily template$<$\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{typename}} \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$ \\
+\mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} \& \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool}{srsran\+::concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool}}$<$ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool_af78f1516e4ddaefe9ad686647954b46a}{Type}} $>$\+::get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets an instance from the pool. 
+
+The selected instance is fixed for the thread that calls the method. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/srsran/support/memory\+\_\+pool/concurrent\+\_\+thread\+\_\+local\+\_\+object\+\_\+pool.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,130 @@
+\doxysection{pusch\+\_\+uci\+\_\+decoder\+\_\+wrapper.\+h}
+\hypertarget{pusch__uci__decoder__wrapper_8h_source}{}\label{pusch__uci__decoder__wrapper_8h_source}\index{lib/phy/upper/channel\_processors/pusch/pusch\_uci\_decoder\_wrapper.h@{lib/phy/upper/channel\_processors/pusch/pusch\_uci\_decoder\_wrapper.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{pusch__uci__decoder__notifier_8h}{"{}pusch\_uci\_decoder\_notifier.h"{}}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pusch/pusch\_decoder\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/uci/uci\_decoder.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/uci/uci\_constants.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ Decodes\ UCI\ messages\ multiplexed\ in\ PUSCH.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ This\ class\ adapts\ PUSCH\ decoder\ buffer\ interface\ to\ decode\ UCI\ messages.\ The\ buffer\ interface\ is\ exposed\ through\ the}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ method\ new\_transmission().}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ The\ instance\ is\ configured\ when\ new\_transmission()\ is\ called.\ Soft\ bits\ are\ enqueued\ in\ \(\backslash\)c\ softbits\_buffer\ with\ the}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ method\ on\_new\_softbits().\ The\ method\ get\_next\_block\_view()\ is\ for\ getting\ a\ view\ of\ the\ next\ soft\ bits\ for\ avoiding}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ copying\ data\ several\ times.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ The\ decoding\ starts\ upon\ the\ call\ on\_end\_softbits()\ which\ notifies\ the\ decoding\ result.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__wrapper}{pusch\_uci\_decoder\_wrapper}}\ :\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Constructs\ an\ instance\ from\ an\ UCI\ decoder\ and\ a\ maximum\ number\ of\ softbits.}}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__wrapper_a6d36b1eefc30624306c4d52f6af618b2}{pusch\_uci\_decoder\_wrapper}}(\mbox{\hyperlink{classsrsran_1_1uci__decoder}{uci\_decoder}}\&\ decoder\_,\ \textcolor{keywordtype}{unsigned}\ max\_nof\_softbits)\ :}
+\DoxyCodeLine{00047\ \ \ \ \ decoder(decoder\_),\ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__wrapper_a6d36b1eefc30624306c4d52f6af618b2}{softbits\_buffer}}(\mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__wrapper_a6d36b1eefc30624306c4d52f6af618b2}{max\_nof\_softbits}})}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Configures\ a\ new\ transmission.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ message\_length\ UCI\ message\ number\ of\ bits.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ modulation\ \ \ \ \ PUSCH\ modulation.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ notifier\_\ \ \ \ \ \ Decoder\ result\ notifier.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ reference\ to\ a\ PUSCH\ decoder\ buffer.}}
+\DoxyCodeLine{00056\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__decoder__buffer}{pusch\_decoder\_buffer}}\&}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__wrapper_ad3647df66ea17ee7ff51436eaa37bda9}{new\_transmission}}(\textcolor{keywordtype}{unsigned}\ message\_length,\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ modulation,\ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__notifier}{pusch\_uci\_decoder\_notifier}}\&\ notifier\_)}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ notifier\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \&notifier\_;}
+\DoxyCodeLine{00060\ \ \ \ \ softbits\_count\ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00061\ \ \ \ \ message\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ span<uint8\_t>(temp\_message).first(message\_length);}
+\DoxyCodeLine{00062\ \ \ \ \ decoder\_config\mbox{\hyperlink{structsrsran_1_1uci__decoder_1_1configuration_a2bb14b8670d03d0020059ff5fa4ee85e}{.}}\mbox{\hyperlink{structsrsran_1_1uci__decoder_1_1configuration_a2bb14b8670d03d0020059ff5fa4ee85e}{modulation}}\ =\ modulation;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ UCI\ decoder.}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{classsrsran_1_1uci__decoder}{uci\_decoder}}\&\ decoder;}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Decode\ Notifier.}}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1pusch__uci__decoder__notifier}{pusch\_uci\_decoder\_notifier}}*\ notifier\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Codeword\ softbits\ buffer.}}
+\DoxyCodeLine{00072\ \ \ std::vector<log\_likelihood\_ratio>\ softbits\_buffer;}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Current\ number\ of\ softbits\ in\ the\ buffer.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{unsigned}\ softbits\_count;}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ Decoded\ message\ storage.}}
+\DoxyCodeLine{00076\ \ \ std::array<uint8\_t,\ uci\_constants::MAX\_NOF\_PAYLOAD\_BITS>\ temp\_message;}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Current\ decoded\ message.}}
+\DoxyCodeLine{00078\ \ \ span<uint8\_t>\ message;}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ Current\ UCI\ decoder\ configuration.}}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{classsrsran_1_1uci__decoder}{uci\_decoder}}::\mbox{\hyperlink{structsrsran_1_1uci__decoder_1_1configuration}{configuration}}\ decoder\_config;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00083\ \ \ span<\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ get\_next\_block\_view(\textcolor{keywordtype}{unsigned}\ block\_size)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00084\ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Makes\ sure\ the\ block\ size\ does\ not\ overflow\ the\ buffer.}}
+\DoxyCodeLine{00086\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(softbits\_count\ +\ block\_size\ <=\ softbits\_buffer.size(),}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ sum\ of\ current\ buffer\ number\ of\ elements\ (i.e.,\ \{\})\ and\ the\ block\ size\ (i.e.,\ \{\}),\ exceeds\ the\ "{}}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}total\ number\ of\ elements\ of\ the\ buffer\ (i.e.,\ \{\})."{}},}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ softbits\_count,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ block\_size,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ softbits\_buffer.size());}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{return}\ span<log\_likelihood\_ratio>(softbits\_buffer).subspan(softbits\_count,\ block\_size);}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ on\_new\_softbits(span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ softbits)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00098\ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ span<\mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ block\ =\ get\_next\_block\_view(softbits.size());}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{//\ Copy\ only\ if\ the\ soft\ bits\ do\ not\ match.}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{if}\ (block.data()\ !=\ softbits.data())\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ srsvec::copy(block,\ softbits);}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ softbits\_count\ +=\ softbits.size();}
+\DoxyCodeLine{00107\ \ \ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{void}\ on\_end\_softbits()\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00111\ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ Select\ codeword\ from\ the\ soft\ bit\ buffer.}}
+\DoxyCodeLine{00113\ \ \ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ codeword\ =\ span<\textcolor{keyword}{const}\ log\_likelihood\_ratio>(softbits\_buffer).first(softbits\_count);}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ Actual\ decode.}}
+\DoxyCodeLine{00116\ \ \ \ \ uci\_status\ status\ =\ decoder.decode(message,\ codeword,\ decoder\_config);}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Notify\ decoded\ UCI.}}
+\DoxyCodeLine{00119\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(notifier\ !=\ \textcolor{keywordtype}{nullptr},\ \textcolor{stringliteral}{"{}Invalid\ notifier."{}});}
+\DoxyCodeLine{00120\ \ \ \ \ notifier-\/>on\_uci\_decoded(message,\ status);}
+\DoxyCodeLine{00121\ \ \ \}}
+\DoxyCodeLine{00122\ \};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

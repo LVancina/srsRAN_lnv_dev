@@ -1,0 +1,189 @@
+\doxysection{ldpc.\+h}
+\hypertarget{ldpc_8h_source}{}\label{ldpc_8h_source}\index{include/srsran/phy/upper/channel\_coding/ldpc/ldpc.h@{include/srsran/phy/upper/channel\_coding/ldpc/ldpc.h}}
+\mbox{\hyperlink{ldpc_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/sch/ldpc\_base\_graph.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{math__utils_8h}{srsran/support/math\_utils.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/support/units.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }ldpc\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_aa8225b08a82fdb2faf7642e2a292f85f}{lifting\_size\_t}}\ \{}
+\DoxyCodeLine{00042\ \ \ LS2\ \ \ =\ 2,}
+\DoxyCodeLine{00043\ \ \ LS3\ \ \ =\ 3,}
+\DoxyCodeLine{00044\ \ \ LS4\ \ \ =\ 4,}
+\DoxyCodeLine{00045\ \ \ LS5\ \ \ =\ 5,}
+\DoxyCodeLine{00046\ \ \ LS6\ \ \ =\ 6,}
+\DoxyCodeLine{00047\ \ \ LS7\ \ \ =\ 7,}
+\DoxyCodeLine{00048\ \ \ LS8\ \ \ =\ 8,}
+\DoxyCodeLine{00049\ \ \ LS9\ \ \ =\ 9,}
+\DoxyCodeLine{00050\ \ \ LS10\ \ =\ 10,}
+\DoxyCodeLine{00051\ \ \ LS11\ \ =\ 11,}
+\DoxyCodeLine{00052\ \ \ LS12\ \ =\ 12,}
+\DoxyCodeLine{00053\ \ \ LS13\ \ =\ 13,}
+\DoxyCodeLine{00054\ \ \ LS14\ \ =\ 14,}
+\DoxyCodeLine{00055\ \ \ LS15\ \ =\ 15,}
+\DoxyCodeLine{00056\ \ \ LS16\ \ =\ 16,}
+\DoxyCodeLine{00057\ \ \ LS18\ \ =\ 18,}
+\DoxyCodeLine{00058\ \ \ LS20\ \ =\ 20,}
+\DoxyCodeLine{00059\ \ \ LS22\ \ =\ 22,}
+\DoxyCodeLine{00060\ \ \ LS24\ \ =\ 24,}
+\DoxyCodeLine{00061\ \ \ LS26\ \ =\ 26,}
+\DoxyCodeLine{00062\ \ \ LS28\ \ =\ 28,}
+\DoxyCodeLine{00063\ \ \ LS30\ \ =\ 30,}
+\DoxyCodeLine{00064\ \ \ LS32\ \ =\ 32,}
+\DoxyCodeLine{00065\ \ \ LS36\ \ =\ 36,}
+\DoxyCodeLine{00066\ \ \ LS40\ \ =\ 40,}
+\DoxyCodeLine{00067\ \ \ LS44\ \ =\ 44,}
+\DoxyCodeLine{00068\ \ \ LS48\ \ =\ 48,}
+\DoxyCodeLine{00069\ \ \ LS52\ \ =\ 52,}
+\DoxyCodeLine{00070\ \ \ LS56\ \ =\ 56,}
+\DoxyCodeLine{00071\ \ \ LS60\ \ =\ 60,}
+\DoxyCodeLine{00072\ \ \ LS64\ \ =\ 64,}
+\DoxyCodeLine{00073\ \ \ LS72\ \ =\ 72,}
+\DoxyCodeLine{00074\ \ \ LS80\ \ =\ 80,}
+\DoxyCodeLine{00075\ \ \ LS88\ \ =\ 88,}
+\DoxyCodeLine{00076\ \ \ LS96\ \ =\ 96,}
+\DoxyCodeLine{00077\ \ \ LS104\ =\ 104,}
+\DoxyCodeLine{00078\ \ \ LS112\ =\ 112,}
+\DoxyCodeLine{00079\ \ \ LS120\ =\ 120,}
+\DoxyCodeLine{00080\ \ \ LS128\ =\ 128,}
+\DoxyCodeLine{00081\ \ \ LS144\ =\ 144,}
+\DoxyCodeLine{00082\ \ \ LS160\ =\ 160,}
+\DoxyCodeLine{00083\ \ \ LS176\ =\ 176,}
+\DoxyCodeLine{00084\ \ \ LS192\ =\ 192,}
+\DoxyCodeLine{00085\ \ \ LS208\ =\ 208,}
+\DoxyCodeLine{00086\ \ \ LS224\ =\ 224,}
+\DoxyCodeLine{00087\ \ \ LS240\ =\ 240,}
+\DoxyCodeLine{00088\ \ \ LS256\ =\ 256,}
+\DoxyCodeLine{00089\ \ \ LS288\ =\ 288,}
+\DoxyCodeLine{00090\ \ \ LS320\ =\ 320,}
+\DoxyCodeLine{00091\ \ \ LS352\ =\ 352,}
+\DoxyCodeLine{00092\ \ \ LS384\ =\ 384}
+\DoxyCodeLine{00093\ \};}
+\DoxyCodeLine{00095\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a3a46322ad929e76af7cb959300dafd93}{NOF\_LIFTING\_SIZES}}\ =\ 51;}
+\DoxyCodeLine{00097\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_aefe38c511b39f84ec0d0e9b9c7f05cb2}{NOF\_LIFTING\_INDICES}}\ =\ 8;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::array<lifting\_size\_t,\ NOF\_LIFTING\_SIZES>\ all\_lifting\_sizes\ =\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ LS2,\ \ \ LS3,\ \ \ LS4,\ \ \ LS5,\ \ \ LS6,\ \ \ LS7,\ \ \ LS8,\ \ \ LS9,\ \ \ LS10,\ \ LS11,\ \ LS12,\ \ LS13,\ \ LS14,}
+\DoxyCodeLine{00102\ \ \ \ \ LS15,\ \ LS16,\ \ LS18,\ \ LS20,\ \ LS22,\ \ LS24,\ \ LS26,\ \ LS28,\ \ LS30,\ \ LS32,\ \ LS36,\ \ LS40,\ \ LS44,}
+\DoxyCodeLine{00103\ \ \ \ \ LS48,\ \ LS52,\ \ LS56,\ \ LS60,\ \ LS64,\ \ LS72,\ \ LS80,\ \ LS88,\ \ LS96,\ \ LS104,\ LS112,\ LS120,\ LS128,}
+\DoxyCodeLine{00104\ \ \ \ \ LS144,\ LS160,\ LS176,\ LS192,\ LS208,\ LS224,\ LS240,\ LS256,\ LS288,\ LS320,\ LS352,\ LS384\};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00107\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint8\_t\ FILLER\_BIT\ =\ 254;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_MESSAGE\_SIZE\ =\ all\_lifting\_sizes.back()\ *\ 22;}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_CODEBLOCK\_SIZE\ =\ all\_lifting\_sizes.back()\ *\ 66;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_CODEBLOCK\_RM\_SIZE\ =\ MAX\_MESSAGE\_SIZE\ *\ 35;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00128\ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a7260856d9ec4648dad107763036ef906}{compute\_tb\_crc\_size}}(\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ tbs)}
+\DoxyCodeLine{00129\ \{}
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{using\ namespace\ }units::literals;}
+\DoxyCodeLine{00131\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ MAX\_BITS\_CRC16\ =\ 3824\_bits;}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordflow}{return}\ ((tbs\ <=\ MAX\_BITS\_CRC16)\ ?\ 16\_bits\ :\ 24\_bits);}
+\DoxyCodeLine{00133\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00140\ \textcolor{keyword}{inline}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a23acad74746ca49586fe02e3033bd392}{compute\_nof\_codeblocks}}(\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ tbs,\ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ bg)}
+\DoxyCodeLine{00141\ \{}
+\DoxyCodeLine{00142\ \ \ \textcolor{keyword}{using\ namespace\ }units::literals;}
+\DoxyCodeLine{00143\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ CBLOCK\_CRC\_LENGTH\ =\ 24\_bits;}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \ \ \ \ \ \ \ \ \ \ tb\_and\_crc\_bits\ \ \ =\ tbs\ +\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a7260856d9ec4648dad107763036ef906}{compute\_tb\_crc\_size}}(tbs);}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ max\_segment\_length\ =\ (bg\ ==\ ldpc\_base\_graph\_type::BG1)\ ?\ 8448\_bits\ :\ 3840\_bits;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{keywordflow}{return}\ ((tb\_and\_crc\_bits\ <=\ max\_segment\_length)}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ 1}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{namespacesrsran_a6e5aee1d553dc6e825017842e4059adb}{divide\_ceil}}(tb\_and\_crc\_bits.\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{value}}(),\ (max\_segment\_length\ -\/\ CBLOCK\_CRC\_LENGTH).value()));}
+\DoxyCodeLine{00151\ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00157\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a65389d5aa819559b5c2cac18d5ec37ae}{compute\_lifting\_size}}(\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ tbs,\ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ base\_graph,\ \textcolor{keywordtype}{unsigned}\ nof\_segments)}
+\DoxyCodeLine{00158\ \{}
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{using\ namespace\ }units::literals;}
+\DoxyCodeLine{00160\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ nof\_tb\_bits\_in\ =\ tbs\ +\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_a7260856d9ec4648dad107763036ef906}{compute\_tb\_crc\_size}}(tbs);}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \textcolor{keywordtype}{unsigned}\ ref\_length\ =\ 22;}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordflow}{if}\ (base\_graph\ ==\ ldpc\_base\_graph\_type::BG2)\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordflow}{if}\ (nof\_tb\_bits\_in\ >\ 640\_bits)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ ref\_length\ =\ 10;}
+\DoxyCodeLine{00166\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (nof\_tb\_bits\_in\ >\ 560\_bits)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ ref\_length\ =\ 9;}
+\DoxyCodeLine{00168\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (nof\_tb\_bits\_in\ >\ 192\_bits)\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ ref\_length\ =\ 8;}
+\DoxyCodeLine{00170\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ ref\_length\ =\ 6;}
+\DoxyCodeLine{00172\ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \textcolor{keywordtype}{unsigned}\ total\_ref\_length\ =\ nof\_segments\ *\ ref\_length;}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \textcolor{comment}{//\ Calculate\ the\ number\ of\ bits\ per\ transport\ block\ including\ codeblock\ CRC.}}
+\DoxyCodeLine{00178\ \ \ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ nof\_tb\_bits\_out\ =\ nof\_tb\_bits\_in;}
+\DoxyCodeLine{00179\ \ \ \textcolor{keywordflow}{if}\ (nof\_segments\ >\ 1)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ nof\_tb\_bits\_out\ +=\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}(24\ *\ nof\_segments);}
+\DoxyCodeLine{00181\ \ \ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \textcolor{keywordtype}{unsigned}\ lifting\_size\ =\ 0;}
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ ls\ :\ all\_lifting\_sizes)\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{if}\ (ls\ *\ total\_ref\_length\ >=\ nof\_tb\_bits\_out.\mbox{\hyperlink{classsrsran_1_1strong__type_a1a71ac48ba41b4a070b32e296c177db0}{value}}())\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ lifting\_size\ =\ ls;}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00188\ \ \ \ \ \}}
+\DoxyCodeLine{00189\ \ \ \}}
+\DoxyCodeLine{00190\ \ \ srsran\_assert(lifting\_size\ !=\ 0,\ \textcolor{stringliteral}{"{}Lifting\ size\ cannot\ be\ 0"{}});}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \textcolor{keywordflow}{return}\ lifting\_size;}
+\DoxyCodeLine{00193\ \}}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00200\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_aeffeb135707ed719a149777da808b611}{compute\_codeblock\_size}}(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ base\_graph,\ \textcolor{keywordtype}{unsigned}\ lifting\_size)}
+\DoxyCodeLine{00201\ \{}
+\DoxyCodeLine{00202\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ base\_length\_BG1\ =\ 22;}
+\DoxyCodeLine{00203\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ base\_length\_BG2\ =\ 10;}
+\DoxyCodeLine{00204\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ base\_length\ \ \ \ \ =\ (base\_graph\ ==\ ldpc\_base\_graph\_type::BG1)\ ?\ base\_length\_BG1\ :\ base\_length\_BG2;}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}(base\_length\ *\ lifting\_size);}
+\DoxyCodeLine{00207\ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00210\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ \mbox{\hyperlink{namespacesrsran_1_1ldpc_ae2d4d9ea6559339acffe226c0a6eb811}{compute\_full\_codeblock\_size}}(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ base\_graph,\ \mbox{\hyperlink{classsrsran_1_1units_1_1bits}{units::bits}}\ codeblock\_size)}
+\DoxyCodeLine{00211\ \{}
+\DoxyCodeLine{00212\ \ \ \textcolor{comment}{//\ BG1\ has\ rate\ 1/3\ and\ BG2\ has\ rate\ 1/5.}}
+\DoxyCodeLine{00213\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ INVERSE\_BG1\_RATE\ =\ 3;}
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ INVERSE\_BG2\_RATE\ =\ 5;}
+\DoxyCodeLine{00215\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ inverse\_rate\ \ \ \ \ =\ (base\_graph\ ==\ ldpc\_base\_graph\_type::BG1)\ ?\ INVERSE\_BG1\_RATE\ :\ INVERSE\_BG2\_RATE;}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \textcolor{keywordflow}{return}\ codeblock\_size\ *\ inverse\_rate;}
+\DoxyCodeLine{00218\ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \}\ \textcolor{comment}{//\ namespace\ ldpc}}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -24,7 +24,6 @@
 #include "lib/ngap/ngap_asn1_converters.h"
 #include "srsran/asn1/ngap/common.h"
 #include "srsran/asn1/ngap/ngap_ies.h"
-#include "srsran/asn1/ngap/ngap_pdu_contents.h"
 #include "srsran/ngap/ngap_message.h"
 #include "srsran/ngap/ngap_types.h"
 #include "srsran/ran/cu_types.h"
@@ -72,7 +71,7 @@ bool srsran::srs_cu_cp::is_pdu_type(const ngap_message&                         
 ngap_ng_setup_request srsran::srs_cu_cp::generate_ng_setup_request()
 {
   ngap_ng_setup_request request_msg;
-  request_msg.global_ran_node_id.gnb_id  = {411, 22};
+  request_msg.global_ran_node_id.gnb_id  = 411;
   request_msg.global_ran_node_id.plmn_id = "00101";
 
   request_msg.ran_node_name = "srsgnb01";
@@ -160,8 +159,7 @@ cu_cp_initial_ue_message srsran::srs_cu_cp::generate_initial_ue_message(ue_index
 {
   cu_cp_initial_ue_message msg = {};
   msg.ue_index                 = ue_index;
-  bool ret                     = msg.nas_pdu.resize(nas_pdu_len);
-  (void)ret;
+  msg.nas_pdu.resize(nas_pdu_len);
   msg.establishment_cause                = static_cast<establishment_cause_t>(rrc_establishment_cause_opts::mo_sig);
   msg.user_location_info.nr_cgi.plmn_hex = "00f110";
   msg.user_location_info.nr_cgi.nci      = 6576;
@@ -183,8 +181,7 @@ ngap_message srsran::srs_cu_cp::generate_downlink_nas_transport_message(amf_ue_i
   dl_nas_transport_msg->amf_ue_ngap_id = amf_ue_id_to_uint(amf_ue_id);
   dl_nas_transport_msg->ran_ue_ngap_id = ran_ue_id_to_uint(ran_ue_id);
   if (nas_pdu.empty()) {
-    bool ret = dl_nas_transport_msg->nas_pdu.resize(nas_pdu_len);
-    (void)ret;
+    dl_nas_transport_msg->nas_pdu.resize(nas_pdu_len);
   } else {
     dl_nas_transport_msg->nas_pdu = nas_pdu.copy();
   }
@@ -196,8 +193,7 @@ cu_cp_ul_nas_transport srsran::srs_cu_cp::generate_ul_nas_transport_message(ue_i
 {
   cu_cp_ul_nas_transport ul_nas_transport = {};
   ul_nas_transport.ue_index               = ue_index;
-  bool ret                                = ul_nas_transport.nas_pdu.resize(nas_pdu_len);
-  (void)ret;
+  ul_nas_transport.nas_pdu.resize(nas_pdu_len);
   ul_nas_transport.user_location_info.nr_cgi.plmn_hex = "00f110";
   ul_nas_transport.user_location_info.nr_cgi.nci      = 6576;
   ul_nas_transport.user_location_info.tai.plmn_id     = "00f110";
@@ -216,8 +212,7 @@ ngap_message srsran::srs_cu_cp::generate_uplink_nas_transport_message(amf_ue_id_
   auto& ul_nas_transport_msg           = ul_nas_transport.pdu.init_msg().value.ul_nas_transport();
   ul_nas_transport_msg->amf_ue_ngap_id = amf_ue_id_to_uint(amf_ue_id);
   ul_nas_transport_msg->ran_ue_ngap_id = ran_ue_id_to_uint(ran_ue_id);
-  bool ret                             = ul_nas_transport_msg->nas_pdu.resize(nas_pdu_len);
-  (void)ret;
+  ul_nas_transport_msg->nas_pdu.resize(nas_pdu_len);
 
   auto& user_loc_info_nr = ul_nas_transport_msg->user_location_info.set_user_location_info_nr();
   user_loc_info_nr.nr_cgi.plmn_id.from_string("00f110");
@@ -468,8 +463,7 @@ srsran::srs_cu_cp::generate_cu_cp_pdu_session_resource_setup_response(pdu_sessio
 
   auto& dlqos_flow_per_tnl_info =
       pdu_session_setup_response_item.pdu_session_resource_setup_response_transfer.dlqos_flow_per_tnl_info;
-  dlqos_flow_per_tnl_info.up_tp_layer_info = {transport_layer_address::create_from_string("0.0.0.0"),
-                                              int_to_gtpu_teid(0)};
+  dlqos_flow_per_tnl_info.up_tp_layer_info = {transport_layer_address{"0.0.0.0"}, int_to_gtpu_teid(0)};
   cu_cp_associated_qos_flow assoc_qos_flow;
   assoc_qos_flow.qos_flow_id = uint_to_qos_flow_id(1);
   dlqos_flow_per_tnl_info.associated_qos_flow_list.emplace(uint_to_qos_flow_id(1), assoc_qos_flow);
@@ -534,7 +528,8 @@ srsran::srs_cu_cp::generate_cu_cp_pdu_session_resource_release_response(pdu_sess
 
   pdu_session_res_released_item_rel_res.pdu_session_id = pdu_session_id;
 
-  pdu_session_res_release_resp.released_pdu_sessions.emplace(pdu_session_id, pdu_session_res_released_item_rel_res);
+  pdu_session_res_release_resp.pdu_session_res_released_list_rel_res.emplace(pdu_session_id,
+                                                                             pdu_session_res_released_item_rel_res);
 
   return pdu_session_res_release_resp;
 }
@@ -633,8 +628,7 @@ srsran::srs_cu_cp::generate_cu_cp_pdu_session_resource_modify_response(pdu_sessi
   pdu_session_modify_response_item.pdu_session_id = pdu_session_id;
 
   cu_cp_qos_flow_per_tnl_information qos_flow_per_tnl_info;
-  qos_flow_per_tnl_info.up_tp_layer_info = {transport_layer_address::create_from_string("127.0.0.1"),
-                                            int_to_gtpu_teid(1)};
+  qos_flow_per_tnl_info.up_tp_layer_info = {transport_layer_address{"127.0.0.1"}, int_to_gtpu_teid(1)};
 
   cu_cp_associated_qos_flow assoc_qos_flow;
   assoc_qos_flow.qos_flow_id = qos_flow_id;

@@ -1,0 +1,98 @@
+\doxysection{rb\+\_\+helper.\+h}
+\hypertarget{rb__helper_8h_source}{}\label{rb__helper_8h_source}\index{lib/scheduler/support/rb\_helper.h@{lib/scheduler/support/rb\_helper.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/search\_space.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/bwp\_configuration.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_dci.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/vrb\_alloc.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ rb\_helper\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)brief\ Conversion\ of\ CRBs\ to\ VRBs\ as\ per\ TS38.211,\ clause\ 7.3.1.6.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)param\ crbs\ CRB\ interval\ to\ be\ converted\ to\ VRB\ interval.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)param\ bwp\_crb\_start\ Start\ of\ the\ BWP\ CRBs.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)param\ coreset\_crb\_start\ Start\ of\ the\ coreset\ CRBs.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)param\ dci\_fmt\ DCI\ DL\ format.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ \(\backslash\)param\ ss\_type\ type\ of\ Search\ Space.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)return\ VRB\ interval.}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1vrb__interval}{vrb\_interval}}\ crb\_to\_vrb\_dl\_non\_interleaved(\mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ \ crbs,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ bwp\_crb\_start,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ coreset\_crb\_start,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dci\_dl\_format\ dci\_fmt,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ is\_common\_ss)}
+\DoxyCodeLine{00047\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordflow}{if}\ (dci\_fmt\ ==\ dci\_dl\_format::f1\_0\ \textcolor{keyword}{and}\ is\_common\_ss)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_ae12c49256448baf7fe53dd06e6764069}{crb\_to\_vrb\_f1\_0\_common\_ss\_non\_interleaved}}\mbox{\hyperlink{namespacesrsran_ae12c49256448baf7fe53dd06e6764069}{(}}crbs\mbox{\hyperlink{namespacesrsran_ae12c49256448baf7fe53dd06e6764069}{,}}\ coreset\_crb\_start\mbox{\hyperlink{namespacesrsran_ae12c49256448baf7fe53dd06e6764069}{)}};}
+\DoxyCodeLine{00050\ \ \ \}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1vrb__interval}{vrb\_interval}}\{crbs.start()\ -\/\ bwp\_crb\_start,\ crbs.stop()\ -\/\ bwp\_crb\_start\};}
+\DoxyCodeLine{00052\ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{comment}{///\ \(\backslash\)brief\ Conversion\ of\ CRBs\ to\ VRBs\ as\ per\ TS38.211,\ clause\ 7.3.1.6.}}
+\DoxyCodeLine{00055\ \textcolor{comment}{///\ \(\backslash\)param\ crbs\ CRB\ interval\ to\ be\ converted\ to\ VRB\ interval.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{///\ \(\backslash\)param\ bwp\_crb\_start\ Start\ of\ the\ BWP\ CRBs.}}
+\DoxyCodeLine{00057\ \textcolor{comment}{///\ \(\backslash\)return\ VRB\ interval.}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1vrb__interval}{vrb\_interval}}\ crb\_to\_vrb\_ul\_non\_interleaved(\mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ crbs,\ \textcolor{keywordtype}{unsigned}\ bwp\_crb\_start)}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(crbs.start()\ >=\ bwp\_crb\_start,\ \textcolor{stringliteral}{"{}Invalid\ CRB\ start"{}});}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1vrb__interval}{vrb\_interval}}\{crbs.start()\ -\/\ bwp\_crb\_start,\ crbs.stop()\ -\/\ bwp\_crb\_start\};}
+\DoxyCodeLine{00062\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ vrb\_to\_crb\_ul\_non\_interleaved(\mbox{\hyperlink{structsrsran_1_1vrb__interval}{vrb\_interval}}\ vrbs,\ \textcolor{keywordtype}{unsigned}\ bwp\_crb\_start)}
+\DoxyCodeLine{00065\ \{}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\{vrbs.start()\ +\ bwp\_crb\_start,\ vrbs.stop()\ +\ bwp\_crb\_start\};}
+\DoxyCodeLine{00067\ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{///\ \(\backslash\)brief\ Finds\ the\ next\ contiguous\ range\ of\ PRBs\ whose\ respective\ bit\ in\ provided\ RB\ bitmap\ is\ set\ to\ zero.}}
+\DoxyCodeLine{00070\ \textcolor{comment}{///}}
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ \(\backslash\)param\ used\_rb\_bitmap\ Bitmap\ of\ RBs,\ where\ 1's\ represent\ used\ RBs\ and\ 0's\ empty\ RBs.}}
+\DoxyCodeLine{00072\ \textcolor{comment}{///\ \(\backslash\)param\ start\_crb\_idx\ Minimum\ RB\ index\ from\ where\ the\ search\ is\ initiated.}}
+\DoxyCodeLine{00073\ \textcolor{comment}{///\ \(\backslash\)param\ last\_crb\_idx\ Maximum\ RB\ index\ (excluding)\ that\ limits\ the\ range\ of\ RBs\ where\ the\ search\ is\ carried\ out.}}
+\DoxyCodeLine{00074\ \textcolor{comment}{///\ \(\backslash\)return\ An\ interval\ of\ contiguous\ RBs\ where\ the\ respective\ bits\ are\ set\ to\ zero.\ If\ no\ interval\ was\ found,\ an\ empty}}
+\DoxyCodeLine{00075\ \textcolor{comment}{///\ \ \ \ \ \ \ \ \ interval\ is\ returned.}}
+\DoxyCodeLine{00076\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}\ find\_next\_empty\_interval(\textcolor{keyword}{const}\ prb\_bitmap\&\ used\_rb\_bitmap,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size\_t\ \ \ \ \ \ \ \ \ \ \ \ start\_crb\_idx\ =\ 0,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size\_t\ \ \ \ \ \ \ \ \ \ \ \ last\_crb\_idx\ \ =\ \mbox{\hyperlink{namespacesrsran_ad1ba5b00d91f36c10973b0b36719e438}{MAX\_NOF\_PRBS}});}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{comment}{///\ \(\backslash\)brief\ Finds\ a\ range\ of\ contiguous\ RBs,\ whose\ value\ in\ the\ provided\ RB\ bitmap\ is\ set\ to\ zero.\ The\ returned\ range}}
+\DoxyCodeLine{00081\ \textcolor{comment}{///\ length\ should\ be\ at\ most\ "{}nof\_rbs"{}\ RBs.\ If\ no\ range\ with\ length\ "{}nof\_rbs"{}\ is\ found,\ the\ longest\ valid\ range\ of}}
+\DoxyCodeLine{00082\ \textcolor{comment}{///\ RBs\ set\ to\ zero\ in\ "{}used\_rb\_bitmap"{}\ is\ returned.}}
+\DoxyCodeLine{00083\ \textcolor{comment}{///}}
+\DoxyCodeLine{00084\ \textcolor{comment}{///\ \(\backslash\)param\ used\_rb\_bitmap\ Bitmap\ of\ RBs,\ where\ 1's\ represent\ used\ RBs\ and\ 0's\ empty\ RBs.}}
+\DoxyCodeLine{00085\ \textcolor{comment}{///\ \(\backslash\)param\ nof\_rbs\ Maximum\ range\ of\ RBs}}
+\DoxyCodeLine{00086\ \textcolor{comment}{///\ \(\backslash\)param\ start\_crb\_idx\ Minimum\ RB\ index\ from\ where\ the\ search\ is\ initiated.}}
+\DoxyCodeLine{00087\ \textcolor{comment}{///\ \(\backslash\)return\ An\ interval\ of\ RBs\ with\ maximum\ length\ equal\ to\ "{}nof\_rbs"{}.}}
+\DoxyCodeLine{00088\ \mbox{\hyperlink{structsrsran_1_1crb__interval}{crb\_interval}}}
+\DoxyCodeLine{00089\ find\_empty\_interval\_of\_length(\textcolor{keyword}{const}\ prb\_bitmap\&\ used\_rb\_bitmap,\ size\_t\ nof\_rbs,\ uint32\_t\ start\_crb\_idx\ =\ 0);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \}\ \textcolor{comment}{//\ namespace\ rb\_helper}}
+\DoxyCodeLine{00092\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

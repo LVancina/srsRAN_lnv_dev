@@ -231,13 +231,13 @@ private:
       return nullptr;
     }
 
-    if (factory_type.find("generic") != std::string::npos) {
+    if (factory_type == "generic") {
       return create_pdsch_processor_factory_sw(pdsch_encoder_factory, pdsch_modulator_factory, dmrs_pdsch_factory);
     }
 
     if (factory_type == "concurrent") {
       worker_pool = std::make_unique<task_worker_pool<concurrent_queue_policy::locking_mpmc>>(
-          "pdsch_proc", NOF_CONCURRENT_THREADS, 128);
+          NOF_CONCURRENT_THREADS, 128, "pdsch_proc");
       executor = std::make_unique<task_worker_pool_executor<concurrent_queue_policy::locking_mpmc>>(*worker_pool);
 
       return create_pdsch_concurrent_processor_factory_sw(crc_calc_factory,

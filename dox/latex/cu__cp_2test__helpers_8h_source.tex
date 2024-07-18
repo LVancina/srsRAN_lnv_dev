@@ -1,0 +1,629 @@
+\doxysection{test\+\_\+helpers.\+h}
+\hypertarget{cu__cp_2test__helpers_8h_source}{}\label{cu__cp_2test__helpers_8h_source}\index{tests/unittests/cu\_cp/test\_helpers.h@{tests/unittests/cu\_cp/test\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}du\_processor\_test\_messages.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}lib/cu\_cp/cu\_cp\_controller/node\_connection\_notifier.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}lib/cu\_cp/cu\_cp\_impl\_interface.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}lib/cu\_cp/cu\_up\_processor/cu\_up\_processor\_impl\_interface.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}lib/cu\_cp/du\_processor/du\_processor\_impl\_interface.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}lib/e1ap/common/e1ap\_asn1\_helpers.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}tests/unittests/e1ap/common/e1ap\_cu\_cp\_test\_messages.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}tests/unittests/ngap/ngap\_test\_helpers.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/variant.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/cu\_cp\_types.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/async\_task.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/async\_test\_utils.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/fifo\_async\_task\_scheduler.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/support/test\_utils.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ byte\_buffer\ generate\_container\_with\_cell\_group\_config();}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00050\ byte\_buffer\ generate\_rrc\_setup\_complete();}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__ue__task__scheduler}{dummy\_du\_processor\_ue\_task\_scheduler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ue__task__scheduler}{du\_processor\_ue\_task\_scheduler}}\ \{}
+\DoxyCodeLine{00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__ue__task__scheduler}{dummy\_du\_processor\_ue\_task\_scheduler}}(\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ timers\_,\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec\_)\ :\ timer\_db(timers\_),\ exec(exec\_)\ \{\}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ schedule\_async\_task(ue\_index\_t\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ task)\textcolor{keyword}{\ override\ }\{\ ctrl\_loop.schedule(std::move(task));\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ clear\_pending\_tasks(ue\_index\_t\ ue\_index)\textcolor{keyword}{\ override\ }\{\ ctrl\_loop.clear\_pending\_tasks();\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{size\_t}\ get\_nof\_pending\_tasks()\ \{\ \textcolor{keywordflow}{return}\ ctrl\_loop.nof\_pending\_tasks();\ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ make\_unique\_timer()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ timer\_db.\mbox{\hyperlink{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}{create\_unique\_timer}}(exec);\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ get\_timer\_manager()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ timer\_db;\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ tick\_timer()\ \{\ timer\_db.\mbox{\hyperlink{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}{tick}}();\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1fifo__async__task__scheduler}{fifo\_async\_task\_scheduler}}\ ctrl\_loop\{16\};}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ timer\_db;}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ exec;}
+\DoxyCodeLine{00072\ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier}{dummy\_du\_processor\_cu\_cp\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__cu__cp__notifier}{du\_processor\_cu\_cp\_notifier}}\ \{}
+\DoxyCodeLine{00075\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier}{dummy\_du\_processor\_cu\_cp\_notifier}}(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__ue__context__removal__handler}{ngap\_ue\_context\_removal\_handler}}\&\ ngap\_handler\_,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__manager}{ue\_manager}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_mng\_\ =\ \textcolor{keyword}{nullptr})\ :}
+\DoxyCodeLine{00078\ \ \ \ \ ngap\_notifier(std::make\_unique<dummy\_ngap\_du\_processor\_notifier>(ngap\_handler\_)),\ ue\_mng(ue\_mng\_)}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{void}\ attach\_handler(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__du__event__handler}{cu\_cp\_du\_event\_handler}}*\ cu\_cp\_handler\_,\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ue__removal__handler}{cu\_cp\_ue\_removal\_handler}}*\ ue\_removal\_handler\_)}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ cu\_cp\_handler\ \ \ \ \ \ =\ cu\_cp\_handler\_;}
+\DoxyCodeLine{00085\ \ \ \ \ ue\_removal\_handler\ =\ ue\_removal\_handler\_;}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier_a3e81565eb344f319b6a12cbe27fa9a8f}{on\_du\_processor\_created}}(du\_index\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_index,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__removal__handler}{f1ap\_ue\_context\_removal\_handler}}\&\ f1ap\_handler,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1f1ap__statistics__handler}{f1ap\_statistics\_handler}}\&\ \ \ \ \ \ \ \ \ f1ap\_statistic\_handler,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__removal__handler}{rrc\_ue\_removal\_handler}}\&\ \ \ \ \ \ \ \ \ \ rrc\_handler,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__du__statistics__handler}{rrc\_du\_statistics\_handler}}\&\ \ \ \ \ \ \ rrc\_statistic\_handler)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00093\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00094\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}du=\{\}:\ Received\ a\ DU\ Processor\ creation\ notification"{}},\ du\_index);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_handler\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ cu\_cp\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__du__event__handler_a4f7caf5a89f39bbc576dd29e4eafdbbd}{handle\_du\_processor\_creation}}(}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ du\_index,\ f1ap\_handler,\ f1ap\_statistic\_handler,\ rrc\_handler,\ rrc\_statistic\_handler);}
+\DoxyCodeLine{00099\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ rrc\_removal\_handler\ =\ \&rrc\_handler;}
+\DoxyCodeLine{00101\ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier_a372b0ae7086cc88f6afec21c99b7c19d}{on\_rrc\_ue\_created}}(ue\_index\_t\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__interface}{rrc\_ue\_interface}}\&\ rrc\_ue)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00105\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00106\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}ue=\{\}:\ Received\ a\ RRC\ UE\ creation\ notification"{}},\ ue\_index);}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{if}\ (cu\_cp\_handler\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ cu\_cp\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__du__event__handler_a6da8b91f38e56255599c65dbd1b10563}{handle\_rrc\_ue\_creation}}(ue\_index,\ rrc\_ue,\ *ngap\_notifier);}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier_a229be8b0fa47b0af973546c794f236a6}{on\_ue\_removal\_required}}(ue\_index\_t\ ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00114\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00115\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}ue=\{\}:\ Received\ a\ UE\ removal\ request"{}},\ ue\_index);}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_removal\_handler\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ ue\_removal\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ue__removal__handler_a754f6f93de44d08236ce073e2730147a}{handle\_ue\_removal\_request}}(ue\_index);}
+\DoxyCodeLine{00119\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_mng\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ ue\_mng-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__manager_ad7f6fed10a7ab5bf6dca6ab8fc7d5017}{remove\_ue}}(ue\_index);}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rrc\_removal\_handler\ !=\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ rrc\_removal\_handler-\/>\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__removal__handler_a072cafcc8d26c41c52a268ce751685c6}{remove\_ue}}(ue\_index);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \}}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier_ad12e4033923cbfa09ed799aa057c5cff}{on\_ue\_transfer\_required}}(ue\_index\_t\ ue\_index,\ ue\_index\_t\ old\_ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00131\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00132\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ UE\ transfer\ required"{}});}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([\textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ CORO\_RETURN(ue\_transfer\_outcome);}
+\DoxyCodeLine{00137\ \ \ \ \ \});}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__cu__cp__notifier_a3c1b76dafa6d2bd18b844a22fda96b5d}{on\_handover\_ue\_context\_push}}(ue\_index\_t\ source\_ue\_index,\ ue\_index\_t\ target\_ue\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00141\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00142\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ handover\ ue\ context\ push"{}});}
+\DoxyCodeLine{00143\ \ \ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00146\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00147\ \ \ std::unique\_ptr<dummy\_ngap\_du\_processor\_notifier>\ ngap\_notifier;}
+\DoxyCodeLine{00148\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__manager}{ue\_manager}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_mng\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00149\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__du__event__handler}{cu\_cp\_du\_event\_handler}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cu\_cp\_handler\ \ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00150\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__cp__ue__removal__handler}{cu\_cp\_ue\_removal\_handler}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_removal\_handler\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__removal__handler}{rrc\_ue\_removal\_handler}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_removal\_handler\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_transfer\_outcome\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00153\ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1dummy__du__connection__notifier}{dummy\_du\_connection\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__connection__notifier}{du\_connection\_notifier}}}
+\DoxyCodeLine{00156\ \{}
+\DoxyCodeLine{00157\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1dummy__du__connection__notifier_ab2c48156da0f66e132d9e8551619fff2}{on\_du\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1du__setup__request}{du\_setup\_request}}\&\ req)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__ngap__ue__context__removal__handler}{dummy\_ngap\_ue\_context\_removal\_handler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__ue__context__removal__handler}{ngap\_ue\_context\_removal\_handler}}\ \{}
+\DoxyCodeLine{00162\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00163\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__ngap__ue__context__removal__handler_a5c7af6fa5f0ae630bc3613ed53847939}{remove\_ue\_context}}(ue\_index\_t\ ue\_index)\textcolor{keyword}{\ override\ }\{\ logger.info(\textcolor{stringliteral}{"{}ue=\{\}:\ Removing\ UE"{}},\ ue\_index);\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00166\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00167\ \};}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{comment}{//\ Configuration\ struct\ to\ parameterize\ the\ modification\ outcome}}
+\DoxyCodeLine{00170\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1pdu__session__modified__outcome__t}{pdu\_session\_modified\_outcome\_t}}\ \{}
+\DoxyCodeLine{00171\ \ \ \mbox{\hyperlink{namespacesrsran_aa153c2df57d799e6d4161dd881ad4df2}{pdu\_session\_id\_t}}\ \ \ \ \ \ psi;}
+\DoxyCodeLine{00172\ \ \ std::vector<drb\_id\_t>\ drb\_added;}
+\DoxyCodeLine{00173\ \ \ std::vector<drb\_id\_t>\ drb\_removed;}
+\DoxyCodeLine{00174\ \};}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{comment}{//\ Stuct\ to\ configure\ Bearer\ Context\ Setup/Modification\ result\ content.}}
+\DoxyCodeLine{00177\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1bearer__context__outcome__t}{bearer\_context\_outcome\_t}}\ \{}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outcome\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00179\ \ \ std::list<unsigned>\ pdu\_sessions\_setup\_list;\ \ \textcolor{comment}{//\ List\ of\ PDU\ session\ IDs\ that\ were\ successful\ to\ setup.}}
+\DoxyCodeLine{00180\ \ \ std::list<unsigned>\ pdu\_sessions\_failed\_list;\ \textcolor{comment}{//\ List\ of\ PDU\ sessions\ IDs\ that\ failed\ to\ be\ setup.}}
+\DoxyCodeLine{00181\ \ \ std::list<pdu\_session\_modified\_outcome\_t>}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ pdu\_sessions\_modified\_list;\ \textcolor{comment}{//\ List\ of\ PDU\ session\ IDs\ that\ were\ successfully\ modified.}}
+\DoxyCodeLine{00183\ \};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__e1ap__control__notifier}{dummy\_du\_processor\_e1ap\_control\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__e1ap__control__notifier}{du\_processor\_e1ap\_control\_notifier}}\ \{}
+\DoxyCodeLine{00186\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00187\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__e1ap__control__notifier}{dummy\_du\_processor\_e1ap\_control\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordtype}{void}\ set\_first\_message\_outcome(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1bearer__context__outcome__t}{bearer\_context\_outcome\_t}}\&\ outcome)\ \{\ first\_e1ap\_response\ =\ outcome;\ \}}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{void}\ set\_second\_message\_outcome(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1bearer__context__outcome__t}{bearer\_context\_outcome\_t}}\&\ outcome)\ \{\ second\_e1ap\_response\ =\ outcome;\ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \textcolor{keywordtype}{void}\ fill\_pdu\_session\_setup\_list(}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<pdu\_session\_id\_t,\ e1ap\_pdu\_session\_resource\_setup\_modification\_item>}}\&\ e1ap\_setup\_list,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::list<unsigned>\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outcome\_setup\_list)}
+\DoxyCodeLine{00196\ \ \ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ psi\ :\ outcome\_setup\_list)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ only\ the\ most\ relevant\ items}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__setup__modification__item}{e1ap\_pdu\_session\_resource\_setup\_modification\_item}}\ res\_setup\_item;}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ res\_setup\_item.pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{uint\_to\_pdu\_session\_id}}(psi);}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ a\ single\ DRB\ with\ the\ same\ ID\ like\ the\ PDU\ session\ it\ belongs\ to}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ drb\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drb\_id\ =\ uint\_to\_drb\_id(psi);\ \textcolor{comment}{//\ Note:\ we\ use\ the\ PDU\ session\ ID\ here\ also\ as\ DRB\ ID}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__setup__item__ng__ran}{e1ap\_drb\_setup\_item\_ng\_ran}}\ drb\_item;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ drb\_item.drb\_id\ =\ drb\_id;}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ a\ QoS\ flow}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__item}{e1ap\_qos\_flow\_item}}\ qos\_item;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ qos\_item.qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a95c3d401b19b2f13c1635740d6737492}{uint\_to\_qos\_flow\_id}}(psi);\ \textcolor{comment}{//\ Note:\ use\ the\ PSI\ again\ as\ QoS\ flow\ ID}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ drb\_item.flow\_setup\_list.emplace(qos\_item.qos\_flow\_id,\ qos\_item);}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ one\ UP\ transport\ item}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__up__params__item}{e1ap\_up\_params\_item}}\ up\_item;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ up\_item.cell\_group\_id\ =\ 0;}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ up\_item.up\_tnl\_info\ \ \ =\ \{\mbox{\hyperlink{classsrsran_1_1transport__layer__address}{transport\_layer\_address}}\{\textcolor{stringliteral}{"{}127.0.0.1"{}}\},\ \mbox{\hyperlink{namespacesrsran_a5275852c5dfe9b8b517ac9f4989cff7d}{int\_to\_gtpu\_teid}}(0x1)\};}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ drb\_item.ul\_up\_transport\_params.push\_back(up\_item);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ res\_setup\_item.drb\_setup\_list\_ng\_ran.emplace(drb\_id,\ drb\_item);}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ e1ap\_setup\_list.\mbox{\hyperlink{classsrsran_1_1slotted__id__vector_aa26c7ec7e499805f9a1faff2d4e3deff}{emplace}}(res\_setup\_item.pdu\_session\_id,\ res\_setup\_item);}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordtype}{void}\ fill\_pdu\_session\_failed\_list(}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<pdu\_session\_id\_t,\ e1ap\_pdu\_session\_resource\_failed\_item>}}\&\ e1ap\_failed\_list,}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::list<unsigned>\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outcome\_failed\_list)}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ \textcolor{keywordtype}{id}\ :\ outcome\_failed\_list)\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__failed__item}{e1ap\_pdu\_session\_resource\_failed\_item}}\ res\_failed\_item;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ res\_failed\_item.pdu\_session\_id\ =\ \mbox{\hyperlink{namespacesrsran_a1e2076674e2a692ea91bdbaef11e35fa}{uint\_to\_pdu\_session\_id}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ e1ap\_failed\_list.\mbox{\hyperlink{classsrsran_1_1slotted__id__vector_aa26c7ec7e499805f9a1faff2d4e3deff}{emplace}}(res\_failed\_item.pdu\_session\_id,\ res\_failed\_item);}
+\DoxyCodeLine{00231\ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \}}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \textcolor{keywordtype}{void}\ fill\_bearer\_context\_response(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__response}{e1ap\_bearer\_context\_setup\_response}}\&\ result,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1bearer__context__outcome__t}{bearer\_context\_outcome\_t}}\&\ outcome)}
+\DoxyCodeLine{00235\ \ \ \{}
+\DoxyCodeLine{00236\ \ \ \ \ result.success\ =\ outcome.outcome;}
+\DoxyCodeLine{00237\ \ \ \ \ fill\_pdu\_session\_setup\_list(result.pdu\_session\_resource\_setup\_list,\ outcome.pdu\_sessions\_setup\_list);}
+\DoxyCodeLine{00238\ \ \ \ \ fill\_pdu\_session\_failed\_list(result.pdu\_session\_resource\_failed\_list,\ outcome.pdu\_sessions\_failed\_list);}
+\DoxyCodeLine{00239\ \ \ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{void}\ fill\_pdu\_session\_modified\_list(}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slotted__id__vector}{slotted\_id\_vector<pdu\_session\_id\_t,\ e1ap\_pdu\_session\_resource\_modified\_item>}}\&\ e1ap\_modified\_list,}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::list<pdu\_session\_modified\_outcome\_t>\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outcome\_modified\_list)}
+\DoxyCodeLine{00244\ \ \ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ modified\_item\ :\ outcome\_modified\_list)\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \textcolor{comment}{//\ add\ only\ the\ most\ relevant\ items}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__pdu__session__resource__modified__item}{e1ap\_pdu\_session\_resource\_modified\_item}}\ res\_mod\_item;}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ res\_mod\_item.pdu\_session\_id\ =\ modified\_item.psi;}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ drb\_id\ :\ modified\_item.drb\_added)\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ a\ single\ DRB\ with\ the\ same\ ID\ like\ the\ PDU\ session\ it\ belongs\ to}}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__drb__setup__item__ng__ran}{e1ap\_drb\_setup\_item\_ng\_ran}}\ drb\_item;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ drb\_item.drb\_id\ =\ drb\_id;}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ a\ QoS\ flow}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__qos__flow__item}{e1ap\_qos\_flow\_item}}\ qos\_item;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ qos\_item.qos\_flow\_id\ =\ \mbox{\hyperlink{namespacesrsran_a95c3d401b19b2f13c1635740d6737492}{uint\_to\_qos\_flow\_id}}(drb\_id\_to\_uint(drb\_id));\ \textcolor{comment}{//\ QoS\ flow\ has\ same\ ID\ like\ DRB}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ drb\_item.flow\_setup\_list.emplace(qos\_item.qos\_flow\_id,\ qos\_item);}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ one\ UP\ transport\ item}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1e1ap__up__params__item}{e1ap\_up\_params\_item}}\ up\_item;}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ drb\_item.ul\_up\_transport\_params.push\_back(up\_item);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ res\_mod\_item.drb\_setup\_list\_ng\_ran.emplace(drb\_id,\ drb\_item);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \ \ \ \ \ \ e1ap\_modified\_list.\mbox{\hyperlink{classsrsran_1_1slotted__id__vector_aa26c7ec7e499805f9a1faff2d4e3deff}{emplace}}(res\_mod\_item.pdu\_session\_id,\ res\_mod\_item);}
+\DoxyCodeLine{00267\ \ \ \ \ \}}
+\DoxyCodeLine{00268\ \ \ \}}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \textcolor{keywordtype}{void}\ fill\_bearer\_context\_response(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__response}{e1ap\_bearer\_context\_modification\_response}}\&\ result,}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1bearer__context__outcome__t}{bearer\_context\_outcome\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ outcome)}
+\DoxyCodeLine{00272\ \ \ \{}
+\DoxyCodeLine{00273\ \ \ \ \ result.success\ =\ outcome.outcome;}
+\DoxyCodeLine{00274\ \ \ \ \ fill\_pdu\_session\_setup\_list(result.pdu\_session\_resource\_setup\_list,\ outcome.pdu\_sessions\_setup\_list);}
+\DoxyCodeLine{00275\ \ \ \ \ fill\_pdu\_session\_failed\_list(result.pdu\_session\_resource\_failed\_list,\ outcome.pdu\_sessions\_failed\_list);}
+\DoxyCodeLine{00276\ \ \ \ \ fill\_pdu\_session\_modified\_list(result.pdu\_session\_resource\_modified\_list,\ outcome.pdu\_sessions\_modified\_list);}
+\DoxyCodeLine{00277\ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<e1ap\_bearer\_context\_setup\_response>}}}
+\DoxyCodeLine{00280\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__e1ap__control__notifier_a00fa0fcf988f91e26c115f8ef552b213}{on\_bearer\_context\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__request}{e1ap\_bearer\_context\_setup\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00281\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00282\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ bearer\ context\ setup\ request"{}});}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ first\_e1ap\_request\ =\ msg;\ \textcolor{comment}{//\ store\ msg\ to\ verify\ content\ in\ TC}}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([res\ =\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__setup__response}{e1ap\_bearer\_context\_setup\_response}}\{\},\ msg,\ \textcolor{keyword}{this}](}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context<async\_task<e1ap\_bearer\_context\_setup\_response>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (first\_e1ap\_response.has\_value())\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ response\ =\ first\_e1ap\_response.value();}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ fill\_bearer\_context\_response(res,\ response);}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Invalidate\ E1\ response\ so\ it's\ not\ consumed\ again.}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ first\_e1ap\_response.reset();}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \ \ \ \ CORO\_RETURN(res);}
+\DoxyCodeLine{00299\ \ \ \ \ \});}
+\DoxyCodeLine{00300\ \ \ \}}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<e1ap\_bearer\_context\_modification\_response>}}}
+\DoxyCodeLine{00303\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__e1ap__control__notifier_a3bd8ccca46685617afd728afdbd1330d}{on\_bearer\_context\_modification\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__request}{e1ap\_bearer\_context\_modification\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00304\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00305\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ bearer\ context\ modification\ request"{}});}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{comment}{//\ store\ msg\ to\ be\ verify\ content\ in\ TC}}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordflow}{if}\ (first\_e1ap\_request.has\_value())\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ second\_e1ap\_request\ =\ msg;}
+\DoxyCodeLine{00310\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ first\_e1ap\_request\ =\ msg;}
+\DoxyCodeLine{00312\ \ \ \ \ \}}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([res\ =\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__modification__response}{e1ap\_bearer\_context\_modification\_response}}\{\},}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context<async\_task<e1ap\_bearer\_context\_modification\_response>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (first\_e1ap\_response.has\_value())\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ E1AP\ message\ is\ already\ a\ bearer\ modification}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ response\ =\ first\_e1ap\_response.value();}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ fill\_bearer\_context\_response(res,\ response);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ first\_e1ap\_response.reset();\ \textcolor{comment}{//\ Make\ sure\ it's\ not\ consumed\ again.}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (second\_e1ap\_response.has\_value())\ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ second\ E1AP\ message\ is\ a\ bearer\ modification}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ response\ =\ second\_e1ap\_response.value();}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ fill\_bearer\_context\_response(res,\ response);}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ second\_e1ap\_response.reset();\ \textcolor{comment}{//\ Make\ sure\ it's\ not\ consumed\ again.}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ CORO\_RETURN(res);}
+\DoxyCodeLine{00330\ \ \ \ \ \});}
+\DoxyCodeLine{00331\ \ \ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__e1ap__control__notifier_af369481363ed77130563697695bafdf5}{on\_bearer\_context\_release\_command}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1e1ap__bearer__context__release__command}{e1ap\_bearer\_context\_release\_command}}\&\ cmd)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00334\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00335\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ bearer\ context\ release\ command"{}});}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ CORO\_RETURN();}
+\DoxyCodeLine{00340\ \ \ \ \ \});}
+\DoxyCodeLine{00341\ \ \ \}}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00343\ \ \ \textcolor{keywordtype}{void}\ reset()}
+\DoxyCodeLine{00344\ \ \ \{}
+\DoxyCodeLine{00345\ \ \ \ \ first\_e1ap\_request.reset();}
+\DoxyCodeLine{00346\ \ \ \ \ second\_e1ap\_request.reset();}
+\DoxyCodeLine{00347\ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<variant<e1ap\_bearer\_context\_setup\_request,\ e1ap\_bearer\_context\_modification\_request>}}>\ first\_e1ap\_request;}
+\DoxyCodeLine{00350\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<e1ap\_bearer\_context\_modification\_request>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ second\_e1ap\_request;}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00353\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00354\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<bearer\_context\_outcome\_t>}}\ first\_e1ap\_response;}
+\DoxyCodeLine{00355\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<bearer\_context\_outcome\_t>}}\ second\_e1ap\_response;}
+\DoxyCodeLine{00356\ \};}
+\DoxyCodeLine{00357\ }
+\DoxyCodeLine{00358\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__ngap__control__notifier}{dummy\_du\_processor\_ngap\_control\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__ngap__control__notifier}{du\_processor\_ngap\_control\_notifier}}\ \{}
+\DoxyCodeLine{00359\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00360\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__ngap__control__notifier}{dummy\_du\_processor\_ngap\_control\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00362\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__ngap__control__notifier_a8780eb01fad10c942a8dbef66a267e0d}{on\_ue\_context\_release\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__request}{cu\_cp\_ue\_context\_release\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00363\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00364\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ UE\ Context\ Release\ Request"{}});}
+\DoxyCodeLine{00365\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([\textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}>\&\ ctx)\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ CORO\_RETURN(release\_request\_outcome);}
+\DoxyCodeLine{00368\ \ \ \ \ \});}
+\DoxyCodeLine{00369\ \ \ \}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ngap\_handover\_preparation\_response>}}}
+\DoxyCodeLine{00372\ \ \ on\_ngap\_handover\_preparation\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__preparation__request}{ngap\_handover\_preparation\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00373\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ngap\_handover\_preparation\_response>}}>\&\ ctx)\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ CORO\_RETURN(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__preparation__response}{ngap\_handover\_preparation\_response}}\{\textcolor{keyword}{false}\});}
+\DoxyCodeLine{00377\ \ \ \ \ \});}
+\DoxyCodeLine{00378\ \ \ \}}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \textcolor{keywordtype}{void}\ set\_ue\_context\_release\_request\_outcome(\textcolor{keywordtype}{bool}\ outcome\_)\ \{\ release\_request\_outcome\ =\ outcome\_;\ \}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00383\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ release\_request\_outcome\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00384\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00385\ \};}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00387\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ue__context__outcome__t}{ue\_context\_outcome\_t}}\ \{}
+\DoxyCodeLine{00388\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outcome\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00389\ \ \ std::list<unsigned>\ drb\_success\_list;\ \textcolor{comment}{//\ List\ of\ DRB\ IDs\ that\ were\ successful\ to\ setup.}}
+\DoxyCodeLine{00390\ \ \ std::list<unsigned>\ drb\_failed\_list;\ \ \textcolor{comment}{//\ List\ of\ DRB\ IDs\ that\ failed\ to\ be\ setup.}}
+\DoxyCodeLine{00391\ \ \ std::list<unsigned>\ drb\_removed\_list;\ \textcolor{comment}{//\ List\ of\ DRB\ IDs\ that\ were\ removed.}}
+\DoxyCodeLine{00392\ \};}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier}{dummy\_du\_processor\_f1ap\_ue\_context\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__f1ap__ue__context__notifier}{du\_processor\_f1ap\_ue\_context\_notifier}}\ \{}
+\DoxyCodeLine{00395\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00396\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier}{dummy\_du\_processor\_f1ap\_ue\_context\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00397\ }
+\DoxyCodeLine{00398\ \ \ \textcolor{keywordtype}{void}\ set\_ue\_context\_setup\_outcome(\textcolor{keywordtype}{bool}\ outcome)\ \{\ ue\_context\_setup\_outcome\ =\ outcome;\ \}}
+\DoxyCodeLine{00399\ }
+\DoxyCodeLine{00400\ \ \ \textcolor{keywordtype}{void}\ set\_ue\_context\_modification\_outcome(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ue__context__outcome__t}{ue\_context\_outcome\_t}}\ outcome)\ \{\ ue\_context\_modification\_outcome\ =\ outcome;\ \}}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1ap\_ue\_context\_setup\_response>}}}
+\DoxyCodeLine{00403\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier_a2e507127905c9b6126cda7907e6a0360}{on\_ue\_context\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__setup__request}{f1ap\_ue\_context\_setup\_request}}\&\ request,}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_ue\_transfer\_context>}}\ \ \ \ rrc\_context)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00405\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00406\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ UE\ context\ setup\ request"{}});}
+\DoxyCodeLine{00407\ }
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([res\ =\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__setup__response}{f1ap\_ue\_context\_setup\_response}}\{\},}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context<async\_task<f1ap\_ue\_context\_setup\_response>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00411\ }
+\DoxyCodeLine{00412\ \ \ \ \ \ \ res.success\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ ue\_context\_setup\_outcome;}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ res.du\_to\_cu\_rrc\_info.cell\_group\_cfg\ =\ \mbox{\hyperlink{namespacesrsran_a0ea08395ea7e678fa65063f01c5d2f02}{make\_byte\_buffer}}(\textcolor{stringliteral}{"{}5800b24223c853a0120c7c080408c008"{}});}
+\DoxyCodeLine{00414\ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ CORO\_RETURN(res);}
+\DoxyCodeLine{00416\ \ \ \ \ \});}
+\DoxyCodeLine{00417\ \ \ \}}
+\DoxyCodeLine{00418\ }
+\DoxyCodeLine{00419\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<f1ap\_ue\_context\_modification\_response>}}}
+\DoxyCodeLine{00420\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier_a492d497847b861ca8b673146ed2761ab}{on\_ue\_context\_modification\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__modification__request}{f1ap\_ue\_context\_modification\_request}}\&\ request)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00421\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00422\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ UE\ context\ modification\ request"{}});}
+\DoxyCodeLine{00423\ }
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{comment}{//\ store\ request\ so\ it\ can\ be\ verified\ in\ the\ test\ code}}
+\DoxyCodeLine{00425\ \ \ \ \ make\_partial\_copy(ue\_context\_modifcation\_request,\ request);}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00427\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([res\ =\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__modification__response}{f1ap\_ue\_context\_modification\_response}}\{\},}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context<async\_task<f1ap\_ue\_context\_modification\_response>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00430\ }
+\DoxyCodeLine{00431\ \ \ \ \ \ \ res.success\ =\ ue\_context\_modification\_outcome.outcome;}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ drb\_id\ :\ ue\_context\_modification\_outcome.drb\_success\_list)\ \{}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ only\ the\ most\ relevant\ items}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__drbs__setup__mod__item}{f1ap\_drbs\_setup\_mod\_item}}\ drb\_item;}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ drb\_item.drb\_id\ =\ uint\_to\_drb\_id(drb\_id);\ \textcolor{comment}{//\ set\ ID}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ res.drbs\_setup\_mod\_list.emplace(drb\_item.drb\_id,\ drb\_item);}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ res.du\_to\_cu\_rrc\_info.cell\_group\_cfg\ =\ \mbox{\hyperlink{namespacesrsran_a0ea08395ea7e678fa65063f01c5d2f02}{make\_byte\_buffer}}(\textcolor{stringliteral}{"{}5800b24223c853a0120c7c080408c008"{}});}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ add\ failed\ list\ and\ other\ fields\ here\ ..}}
+\DoxyCodeLine{00440\ }
+\DoxyCodeLine{00441\ \ \ \ \ \ \ CORO\_RETURN(res);}
+\DoxyCodeLine{00442\ \ \ \ \ \});}
+\DoxyCodeLine{00443\ \ \ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ue\_index\_t>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier_a2f87def98731e3aab7bff8e61d03942b}{on\_ue\_context\_release\_command}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__release__command}{f1ap\_ue\_context\_release\_command}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00446\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00447\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ UE\ context\ release\ command"{}});}
+\DoxyCodeLine{00448\ }
+\DoxyCodeLine{00449\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([msg](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ue\_index\_t>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ CORO\_RETURN(msg.ue\_index);}
+\DoxyCodeLine{00452\ \ \ \ \ \});}
+\DoxyCodeLine{00453\ \ \ \}}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__f1ap__ue__context__notifier_a539e0941ec3c179f1bbc3edea9499dd5}{on\_intra\_du\_reestablishment}}(ue\_index\_t\ ue\_index,\ ue\_index\_t\ old\_ue\_index)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00456\ }
+\DoxyCodeLine{00457\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1f1ap__ue__context__modification__request}{f1ap\_ue\_context\_modification\_request}}\&\ get\_ctxt\_mod\_request()\ \{\ \textcolor{keywordflow}{return}\ ue\_context\_modifcation\_request;\ \}}
+\DoxyCodeLine{00458\ }
+\DoxyCodeLine{00459\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00460\ \ \ \textcolor{keywordtype}{void}\ make\_partial\_copy(f1ap\_ue\_context\_modification\_request\&\ \ \ \ \ \ \ target,}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ f1ap\_ue\_context\_modification\_request\&\ source)}
+\DoxyCodeLine{00462\ \ \ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \textcolor{comment}{//\ only\ copy\ fields\ that\ are\ actually\ checked\ in\ unit\ tests}}
+\DoxyCodeLine{00464\ \ \ \ \ target.drbs\_to\_be\_setup\_mod\_list\ =\ source.drbs\_to\_be\_setup\_mod\_list;}
+\DoxyCodeLine{00465\ \ \ \ \ target.drbs\_to\_be\_released\_list\ \ =\ source.drbs\_to\_be\_released\_list;}
+\DoxyCodeLine{00466\ \ \ \}}
+\DoxyCodeLine{00467\ }
+\DoxyCodeLine{00468\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00469\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_context\_setup\_outcome\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00470\ \ \ ue\_context\_outcome\_t\ \ ue\_context\_modification\_outcome;}
+\DoxyCodeLine{00471\ }
+\DoxyCodeLine{00472\ \ \ f1ap\_ue\_context\_modification\_request\ ue\_context\_modifcation\_request;}
+\DoxyCodeLine{00473\ \};}
+\DoxyCodeLine{00474\ }
+\DoxyCodeLine{00475\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier}{dummy\_du\_processor\_rrc\_ue\_control\_message\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__rrc__ue__control__message__notifier}{du\_processor\_rrc\_ue\_control\_message\_notifier}}\ \{}
+\DoxyCodeLine{00476\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00477\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier}{dummy\_du\_processor\_rrc\_ue\_control\_message\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \textcolor{keywordtype}{void}\ set\_rrc\_reconfiguration\_outcome(\textcolor{keywordtype}{bool}\ outcome)\ \{\ rrc\_reconfiguration\_outcome\ =\ outcome;\ \}}
+\DoxyCodeLine{00480\ }
+\DoxyCodeLine{00481\ \ \ \textcolor{keywordtype}{void}\ set\_transaction\_id(\textcolor{keywordtype}{unsigned}\ transaction\_id\_)\ \{\ transaction\_id\ =\ transaction\_id\_;\ \}}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00483\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_ad5292c279398e1c76d37c5e9ed0e61a8}{on\_ue\_capability\_transfer\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__capability__transfer__request}{rrc\_ue\_capability\_transfer\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00484\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00485\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ UE\ capability\ transfer\ request"{}});}
+\DoxyCodeLine{00486\ }
+\DoxyCodeLine{00487\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([\textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ CORO\_RETURN(ue\_cap\_transfer\_outcome);}
+\DoxyCodeLine{00490\ \ \ \ \ \});}
+\DoxyCodeLine{00491\ \ \ \}}
+\DoxyCodeLine{00492\ }
+\DoxyCodeLine{00493\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_ac7bd73e86a7064ecbfb966a1b37a2a30}{on\_rrc\_reconfiguration\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__reconfiguration__procedure__request}{rrc\_reconfiguration\_procedure\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00494\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00495\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ RRC\ reconfiguration\ request"{}});}
+\DoxyCodeLine{00496\ \ \ \ \ last\_radio\_bearer\_cfg\ =\ msg.radio\_bearer\_cfg;}
+\DoxyCodeLine{00497\ }
+\DoxyCodeLine{00498\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([\textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ CORO\_RETURN(rrc\_reconfiguration\_outcome);}
+\DoxyCodeLine{00501\ \ \ \ \ \});}
+\DoxyCodeLine{00502\ \ \ \}}
+\DoxyCodeLine{00503\ }
+\DoxyCodeLine{00504\ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_a0b151105c277df12859fbece2894064d}{on\_handover\_reconfiguration\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__reconfiguration__procedure__request}{rrc\_reconfiguration\_procedure\_request}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00505\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00506\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ handover\ reconfiguration\ request\ (transaction\_id=\{\})"{}},\ transaction\_id);}
+\DoxyCodeLine{00507\ \ \ \ \ last\_radio\_bearer\_cfg\ =\ msg.radio\_bearer\_cfg;}
+\DoxyCodeLine{00508\ \ \ \ \ \textcolor{keywordflow}{return}\ transaction\_id;}
+\DoxyCodeLine{00509\ \ \ \}}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_a75e148d553f5201da3c91faa90c33a8b}{on\_handover\_reconfiguration\_complete\_expected}}(uint8\_t\ transaction\_id\_)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00512\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00513\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Awaiting\ a\ RRC\ Reconfiguration\ Complete\ (transaction\_id=\{\})"{}},\ transaction\_id\_);}
+\DoxyCodeLine{00514\ \ \ \ \ last\_transaction\_id\ =\ transaction\_id\_;}
+\DoxyCodeLine{00515\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a7e6b39343dc4497d9182977154e42559}{launch\_async}}([\textcolor{keyword}{this}](\mbox{\hyperlink{structsrsran_1_1detail_1_1base__coro__frame}{coro\_context}}<\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}>\&\ ctx)\ \textcolor{keyword}{mutable}\ \{}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ CORO\_BEGIN(ctx);}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ CORO\_RETURN(rrc\_reconfiguration\_outcome);}
+\DoxyCodeLine{00518\ \ \ \ \ \});}
+\DoxyCodeLine{00519\ \ \ \}}
+\DoxyCodeLine{00520\ }
+\DoxyCodeLine{00521\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__release__context}{rrc\_ue\_release\_context}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_a3f762cea6feb655537a9af8754c6e272}{get\_rrc\_ue\_release\_context}}()\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00522\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00523\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ request\ to\ get\ RRC\ UE\ release\ context"{}});}
+\DoxyCodeLine{00524\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__release__context}{rrc\_ue\_release\_context}}\ release\_context;}
+\DoxyCodeLine{00525\ \ \ \ \ \textcolor{comment}{//\ TODO:\ Add\ values}}
+\DoxyCodeLine{00526\ \ \ \ \ \textcolor{keywordflow}{return}\ release\_context;}
+\DoxyCodeLine{00527\ \ \ \}}
+\DoxyCodeLine{00528\ }
+\DoxyCodeLine{00529\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_cfg>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_aab5933ece8f83effc7aab88e17f728df}{generate\_meas\_config}}(\mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_cfg>}}\ current\_meas\_config\ =\ \{\})\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00530\ \ \ \{}
+\DoxyCodeLine{00531\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_meas\_cfg>}}\ meas\_config;}
+\DoxyCodeLine{00532\ \ \ \ \ \textcolor{keywordflow}{return}\ meas\_config;}
+\DoxyCodeLine{00533\ \ \ \}}
+\DoxyCodeLine{00534\ }
+\DoxyCodeLine{00535\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__transfer__context}{rrc\_ue\_transfer\_context}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_aec186a8e5c342af954de2f0c94ec988a}{get\_transfer\_context}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__transfer__context}{rrc\_ue\_transfer\_context}}\{\};\ \}}
+\DoxyCodeLine{00536\ }
+\DoxyCodeLine{00537\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ get\_packed\_handover\_preparation\_message()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\{\};\ \}}
+\DoxyCodeLine{00538\ }
+\DoxyCodeLine{00539\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_a1564eb100cc0b1ac834419e5e944903e}{on\_new\_security\_context}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1security_1_1security__context}{security::security\_context}}\&\ sec\_context)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00540\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00541\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ security\ context."{}});}
+\DoxyCodeLine{00542\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00543\ \ \ \}}
+\DoxyCodeLine{00544\ }
+\DoxyCodeLine{00545\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__control__message__notifier_a1e61e9c7947f64bab1bcb09e684147b9}{on\_rrc\_handover\_command\_required}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__reconfiguration__procedure__request}{rrc\_reconfiguration\_procedure\_request}}\&\ request,}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction\_id\_)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00547\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00548\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ request\ to\ get\ a\ RRC\ Handover\ Command."{}});}
+\DoxyCodeLine{00549\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer}{byte\_buffer}}\{\};}
+\DoxyCodeLine{00550\ \ \ \}}
+\DoxyCodeLine{00551\ }
+\DoxyCodeLine{00552\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<rrc\_radio\_bearer\_config>}}\ last\_radio\_bearer\_cfg;}
+\DoxyCodeLine{00553\ }
+\DoxyCodeLine{00554\ \ \ \textcolor{keywordtype}{void}\ reset()\ \{\ last\_radio\_bearer\_cfg.\mbox{\hyperlink{classsrsran_1_1optional_a9b71297f971116f04b4a5a81c4dd55f2}{reset}}();\ \}}
+\DoxyCodeLine{00555\ }
+\DoxyCodeLine{00556\ \ \ \textcolor{keywordtype}{unsigned}\ last\_transaction\_id;}
+\DoxyCodeLine{00557\ }
+\DoxyCodeLine{00558\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00559\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00560\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_cap\_transfer\_outcome\ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00561\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rrc\_reconfiguration\_outcome\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00562\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ transaction\_id;}
+\DoxyCodeLine{00563\ \};}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00565\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__srb__control__notifier}{dummy\_du\_processor\_rrc\_ue\_srb\_control\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__rrc__ue__srb__control__notifier}{du\_processor\_rrc\_ue\_srb\_control\_notifier}}\ \{}
+\DoxyCodeLine{00566\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00567\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__srb__control__notifier_a620a496d5ffc067769834ad4cb25c9d4}{create\_srb}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1srb__creation__message}{srb\_creation\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00568\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00569\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}ue=\{\}\ Creating\ \{\}"{}},\ msg.ue\_index,\ msg.srb\_id);}
+\DoxyCodeLine{00570\ \ \ \ \ last\_srb\_id\ =\ msg.srb\_id;}
+\DoxyCodeLine{00571\ \ \ \ \ srb\_vec.push\_back(msg.srb\_id);}
+\DoxyCodeLine{00572\ \ \ \}}
+\DoxyCodeLine{00573\ }
+\DoxyCodeLine{00574\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<srb\_id\_t,\ MAX\_NOF\_SRBS>}}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__ue__srb__control__notifier_a86e60447dc15d2b42cf3649549920841}{get\_srbs}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ srb\_vec;\ \}}
+\DoxyCodeLine{00575\ }
+\DoxyCodeLine{00576\ \ \ srb\_id\_t\ last\_srb\_id;}
+\DoxyCodeLine{00577\ }
+\DoxyCodeLine{00578\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00579\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00580\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<srb\_id\_t,\ MAX\_NOF\_SRBS>}}\ srb\_vec;}
+\DoxyCodeLine{00581\ \};}
+\DoxyCodeLine{00582\ }
+\DoxyCodeLine{00583\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__du__ue__notifier}{dummy\_du\_processor\_rrc\_du\_ue\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1du__processor__rrc__du__ue__notifier}{du\_processor\_rrc\_du\_ue\_notifier}}\ \{}
+\DoxyCodeLine{00584\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00585\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__du__ue__notifier}{dummy\_du\_processor\_rrc\_du\_ue\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00586\ }
+\DoxyCodeLine{00587\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__du__ue__notifier_a2fd9459c0d9f657b03418d7a4885fa78}{on\_new\_served\_cell\_list}}(\textcolor{keyword}{const}\ std::vector<cu\_cp\_du\_served\_cells\_item>\&\ served\_cell\_list)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00588\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00589\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ served\ cell\ list"{}});}
+\DoxyCodeLine{00590\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00591\ \ \ \}}
+\DoxyCodeLine{00592\ }
+\DoxyCodeLine{00593\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1rrc__ue__interface}{rrc\_ue\_interface}}*\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__du__ue__notifier_a7ce7e15b4c63a0e3e8845b25f6afb1bf}{on\_ue\_creation\_request}}(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1up__resource__manager}{up\_resource\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ up\_resource\_mng,}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1rrc__ue__creation__message}{rrc\_ue\_creation\_message}}\&\ msg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00595\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00596\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ UE\ creation\ request"{}});}
+\DoxyCodeLine{00597\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00598\ \ \ \}}
+\DoxyCodeLine{00599\ }
+\DoxyCodeLine{00601\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__du__processor__rrc__du__ue__notifier_ac6e3e206c9a3d9ed8160b50211701201}{on\_release\_ues}}()\textcolor{keyword}{\ override\ }\{\ logger.info(\textcolor{stringliteral}{"{}Releasing\ all\ UEs"{}});\ \}}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00604\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00605\ \};}
+\DoxyCodeLine{00606\ }
+\DoxyCodeLine{00607\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__cu__up__processor__cu__up__management__notifier}{dummy\_cu\_up\_processor\_cu\_up\_management\_notifier}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1cu__up__processor__cu__up__management__notifier}{cu\_up\_processor\_cu\_up\_management\_notifier}}\ \{}
+\DoxyCodeLine{00608\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00609\ \ \ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__cu__up__processor__cu__up__management__notifier}{dummy\_cu\_up\_processor\_cu\_up\_management\_notifier}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00610\ }
+\DoxyCodeLine{00611\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__cu__up__processor__cu__up__management__notifier_ac065d759c343d1538fdc8ce139e92924}{on\_new\_cu\_up\_connection}}()\textcolor{keyword}{\ override\ }\{\ logger.info(\textcolor{stringliteral}{"{}Received\ a\ new\ CU-\/UP\ connection\ notification"{}});\ \}}
+\DoxyCodeLine{00612\ }
+\DoxyCodeLine{00613\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1dummy__cu__up__processor__cu__up__management__notifier_a0cae8e63004721c5471e116df904ec73}{on\_cu\_up\_remove\_request\_received}}(\textcolor{keyword}{const}\ cu\_up\_index\_t\ cu\_up\_index)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00614\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00615\ \ \ \ \ logger.info(\textcolor{stringliteral}{"{}Received\ a\ CU-\/UP\ remove\ request\ for\ cu\_up\_index=\{\}"{}},\ cu\_up\_index);}
+\DoxyCodeLine{00616\ \ \ \ \ last\_cu\_up\_index\_to\_remove\ =\ cu\_up\_index;}
+\DoxyCodeLine{00617\ \ \ \}}
+\DoxyCodeLine{00618\ }
+\DoxyCodeLine{00619\ \ \ cu\_up\_index\_t\ last\_cu\_up\_index\_to\_remove;}
+\DoxyCodeLine{00620\ }
+\DoxyCodeLine{00621\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00622\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\ =\ srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}TEST"{}});}
+\DoxyCodeLine{00623\ \};}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00626\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

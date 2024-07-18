@@ -1,0 +1,90 @@
+\doxysection{ofh\+\_\+data\+\_\+flow\+\_\+uplane\+\_\+uplink\+\_\+prach\+\_\+impl.\+h}
+\hypertarget{ofh__data__flow__uplane__uplink__prach__impl_8h_source}{}\label{ofh__data__flow__uplane__uplink__prach__impl_8h_source}\index{lib/ofh/receiver/ofh\_data\_flow\_uplane\_uplink\_prach\_impl.h@{lib/ofh/receiver/ofh\_data\_flow\_uplane\_uplink\_prach\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../support/prach\_context\_repository.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../support/uplink\_cplane\_context\_repository.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__data__flow__uplane__uplink__prach_8h}{"{}ofh\_data\_flow\_uplane\_uplink\_prach.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__uplane__prach__data__flow__notifier_8h}{"{}ofh\_uplane\_prach\_data\_flow\_notifier.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ofh__uplane__prach__symbol__data__flow__writer_8h}{"{}ofh\_uplane\_prach\_symbol\_data\_flow\_writer.h"{}}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/ofh\_constants.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ofh/serdes/ofh\_uplane\_message\_decoder.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ ofh\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Open\ Fronthaul\ User-\/Plane\ uplink\ PRACH\ data\ flow\ implementation\ configuration.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__config}{data\_flow\_uplane\_uplink\_prach\_impl\_config}}\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ PRACH\ Control-\/Plane\ enabled\ flag.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__config_ab47c33a5941abe4b9a5b20732650132a}{is\_prach\_cplane\_enabled}};}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Uplink\ PRACH\ eAxCs.}}
+\DoxyCodeLine{00041\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_SUPPORTED\_EAXC>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__config_ac937a22c7354c3551afa60aafd7d2f80}{prach\_eaxcs}};}
+\DoxyCodeLine{00042\ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ Open\ Fronthaul\ User-\/Plane\ uplink\ PRACH\ data\ flow\ implementation\ dependencies.}}
+\DoxyCodeLine{00045\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies}{data\_flow\_uplane\_uplink\_prach\_impl\_dependencies}}\ \{}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a70219c62eb291fc1536da6d2e3e6aa8f}{srslog}}::\mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a70219c62eb291fc1536da6d2e3e6aa8f}{basic\_logger}}*\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a70219c62eb291fc1536da6d2e3e6aa8f}{logger}};}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ User-\/Plane\ received\ symbol\ notifier.}}
+\DoxyCodeLine{00049\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplane__rx__symbol__notifier}{uplane\_rx\_symbol\_notifier}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_ab33901b3ea955eb8fda075898084140d}{notifier}};}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Control-\/Plane\ context\ repository.}}
+\DoxyCodeLine{00051\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__cplane__context__repository}{uplink\_cplane\_context\_repository}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a000172adace1d9bf4871120f0dfe2bee}{ul\_cplane\_context\_repo\_ptr}};}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Uplink\ PRACH\ context\ repository.}}
+\DoxyCodeLine{00053\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1prach__context__repository}{prach\_context\_repository}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_acc0fc2e12053ec3d59d129174ac0c894}{prach\_context\_repo}};}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ User-\/Plane\ message\ decoder.}}
+\DoxyCodeLine{00055\ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a36c687805b7f66d1f70514d8996cf9b1}{std}}::\mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a36c687805b7f66d1f70514d8996cf9b1}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a36c687805b7f66d1f70514d8996cf9b1}{uplane\_message\_decoder}}>\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies_a36c687805b7f66d1f70514d8996cf9b1}{uplane\_decoder}};}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{comment}{///\ Open\ Fronthaul\ User-\/Plane\ uplink\ PRACH\ data\ flow\ implementation.}}
+\DoxyCodeLine{00059\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl}{data\_flow\_uplane\_uplink\_prach\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach}{data\_flow\_uplane\_uplink\_prach}}}
+\DoxyCodeLine{00060\ \{}
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ data\_flow\_uplane\_uplink\_prach\_impl(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__config}{data\_flow\_uplane\_uplink\_prach\_impl\_config}}\&\ \ config\_,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl__dependencies}{data\_flow\_uplane\_uplink\_prach\_impl\_dependencies}}\&\&\ dependencies);}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ofh_1_1data__flow__uplane__uplink__prach__impl_a7300a6335628fcddd4942ae9189fb850}{decode\_type1\_message}}(\textcolor{keywordtype}{unsigned}\ eaxc,\ span<\textcolor{keyword}{const}\ uint8\_t>\ message)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ Returns\ true\ if\ the\ User-\/Plane\ packet\ represented\ by\ the\ given\ User-\/Plane\ results\ and\ eAxC\ should\ be\ filtered,}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ otherwise\ false.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{bool}\ should\_uplane\_packet\_be\_filtered(\textcolor{keywordtype}{unsigned}\ eaxc,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1ofh_1_1uplane__message__decoder__results}{uplane\_message\_decoder\_results}}\&\ results)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00074\ \ \ srslog::basic\_logger\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger;}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_prach\_cplane\_enabled;}
+\DoxyCodeLine{00076\ \ \ std::shared\_ptr<\mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__cplane__context__repository}{uplink\_cplane\_context\_repository}}>\ ul\_cplane\_context\_repo\_ptr;}
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplink__cplane__context__repository}{uplink\_cplane\_context\_repository}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ul\_cplane\_context\_repo;}
+\DoxyCodeLine{00078\ \ \ std::unique\_ptr<uplane\_message\_decoder>\ \ \ \ \ \ \ \ \ \ \ uplane\_decoder;}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplane__prach__symbol__data__flow__writer}{uplane\_prach\_symbol\_data\_flow\_writer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ prach\_iq\_writter;}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{classsrsran_1_1ofh_1_1uplane__prach__data__flow__notifier}{uplane\_prach\_data\_flow\_notifier}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notification\_sender;}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \}\ \textcolor{comment}{//\ namespace\ ofh}}
+\DoxyCodeLine{00084\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

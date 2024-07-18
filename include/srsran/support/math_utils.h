@@ -33,21 +33,13 @@ namespace srsran {
 /// Defines two times Pi.
 static constexpr float TWOPI = 2.0F * static_cast<float>(M_PI);
 
-/// Floating point near zero value.
-static constexpr float near_zero = 1e-9;
-
 /// \brief Performs an integer division rounding up.
 ///
-/// \tparam     NumType Division numerator integer type.
-/// \tparam     DenType Division denominator integer type.
-/// \param[in]  num     Numerator.
-/// \param[out] den     Denominator.
+/// \param[in]  num Numerator.
+/// \param[out] den Denominator.
 /// \return The result of the operation.
-template <typename NumType, typename DenType>
-inline constexpr auto divide_ceil(NumType num, DenType den)
+inline constexpr unsigned divide_ceil(unsigned num, unsigned den)
 {
-  static_assert(std::is_integral<NumType>::value, "The numerator must be an integer.");
-  static_assert(std::is_integral<DenType>::value, "The denominator must be an integer.");
   srsran_sanity_check(den != 0, "Denominator cannot be zero.");
   return (num + (den - 1)) / den;
 }
@@ -79,18 +71,6 @@ inline constexpr float abs_sq(cf_t x)
 {
   // Equivalent to but computationally simpler than std::pow(std::abs(x),2).
   return x.real() * x.real() + x.imag() * x.imag();
-}
-
-/// Determines whether a floating point value is near zero.
-inline bool is_near_zero(float value)
-{
-  return std::abs(value) < near_zero;
-}
-
-/// Determines whether a complex floating point value is near zero.
-inline bool is_near_zero(cf_t value)
-{
-  return abs_sq(value) < near_zero;
 }
 
 /// \brief Calculates \f$\left \lceil log_2(n) \right \rceil\f$.
@@ -215,7 +195,7 @@ constexpr const T& clamp(const T& value, const T& lower_bound, const T& upper_bo
 template <class T>
 constexpr const T& clamp(const T& value, const T& lower_bound, const T& upper_bound)
 {
-  return srsran::clamp(value, lower_bound, upper_bound, std::less<T>());
+  return clamp(value, lower_bound, upper_bound, std::less<T>());
 }
 
 } // namespace srsran

@@ -1,0 +1,61 @@
+\doxysection{srsran\+::timer\+\_\+manager Class Reference}
+\hypertarget{classsrsran_1_1timer__manager}{}\label{classsrsran_1_1timer__manager}\index{srsran::timer\_manager@{srsran::timer\_manager}}
+
+
+This class implements the service associated with the management of the timers of the application, including the allocation, destruction, starting/halting and timeout triggering of the registered timers. The user can check and control the state of an individual timer via the respective {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} handle object.  
+
+
+
+
+{\ttfamily \#include $<$timers.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39}{timer\+\_\+manager}} (size\+\_\+t pre\+\_\+reserve\+\_\+capacity=64)
+\item 
+\Hypertarget{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34}\label{classsrsran_1_1timer__manager_a4e379023ca809b15c063cf96ce696d34} 
+void {\bfseries tick} ()
+\begin{DoxyCompactList}\small\item\em Advances one tick and triggers any running timer that just expired. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c}\label{classsrsran_1_1timer__manager_ae7969b02b1e0306e319b93505212f36c} 
+\mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} {\bfseries create\+\_\+unique\+\_\+timer} (\mbox{\hyperlink{classsrsran_1_1task__executor}{task\+\_\+executor}} \&exec)
+\begin{DoxyCompactList}\small\item\em Creates a new instance of a unique timer. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8}\label{classsrsran_1_1timer__manager_aa7dbcfc746e6c26caa57bba65dff28a8} 
+size\+\_\+t {\bfseries nof\+\_\+timers} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of timers handled by this instance. \end{DoxyCompactList}\item 
+\Hypertarget{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8}\label{classsrsran_1_1timer__manager_a6f308d387326950ddf2531f77fe560a8} 
+unsigned {\bfseries nof\+\_\+running\+\_\+timers} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of running timers handled by this instance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classsrsran_1_1timer__manager_abf15e4ba4b26bb5301fc9a93f615e81e}\label{classsrsran_1_1timer__manager_abf15e4ba4b26bb5301fc9a93f615e81e} 
+class {\bfseries unique\+\_\+timer}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class implements the service associated with the management of the timers of the application, including the allocation, destruction, starting/halting and timeout triggering of the registered timers. The user can check and control the state of an individual timer via the respective {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} handle object. 
+
+The {\ttfamily \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager}} and {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} classes follow a publisher/subscriber model. The {\ttfamily \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager}}, the publisher, receives periodic ticks from a clock source (e.\+g. RF front-\/end or system clock) that advance its internal clock. It also contains an internal list of subscribed {\ttfamily unique\+\_\+timers}. Once enough time has passed and a running timer time-\/outs, the respective timer gets notified via a callback. The user can control the timer starting time, duration until timeout and timeout callback function definition via the {\ttfamily \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer}} interface.
+
+The implementation assumes that the "{}tick()"{} method is always called from the same thread and that an \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer} object is not accessed concurrently by different threads. However, separate unique\+\_\+timers can be safely used from separate threads. An \doxylink{classsrsran_1_1unique__timer}{unique\+\_\+timer} object and the \doxylink{classsrsran_1_1timer__manager}{timer\+\_\+manager} communicate with one another via thread-\/safe queues. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39}\label{classsrsran_1_1timer__manager_af2eac84d2d214332c0b5395add1cff39} 
+\index{srsran::timer\_manager@{srsran::timer\_manager}!timer\_manager@{timer\_manager}}
+\index{timer\_manager@{timer\_manager}!srsran::timer\_manager@{srsran::timer\_manager}}
+\doxysubsubsection{\texorpdfstring{timer\_manager()}{timer\_manager()}}
+{\footnotesize\ttfamily timer\+\_\+manager\+::timer\+\_\+manager (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{pre\+\_\+reserve\+\_\+capacity = {\ttfamily 64} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+Constructs a timer manager. 
+\begin{DoxyParams}{Parameters}
+{\em capacity} & Number of timers to pre-\/reserve and speed up timer construction. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/srsran/support/timers.\+h\item 
+lib/support/timers.\+cpp\end{DoxyCompactItemize}

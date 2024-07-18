@@ -1,0 +1,42 @@
+\doxysection{to\+\_\+array.\+h}
+\hypertarget{to__array_8h_source}{}\label{to__array_8h_source}\index{include/srsran/adt/to\_array.h@{include/srsran/adt/to\_array.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{array}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T,\ std::size\_t\ N,\ std::size\_t...\ I>}
+\DoxyCodeLine{00011\ \textcolor{keyword}{constexpr}\ std::array<std::remove\_cv\_t<T>,\ N>\ to\_array\_impl(T\ (\&a)[N],\ std::index\_sequence<I...>)}
+\DoxyCodeLine{00012\ \{}
+\DoxyCodeLine{00013\ \ \ \textcolor{keywordflow}{return}\ \{\{a[I]...\}\};}
+\DoxyCodeLine{00014\ \}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T,\ std::size\_t\ N,\ std::size\_t...\ I>}
+\DoxyCodeLine{00017\ \textcolor{keyword}{constexpr}\ std::array<std::remove\_cv\_t<T>,\ N>\ to\_array\_impl(T\ (\&\&a)[N],\ std::index\_sequence<I...>)}
+\DoxyCodeLine{00018\ \{}
+\DoxyCodeLine{00019\ \ \ \textcolor{keywordflow}{return}\ \{\{std::move(a[I])...\}\};}
+\DoxyCodeLine{00020\ \}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ Helper\ method\ to\ generate\ an\ std::array\ from\ a\ C\ array\ without\ needing\ to\ derive\ the\ size\ N.}}
+\DoxyCodeLine{00025\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T,\ std::size\_t\ N>}
+\DoxyCodeLine{00026\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{std}}::\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{array}}<\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{std}}::\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{remove\_cv\_t}}<\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{T}}>,\ \mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{N}}>\ \mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{to\_array}}(\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{T}}\ (\&\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{a}})[\mbox{\hyperlink{namespacesrsran_a1e4b98f4698e727e87042d2449a5431c}{N}}])}
+\DoxyCodeLine{00027\ \{}
+\DoxyCodeLine{00028\ \ \ \textcolor{keywordflow}{return}\ detail::to\_array\_impl(a,\ std::make\_index\_sequence<N>\{\});}
+\DoxyCodeLine{00029\ \}}
+\DoxyCodeLine{00030\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T,\ std::size\_t\ N>}
+\DoxyCodeLine{00031\ \textcolor{keyword}{constexpr}\ std::array<std::remove\_cv\_t<T>,\ N>\ to\_array(T\ (\&\&a)[N])}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ \textcolor{keywordflow}{return}\ detail::to\_array\_impl(std::move(a),\ std::make\_index\_sequence<N>\{\});}
+\DoxyCodeLine{00034\ \}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

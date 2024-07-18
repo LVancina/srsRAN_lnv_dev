@@ -1,0 +1,117 @@
+\doxysection{e1ap\+\_\+cu\+\_\+up\+\_\+impl.\+h}
+\hypertarget{e1ap__cu__up__impl_8h_source}{}\label{e1ap__cu__up__impl_8h_source}\index{lib/e1ap/cu\_up/e1ap\_cu\_up\_impl.h@{lib/e1ap/cu\_up/e1ap\_cu\_up\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../common/e1ap\_asn1\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{e1ap__cu__up__connection__handler_8h}{"{}e1ap\_cu\_up\_connection\_handler.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}ue\_context/e1ap\_cu\_up\_ue\_context.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/asn1/e1ap/e1ap.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/e1ap/cu\_up/e1ap\_cu\_up.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{unordered\_map}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ srs\_cu\_up\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__connection__client}{e1ap\_connection\_client}};}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__event__manager}{e1ap\_event\_manager}};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class}\ e1ap\_cu\_up\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__interface}{e1ap\_interface}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ e1ap\_cu\_up\_impl(\mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__connection__client}{e1ap\_connection\_client}}\&\ e1ap\_client\_handler\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__notifier}{e1ap\_cu\_up\_notifier}}\&\ \ \ \ cu\_up\_notifier\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ \ \ \ \ \ \ \ \ \ timers\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ cu\_up\_exec\_);}
+\DoxyCodeLine{00047\ \ \ \string~e1ap\_cu\_up\_impl()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{//\ e1ap\ connection\ manager\ functions}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_a799bbf9a75eec25382c79a3f211436cb}{connect\_to\_cu\_cp}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ E1AP\ interface\ management\ procedures\ functions\ as\ per\ TS38.463,\ Section\ 8.2.}}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task}}<\mbox{\hyperlink{structsrsran_1_1cu__up__e1__setup__response}{cu\_up\_e1\_setup\_response}}>\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_ab30e97b2268f498bc737832fad935750}{handle\_cu\_up\_e1\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1cu__up__e1__setup__request}{cu\_up\_e1\_setup\_request}}\&\ request)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{//\ e1ap\ message\ handler\ functions}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_a0a7390b736b7c4b6fb08176b642992e8}{handle\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1e1ap__message}{e1ap\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{//\ e1ap\ control\ message\ handler\ functions}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_a5f2d7fc767f1061fda45696a22fe243f}{handle\_bearer\_context\_inactivity\_notification}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__up_1_1e1ap__bearer__context__inactivity__notification}{e1ap\_bearer\_context\_inactivity\_notification}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ e1ap\ event\ handler\ functions}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ handle\_connection\_loss()\ \textcolor{keyword}{override}\ \{\}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ e1ap\_statistics\_handler\ functions}}
+\DoxyCodeLine{00064\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_a142b7f32501d12f14f5b327b7398f96b}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__impl_a142b7f32501d12f14f5b327b7398f96b}{get\_nof\_ues}}()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ ue\_ctxt\_list.size();\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ initiating\ message.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ initiating\ message.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ handle\_initiating\_message(\textcolor{keyword}{const}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1init__msg__s}{init\_msg\_s}}\&\ msg);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ Bearer\ Context\ Setup\ Request\ message.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ This\ starts\ the\ UE\ context\ creation\ at\ the\ UE\ manager\ and\ E1.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ Bearer\ Context\ Setup\ message.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ handle\_bearer\_context\_setup\_request(\textcolor{keyword}{const}\ asn1::e1ap::bearer\_context\_setup\_request\_s\&\ msg);}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ Bearer\ Context\ Modification\ Request\ message.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ This\ starts\ the\ UE\ context\ creation\ at\ the\ UE\ manager\ and\ E1.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ Bearer\ Context\ Modification\ message.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ handle\_bearer\_context\_modification\_request(\textcolor{keyword}{const}\ asn1::e1ap::bearer\_context\_mod\_request\_s\&\ msg);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ Bearer\ Context\ Release\ Command\ message.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ This\ starts\ the\ UE\ context\ release\ at\ the\ UE\ manager\ and\ E1.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ Bearer\ Context\ Release\ Command.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ handle\_bearer\_context\_release\_command(\textcolor{keyword}{const}\ asn1::e1ap::bearer\_context\_release\_cmd\_s\&\ msg);}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ successful\ outcome.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ successful\ outcome\ message.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ handle\_successful\_outcome(\textcolor{keyword}{const}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1successful__outcome__s}{successful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Notify\ about\ the\ reception\ of\ an\ unsuccessful\ outcome.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ msg\ The\ received\ unsuccessful\ outcome\ message.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{void}\ handle\_unsuccessful\_outcome(\textcolor{keyword}{const}\ asn1::e1ap::\mbox{\hyperlink{structasn1_1_1e1ap_1_1unsuccessful__outcome__s}{unsuccessful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ nofifiers\ and\ handles}}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__notifier}{e1ap\_cu\_up\_notifier}}\&\ cu\_up\_notifier;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ timers;}
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ cu\_up\_exec;}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__cu__up__connection__handler}{e1ap\_cu\_up\_connection\_handler}}\ connection\_handler;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Repository\ of\ UE\ Contexts.}}
+\DoxyCodeLine{00105\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__up_1_1e1ap__ue__context__list}{e1ap\_ue\_context\_list}}\ ue\_ctxt\_list;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ std::unique\_ptr<e1ap\_event\_manager>\ ev\_mng;}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_up}}
+\DoxyCodeLine{00111\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

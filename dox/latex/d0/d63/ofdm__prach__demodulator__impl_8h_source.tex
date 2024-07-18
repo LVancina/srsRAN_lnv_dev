@@ -1,0 +1,89 @@
+\doxysection{ofdm\+\_\+prach\+\_\+demodulator\+\_\+impl.\+h}
+\hypertarget{ofdm__prach__demodulator__impl_8h_source}{}\label{ofdm__prach__demodulator__impl_8h_source}\index{lib/phy/lower/modulation/ofdm\_prach\_demodulator\_impl.h@{lib/phy/lower/modulation/ofdm\_prach\_demodulator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00022\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/slotted\_array.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/generic\_functions/dft\_processor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/modulation/ofdm\_prach\_demodulator.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/sampling\_rate.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/prach\_buffer.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/prach/prach\_subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Describes\ a\ generic\ OFDM\ PRACH\ demodulator.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ ofdm\_prach\_demodulator\_impl\ :\ \textcolor{keyword}{public}\ ofdm\_prach\_demodulator}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{using}\ dft\_processors\_table\ =\ slotted\_id\_table<prach\_subcarrier\_spacing,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<dft\_processor>,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(prach\_subcarrier\_spacing::invalid)>;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Builds\ a\ PRACH\ OFDM\ demodulator.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ srate\_\ \ \ \ \ \ \ \ \ \ Sampling\ rate.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ dft\_processors\_\ Table\ with\ one\ DFT\ processor\ for\ each\ of\ the\ possible\ RA\ subcarrier\ spacings.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ An\ assertion\ is\ triggered\ if\ \(\backslash\)c\ dft\_processors\_\ do\ not\ contain\ a\ valid\ DFT\ processor\ for\ each\ of\ the}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ possible\ random\ access\ subcarrier\ spacings.}}
+\DoxyCodeLine{00050\ \ \ ofdm\_prach\_demodulator\_impl(sampling\_rate\ srate\_,\ dft\_processors\_table\ dft\_processors\_)\ :}
+\DoxyCodeLine{00051\ \ \ \ \ srate(srate\_),\ dft\_processors(std::move(dft\_processors\_))}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{using}\ int\_type\ =\ std::underlying\_type\_t<prach\_subcarrier\_spacing>;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{for}\ (int\_type\ i\_scs\ \ \ \ \ =\ \textcolor{keyword}{static\_cast}<int\_type>(prach\_subcarrier\_spacing::kHz15),}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\_scs\_end\ =\ \textcolor{keyword}{static\_cast}<int\_type>(prach\_subcarrier\_spacing::invalid);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ i\_scs\ !=\ i\_scs\_end;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ ++i\_scs)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ prach\_subcarrier\_spacing\ ra\_scs\ =\ \textcolor{keyword}{static\_cast}<prach\_subcarrier\_spacing>(i\_scs);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dft\_processors.contains(ra\_scs),}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Table\ does\ not\ contain\ a\ DFT\ processor\ for\ \{\}\ subcarrier\ spacing."{}},}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to\_string(ra\_scs));}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dft\_processors[ra\_scs],\ \textcolor{stringliteral}{"{}Invalid\ DFT\ processor\ for\ \{\}\ subcarrier\ spacing."{}},\ to\_string(ra\_scs));}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dft\_processors[ra\_scs]-\/>get\_direction()\ ==\ dft\_processor::direction::DIRECT,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ DFT\ processor\ direction\ for\ \{\}\ subcarrier\ spacing."{}},}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to\_string(ra\_scs));}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dft\_processors[ra\_scs]-\/>get\_size()\ ==\ srate.get\_dft\_size(ra\_scs\_to\_Hz(ra\_scs)),}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ DFT\ processor\ size\ (i.e.,\ \{\})\ for\ \{\}\ subcarrier\ spacing."{}},}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dft\_processors[ra\_scs]-\/>get\_size(),}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to\_string(ra\_scs));}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ demodulate(prach\_buffer\&\ buffer,\ span<\textcolor{keyword}{const}\ cf\_t>\ input,\ \textcolor{keyword}{const}\ configuration\&\ config)\ override;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Sampling\ rate.}}
+\DoxyCodeLine{00078\ \ \ sampling\_rate\ srate;}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ DFT\ processor\ table.}}
+\DoxyCodeLine{00080\ \ \ dft\_processors\_table\ dft\_processors;}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

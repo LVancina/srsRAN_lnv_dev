@@ -1,0 +1,116 @@
+\doxysection{resource\+\_\+grid\+\_\+reader.\+h}
+\hypertarget{resource__grid__reader_8h_source}{}\label{resource__grid__reader_8h_source}\index{include/srsran/phy/support/resource\_grid\_reader.h@{include/srsran/phy/support/resource\_grid\_reader.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/bounded\_bitset.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/complex.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/span.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/constants.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_base.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Describes\ a\ resource\ grid\ reader\ interface.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ resource\_grid\_reader\ :\ \textcolor{keyword}{public}\ resource\_grid\_base}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{virtual}\ \string~resource\_grid\_reader()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Determines\ whether\ a\ given\ port\ is\ empty.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ A\ port\ is\ considered\ empty\ if\ no\ \(\backslash\)c\ put\ method\ have\ been\ called\ since\ last\ zero\ set.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ If\ zeros\ are\ written\ using\ any\ \(\backslash\)c\ put\ method,\ the\ port\ is\ considered\ not\ empty.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ An\ invalid\ port\ index\ triggers\ an\ assertion.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ port\ Port\ index.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ given\ port\ is\ empty.\ Otherwise,\ false.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ is\_empty(\textcolor{keywordtype}{unsigned}\ port)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Determines\ whether\ the\ resource\ grid\ is\ empty.}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ The\ grid\ is\ considered\ empty\ if\ no\ \(\backslash\)c\ put\ method\ have\ been\ called\ since\ last\ zero\ set.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ If\ zeros\ are\ written\ using\ any\ \(\backslash\)c\ put\ method,\ the\ grid\ is\ considered\ not\ empty.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \(\backslash\)c\ true\ if\ the\ resource\ grid\ is\ empty.\ Otherwise,\ \(\backslash\)c\ false.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ is\_empty()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ number\ of\ resource\ elements\ in\ the\ resource\ grid\ at\ the\ given\ port\ and\ symbol\ using\ a\ mask\ to}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ indicate\ which\ subcarriers\ are\ allocated\ and\ which\ are\ not.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ symbols\ Destination\ symbol\ buffer.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ port\ \ \ \ Port\ index.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ l\ \ \ \ \ \ \ Symbol\ index.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ k\_init\ \ Initial\ subcarrier\ index.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ mask\ \ \ \ \ Boolean\ mask\ denoting\ the\ subcarriers\ to\ be\ read\ (if\ \(\backslash\)c\ true),\ starting\ from\ \(\backslash\)c\ k\_init.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ view\ to\ the\ unused\ entries\ of\ \(\backslash\)c\ symbols.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ shall\ be\ equal\ to\ or\ greater\ than\ the\ resource\ grid\ number\ of\ subcarriers.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ number\ of\ elements\ of\ \(\backslash\)c\ symbol\ shall\ be\ equal\ to\ or\ greater\ than\ the\ number\ of\ true\ elements\ in}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)c\ mask.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{virtual}\ span<cf\_t>}
+\DoxyCodeLine{00073\ \ \ get(span<cf\_t>\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}>\ mask)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ number\ of\ resource\ elements\ in\ the\ resource\ grid\ at\ the\ given\ port\ and\ symbol\ using\ a\ bounded\ bitset}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ to\ indicate\ which\ subcarriers\ are\ allocated\ and\ which\ are\ not.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ symbols\ Destination\ symbol\ buffer.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ port\ \ \ \ Port\ index.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ l\ \ \ \ \ \ \ Symbol\ index.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ k\_init\ \ Initial\ subcarrier\ index.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ mask\ \ \ \ \ Boolean\ mask\ denoting\ the\ subcarriers\ to\ be\ read\ (if\ \(\backslash\)c\ true),\ starting\ from\ \(\backslash\)c\ k\_init.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ view\ to\ the\ unused\ entries\ of\ \(\backslash\)c\ symbols.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ number\ of\ elements\ of\ \(\backslash\)c\ mask\ shall\ be\ equal\ to\ or\ greater\ than\ the\ resource\ grid\ number\ of\ subcarriers.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ number\ of\ elements\ of\ \(\backslash\)c\ symbol\ shall\ be\ equal\ to\ or\ greater\ than\ the\ number\ of\ true\ elements\ in}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)c\ mask.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{virtual}\ span<cf\_t>\ get(span<cf\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbols,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ consecutive\ number\ of\ resource\ elements\ for\ a\ given\ port\ and\ symbol\ \(\backslash\)c\ l\ starting\ at\ \(\backslash\)c\ k\_init.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ symbols\ Destination\ symbol\ buffer.}}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ port\ \ \ \ Port\ index.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ l\ \ \ \ \ \ \ Symbol\ index.}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ k\_init\ \ Initial\ subcarrier\ index.}}
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ sum\ of\ \(\backslash\)c\ k\_init\ and\ the\ number\ of\ elements\ in\ \(\backslash\)c\ symbols\ shall\ not\ exceed\ the\ resource\ grid\ number\ of}}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ subcarriers.}}
+\DoxyCodeLine{00101\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ get(span<cf\_t>\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ view\ of\ all\ resource\ elements\ for\ a\ given\ port\ and\ symbol\ \(\backslash\)c\ l.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ port\ \ \ \ Port\ index.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ l\ \ \ \ \ \ \ Symbol\ index.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{virtual}\ span<\textcolor{keyword}{const}\ cf\_t>\ get\_view(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l)\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

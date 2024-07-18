@@ -23,20 +23,13 @@
 #include "low_papr_sequence_generator_impl.h"
 #include "srsran/adt/static_vector.h"
 #include "srsran/phy/constants.h"
-#include "srsran/srsvec/prod.h"
 #include "srsran/srsvec/sc_prod.h"
 #include "srsran/support/error_handling.h"
 #include "srsran/support/math_utils.h"
 
 using namespace srsran;
 
-// Sequence sizes used in PUCCH Format 1 and SRS.
-const std::set<unsigned> low_papr_sequence_generator_impl::sequence_sizes = {
-    12,  24,  36,  48,  60,  72,  84,  96,  108,  120,  132,  144,  156,  168,  180,  192,  204,  216,  228, 240,
-    252, 264, 276, 288, 312, 324, 336, 360, 384,  396,  408,  432,  456,  480,  504,  528,  552,  576,  624, 648,
-    672, 720, 768, 792, 816, 864, 912, 960, 1008, 1056, 1104, 1152, 1248, 1296, 1344, 1440, 1536, 1584, 1632};
-
-const std::array<std::array<int, 6>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
+const std::array<std::array<float, 6>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
     low_papr_sequence_generator_impl::phi_M_sc_6 = {
         {{-3, -1, 3, 3, -1, -3},  {-3, 3, -1, -1, 3, -3},  {-3, -3, -3, 3, 1, -3},  {1, 1, 1, 3, -1, -3},
          {1, 1, 1, -3, -1, 3},    {-3, 1, -1, -3, -3, -3}, {-3, 1, 3, -3, -3, -3},  {-3, -1, 1, -3, 1, -1},
@@ -47,7 +40,7 @@ const std::array<std::array<int, 6>, low_papr_sequence_generator_impl::NOF_ZC_SE
          {1, 1, 3, -1, 3, 3},     {1, 1, -3, 1, 3, 3},     {1, 1, -1, -1, 3, -1},   {1, 1, -1, 3, -1, -1},
          {1, 1, -1, 3, -3, -1},   {1, 1, -3, 1, -1, -1}}};
 
-const std::array<std::array<int, 12>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
+const std::array<std::array<float, 12>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
     low_papr_sequence_generator_impl::phi_M_sc_12 = {
         {{-3, 1, -3, -3, -3, 3, -3, -1, 1, 1, 1, -3},  {-3, 3, 1, -3, 1, 3, -1, -1, 1, 3, 3, 3},
          {-3, 3, 3, 1, -3, 3, -1, 1, 3, -3, 3, -3},    {-3, -3, -1, 3, 3, 3, -3, 3, -3, 1, -1, -3},
@@ -65,7 +58,7 @@ const std::array<std::array<int, 12>, low_papr_sequence_generator_impl::NOF_ZC_S
          {-1, 1, 3, -3, 1, -1, 1, -1, -1, -3, 1, -1},  {-3, -3, 3, 3, 3, -3, -1, 1, -3, 3, 1, -3},
          {1, -1, 3, 1, 1, -1, -1, -1, 1, 3, -3, 1},    {-3, 3, -3, 3, -3, -3, 3, -1, -1, 1, 3, -3}}};
 
-const std::array<std::array<int, 18>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
+const std::array<std::array<float, 18>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
     low_papr_sequence_generator_impl::phi_M_sc_18 = {
         {{-1, 3, -1, -3, 3, 1, -3, -1, 3, -3, -1, -1, 1, 1, 1, -1, -1, -1},
          {3, -3, 3, -1, 1, 3, -3, -1, -3, -3, -1, -3, 3, 1, -1, 3, -3, 3},
@@ -98,7 +91,7 @@ const std::array<std::array<int, 18>, low_papr_sequence_generator_impl::NOF_ZC_S
          {-1, -3, 1, -3, -3, -3, 1, 1, 3, 3, -3, 3, 3, -3, -1, 3, -3, 1},
          {-3, 3, 1, -1, -1, -1, -1, 1, -1, 3, 3, -3, -1, 1, 3, -1, 3, -1}}};
 
-const std::array<std::array<int, 24>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
+const std::array<std::array<float, 24>, low_papr_sequence_generator_impl::NOF_ZC_SEQ>
     low_papr_sequence_generator_impl::phi_M_sc_24 = {
         {{-1, -3, 3, -1, 3, 1, 3, -1, 1, -3, -1, -3, -1, 1, 3, -3, -1, -3, 3, 3, 3, -3, -3, -3},
          {-1, -3, 3, 1, 1, -3, 1, -3, -3, 1, -3, -1, -1, 3, -3, 3, 3, 3, -3, 1, 3, 3, -3, -3},
@@ -131,7 +124,27 @@ const std::array<std::array<int, 24>, low_papr_sequence_generator_impl::NOF_ZC_S
          {-3, 1, -3, 1, -3, 1, 1, 3, 1, -3, -3, -1, 1, 3, -1, -3, 3, 1, -1, -3, -3, -3, -3, -3},
          {3, -3, -1, 1, 3, -1, -1, -3, -1, 3, -1, -3, -1, -3, 3, -1, 3, 1, 1, -3, 3, -3, -3, -3}}};
 
-static int zc_sequence_q(uint32_t u, uint32_t v, uint32_t N_sz)
+void low_papr_sequence_generator_impl::r_uv_arg_0dot5prb(span<float> tmp_arg, uint32_t u)
+{
+  srsvec::sc_prod(phi_M_sc_6[u], M_PI_4, tmp_arg);
+}
+
+void low_papr_sequence_generator_impl::r_uv_arg_1prb(span<float> tmp_arg, uint32_t u)
+{
+  srsvec::sc_prod(phi_M_sc_12[u], M_PI_4, tmp_arg);
+}
+
+void low_papr_sequence_generator_impl::r_uv_arg_1dot5prb(span<float> tmp_arg, uint32_t u)
+{
+  srsvec::sc_prod(phi_M_sc_18[u], M_PI_4, tmp_arg);
+}
+
+void low_papr_sequence_generator_impl::r_uv_arg_2prb(span<float> tmp_arg, uint32_t u)
+{
+  srsvec::sc_prod(phi_M_sc_24[u], M_PI_4, tmp_arg);
+}
+
+static uint32_t zc_sequence_q(uint32_t u, uint32_t v, uint32_t N_sz)
 {
   float q;
   float q_hat;
@@ -143,102 +156,58 @@ static int zc_sequence_q(uint32_t u, uint32_t v, uint32_t N_sz)
   } else {
     q = q_hat + 0.5 - v;
   }
-  return static_cast<int>(q);
+  return (uint32_t)q;
 }
 
-static unsigned get_N_zc(unsigned M_zc)
+void low_papr_sequence_generator_impl::r_uv_arg_mprb(span<float> tmp_arg, uint32_t u, uint32_t v)
 {
-  if (M_zc >= 36) {
-    return prime_lower_than(M_zc);
-  }
+  unsigned M_zc = tmp_arg.size();
+  unsigned N_sz = prime_lower_than(M_zc);
 
-  return 4;
-}
+  float n_sz = (float)N_sz;
+  srsran_assert(std::isnormal(n_sz), "Invalid n_sz value");
 
-span<const int> low_papr_sequence_generator_impl::r_uv_arg_mprb(unsigned u, unsigned v, unsigned M_zc)
-{
-  // Select temporary argument.
-  srsran_assert(M_zc <= temp_r_uv_arg.size(),
-                "Sequence length (i.e., {}) exceeds maximum sequence size (i.e., {})",
-                M_zc,
-                temp_r_uv_arg.size());
-  span<int> r_uv_arg = span<int>(temp_r_uv_arg).first(M_zc);
-  unsigned  N_zc     = get_N_zc(M_zc);
-  int64_t   q        = zc_sequence_q(u, v, N_zc);
+  float q = zc_sequence_q(u, v, N_sz);
   for (unsigned n = 0; n != M_zc; ++n) {
-    int64_t m   = (n % N_zc);
-    r_uv_arg[n] = -static_cast<int>((q * m * (m + 1)) % (2 * N_zc));
+    float m    = (float)(n % N_sz);
+    tmp_arg[n] = -M_PI * q * m * (m + 1) / n_sz;
   }
-
-  return r_uv_arg;
 }
 
-span<const int> low_papr_sequence_generator_impl::r_uv_arg(unsigned u, unsigned v, unsigned M_zc)
+void low_papr_sequence_generator_impl::r_uv_arg(span<float> tmp_arg, uint32_t u, uint32_t v)
 {
+  unsigned M_zc = tmp_arg.size();
+
   if (M_zc == 6) {
-    return phi_M_sc_6[u];
+    r_uv_arg_0dot5prb(tmp_arg, u);
   } else if (M_zc == 12) {
-    return phi_M_sc_12[u];
+    r_uv_arg_1prb(tmp_arg, u);
   } else if (M_zc == 18) {
-    return phi_M_sc_18[u];
+    r_uv_arg_1dot5prb(tmp_arg, u);
   } else if (M_zc == 24) {
-    return phi_M_sc_24[u];
+    r_uv_arg_2prb(tmp_arg, u);
   } else if (M_zc >= 36) {
-    return r_uv_arg_mprb(u, v, M_zc);
+    r_uv_arg_mprb(tmp_arg, u, v);
+  } else {
+    srsran_terminate("Invalid sequence length {}", M_zc);
   }
-
-  srsran_terminate("Invalid sequence length {}", M_zc);
-  return {};
 }
 
-low_papr_sequence_generator_impl::low_papr_sequence_generator_impl() : cs_table(24, 1)
+void low_papr_sequence_generator_impl::cexp(span<cf_t> sequence, float alpha, const span<const float> tmp_arg)
 {
-  unsigned max_size = 0;
-  for (unsigned M_zc : sequence_sizes) {
-    // Select number of elements in the complex exponential.
-    unsigned table_size = 2 * get_N_zc(M_zc);
-
-    // Create complex exponential table if it has not been created earlier.
-    if (tables.count(table_size) == 0) {
-      tables.emplace(table_size, complex_exponential_table(table_size, 1.0));
-
-      max_size = std::max(max_size, M_zc);
-    }
+  for (unsigned n = 0; n != sequence.size(); n++) {
+    sequence[n] = std::polar(1.0F, (tmp_arg[n] + alpha * n));
   }
-
-  temp_r_uv_arg.resize(max_size);
-  temp_cyclic_shift.resize(max_size);
 }
 
-void low_papr_sequence_generator_impl::generate(span<cf_t> sequence,
-                                                unsigned   u,
-                                                unsigned   v,
-                                                unsigned   alpha_num,
-                                                unsigned   alpha_den)
+void low_papr_sequence_generator_impl::generate(span<cf_t> sequence, unsigned u, unsigned v, float alpha) const
 {
-  // Select number of elements in the complex exponential.
-  unsigned table_size = 2 * get_N_zc(sequence.size());
-  srsran_assert(tables.count(table_size), "Sequence generator was not initialized with table size {}", table_size);
-
-  // Select complex exponential table.
-  complex_exponential_table& table = tables.at(table_size);
-
-  // Verify the cyclic shift is valid.
-  srsran_assert((alpha_num == 0) || (cs_table.size() % alpha_den == 0),
-                "The cyclic shift denominator (i.e., {}) is not compatible with a table size of (i.e., {})",
-                alpha_den,
-                cs_table.size());
+  // Create temporal argument storage.
+  static_vector<float, MAX_RB * NRE> arg(sequence.size());
 
   // Calculate argument.
-  span<const int> arg = r_uv_arg(u, v, sequence.size());
+  r_uv_arg(arg, u, v);
 
-  // Generate sequence from the argument.
-  table.generate(sequence, arg);
-
-  // Apply cyclic shift.
-  if (alpha_num != 0) {
-    span<cf_t> cyclic_shift = span<cf_t>(temp_cyclic_shift).first(sequence.size());
-    cs_table.generate(cyclic_shift, 0, alpha_num * cs_table.size() / alpha_den);
-    srsvec::prod(sequence, cyclic_shift, sequence);
-  }
+  // Do complex exponential and adjust amplitude.
+  cexp(sequence, alpha, arg);
 }

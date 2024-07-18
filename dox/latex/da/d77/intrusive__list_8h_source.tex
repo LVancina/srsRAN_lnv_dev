@@ -1,0 +1,261 @@
+\doxysection{intrusive\+\_\+list.\+h}
+\hypertarget{intrusive__list_8h_source}{}\label{intrusive__list_8h_source}\index{include/srsran/adt/intrusive\_list.h@{include/srsran/adt/intrusive\_list.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{iterator}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{struct}\ default\_intrusive\_tag;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Base\ class\ of\ each\ node\ of\ an\ intrusive\_forward\_list<T>}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)tparam\ Tag\ type\ used\ to\ differentiate\ separate\ intrusive\ lists\ stored\ in\ a\ single\ node}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Tag\ =\ default\_intrusive\_tag>}
+\DoxyCodeLine{00035\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1intrusive__forward__list__element}{intrusive\_forward\_list\_element}}\ \{}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{structsrsran_1_1intrusive__forward__list__element}{intrusive\_forward\_list\_element}}<Tag>*\ next\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00037\ \};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ Forward\ linked\ list\ of\ pointers\ of\ type\ "{}T"{}\ that\ doesn't\ rely\ on\ allocations.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ It\ leverages\ each\ node's\ internal\ pointer\ (thus\ intrusive)\ to\ store\ the\ next\ node\ of\ the\ list.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ It\ supports\ push\_front/pop\_front,\ iteration,\ clear,\ etc.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///\ @tparam\ T\ node\ type.\ It\ must\ be\ a\ subclass\ of\ intrusive\_forward\_list\_element<Tag>}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ @tparam\ Tag\ useful\ to\ differentiate\ multiple\ intrusive\ lists\ in\ the\ same\ node}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Tag\ =\ default\_intrusive\_tag>}
+\DoxyCodeLine{00045\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{using}\ node\_t\ =\ \mbox{\hyperlink{structsrsran_1_1intrusive__forward__list__element}{intrusive\_forward\_list\_element}}<Tag>;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Iterator\ implementation\ of\ intrusive\ forward\_list.\ It\ is\ used\ to\ define\ "{}iterator"{}\ and\ "{}const\_iterator"{}}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{class}\ iterator\_impl}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{using}\ elem\_t\ =\ \textcolor{keyword}{typename}\ std::conditional<std::is\_const<U>::value,\ \textcolor{keyword}{const}\ node\_t,\ node\_t>::type;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{using}\ iterator\_category\ =\ std::forward\_iterator\_tag;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ \ =\ U;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{using}\ difference\_type\ \ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ \ =\ U*;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ \ =\ U\&;}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{explicit}\ iterator\_impl(elem\_t*\ node\_\ =\ \textcolor{keywordtype}{nullptr})\ :\ node(node\_)\ \{\}}
+\DoxyCodeLine{00063\ \ \ \ \ iterator\_impl<U>\&\ operator++()}
+\DoxyCodeLine{00064\ \ \ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ node\ =\ node-\/>next\_node;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ pointer\ \ \ operator-\/>()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<pointer>(node);\ \}}
+\DoxyCodeLine{00069\ \ \ \ \ reference\ operator*()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<reference>(*node);\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ iterator\_impl<U>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ ==\ other.node;\ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ iterator\_impl<U>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ !=\ other.node;\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00075\ \ \ \ \ elem\_t*\ node;}
+\DoxyCodeLine{00076\ \ \ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{using}\ iterator\ \ \ \ \ \ \ =\ iterator\_impl<T>;}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{using}\ const\_iterator\ =\ iterator\_impl<\textcolor{keyword}{const}\ T>;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ intrusive\_forward\_list()}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_base\_of<node\_t,\ T>::value,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Provided\ template\ argument\ T\ must\ have\ intrusive\_forward\_list\_element<Tag>\ as\ base\ class"{}});}
+\DoxyCodeLine{00086\ \ \ \}}
+\DoxyCodeLine{00087\ \ \ intrusive\_forward\_list(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00088\ \ \ intrusive\_forward\_list(\mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&\&\ other)\ \textcolor{keyword}{noexcept}\ :\ node(other.node)\ \{\ other.node\ =\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1intrusive__forward__list}{intrusive\_forward\_list}}\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ node\ \ \ \ \ \ \ =\ other.node;}
+\DoxyCodeLine{00093\ \ \ \ \ other.node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00095\ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ T\&\ front()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{static\_cast}<T*>(node);\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ push\_front(T*\ t)}
+\DoxyCodeLine{00100\ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ node\_t*\ new\_head\ \ \ \ =\ \textcolor{keyword}{static\_cast}<node\_t*>(t);}
+\DoxyCodeLine{00102\ \ \ \ \ new\_head-\/>next\_node\ =\ node;}
+\DoxyCodeLine{00103\ \ \ \ \ node\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ new\_head;}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ \ \ T*\ pop\_front()}
+\DoxyCodeLine{00106\ \ \ \{}
+\DoxyCodeLine{00107\ \ \ \ \ node\_t*\ ret\ =\ node;}
+\DoxyCodeLine{00108\ \ \ \ \ node\ \ \ \ \ \ \ \ =\ node-\/>next\_node;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<T*>(ret);}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{void}\ clear()}
+\DoxyCodeLine{00112\ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{while}\ (node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ node\_t*\ torem\ \ \ \ =\ node;}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ node\ \ \ \ \ \ \ \ \ \ \ \ \ =\ node-\/>next\_node;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ torem-\/>next\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00117\ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ ==\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ iterator\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ iterator(node);\ \}}
+\DoxyCodeLine{00123\ \ \ iterator\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ iterator(\textcolor{keywordtype}{nullptr});\ \}}
+\DoxyCodeLine{00124\ \ \ const\_iterator\ begin()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(node);\ \}}
+\DoxyCodeLine{00125\ \ \ const\_iterator\ end()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(\textcolor{keywordtype}{nullptr});\ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00128\ \ \ node\_t*\ node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00129\ \};}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{comment}{///\ Base\ class\ of\ each\ node\ of\ an\ intrusive\_double\_linked\_list<T>}}
+\DoxyCodeLine{00132\ \textcolor{comment}{///\ \(\backslash\)tparam\ Tag\ type\ used\ to\ differentiate\ separate\ intrusive\ lists\ stored\ in\ a\ single\ node}}
+\DoxyCodeLine{00133\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Tag\ =\ default\_intrusive\_tag>}
+\DoxyCodeLine{00134\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1intrusive__double__linked__list__element}{intrusive\_double\_linked\_list\_element}}\ \{}
+\DoxyCodeLine{00135\ \ \ \mbox{\hyperlink{structsrsran_1_1intrusive__double__linked__list__element}{intrusive\_double\_linked\_list\_element}}<Tag>*\ next\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{structsrsran_1_1intrusive__double__linked__list__element}{intrusive\_double\_linked\_list\_element}}<Tag>*\ prev\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \textcolor{comment}{///\ Double\ Linked\ List\ of\ pointers\ of\ type\ "{}T"{}\ that\ doesn't\ rely\ on\ allocations.}}
+\DoxyCodeLine{00140\ \textcolor{comment}{///\ Instead,\ it\ leverages\ T's\ internal\ pointers\ to\ store\ the\ next\ and\ previous\ nodes}}
+\DoxyCodeLine{00141\ \textcolor{comment}{///\ @tparam\ T\ node\ type.\ Must\ be\ a\ subclass\ of\ intrusive\_double\_linked\_list\_element<Tag>}}
+\DoxyCodeLine{00142\ \textcolor{comment}{///\ @tparam\ Tag\ tag\ of\ nodes.\ Useful\ to\ differentiate\ separate\ intrusive\ lists\ inside\ the\ same\ T\ node}}
+\DoxyCodeLine{00143\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Tag\ =\ default\_intrusive\_tag>}
+\DoxyCodeLine{00144\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}}
+\DoxyCodeLine{00145\ \{}
+\DoxyCodeLine{00146\ \ \ \textcolor{keyword}{using}\ node\_t\ =\ \mbox{\hyperlink{structsrsran_1_1intrusive__double__linked__list__element}{intrusive\_double\_linked\_list\_element}}<Tag>;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{///\ Iterator\ implementation\ for\ intrusive\_double\_linked\_list.\ It\ is\ used\ to\ define\ "{}iterator"{}\ and\ "{}const\_iterator"{}}}
+\DoxyCodeLine{00149\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00150\ \ \ \textcolor{keyword}{class}\ iterator\_impl}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keyword}{using}\ elem\_t\ =\ \textcolor{keyword}{typename}\ std::conditional<std::is\_const<U>::value,\ \textcolor{keyword}{const}\ node\_t,\ node\_t>::type;}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keyword}{using}\ iterator\_category\ =\ std::bidirectional\_iterator\_tag;}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ \ =\ U;}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keyword}{using}\ difference\_type\ \ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ \ =\ U*;}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ \ =\ U\&;}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keyword}{explicit}\ iterator\_impl(elem\_t*\ node\_\ =\ \textcolor{keywordtype}{nullptr})\ :\ node(node\_)\ \{\}}
+\DoxyCodeLine{00162\ \ \ \ \ iterator\_impl<U>\&\ operator++()}
+\DoxyCodeLine{00163\ \ \ \ \ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ node\ =\ node-\/>next\_node;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00166\ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ iterator\_impl<U>\&\ operator-\/-\/()}
+\DoxyCodeLine{00168\ \ \ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ node\ =\ node-\/>prev\_node;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00171\ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ pointer\ \ \ operator-\/>()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<pointer>(node);\ \}}
+\DoxyCodeLine{00173\ \ \ \ \ reference\ operator*()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<reference>(*node);\ \}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ iterator\_impl<U>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ ==\ other.node;\ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ iterator\_impl<U>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ !=\ other.node;\ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00179\ \ \ \ \ elem\_t*\ node;}
+\DoxyCodeLine{00180\ \ \ \};}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00183\ \ \ \textcolor{keyword}{using}\ iterator\ \ \ \ \ \ \ =\ iterator\_impl<T>;}
+\DoxyCodeLine{00184\ \ \ \textcolor{keyword}{using}\ const\_iterator\ =\ iterator\_impl<\textcolor{keyword}{const}\ T>;}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ intrusive\_double\_linked\_list()}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keyword}{static\_assert}(std::is\_base\_of<node\_t,\ T>::value,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Provided\ template\ argument\ T\ must\ have\ intrusive\_forward\_list\_element<Tag>\ as\ base\ class"{}});}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ \ \ intrusive\_double\_linked\_list(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00192\ \ \ intrusive\_double\_linked\_list(\mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&\&\ other)\ \textcolor{keyword}{noexcept}\ :\ node(other.node)}
+\DoxyCodeLine{00193\ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ other.node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00197\ \ \ \mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1intrusive__double__linked__list}{intrusive\_double\_linked\_list}}\&\&\ other)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00198\ \ \ \{}
+\DoxyCodeLine{00199\ \ \ \ \ node\ \ \ \ \ \ \ =\ other.node;}
+\DoxyCodeLine{00200\ \ \ \ \ other.node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00202\ \ \ \}}
+\DoxyCodeLine{00203\ \ \ \string~intrusive\_double\_linked\_list()\ \{\ clear();\ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ T\&\ front()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{static\_cast}<T*>(node);\ \}}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \textcolor{keywordtype}{void}\ push\_front(T*\ t)}
+\DoxyCodeLine{00208\ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ node\_t*\ new\_head\ \ \ \ =\ \textcolor{keyword}{static\_cast}<node\_t*>(t);}
+\DoxyCodeLine{00210\ \ \ \ \ new\_head-\/>prev\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00211\ \ \ \ \ new\_head-\/>next\_node\ =\ node;}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordflow}{if}\ (node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ node-\/>prev\_node\ =\ new\_head;}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ node\ =\ new\_head;}
+\DoxyCodeLine{00216\ \ \ \}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \textcolor{keywordtype}{void}\ pop(T*\ t)}
+\DoxyCodeLine{00219\ \ \ \{}
+\DoxyCodeLine{00220\ \ \ \ \ node\_t*\ to\_rem\ =\ \textcolor{keyword}{static\_cast}<node\_t*>(t);}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keywordflow}{if}\ (to\_rem\ ==\ node)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ node\ =\ to\_rem-\/>next\_node;}
+\DoxyCodeLine{00223\ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordflow}{if}\ (to\_rem-\/>prev\_node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ to\_rem-\/>prev\_node-\/>next\_node\ =\ to\_rem-\/>next\_node;}
+\DoxyCodeLine{00226\ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{if}\ (to\_rem-\/>next\_node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ to\_rem-\/>next\_node-\/>prev\_node\ =\ to\_rem-\/>prev\_node;}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ to\_rem-\/>next\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00231\ \ \ \ \ to\_rem-\/>prev\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00232\ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordtype}{void}\ pop\_front()\ \{\ pop(\textcolor{keyword}{static\_cast}<T*>(node));\ \}}
+\DoxyCodeLine{00234\ \ \ \textcolor{keywordtype}{void}\ clear()}
+\DoxyCodeLine{00235\ \ \ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{while}\ (node\ !=\ \textcolor{keywordtype}{nullptr})\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ node\_t*\ torem\ \ \ \ =\ node;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ node\ \ \ \ \ \ \ \ \ \ \ \ \ =\ node-\/>next\_node;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ torem-\/>next\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ torem-\/>prev\_node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00241\ \ \ \ \ \}}
+\DoxyCodeLine{00242\ \ \ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ node\ ==\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \ \ iterator\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ iterator(node);\ \}}
+\DoxyCodeLine{00247\ \ \ iterator\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ iterator(\textcolor{keywordtype}{nullptr});\ \}}
+\DoxyCodeLine{00248\ \ \ const\_iterator\ begin()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(node);\ \}}
+\DoxyCodeLine{00249\ \ \ const\_iterator\ end()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ const\_iterator(\textcolor{keywordtype}{nullptr});\ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00252\ \ \ node\_t*\ node\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00253\ \};}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

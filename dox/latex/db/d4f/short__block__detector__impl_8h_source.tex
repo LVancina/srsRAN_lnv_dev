@@ -1,0 +1,71 @@
+\doxysection{short\+\_\+block\+\_\+detector\+\_\+impl.\+h}
+\hypertarget{short__block__detector__impl_8h_source}{}\label{short__block__detector__impl_8h_source}\index{lib/phy/upper/channel\_coding/short/short\_block\_detector\_impl.h@{lib/phy/upper/channel\_coding/short/short\_block\_detector\_impl.h}}
+\mbox{\hyperlink{short__block__detector__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ Short-\/block\ detector\ implementation.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/short/short\_block\_detector.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Maximum\ length\ of\ a\ codeword.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_BLOCK\_LENGTH\ =\ 32;}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ Maximum\ length\ of\ a\ message.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_MSG\_LENGTH\ =\ 11;}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Half\ of\ the\ maximum\ codebook\ size.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_CODEWORDS\_2\ =\ 1U\ <<\ (MAX\_MSG\_LENGTH\ -\/\ 1);}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ \(\backslash\)brief\ Generic\ implementation\ of\ the\ short-\/block\ detector.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///}}
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ Implements\ a\ brute-\/force,\ maximum-\/likelihood\ detector\ for\ short-\/block\ codes\ (up\ to\ 11\ information\ bits).}}
+\DoxyCodeLine{00042\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1short__block__detector__impl}{short\_block\_detector\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1short__block__detector}{short\_block\_detector}}}
+\DoxyCodeLine{00043\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1short__block__detector__impl_a19623e946a11e01acf68e233517b5816}{detect}}(span<uint8\_t>\ output,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ input,\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ mod)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Brute\ force\ ML\ detection\ for\ messages\ of\ length\ 3-\/11\ bits.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ output\ The\ detected\ message.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ input\ \ The\ received\ codeword\ (represented\ as\ a\ sequence\ of\ 32\ LLRs).}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)returns\ The\ value\ of\ the\ GLRT\ detection\ metric.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ size\ of\ \(\backslash\)c\ output\ must\ match\ the\ length\ of\ the\ expected\ message.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ detect\_3\_11(span<uint8\_t>\ output,\ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ input);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Look-\/up\ table\ of\ possible\ transmitted\ sequences\ of\ 32\ bits.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ Row\ \(\backslash\)f\$r\(\backslash\)f\$\ corresponds\ to\ the\ codeword\ obtained\ by\ encoding\ the\ binary\ expansion\ of\ \(\backslash\)f\$2r\(\backslash\)f\$\ as\ described\ in}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ TS\ 38.211\ Section\ 5.3.3.3.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ \(\backslash\)note\ The\ codeword\ corresponding\ to\ the\ binary\ expansion\ of\ \(\backslash\)f\$\ 2r\ +\ 1\ \(\backslash\)f\$\ can\ be\ obtained\ from\ the\ codeword\ with}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ index\ \(\backslash\)f\$\ r\ \(\backslash\)f\$\ by\ inverting\ all\ the\ signs.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<std::array<int8\_t,\ MAX\_BLOCK\_LENGTH>,\ MAX\_NOF\_CODEWORDS\_2>\ DETECT\_TABLE;}
+\DoxyCodeLine{00063\ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

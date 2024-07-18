@@ -1,0 +1,142 @@
+\doxysection{ldpc\+\_\+segmenter\+\_\+impl.\+h}
+\hypertarget{ldpc__segmenter__impl_8h_source}{}\label{ldpc__segmenter__impl_8h_source}\index{lib/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_impl.h@{lib/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_impl.h}}
+\mbox{\hyperlink{ldpc__segmenter__impl_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ LDPC\ codeblock\ segmentation\ declaration.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ldpc__graph__impl_8h}{"{}ldpc\_graph\_impl.h"{}}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/crc\_calculator.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_rx.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/ldpc/ldpc\_segmenter\_tx.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)brief\ Generic\ implementation\ of\ LDPC\ segmentation.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ Implements\ both\ ldpc\_segmenter\_tx\ and\ ldpc\_segmenter\_rx.\ For\ this\ reason,\ the\ constructor\ has\ been\ hidden\ behind\ the}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ static\ wrapper\ methods\ create\_ldpc\_segmenter\_impl\_tx()\ and\ create\_ldpc\_segmenter\_impl\_rx().}}
+\DoxyCodeLine{00039\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl}{ldpc\_segmenter\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__tx}{ldpc\_segmenter\_tx}},\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__rx}{ldpc\_segmenter\_rx}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ CRC\ calculators\ used\ in\ shared\ channels.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc}{sch\_crc}}\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{///\ For\ short\ TB\ checksums.}}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a7a15c157c9a71ec8008fcf3b3e431963}{std}}::\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a7a15c157c9a71ec8008fcf3b3e431963}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a7a15c157c9a71ec8008fcf3b3e431963}{crc\_calculator}}>\ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a7a15c157c9a71ec8008fcf3b3e431963}{crc16}};}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ For\ long\ TB\ checksums.}}
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a1632766771b79d0742849b0ad070e099}{std}}::\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a1632766771b79d0742849b0ad070e099}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a1632766771b79d0742849b0ad070e099}{crc\_calculator}}>\ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_a1632766771b79d0742849b0ad070e099}{crc24A}};}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{///\ For\ segment-\/specific\ checksums.}}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_ade7d09be37cbbb89b97c3e9039795233}{std}}::\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_ade7d09be37cbbb89b97c3e9039795233}{unique\_ptr}}<\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_ade7d09be37cbbb89b97c3e9039795233}{crc\_calculator}}>\ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc_ade7d09be37cbbb89b97c3e9039795233}{crc24B}};}
+\DoxyCodeLine{00050\ \ \ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Wraps\ the\ constructor\ of\ the\ Tx\ version\ of\ the\ LDPC\ segmenter.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac9b94cc668575c6fb122b3d8d7b5a0ca}{std}}::\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac9b94cc668575c6fb122b3d8d7b5a0ca}{unique\_ptr}}<\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac9b94cc668575c6fb122b3d8d7b5a0ca}{ldpc\_segmenter\_tx}}>\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac9b94cc668575c6fb122b3d8d7b5a0ca}{create\_ldpc\_segmenter\_impl\_tx}}(\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac9b94cc668575c6fb122b3d8d7b5a0ca}{sch\_crc}}\&);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Wraps\ the\ constructor\ of\ the\ Rx\ version\ of\ the\ LDPC\ segmenter.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ The\ receive-\/chain\ version\ of\ the\ segmenter\ does\ not\ need\ CRC\ calculators.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ab902ba9d2a109cc9d7b56476e4363f8a}{std}}::\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ab902ba9d2a109cc9d7b56476e4363f8a}{unique\_ptr}}<\mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ab902ba9d2a109cc9d7b56476e4363f8a}{ldpc\_segmenter\_rx}}>\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ab902ba9d2a109cc9d7b56476e4363f8a}{create\_ldpc\_segmenter\_impl\_rx}}();}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{//\ Tx-\/chain\ segmentation.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_ac42240fce4bb7e502661967508115d76}{segment}}(static\_vector<described\_segment,\ MAX\_NOF\_SEGMENTS>\&\ described\_segments,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ transport\_block,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1segmenter__config}{segmenter\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ Rx-\/chain\ segmentation.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ldpc__segmenter__impl_a75d65c4074bcbe5c3931bfa3544154a9}{segment}}(static\_vector<described\_rx\_codeblock,\ MAX\_NOF\_SEGMENTS>\&\ described\_codeblocks,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ span<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1log__likelihood__ratio}{log\_likelihood\_ratio}}>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ codeword\_llrs,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tbs,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1segmenter__config}{segmenter\_config}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cfg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ Default\ constructor.}}
+\DoxyCodeLine{00074\ \ \ ldpc\_segmenter\_impl()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ an\ LDPC\ segmentation\ object\ that\ aggregates\ a\ crc\_calculator.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ c\ The\ CRC\ calculators\ to\ aggregate.\ The\ generation\ polynomials\ must\ math\ their\ respective\ types.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{explicit}\ ldpc\_segmenter\_impl(\mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc}{sch\_crc}}\ c)\ :\ crc\_set(\{std::move(c.crc16),\ std::move(c.crc24A),\ std::move(c.crc24B)\})\ \{\}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ Computes\ the\ length\ of\ the\ rate-\/matched\ codeblock\ corresponding\ to\ each\ segment,\ as\ per\ TS38.212}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ Section\ 5.4.2.1.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{unsigned}\ compute\_rm\_length(\textcolor{keywordtype}{unsigned}\ i\_seg,\ \mbox{\hyperlink{namespacesrsran_a7d1f3285d6ba6d2621f9d919681802df}{modulation\_scheme}}\ mod,\ \textcolor{keywordtype}{unsigned}\ nof\_layers)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ Internally\ computed\ segment\ metadata.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{struct}\ segment\_internal\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{///\ Segment\ index.}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ i\_segment;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{///\ Total\ codeword\ length.}}
+\DoxyCodeLine{00090\ \ \ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ cw\_length;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{///\ Codeblock\ starting\ index\ within\ the\ codeword.}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ cw\_offset;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ filler\ bits.}}
+\DoxyCodeLine{00094\ \ \ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_filler\_bits;}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ segment-\/specific\ CRC\ bits.}}
+\DoxyCodeLine{00096\ \ \ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_crc\_bits;}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ TB-\/specific\ CRC\ bits.}}
+\DoxyCodeLine{00098\ \ \ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_tb\_crc\_bits;}
+\DoxyCodeLine{00099\ \ \ \};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Generates\ a\ codeblock\ metadata\ structure\ for\ the\ current\ segment\ configuration.}}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{structsrsran_1_1codeblock__metadata}{codeblock\_metadata}}\ generate\_cb\_metadata(\textcolor{keyword}{const}\ segment\_internal\&\ seg\_extra,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1segmenter__config}{segmenter\_config}}\&\ cfg)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Base\ graph\ used\ for\ encoding/decoding\ the\ current\ transport\ block.}}
+\DoxyCodeLine{00105\ \ \ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ base\_graph\ =\ \mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}::BG1;}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ Lifting\ size\ used\ for\ encoding/decoding\ the\ current\ transport\ block.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{unsigned}\ lifting\_size\ =\ 0;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Attributes\ relative\ to\ TS38.212\ Section\ 5.2.2.}}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Final\ length\ of\ a\ segment\ (corresponds\ to\ \(\backslash\)f\$K\(\backslash\)f\$).}}
+\DoxyCodeLine{00113\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ segment\_length\{0\};}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ Number\ of\ bits\ in\ the\ transport\ block\ (corresponds\ to\ \(\backslash\)f\$B\(\backslash\)f\$).}}
+\DoxyCodeLine{00115\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_tb\_bits\_in\{0\};}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ Augmented\ number\ of\ bits\ in\ the\ transport\ block,\ including\ new\ CRCs\ (corresponds\ to\ \(\backslash\)f\$B'\(\backslash\)f\$).}}
+\DoxyCodeLine{00117\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ nof\_tb\_bits\_out\{0\};}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ Number\ of\ segments\ resulting\ from\ the\ transport\ block\ (corresponds\ to\ \(\backslash\)f\$C\(\backslash\)f\$).}}
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_segments\ =\ 0;}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ \(\backslash\)name\ Attributes\ relative\ to\ TS38.212\ Section\ 5.4.2.1.}}
+\DoxyCodeLine{00123\ \ \ \textcolor{comment}{///@\{}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///\ Number\ of\ symbols\ per\ transmission\ layer\ (corresponds\ to\ \(\backslash\)f\$G\ /\ (N\_L\ Q\_m)\(\backslash\)f\$).}}
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\_per\_layer\ =\ 0;}
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Number\ of\ segments\ of\ short\ rate-\/matched\ length\ (corresponds\ to\ \(\backslash\)f\$C\ -\/\ \(\backslash\)bigr(\(\backslash\)bigl(G\ /\ (N\_L\ Q\_m)\(\backslash\)bigr)}}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ \(\backslash\)bmod\ C\(\backslash\)bigr)\(\backslash\)f\$).}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_short\_segments\ =\ 0;}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///@\}}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ CRC\ calculators\ for\ transport-\/block\ and\ segment-\/specific\ checksums.}}
+\DoxyCodeLine{00133\ \ \ \mbox{\hyperlink{structsrsran_1_1ldpc__segmenter__impl_1_1sch__crc}{sch\_crc}}\ crc\_set;}
+\DoxyCodeLine{00134\ \};}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

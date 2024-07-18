@@ -1,0 +1,241 @@
+\doxysection{memory\+\_\+block\+\_\+list.\+h}
+\hypertarget{memory__block__list_8h_source}{}\label{memory__block__list_8h_source}\index{include/srsran/support/memory\_pool/memory\_block\_list.h@{include/srsran/support/memory\_pool/memory\_block\_list.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}memory\_pool\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{intrusive\_memory\_block\_list}}}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ next;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}(\mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ prev\_)\ :\ next(prev\_)\ \{\}}
+\DoxyCodeLine{00041\ \ \ \};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ \ \ \ \ \ \ head\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ \ \ \ \ \ \ tail\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00045\ \ \ std::size\_t\ count\ =\ 0;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ std::size\_t\ min\_memory\_block\_size()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}});\ \}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{static}\ std::size\_t\ min\_memory\_block\_align()\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{alignof}(node);\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_ab60deb7257aa01d7116f261a113835bc}{push}}(\textcolor{keywordtype}{void}*\ block)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{namespacesrsran_a158f8090b2ed6f00229c381d63aec335}{is\_aligned}}(block,\ min\_memory\_block\_align()),\ \textcolor{stringliteral}{"{}The\ provided\ memory\ block\ is\ not\ aligned"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ ptr\ =\ ::new\ (block)\ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}(head);}
+\DoxyCodeLine{00055\ \ \ \ \ head\ \ \ \ \ \ =\ ptr;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{if}\ (tail\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ tail\ =\ ptr;}
+\DoxyCodeLine{00058\ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ count++;}
+\DoxyCodeLine{00060\ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{void}*\ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_a791d152e680ebcb4671021c6e9e99339}{pop}}()\ noexcept}
+\DoxyCodeLine{00064\ \ \ \{}
+\DoxyCodeLine{00065\ \ \ \ \ srsran\_assert(not\ empty(),\ \textcolor{stringliteral}{"{}pop()\ called\ on\ empty\ list"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ last\_head\ =\ head;}
+\DoxyCodeLine{00067\ \ \ \ \ head\ \ \ \ \ \ \ \ \ \ \ \ =\ head-\/>next;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (head\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ tail\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ last\_head-\/>\string~node();}
+\DoxyCodeLine{00072\ \ \ \ \ count-\/-\/;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{void}*\textcolor{keyword}{>}(last\_head);}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}*\ try\_pop()\ noexcept\ \{\ \textcolor{keywordflow}{return}\ empty()\ ?\ nullptr\ :\ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_a791d152e680ebcb4671021c6e9e99339}{pop}}();\ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_a2fb14b0caa2f8acc824a152e13859983}{steal\_top}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{intrusive\_memory\_block\_list}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00080\ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ srsran\_assert(not\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.empty(),\ \textcolor{stringliteral}{"{}Trying\ to\ steal\ from\ empty\ memory\_block\ list"{}});}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1intrusive__memory__block__list_1_1node}{node}}*\ other\_head\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.head;}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.head\ \ \ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.head-\/>next;}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.head\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.tail\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ other\_head-\/>next\ =\ head;}
+\DoxyCodeLine{00088\ \ \ \ \ head\ \ \ \ \ \ \ \ \ \ \ \ \ =\ other\_head;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{if}\ (tail\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ head\ =\ tail;}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.count-\/-\/;}
+\DoxyCodeLine{00093\ \ \ \ \ count++;}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{intrusive\_memory\_block\_list}}\ try\_pop\_batch(\textcolor{keywordtype}{unsigned}\ n)}
+\DoxyCodeLine{00097\ \ \ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{intrusive\_memory\_block\_list}}\ new\_list\{\};}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{if}\ (n\ >=\ size())\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ new\_list.head\ \ =\ std::exchange(head,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ new\_list.tail\ \ =\ std::exchange(tail,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ new\_list.count\ =\ std::exchange(count,\ 0);}
+\DoxyCodeLine{00103\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (n\ >\ 0)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ node*\ prev\ =\ head;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ n\ -\/\ 1;\ ++i)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ prev\ =\ prev-\/>next;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ new\_list.head\ \ =\ head;}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ new\_list.tail\ \ =\ prev;}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ new\_list.count\ =\ n;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ head\ \ \ \ \ \ \ \ \ \ \ =\ std::exchange(prev-\/>next,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ count\ -\/=\ n;}
+\DoxyCodeLine{00113\ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{return}\ new\_list;}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{void}\ steal\_blocks(intrusive\_memory\_block\_list\&\ list)}
+\DoxyCodeLine{00118\ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{if}\ (list.empty())\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00121\ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordflow}{if}\ (empty())\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ head\ =\ std::exchange(list.head,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00124\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ tail-\/>next\ =\ std::exchange(list.head,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ tail\ =\ std::exchange(list.tail,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00128\ \ \ \ \ count\ +=\ std::exchange(list.count,\ 0);}
+\DoxyCodeLine{00129\ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{bool}\ empty()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ head\ ==\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ std::size\_t\ size()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ count;\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{keywordtype}{void}\ clear()\ noexcept}
+\DoxyCodeLine{00136\ \ \ \{}
+\DoxyCodeLine{00137\ \ \ \ \ head\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00138\ \ \ \ \ tail\ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00139\ \ \ \ \ count\ =\ 0;}
+\DoxyCodeLine{00140\ \ \ \}}
+\DoxyCodeLine{00141\ \};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00147\ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{free\_memory\_block\_list}}\ =\ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{detail::intrusive\_memory\_block\_list}};}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00150\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}}
+\DoxyCodeLine{00151\ \{}
+\DoxyCodeLine{00152\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00153\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00154\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00155\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}(\mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00156\ \ \ \{}
+\DoxyCodeLine{00157\ \ \ \ \ std::unique\_lock<std::mutex>\ lk1(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.mutex,\ std::defer\_lock);}
+\DoxyCodeLine{00158\ \ \ \ \ std::unique\_lock<std::mutex>\ lk2(mutex,\ std::defer\_lock);}
+\DoxyCodeLine{00159\ \ \ \ \ std::lock(lk1,\ lk2);}
+\DoxyCodeLine{00160\ \ \ \ \ stack\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.stack;}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00163\ \ \ \mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1concurrent__free__memory__block__list}{concurrent\_free\_memory\_block\_list}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00164\ \ \ \{}
+\DoxyCodeLine{00165\ \ \ \ \ std::unique\_lock<std::mutex>\ lk1(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.mutex,\ std::defer\_lock);}
+\DoxyCodeLine{00166\ \ \ \ \ std::unique\_lock<std::mutex>\ lk2(mutex,\ std::defer\_lock);}
+\DoxyCodeLine{00167\ \ \ \ \ std::lock(lk1,\ lk2);}
+\DoxyCodeLine{00168\ \ \ \ \ stack\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.stack;}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00170\ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \textcolor{keywordtype}{void}\ push(\textcolor{keywordtype}{void}*\ block)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00173\ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00175\ \ \ \ \ stack.\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_ab60deb7257aa01d7116f261a113835bc}{push}}(block);}
+\DoxyCodeLine{00176\ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordtype}{void}\ steal\_blocks(\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{free\_memory\_block\_list}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00179\ \ \ \{}
+\DoxyCodeLine{00180\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00181\ \ \ \ \ stack.steal\_blocks(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});}
+\DoxyCodeLine{00182\ \ \ \}}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordtype}{void}\ steal\_blocks(\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{free\_memory\_block\_list}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}},\ \textcolor{keywordtype}{size\_t}\ max\_n)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00185\ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordflow}{if}\ (max\_n\ >=\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.size())\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ steal\_blocks(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00189\ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ max\_n;\ ++i)\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ stack.\mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list_ab60deb7257aa01d7116f261a113835bc}{push}}(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.try\_pop());}
+\DoxyCodeLine{00193\ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{keywordtype}{void}*\ try\_pop()\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00197\ \ \ \{}
+\DoxyCodeLine{00198\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordtype}{void}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ block\ =\ stack.try\_pop();}
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordflow}{return}\ block;}
+\DoxyCodeLine{00201\ \ \ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{free\_memory\_block\_list}}\ try\_pop\_list(\textcolor{keywordtype}{unsigned}\ n)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00204\ \ \ \{}
+\DoxyCodeLine{00205\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{return}\ stack.try\_pop\_batch(n);}
+\DoxyCodeLine{00207\ \ \ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{size\_t}\ N>}
+\DoxyCodeLine{00210\ \ \ \textcolor{keywordtype}{size\_t}\ try\_pop(std::array<void*,\ N>\&\ result)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00211\ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\ =\ 0;}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{for}\ (;\ i\ <\ N;\ ++i)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ result[i]\ =\ stack.try\_pop();}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result[i]\ ==\ \textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keywordflow}{return}\ i;}
+\DoxyCodeLine{00221\ \ \ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \textcolor{keywordtype}{bool}\ empty()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ stack.empty();\ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \textcolor{keywordtype}{size\_t}\ size()\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00226\ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordflow}{return}\ stack.size();}
+\DoxyCodeLine{00229\ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \textcolor{keywordtype}{void}\ clear()}
+\DoxyCodeLine{00232\ \ \ \{}
+\DoxyCodeLine{00233\ \ \ \ \ std::lock\_guard<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00234\ \ \ \ \ stack.clear();}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00238\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1intrusive__memory__block__list}{free\_memory\_block\_list}}\ stack;}
+\DoxyCodeLine{00239\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \ \ \ \ mutex;}
+\DoxyCodeLine{00240\ \};}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

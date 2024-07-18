@@ -1,0 +1,251 @@
+\doxysection{du\+\_\+high\+\_\+executor\+\_\+strategies.\+h}
+\hypertarget{du__high__executor__strategies_8h_source}{}\label{du__high__executor__strategies_8h_source}\index{lib/du\_high/du\_high\_executor\_strategies.h@{lib/du\_high/du\_high\_executor\_strategies.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/du\_high/du\_high\_executor\_mapper.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{///\ L2\ UL\ executor\ mapper\ that\ maps\ UEs\ based\ on\ their\ RNTI.}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ index\_based\_ue\_executor\_mapper\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ index\_based\_ue\_executor\_mapper(\textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ ctrl\_execs,}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ ul\_execs\ =\ \{\},}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ dl\_execs\ =\ \{\})\ :}
+\DoxyCodeLine{00037\ \ \ \ \ execs(ctrl\_execs.size())}
+\DoxyCodeLine{00038\ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ctrl\_execs.size()\ >\ 0,\ \textcolor{stringliteral}{"{}At\ least\ one\ control\ executor\ must\ be\ specified"{}});}
+\DoxyCodeLine{00040\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ul\_execs.size()\ ==\ 0\ \textcolor{keyword}{or}\ ul\_execs.size()\ ==\ ctrl\_execs.size(),}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}If\ specified,\ the\ number\ of\ UE\ UL\ executors\ must\ be\ equal\ to\ the\ number\ of\ control\ executors"{}});}
+\DoxyCodeLine{00042\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dl\_execs.size()\ ==\ 0\ \textcolor{keyword}{or}\ dl\_execs.size()\ ==\ ctrl\_execs.size(),}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}If\ specified,\ the\ number\ of\ UE\ DL\ executors\ must\ be\ equal\ to\ the\ number\ of\ control\ executors"{}});}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ ctrl\_execs.size();\ ++i)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ execs[i].ctrl\_exec\ =\ ctrl\_execs[i];}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ UL\ executors\ not\ specified,\ we\ use\ the\ control\ executor.}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ execs[i].ul\_exec\ =\ ul\_execs.empty()\ ?\ ctrl\_execs[i]\ :\ ul\_execs[i];}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ DL\ executors\ not\ specified,\ we\ use\ the\ DL\ executor\ (that\ might\ be\ the\ control\ executor\ if\ the\ DL\ executor}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{comment}{//\ was\ not\ specified).}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ execs[i].dl\_exec\ =\ dl\_execs.empty()\ ?\ execs[i].ul\_exec\ :\ dl\_execs[i];}
+\DoxyCodeLine{00052\ \ \ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1index__based__ue__executor__mapper_ac2f7d8c2a7ae0d227ce7f13135410133}{rebind\_executors}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ pcell\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00056\ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00058\ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1index__based__ue__executor__mapper_ae5fb7702aadbb20155c11eed7813a16e}{ctrl\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00061\ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ ue\_index\ =\ ue\_index\ <\ MAX\_NOF\_DU\_UES\ ?\ ue\_index\ :\ to\_du\_ue\_index(0);}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_index\ \%\ execs.size()].ctrl\_exec;}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1index__based__ue__executor__mapper_a8b7eb6311f131e18fafd836701be0954}{f1u\_dl\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ ue\_index\ =\ ue\_index\ <\ MAX\_NOF\_DU\_UES\ ?\ ue\_index\ :\ to\_du\_ue\_index(0);}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_index\ \%\ execs.size()].dl\_exec;}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1index__based__ue__executor__mapper_aa6606fb5ccfad2238fb0162b680599f7}{mac\_ul\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00073\ \ \ \{}
+\DoxyCodeLine{00074\ \ \ \ \ ue\_index\ =\ ue\_index\ <\ MAX\_NOF\_DU\_UES\ ?\ ue\_index\ :\ to\_du\_ue\_index(0);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_index\ \%\ execs.size()].ul\_exec;}
+\DoxyCodeLine{00076\ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{struct}\ ue\_executors\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ ctrl\_exec;}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ ul\_exec;}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ dl\_exec;}
+\DoxyCodeLine{00083\ \ \ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ std::vector<ue\_executors>\ execs;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{comment}{///\ L2\ UL\ executor\ mapper\ that\ maps\ UEs\ based\ on\ their\ PCell.}}
+\DoxyCodeLine{00089\ \textcolor{keyword}{class}\ pcell\_ue\_executor\_mapper\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}}
+\DoxyCodeLine{00090\ \{}
+\DoxyCodeLine{00091\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{explicit}\ pcell\_ue\_executor\_mapper(\textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ ctrl\_execs,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ ul\_execs\ =\ \{\},}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<task\_executor*>\&\ dl\_execs\ =\ \{\})\ :}
+\DoxyCodeLine{00095\ \ \ \ \ execs(ctrl\_execs.size())}
+\DoxyCodeLine{00096\ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ ctrl\_execs.empty(),\ \textcolor{stringliteral}{"{}At\ least\ one\ control\ executor\ must\ be\ specified"{}});}
+\DoxyCodeLine{00098\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ul\_execs.empty()\ \textcolor{keyword}{or}\ ul\_execs.size()\ ==\ ctrl\_execs.size(),}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}If\ specified,\ the\ number\ of\ UE\ UL\ executors\ must\ be\ equal\ to\ the\ number\ of\ control\ executors"{}});}
+\DoxyCodeLine{00100\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dl\_execs.empty()\ \textcolor{keyword}{or}\ dl\_execs.size()\ ==\ ctrl\_execs.size(),}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}If\ specified,\ the\ number\ of\ UE\ DL\ executors\ must\ be\ equal\ to\ the\ number\ of\ control\ executors"{}});}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ ctrl\_execs.size();\ ++i)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ execs[i].ctrl\_exec\ =\ ctrl\_execs[i];}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ UL\ executors\ not\ specified,\ we\ use\ the\ control\ executor.}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ execs[i].ul\_exec\ =\ ul\_execs.empty()\ ?\ ctrl\_execs[i]\ :\ ul\_execs[i];}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{comment}{//\ If\ DL\ executors\ not\ specified,\ we\ use\ the\ DL\ executor\ (that\ might\ be\ the\ control\ executor\ if\ the\ DL\ executor}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \textcolor{comment}{//\ was\ not\ specified).}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ execs[i].dl\_exec\ =\ dl\_execs.empty()\ ?\ execs[i].ul\_exec\ :\ dl\_execs[i];}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ Initialize\ executors\ in\ a\ round-\/robin\ fashion.}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0;\ i\ !=\ MAX\_NOF\_DU\_UES;\ ++i)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ ue\_idx\_to\_exec\_index[i]\ =\ i\ \%\ execs.size();}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pcell__ue__executor__mapper_a997364669c5506d27c2d1fbca738b3ee}{rebind\_executors}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ pcell\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(is\_du\_ue\_index\_valid(ue\_index),\ \textcolor{stringliteral}{"{}Invalid\ ue\ id=\{\}"{}},\ ue\_index);}
+\DoxyCodeLine{00121\ \ \ \ \ ue\_idx\_to\_exec\_index[ue\_index]\ =\ pcell\_index\ \%\ execs.size();}
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1pcell__ue__executor__mapper_ab41de64bb36efc79bad19feafb16b1bf}{ctrl\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00125\ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\ <\ MAX\_NOF\_DU\_UES)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_idx\_to\_exec\_index[ue\_index]].ctrl\_exec;}
+\DoxyCodeLine{00128\ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[0].ctrl\_exec;}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1pcell__ue__executor__mapper_a356425c7cde88a4f845d17582790e68f}{f1u\_dl\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00133\ \ \ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\ <\ MAX\_NOF\_DU\_UES)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_idx\_to\_exec\_index[ue\_index]].dl\_exec;}
+\DoxyCodeLine{00136\ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[0].dl\_exec;}
+\DoxyCodeLine{00138\ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1pcell__ue__executor__mapper_a8d86dcd3862b942365ec4929ee6f8643}{mac\_ul\_pdu\_executor}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00141\ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordflow}{if}\ (ue\_index\ <\ MAX\_NOF\_DU\_UES)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[ue\_idx\_to\_exec\_index[ue\_index]].ul\_exec;}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{return}\ *execs[0].ul\_exec;}
+\DoxyCodeLine{00146\ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00149\ \ \ \textcolor{keyword}{struct}\ ue\_executors\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ ctrl\_exec;}
+\DoxyCodeLine{00151\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ ul\_exec;}
+\DoxyCodeLine{00152\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ dl\_exec;}
+\DoxyCodeLine{00153\ \ \ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ std::vector<ue\_executors>\ execs;}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ Map\ of\ ue\ indexes\ to\ executors.\ The\ last\ position\ is\ used\ when\ the\ UE\ has\ no\ ue\_index\ yet\ assigned.}}
+\DoxyCodeLine{00158\ \ \ std::array<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_DU\_UES>\ ue\_idx\_to\_exec\_index;}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{comment}{///\ \(\backslash\)brief\ Mapper\ of\ task\ executors\ used\ by\ the\ MAC\ DL,\ RLC\ DL\ and\ MAC\ scheduler\ for\ low-\/latency\ tasks.\ The\ task}}
+\DoxyCodeLine{00162\ \textcolor{comment}{///\ executors\ can\ be\ mapped\ based\ on\ cell\ index\ or\ type\ of\ task\ (slot\ indication\ vs\ others).}}
+\DoxyCodeLine{00163\ \textcolor{keyword}{class}\ cell\_executor\_mapper\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__cell__executor__mapper}{du\_high\_cell\_executor\_mapper}}}
+\DoxyCodeLine{00164\ \{}
+\DoxyCodeLine{00165\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ cell\_executor\_mapper\ instance.}}
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ cell\_execs\_\ List\ of\ task\ executors\ that\ will\ be\ used\ by\ the\ MAC\ DL\ and\ scheduler.}}
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ blocking\_slot\_ind\ sets\ whether\ slot\ indication\ tasks\ are\ processed\ synchronously\ or\ asynchronously}}
+\DoxyCodeLine{00169\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_executor\_mapper}}(\textcolor{keyword}{const}\ std::initializer\_list<\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*>\&\ cell\_execs\_,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::initializer\_list<\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*>\&\ slot\_execs\_\ \ \ \ =\ \{\},}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::initializer\_list<\mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*>\&\ err\_ind\_execs\_\ =\ \{\})\ :}
+\DoxyCodeLine{00172\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_execs}}(\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{begin}}(),\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{end}}()),}
+\DoxyCodeLine{00173\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{slot\_execs}}(\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{slot\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{begin}}(),\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{slot\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{end}}()),}
+\DoxyCodeLine{00174\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{err\_ind\_execs}}(\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{begin}}(),\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{cell\_execs\_}}.\mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_af27cc0e4674fa6f1a5c9c7f49b832936}{end}}())}
+\DoxyCodeLine{00175\ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ cell\_execs.empty(),\ \textcolor{stringliteral}{"{}The\ number\ of\ DL\ executors\ must\ be\ higher\ than\ 1"{}});}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{if}\ (slot\_execs.empty())\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ slot\_execs\ =\ cell\_execs;}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{if}\ (err\_ind\_execs.empty())\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ err\_ind\_execs\ =\ cell\_execs;}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ \ \ \}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_a99fbab0ba7a1aefb72ab22b0ee36b3c1}{executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *cell\_execs[cell\_index\ \%\ cell\_execs.size()];\ \}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_a1c11ca2b4bb0d73e0517ead41ecd963b}{slot\_ind\_executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00188\ \ \ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{return}\ *slot\_execs[cell\_index\ \%\ slot\_execs.size()];}
+\DoxyCodeLine{00190\ \ \ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1cell__executor__mapper_ada5a49aa2d83e7bc237aee502e4999b7}{error\_ind\_executor}}(\mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index)\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00193\ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{return}\ *err\_ind\_execs[cell\_index\ \%\ err\_ind\_execs.size()];}
+\DoxyCodeLine{00195\ \ \ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{///\ Executors\ used\ to\ process\ tasks\ related\ to\ the\ MAC\ DL\ and\ scheduler\ other\ than\ the\ slot\ indications.}}
+\DoxyCodeLine{00199\ \ \ std::vector<task\_executor*>\ cell\_execs;}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Executors\ used\ to\ process\ slot\ indication\ tasks.\ These\ executors\ can\ be\ either\ the\ same\ as\ the}}
+\DoxyCodeLine{00202\ \ \ \textcolor{comment}{///\ \(\backslash\)c\ cell\_execs\ or\ point\ to\ a\ sync\_task\_executor\ adapter\ stored\ in\ \(\backslash\)c\ blocking\_slot\_execs,\ depending\ on\ whether}}
+\DoxyCodeLine{00203\ \ \ \textcolor{comment}{///\ slot\ indication\ tasks\ are\ processed\ synchronously\ or\ asynchronously.}}
+\DoxyCodeLine{00204\ \ \ std::vector<task\_executor*>\ slot\_execs;}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Executors\ to\ handle\ error\ indications\ triggered\ from\ the\ FAPI.}}
+\DoxyCodeLine{00207\ \ \ std::vector<task\_executor*>\ err\_ind\_execs;}
+\DoxyCodeLine{00208\ \};}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \textcolor{comment}{///\ \(\backslash\)brief\ Task\ Executor\ Mapper\ for\ DU-\/high.}}
+\DoxyCodeLine{00211\ \textcolor{keyword}{class}\ du\_high\_executor\_mapper\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper}{du\_high\_executor\_mapper}}}
+\DoxyCodeLine{00212\ \{}
+\DoxyCodeLine{00213\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00214\ \ \ \textcolor{keyword}{explicit}\ du\_high\_executor\_mapper\_impl(std::unique\_ptr<du\_high\_cell\_executor\_mapper>\ cell\_mapper\_,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<du\_high\_ue\_executor\_mapper>\ \ \ ue\_mapper\_,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_ctrl\_exec\_,}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timer\_exec\_,}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_e2\_exec\_)\ :}
+\DoxyCodeLine{00219\ \ \ \ \ cell\_mapper\_ptr(std::move(cell\_mapper\_)),}
+\DoxyCodeLine{00220\ \ \ \ \ ue\_mapper\_ptr(std::move(ue\_mapper\_)),}
+\DoxyCodeLine{00221\ \ \ \ \ du\_ctrl\_exec(\&du\_ctrl\_exec\_),}
+\DoxyCodeLine{00222\ \ \ \ \ timer\_exec(\&timer\_exec\_),}
+\DoxyCodeLine{00223\ \ \ \ \ du\_e2\_exec(\&du\_e2\_exec\_)}
+\DoxyCodeLine{00224\ \ \ \{}
+\DoxyCodeLine{00225\ \ \ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \mbox{\hyperlink{classsrsran_1_1du__high__cell__executor__mapper}{du\_high\_cell\_executor\_mapper}}\&\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper__impl_aed927bd733e73e34bf6cdb28b379fdf5}{cell\_mapper}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *cell\_mapper\_ptr;\ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \mbox{\hyperlink{classsrsran_1_1du__high__ue__executor__mapper}{du\_high\_ue\_executor\_mapper}}\&\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper__impl_a7e31bd4eb9c0b9ac785aa1b19d5ed71d}{ue\_mapper}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *ue\_mapper\_ptr;\ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper__impl_ad351d89ed663bddce2eec766b1eb0d57}{du\_control\_executor}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *du\_ctrl\_exec;\ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper__impl_a29b17281c0f0edfe2854abb77574cb00}{du\_timer\_executor}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *timer\_exec;\ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \mbox{\hyperlink{classsrsran_1_1du__high__executor__mapper__impl_a1bc352e69f7c134ef11880d709bdd5f4}{du\_e2\_executor}}()\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ *du\_e2\_exec;\ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00238\ \ \ std::unique\_ptr<du\_high\_cell\_executor\_mapper>\ cell\_mapper\_ptr;}
+\DoxyCodeLine{00239\ \ \ std::unique\_ptr<du\_high\_ue\_executor\_mapper>\ \ \ ue\_mapper\_ptr;}
+\DoxyCodeLine{00240\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_ctrl\_exec;}
+\DoxyCodeLine{00241\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timer\_exec;}
+\DoxyCodeLine{00242\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_e2\_exec;}
+\DoxyCodeLine{00243\ \};}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,270 @@
+\doxysection{rlc\+\_\+retx\+\_\+queue.\+h}
+\hypertarget{rlc__retx__queue_8h_source}{}\label{rlc__retx__queue_8h_source}\index{lib/rlc/rlc\_retx\_queue.h@{lib/rlc/rlc\_retx\_queue.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__am__pdu_8h}{"{}rlc\_am\_pdu.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/ring\_buffer.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\ \{}
+\DoxyCodeLine{00034\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_ab235f9dedd9f926b587605b1835076f5}{sn}}\ \ \ \ \ =\ \mbox{\hyperlink{namespacesrsran_a7330c0b829cb3d3717bb70ab14ec3e3c}{INVALID\_RLC\_SN}};\ \textcolor{comment}{///<\ sequence\ number}}
+\DoxyCodeLine{00035\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{so}}\ \ \ \ \ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{///<\ offset\ to\ first\ byte\ of\ this\ ReTx\ within\ the\ associated\ SDU}}
+\DoxyCodeLine{00036\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{length}}\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{///<\ length\ of\ this\ ReTx}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Implements\ a\ check\ whether\ the\ range\ of\ this\ retransmission\ object\ includes\ the\ given\ segment\ range}}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ segment\_offset\ The\ segment\ offset\ to\ check}}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ segment\_length\ Length\ of\ the\ segment\ to\ check}}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ the\ segment\ offset\ is\ covered\ by\ the\ retransmission\ object.\ Otherwise\ false}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_abc916e0f83e502a6d559886675e331e9}{includes}}(uint32\_t\ segment\_offset,\ uint32\_t\ segment\_length)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00043\ \ \ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{return}\ (segment\_offset\ >=\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{so}})\ \&\&\ (segment\_offset\ +\ segment\_length\ <=\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{so}}\ +\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{length}});}
+\DoxyCodeLine{00045\ \ \ \}}
+\DoxyCodeLine{00046\ \};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue__state}{rlc\_retx\_queue\_state}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ uint32\_t\ retx\_bytes\ \ \ \ \ \ \ \ =\ 0;\ \textcolor{comment}{///<\ Total\ amount\ of\ queued\ PDU\ payload\ bytes\ across\ all\ queued\ ReTx}}
+\DoxyCodeLine{00051\ \ \ uint32\_t\ n\_retx\_so\_zero\ \ \ \ =\ 0;\ \textcolor{comment}{///<\ Number\ of\ queued\ ReTx\ with\ zero\ segment\ offset,\ i.e.\ need\ small\ PDU\ header}}
+\DoxyCodeLine{00052\ \ \ uint32\_t\ n\_retx\_so\_nonzero\ =\ 0;\ \textcolor{comment}{///<\ Number\ of\ queued\ ReTx\ with\ non-\/zero\ segment\ offset,\ i.e.\ need\ large\ PDU\ header}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ uint32\_t\ get\_retx\_bytes()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ retx\_bytes;\ \}}
+\DoxyCodeLine{00056\ \ \ uint32\_t\ get\_n\_retx\_so\_zero()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ n\_retx\_so\_zero;\ \}}
+\DoxyCodeLine{00057\ \ \ uint32\_t\ get\_n\_retx\_so\_nonzero()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ n\_retx\_so\_nonzero;\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ add(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\&\ elem)}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ retx\_bytes\ +=\ elem\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{length}};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (elem\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{so}}\ ==\ 0)\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ n\_retx\_so\_zero++;}
+\DoxyCodeLine{00064\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ n\_retx\_so\_nonzero++;}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ subtract(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\&\ elem)}
+\DoxyCodeLine{00070\ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{if}\ (retx\_bytes\ >=\ elem\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{length}})\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ retx\_bytes\ -\/=\ elem\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a5f3e3c8f518d0850fa1fb632c04562fb}{length}};}
+\DoxyCodeLine{00073\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ retx\_bytes\ =\ 0;}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{if}\ (elem\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx_a80ab73a1ffc00ff6c965b75673542d08}{so}}\ ==\ 0)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\_retx\_so\_zero\ >\ 0)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ n\_retx\_so\_zero-\/-\/;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n\_retx\_so\_nonzero\ >\ 0)\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ n\_retx\_so\_nonzero-\/-\/;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item}{rlc\_retx\_queue\_item}}\ \{}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_aef6897ab49b1b277c2dc5c2550854220}{invalid}}\ =\ \textcolor{keyword}{false};\ \textcolor{comment}{///<\ Marks\ element\ as\ virtually\ removed\ "{}zombie"{}\ which\ can\ be\ skipped\ on\ pop}}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\ \mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_ad2612784d868a218bcdac31eae50443e}{retx}}\ \ \ \ =\ \{\};\ \ \ \ \textcolor{comment}{///<\ The\ actual\ ReTx\ info}}
+\DoxyCodeLine{00091\ \};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue}{rlc\_retx\_queue}}}
+\DoxyCodeLine{00094\ \{}
+\DoxyCodeLine{00095\ \ \ ring\_buffer<rlc\_retx\_queue\_item>\ queue;}
+\DoxyCodeLine{00096\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue__state}{rlc\_retx\_queue\_state}}\ \ \ \ \ \ \ \ \ \ \ \ \ st;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00099\ \ \ rlc\_retx\_queue(size\_t\ capacity)\ :\ queue(capacity)\ \{\}}
+\DoxyCodeLine{00100\ \ \ \string~rlc\_retx\_queue()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Tries\ to\ push\ a\ ReTx\ to\ the\ queue.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ retx\ The\ ReTx\ to\ be\ added.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ the\ ReTx\ was\ added\ successfully;\ False\ if\ the\ queue\ was\ full.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a7741fbc6f94d04570bb6e1f5c2bfd736}{try\_push}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\&\ retx)}
+\DoxyCodeLine{00106\ \ \ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item}{rlc\_retx\_queue\_item}}\ elem\ =\ \{\};}
+\DoxyCodeLine{00108\ \ \ \ \ elem\mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_ad2612784d868a218bcdac31eae50443e}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_ad2612784d868a218bcdac31eae50443e}{retx}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ retx;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{bool}\ success\ \ \ \ \ \ \ \ \ \ \ \ \ =\ queue.try\_push(elem);}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{if}\ (success)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ st.add(retx);}
+\DoxyCodeLine{00112\ \ \ \ \ \}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{return}\ success;}
+\DoxyCodeLine{00114\ \ \ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Removes\ the\ first\ element\ from\ the\ front\ together\ with\ any\ following\ invalid\ elements\ such\ that\ front\ is}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ either\ a\ valid\ element\ or\ the\ queue\ is\ empty.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_acdbf994801b211ef036133cdfffc537e}{pop}}()}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{not}\ queue.empty())\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ st.subtract(queue.top().retx);}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ queue.pop();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{clean\_invalid\_front}}\mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{(}}\mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{)}};}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Access\ the\ first\ valid\ element\ of\ the\ queue\ unless\ the\ queue\ is\ empty.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ First\ valid\ element\ in\ the\ queue}}
+\DoxyCodeLine{00129\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\&\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a26dc77688e90caf1aa10ef6da4164298}{front}}()\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00130\ \ \ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ queue.empty(),\ \textcolor{stringliteral}{"{}Cannot\ return\ front\ element\ of\ empty\ queue."{}});}
+\DoxyCodeLine{00132\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ queue.top().invalid,\ \textcolor{stringliteral}{"{}Cannot\ return\ front\ element.\ The\ front\ is\ invalid."{}});}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordflow}{return}\ queue.top().retx;}
+\DoxyCodeLine{00134\ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Replaces\ the\ first\ valid\ element\ of\ the\ queue.}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ retx\ The\ ReTx\ to\ be\ written.}}
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a96503d2319022f117b851c7a130de56b}{replace\_front}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__tx__amd__retx}{rlc\_tx\_amd\_retx}}\&\ retx)}
+\DoxyCodeLine{00139\ \ \ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ queue.empty(),\ \textcolor{stringliteral}{"{}Cannot\ replace\ front\ element\ of\ empty\ queue."{}});}
+\DoxyCodeLine{00141\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(\textcolor{keyword}{not}\ queue.top().invalid,\ \textcolor{stringliteral}{"{}Cannot\ replace\ front\ element.\ The\ front\ is\ invalid."{}});}
+\DoxyCodeLine{00142\ \ \ \ \ st.subtract(queue.top().retx);}
+\DoxyCodeLine{00143\ \ \ \ \ st.add(retx);}
+\DoxyCodeLine{00144\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item}{rlc\_retx\_queue\_item}}\ elem\ =\ \{\};}
+\DoxyCodeLine{00145\ \ \ \ \ elem\mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_ad2612784d868a218bcdac31eae50443e}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__retx__queue__item_ad2612784d868a218bcdac31eae50443e}{retx}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ retx;}
+\DoxyCodeLine{00146\ \ \ \ \ queue.top()\ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ elem;}
+\DoxyCodeLine{00147\ \ \ \}}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Clear\ the\ container\ and\ reset\ state\ to\ the\ initial\ state.}}
+\DoxyCodeLine{00150\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_af2976c5644f936cf2a01edddec5db543}{clear}}()}
+\DoxyCodeLine{00151\ \ \ \{}
+\DoxyCodeLine{00152\ \ \ \ \ st\ =\ \{\};}
+\DoxyCodeLine{00153\ \ \ \ \ queue.clear();}
+\DoxyCodeLine{00154\ \ \ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Total\ number\ of\ elements\ (valid\ +\ invalid)\ in\ the\ queue.}}
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Number\ of\ any\ elements\ in\ the\ queue.}}
+\DoxyCodeLine{00158\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a484070008d093c081e44bd88a41c3acd}{size\_t}}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a484070008d093c081e44bd88a41c3acd}{size}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ queue.size();\ \}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Checks\ the\ presence\ of\ at\ least\ one\ valid\ element.}}
+\DoxyCodeLine{00161\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ no\ valid\ element\ is\ queued;\ False\ if\ at\ least\ one\ valid\ element\ is\ queued.}}
+\DoxyCodeLine{00162\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a778792b878a76c69aec610429a6f243d}{empty}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ queue.empty();\ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Access\ to\ the\ internal\ state\ of\ the\ queue.}}
+\DoxyCodeLine{00165\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ internal\ state\ of\ the\ queue.}}
+\DoxyCodeLine{00166\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue__state}{rlc\_retx\_queue\_state}}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a41a054d271901433a6844d6740f2cd64}{state}}()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ st;\ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{///\ Checks\ if\ the\ queue\ contains\ an\ element\ with\ a\ given\ SN.}}
+\DoxyCodeLine{00169\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ The\ sequence\ number\ to\ look\ up.}}
+\DoxyCodeLine{00170\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ queue\ contains\ the\ SN,\ false\ otherwise.}}
+\DoxyCodeLine{00171\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a6494bee31fca36ba6448fe1bafb0e10f}{has\_sn}}(uint32\_t\ sn)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00172\ \ \ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.empty())\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ elem\ :\ queue)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elem.invalid\ ==\ \textcolor{keyword}{false}\ \&\&\ elem.retx.sn\ ==\ sn)\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00182\ \ \ \};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{///\ Checks\ if\ the\ queue\ contains\ an\ element\ with\ a\ given\ SN\ and\ also\ includes\ a\ specified\ segment\ interval\ given\ by\ a}}
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{///\ segment\ offset\ and\ segment\ length.}}
+\DoxyCodeLine{00186\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ The\ sequence\ number\ to\ look\ up.}}
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ so\ The\ segment\ offset\ to\ check.}}
+\DoxyCodeLine{00188\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ length\ The\ segment\ length\ to\ check.}}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ queue\ contains\ the\ SN\ and\ the\ element\ includes\ the\ given\ segment\ interval,\ false\ otherwise.}}
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a430aff019b144c1e1722c8cb3bbca314}{has\_sn}}(uint32\_t\ sn,\ uint32\_t\ so,\ uint32\_t\ length)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00191\ \ \ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.empty())\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ elem\ :\ queue)\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elem.invalid\ ==\ \textcolor{keyword}{false}\ \&\&\ elem.retx.sn\ ==\ sn)\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elem.retx.includes(so,\ length))\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00201\ \ \ \ \ \}}
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00203\ \ \ \};}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Removes\ all\ elements\ with\ a\ given\ SN\ from\ queue\ and\ removes\ any\ invalid\ elements\ at\ the\ front.}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ The\ ReTx\ for\ matching\ SN\ will\ be\ marked\ as\ invalid\ and\ its\ content\ will\ be\ subtracted\ from\ the\ state.}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ Subsequently,\ any\ invalid\ elements\ are\ removed\ from\ the\ front.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ sequence\ number\ to\ be\ removed\ from\ queue.}}
+\DoxyCodeLine{00211\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ if\ at\ least\ one\ element\ was\ removed,\ false\ if\ no\ element\ to\ remove\ was\ found.}}
+\DoxyCodeLine{00212\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a6820aedd320db49e258231371fcc6cfa}{remove\_sn}}(uint32\_t\ sn)}
+\DoxyCodeLine{00213\ \ \ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.empty())\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00216\ \ \ \ \ \}}
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keyword}{auto}\ iter\ \ \ =\ queue.begin();}
+\DoxyCodeLine{00218\ \ \ \ \ \textcolor{keywordtype}{bool}\ result\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{while}\ (iter\ !=\ queue.end())\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iter-\/>invalid\ ==\ \textcolor{keyword}{false}\ \&\&\ iter-\/>retx.sn\ ==\ sn)\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ st.subtract(iter-\/>retx);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ iter-\/>invalid\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ result\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ ++iter;}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ \}}
+\DoxyCodeLine{00228\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{clean\_invalid\_front}}\mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{(}}\mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{)}};}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00230\ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Advances\ the\ front\ of\ the\ queue\ to\ the\ first\ valid\ element\ or\ to\ the\ end\ of\ the\ queue.}}
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__retx__queue_a853031c6354dc22e697ffe8b4b60f224}{clean\_invalid\_front}}()}
+\DoxyCodeLine{00234\ \ \ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keywordflow}{while}\ (!queue.empty())\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (queue.top().invalid\ ==\ \textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ invalid\ element}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ queue.pop();}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ stop\ at\ valid\ element}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \}}
+\DoxyCodeLine{00245\ \};}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00250\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00251\ \textcolor{keyword}{struct}\ formatter<srsran::rlc\_tx\_amd\_retx>\ \{}
+\DoxyCodeLine{00252\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00253\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00254\ \ \ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00256\ \ \ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00259\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::rlc\_tx\_amd\_retx\ retx,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00260\ \ \ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}sn=\{\}\ so=\{\}\ len=\{\}"{}},\ retx.sn,\ retx.so,\ retx.length);}
+\DoxyCodeLine{00262\ \ \ \}}
+\DoxyCodeLine{00263\ \};}
+\DoxyCodeLine{00264\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

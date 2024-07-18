@@ -1,0 +1,96 @@
+\doxysection{dmrs\+\_\+pdcch\+\_\+processor\+\_\+impl.\+h}
+\hypertarget{dmrs__pdcch__processor__impl_8h_source}{}\label{dmrs__pdcch__processor__impl_8h_source}\index{lib/phy/upper/signal\_processors/dmrs\_pdcch\_processor\_impl.h@{lib/phy/upper/signal\_processors/dmrs\_pdcch\_processor\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/re\_buffer.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/signal\_processors/dmrs\_pdcch\_processor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/pdcch\_constants.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Describes\ a\ generic\ implementation\ of\ a\ DMRS\ for\ PDCCH\ processor.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ dmrs\_pdcch\_processor\_impl\ :\ \textcolor{keyword}{public}\ dmrs\_pdcch\_processor}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{comment}{///\ DM-\/RS\ index\ increment\ in\ frequency\ domain.}}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ STRIDE\ =\ 4;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Number\ of\ DM-\/RS\ for\ PDCCH\ per\ active\ resource\ block.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_DMRS\_PER\_RB\ =\ NRE\ /\ STRIDE;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ DM-\/RS\ for\ PDCCH\ that\ can\ be\ found\ in\ a\ symbol.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_DMRS\_PER\_SYMBOL\ =\ pdcch\_constants::MAX\_NOF\_RB\_PDCCH\ *\ NOF\_DMRS\_PER\_RB;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ DM-\/RS\ for\ PDCCH\ that\ can\ be\ found\ in\ a\ transmission.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_NOF\_DMRS\ =\ pdcch\_constants::MAX\_CORESET\_DURATION\ *\ MAX\_NOF\_DMRS\_PER\_SYMBOL;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Pseudo-\/random\ sequence\ generator\ instance.}}
+\DoxyCodeLine{00050\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ prg;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Temporary\ sequence\ storage.}}
+\DoxyCodeLine{00053\ \ \ std::array<cf\_t,\ MAX\_NOF\_DMRS\_PER\_SYMBOL>\ temp\_sequence;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ initial\ pseudo-\/random\ state.}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ \ \ \ Symbol\ index\ within\ the\ slot.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ \ \ Required\ parameters.}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ initial\ pseudo-\/random\ state.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ c\_init(\textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keyword}{const}\ config\_t\&\ config);}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Sequence\ generation\ as\ per\ TS\ 38.211\ Section\ 7.4.1.3.1.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ This\ method\ generates\ the\ sequence\ described\ in\ TS\ 38.211\ Section\ 7.4.1.3.1,\ considering\ the\ only\ values\ required}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ to\ fill\ the\ resource\ blocks\ according\ to\ TS\ 38.211\ Section\ 7.3.2.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ sequence\ Sequence\ destination.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ \ \ \ Symbol\ index\ within\ the\ slot.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ \ \ Required\ parameters\ to\ calculate\ the\ sequences.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{void}\ sequence\_generation(span<cf\_t>\ sequence,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keyword}{const}\ config\_t\&\ config)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Mapping\ to\ physical\ resources\ as\ per\ TS\ 38.211\ Section\ 7.4.1.3.2.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ This\ method\ implements\ the\ signal\ mapping\ as\ described\ in\ TS\ 38.211\ Section\ 7.4.1.3.2.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ mapper\ \ \ \ \ \ \ \ \ \ Resource\ grid\ mapper\ interface.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ d\_pdcch\ \ \ \ \ \ \ \ \ \ PDCCH\ resource\ elements\ to\ map\ in\ the\ resource\ grid.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ \ \ \ \ \ \ \ \ \ \ PDCCH\ modulator\ parameters.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ mapping(resource\_grid\_mapper\&\ mapper,\ \textcolor{keyword}{const}\ re\_buffer\_reader\&\ d\_pdcch,\ \textcolor{keyword}{const}\ config\_t\&\ config);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{explicit}\ dmrs\_pdcch\_processor\_impl(std::unique\_ptr<pseudo\_random\_generator>\ prg\_)\ :\ prg(std::move(prg\_))}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(prg,\ \textcolor{stringliteral}{"{}Invalid\ PRG."{}});}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ map(resource\_grid\_mapper\&\ grid,\ \textcolor{keyword}{const}\ config\_t\&\ config)\ override;}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

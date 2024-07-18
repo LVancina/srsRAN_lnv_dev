@@ -1,0 +1,113 @@
+\doxysection{filter\+\_\+view.\+h}
+\hypertarget{filter__view_8h_source}{}\label{filter__view_8h_source}\index{include/srsran/adt/filter\_view.h@{include/srsran/adt/filter\_view.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{memory}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{type\_traits}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ views\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)brief\ This\ class\ provides\ a\ range\ (with\ begin\ and\ end)\ that\ filters\ out\ elements\ from\ another\ range\ for\ which}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ FilterFunc\ returns\ false.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)tparam\ Range}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)tparam\ FilterFunc}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Range,\ \textcolor{keyword}{typename}\ FilterFunc>}
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{filter\_view}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Data>}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{class}\ iter\_impl}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{using}\ range\_it\_t\ =\ std::conditional\_t<std::is\_const<Data>::value,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::decay\_t<Range>::const\_iterator,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ std::decay\_t<Range>::iterator>;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{using}\ value\_type\ \ \ \ \ \ \ \ =\ std::remove\_const\_t<Data>;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{using}\ reference\ \ \ \ \ \ \ \ \ =\ Data\&;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{using}\ pointer\ \ \ \ \ \ \ \ \ \ \ =\ Data*;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{using}\ difference\_type\ \ \ =\ std::ptrdiff\_t;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{using}\ iterator\_category\ =\ std::forward\_iterator\_tag;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ iter\_impl(\mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{filter\_view}}<Range,\ FilterFunc>\&\ parent\_,\ range\_it\_t\ it\_)\ :\ parent(\&parent\_),\ it(it\_)\ \{\ next\_valid\_it();\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ iter\_impl<Data>\&\ operator++()}
+\DoxyCodeLine{00057\ \ \ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_af4c77185b269332767c554ee6b23df8e}{srsran\_sanity\_check}}(it\ !=\ parent-\/>r.end(),\ \textcolor{stringliteral}{"{}Iterator\ incremented\ past\ end()\ point"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ next\_valid\_it();}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ value\_type\&\ operator*()\ \{\ \textcolor{keywordflow}{return}\ *it;\ \}}
+\DoxyCodeLine{00065\ \ \ \ \ value\_type*\ operator-\/>()\ \{\ \textcolor{keywordflow}{return}\ \&(*it);\ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ iter\_impl<Data>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ it\ ==\ other.it;\ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ iter\_impl<Data>\&\ other)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ it\ !=\ other.it;\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ next\_valid\_it()}
+\DoxyCodeLine{00072\ \ \ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (it\ !=\ parent-\/>r.end()\ \textcolor{keyword}{and}\ \textcolor{keyword}{not}\ parent-\/>pred(*it))\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ ++it;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{filter\_view}}<Range,\ FilterFunc>*\ parent;}
+\DoxyCodeLine{00079\ \ \ \ \ range\_it\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it;}
+\DoxyCodeLine{00080\ \ \ \};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{value\_type}}\ \ \ \ \ =\ \textcolor{keyword}{typename}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{std}}::\mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{decay\_t}}<\mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{Range}}>::\mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{value\_type}};}
+\DoxyCodeLine{00084\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{iterator}}\ \ \ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{iter\_impl}}<\mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{value\_type}}>;}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{using}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{const\_iterator}}\ =\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{iter\_impl}}<\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{value\_type}}>;}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ filter\_view(Range\ r\_,\ FilterFunc\ pred\_)\ :\ r(std::forward<Range>(r\_)),\ pred(std::forward<FilterFunc>(pred\_))\ \{\}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ iterator\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ r.begin()\};\ \}}
+\DoxyCodeLine{00090\ \ \ iterator\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ r.end()\};\ \}}
+\DoxyCodeLine{00091\ \ \ const\_iterator\ begin()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ r.begin()\};\ \}}
+\DoxyCodeLine{00092\ \ \ const\_iterator\ end()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ iterator\{*\textcolor{keyword}{this},\ r.end()\};\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00095\ \ \ Range\ \ \ \ \ \ r;}
+\DoxyCodeLine{00096\ \ \ FilterFunc\ pred;}
+\DoxyCodeLine{00097\ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Range,\ \textcolor{keyword}{typename}\ Pred>}
+\DoxyCodeLine{00100\ \mbox{\hyperlink{classsrsran_1_1views_1_1filter__view}{filter\_view}}<Range,\ Pred>\ filter(Range\&\&\ r,\ Pred\&\&\ p)}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordflow}{return}\ \{std::forward<Range>(r),\ std::forward<Pred>(p)\};}
+\DoxyCodeLine{00103\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \}\ \textcolor{comment}{//\ namespace\ views}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

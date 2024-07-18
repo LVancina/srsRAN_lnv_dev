@@ -1,0 +1,61 @@
+\doxysection{du\+\_\+update\+\_\+config\+\_\+helpers.\+h}
+\hypertarget{du__update__config__helpers_8h_source}{}\label{du__update__config__helpers_8h_source}\index{include/srsran/du/du\_update\_config\_helpers.h@{include/srsran/du/du\_update\_config\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/expected.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/du/du\_cell\_config.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ config\_helpers\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)brief\ Compute\ the\ PRACH\ frequency\ start\ as\ a\ function\ of\ the\ PUCCH\ guardbands.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{///}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ This\ function\ computes\ the\ PRACH\ frequency\ start\ so\ as\ it\ won't\ collide\ with\ the\ PUCCH\ resources.\ As\ per\ TS\ 38.331,}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ PRACH\ frequency\ start\ is\ \(\backslash\)c\ msg1-\/FrequencyStart.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ \(\backslash\)param\ user\_params\ parameters\ passed\ by\ the\ user\ for\ the\ generation\ the\ PUCCH\ resource\ list.}}
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)param\ bwp\_size\ size\ of\ the\ BWP\ in\ RBs.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///\ \(\backslash\)return\ PRACH\ frequency\ start.}}
+\DoxyCodeLine{00039\ \textcolor{keywordtype}{unsigned}\ compute\_prach\_frequency\_start(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pucch__builder__params}{pucch\_builder\_params}}\&\ user\_params,\ \textcolor{keywordtype}{unsigned}\ bwp\_size,\ \textcolor{keywordtype}{bool}\ is\_long\_prach);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{comment}{///\ \(\backslash\)brief\ Compute\ the\ number\ of\ PUCCH\ resources\ that\ are\ used\ for\ SR\ and\ CSI.}}
+\DoxyCodeLine{00042\ \textcolor{comment}{///}}
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ If\ the\ user\ has\ defined\ a\ larger\ number\ of\ resources\ for\ SR\ and\ CSI\ than\ needed,\ this\ will\ returns\ the\ actual}}
+\DoxyCodeLine{00044\ \textcolor{comment}{///\ estimated\ number\ of\ resources\ that\ will\ be\ used\ by\ the\ GNB,\ constrained\ by\ the\ maximum\ PUCCH\ grants\ per\ slot.}}
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)param\ user\_params\ parameters\ passed\ by\ the\ user\ for\ the\ generation\ the\ PUCCH\ resource\ list.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{///\ \(\backslash\)param\ max\_pucch\_grants\_per\_slot\ maximum\ number\ of\ PUCCH\ grants\ that\ can\ be\ allocated\ per\ slot\ in\ the\ cell.}}
+\DoxyCodeLine{00047\ \textcolor{comment}{///\ \(\backslash\)param\ sr\_period\_msec\ SR\ period\ in\ milliseconds.}}
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ \(\backslash\)param\ csi\_period\_msec\ CSI\ period\ in\ milliseconds.}}
+\DoxyCodeLine{00049\ \textcolor{keywordtype}{void}\ compute\_nof\_sr\_csi\_pucch\_res(\mbox{\hyperlink{structsrsran_1_1pucch__builder__params}{pucch\_builder\_params}}\&\ user\_params,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_pucch\_grants\_per\_slot,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ sr\_period\_msec,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\textcolor{keywordtype}{unsigned}>\ \ \ \ csi\_period\_msec);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \}\ \textcolor{comment}{//\ namespace\ config\_helpers}}
+\DoxyCodeLine{00055\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

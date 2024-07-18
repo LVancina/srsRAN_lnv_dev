@@ -23,9 +23,8 @@
 #pragma once
 
 #include "../../f1ap/common/asn1_helpers.h"
-#include "../cu_cp_controller/common_task_scheduler.h"
 #include "../cu_cp_impl_interface.h"
-#include "../du_processor/du_processor.h"
+#include "../du_processor/du_processor_impl_interface.h"
 #include "../du_processor/du_setup_handler.h"
 #include "srsran/cu_cp/cu_cp.h"
 #include "srsran/f1ap/cu_cp/f1ap_cu.h"
@@ -33,6 +32,22 @@
 
 namespace srsran {
 namespace srs_cu_cp {
+
+/// Adapter between F1AP and CU-CP
+class f1ap_cu_cp_adapter : public f1ap_ue_removal_notifier
+{
+public:
+  void connect_cu_cp(cu_cp_ue_removal_handler& ue_removal_handler_) { ue_removal_handler = &ue_removal_handler_; }
+
+  void on_ue_removal_required(ue_index_t ue_index) override
+  {
+    srsran_assert(ue_removal_handler != nullptr, "CU-CP UE removal handler must not be nullptr");
+    return ue_removal_handler->handle_ue_removal_request(ue_index);
+  }
+
+private:
+  cu_cp_ue_removal_handler* ue_removal_handler = nullptr;
+};
 
 /// Adapter between F1AP and DU repository, to handle DU specific procedure outcomes (e.g. F1 Remove)
 class f1ap_du_repository_adapter : public f1ap_du_management_notifier
@@ -54,10 +69,7 @@ private:
 class f1ap_du_processor_adapter : public f1ap_du_processor_notifier
 {
 public:
-  f1ap_du_processor_adapter(common_task_scheduler& common_task_sched_, du_setup_handler& du_setup_hdlr_) :
-    common_task_sched(&common_task_sched_), du_setup_hdlr(&du_setup_hdlr_)
-  {
-  }
+  f1ap_du_processor_adapter(du_setup_handler& du_setup_hdlr_) : du_setup_hdlr(&du_setup_hdlr_) {}
 
   void connect_du_processor(du_processor_f1ap_interface& du_processor_f1ap_) { du_f1ap_handler = &du_processor_f1ap_; }
 
@@ -88,20 +100,9 @@ public:
     du_f1ap_handler->handle_du_initiated_ue_context_release_request(req);
   }
 
-  bool schedule_async_task(async_task<void> task) override
-  {
-    return common_task_sched->schedule_async_task(std::move(task));
-  }
-
-  async_task<void> on_transaction_info_loss(const f1_ue_transaction_info_loss_event& ev) override
-  {
-    return du_f1ap_handler->handle_ue_transaction_info_loss(ev);
-  }
-
 private:
-  common_task_scheduler*       common_task_sched = nullptr;
-  du_setup_handler*            du_setup_hdlr     = nullptr;
-  du_processor_f1ap_interface* du_f1ap_handler   = nullptr;
+  du_setup_handler*            du_setup_hdlr   = nullptr;
+  du_processor_f1ap_interface* du_f1ap_handler = nullptr;
 };
 
 /// Adapter between F1AP and RRC UE

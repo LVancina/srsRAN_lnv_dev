@@ -1,0 +1,109 @@
+\doxysection{prach\+\_\+processor\+\_\+impl.\+h}
+\hypertarget{prach__processor__impl_8h_source}{}\label{prach__processor__impl_8h_source}\index{lib/phy/lower/processors/uplink/prach/prach\_processor\_impl.h@{lib/phy/lower/processors/uplink/prach/prach\_processor\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{prach__processor__worker_8h}{"{}prach\_processor\_worker.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/uplink/prach/prach\_processor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/uplink/prach/prach\_processor\_baseband.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/uplink/prach/prach\_processor\_notifier.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/lower/processors/uplink/prach/prach\_processor\_request\_handler.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{atomic}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ PRACH\ processor\ implementation.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Acts\ as\ a\ PRACH\ processor\ worker\ pool\ which\ assigns\ the\ PRACH\ occasion\ requests\ to\ the\ first\ available\ worker.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ prach\_processor\_impl\ :\ \textcolor{keyword}{public}\ prach\_processor,}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ prach\_processor\_baseband,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ prach\_processor\_request\_handler}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00042\ \ \ std::vector<std::unique\_ptr<prach\_processor\_worker>>\ workers;}
+\DoxyCodeLine{00043\ \ \ prach\_processor\_notifier*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notifier\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{//\ See\ prach\_processor\_request\_handler\ for\ documentation.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ handle\_request(prach\_buffer\&\ buffer,\ \textcolor{keyword}{const}\ prach\_buffer\_context\&\ context)\ override}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(notifier,\ \textcolor{stringliteral}{"{}Notifier\ has\ not\ been\ connected."{}});}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{//\ Iterate\ all\ workers...}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{for}\ (std::unique\_ptr<prach\_processor\_worker>\&\ worker\ :\ workers)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{comment}{//\ Select\ the\ first\ worker\ available.}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (worker-\/>is\_available())\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ request.}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ worker-\/>handle\_request(buffer,\ context);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stop\ iterating.}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{//\ If\ no\ available\ workers,\ notify\ error\ and\ the\ buffer\ is\ discarded.}}
+\DoxyCodeLine{00063\ \ \ \ \ notifier-\/>on\_prach\_request\_overflow(context);}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ prach\_processor\_baseband\ for\ documentation.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ process\_symbol(\textcolor{keyword}{const}\ baseband\_gateway\_buffer\_reader\&\ samples,\ \textcolor{keyword}{const}\ symbol\_context\&\ context)\ override}
+\DoxyCodeLine{00068\ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{//\ Iterate\ all\ workers...}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{for}\ (std::unique\_ptr<prach\_processor\_worker>\&\ worker\ :\ workers)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{comment}{//\ Process\ baseband.}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ worker-\/>process\_symbol(samples,\ context);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Creates\ a\ PRACH\ processor\ containing\ workers.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{explicit}\ prach\_processor\_impl(std::vector<std::unique\_ptr<prach\_processor\_worker>>\&\&\ workers\_)\ :}
+\DoxyCodeLine{00079\ \ \ \ \ workers(std::move(workers\_))}
+\DoxyCodeLine{00080\ \ \ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(!workers.empty(),\ \textcolor{stringliteral}{"{}No\ workers\ are\ available."{}});}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ std::unique\_ptr<prach\_processor\_worker>\&\ worker\ :\ workers)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(worker,\ \textcolor{stringliteral}{"{}Invalid\ worker."{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{//\ See\ prach\_processor\ for\ documentation.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ connect(prach\_processor\_notifier\&\ notifier\_)\ override}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{for}\ (std::unique\_ptr<prach\_processor\_worker>\&\ worker\ :\ workers)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ worker-\/>connect(notifier\_);}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ notifier\ =\ \&notifier\_;}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ See\ prach\_processor\ for\ documentation.}}
+\DoxyCodeLine{00097\ \ \ prach\_processor\_request\_handler\&\ get\_request\_handler()\ override\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{//\ See\ prach\_processor\ for\ documentation.}}
+\DoxyCodeLine{00100\ \ \ prach\_processor\_baseband\&\ get\_baseband()\ override\ \{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

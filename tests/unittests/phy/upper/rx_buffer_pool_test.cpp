@@ -529,7 +529,7 @@ TEST(rx_buffer_pool, concurrent)
   unsigned cb_size             = 16;
 
   task_worker_pool<concurrent_queue_policy::lockfree_mpmc> release_worker_pool(
-      "release", nof_release_threads, nof_repetitions * max_nof_buffers);
+      nof_release_threads, nof_repetitions * max_nof_buffers, "release");
 
   // Create pool configuration for the test.
   rx_buffer_pool_config pool_config;

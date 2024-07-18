@@ -1,0 +1,146 @@
+\doxysection{dl\+\_\+sch\+\_\+pdu\+\_\+assembler.\+h}
+\hypertarget{dl__sch__pdu__assembler_8h_source}{}\label{dl__sch__pdu__assembler_8h_source}\index{lib/mac/mac\_dl/dl\_sch\_pdu\_assembler.h@{lib/mac/mac\_dl/dl\_sch\_pdu\_assembler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{mac__dl__ue__manager_8h}{"{}mac\_dl\_ue\_manager.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/lcid\_dl\_sch.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/mac/mac\_pdu\_format.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/harq\_id.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/scheduler\_slot\_handler.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ byte\_buffer\_chain;}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)brief\ This\ class\ represents\ and\ encodes\ a\ MAC\ DL-\/SCH\ PDU\ that\ may\ contain\ multiple\ subPDUs.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ Each\ subPDU\ is\ composed\ of\ a\ MAC\ subheader\ and\ MAC\ CE\ or\ MAC\ SDU\ payload.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ dl\_sch\_pdu}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Encoder\ of\ a\ MAC\ SDU.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{class}\ mac\_sdu\_encoder}
+\DoxyCodeLine{00042\ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \ \ mac\_sdu\_encoder()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00045\ \ \ \ \ mac\_sdu\_encoder(dl\_sch\_pdu\&\ pdu\_,\ lcid\_t\ lcid\_,\ \textcolor{keywordtype}{unsigned}\ subhdr\_len\_,\ \textcolor{keywordtype}{unsigned}\ max\_sdu\_size\_);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{bool}\ valid()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdu\ !=\ \textcolor{keywordtype}{nullptr};\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Returns\ the\ space\ that\ is\ reserved\ for\ this\ MAC\ SDU\ payload.}}
+\DoxyCodeLine{00050\ \ \ \ \ span<uint8\_t>\ sdu\_space()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Updates\ the\ DL-\/SCH\ PDU\ with\ the\ encoded\ MAC\ SDU\ subheader\ and\ payload.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Number\ of\ bytes\ written\ to\ the\ DL-\/SCH\ PDU\ (MAC\ SDU\ subheader\ +\ payload).}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ encode\_sdu(\textcolor{keywordtype}{unsigned}\ sdu\_bytes\_written);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00057\ \ \ \ \ dl\_sch\_pdu*\ pdu\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00058\ \ \ \ \ lcid\_t\ \ \ \ \ \ lcid;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ subhr\_len;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ max\_sdu\_size;}
+\DoxyCodeLine{00061\ \ \ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{explicit}\ dl\_sch\_pdu(span<uint8\_t>\ pdu\_buffer\_)\ :\ pdu(pdu\_buffer\_)\ \{\}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Gets\ a\ MAC\ SDU\ encoder\ for\ a\ given\ LCID\ and\ scheduler\ grant\ size.}}
+\DoxyCodeLine{00066\ \ \ mac\_sdu\_encoder\ get\_sdu\_encoder(lcid\_t\ lcid,\ \textcolor{keywordtype}{unsigned}\ sdu\_payload\_len\_estimate);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ Adds\ a\ MAC\ SDU\ as\ a\ subPDU.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{unsigned}\ add\_sdu(lcid\_t\ lcid\_,\ byte\_buffer\_chain\&\&\ sdu);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ Adds\ a\ UE\ Contention\ Resolution\ CE\ as\ a\ subPDU.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ add\_ue\_con\_res\_id(\textcolor{keyword}{const}\ ue\_con\_res\_id\_t\&\ con\_res\_payload);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ Adds\ a\ Timing\ Advance\ Command\ CE\ as\ a\ subPDU.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ add\_tag\_cmd(\textcolor{keyword}{const}\ ta\_cmd\_ce\_payload\&\ ce\_payload);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ Adds\ a\ padding\ CE\ as\ a\ subPDU.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ add\_padding(\textcolor{keywordtype}{unsigned}\ len);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Number\ of\ bytes\ of\ the\ MAC\ PDU.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_bytes()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ byte\_offset;\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ Remaining\ space\ in\ number\ of\ bytes\ in\ the\ PDU.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_empty\_bytes()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ pdu.size()\ -\/\ byte\_offset;\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Gets\ the\ held\ MAC\ PDU\ bytes.}}
+\DoxyCodeLine{00087\ \ \ span<uint8\_t>\ get()\ \{\ \textcolor{keywordflow}{return}\ pdu.first(byte\_offset);\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ encode\_subheader(\textcolor{keywordtype}{bool}\ F\_bit,\ lcid\_dl\_sch\_t\ lcid,\ \textcolor{keywordtype}{unsigned}\ header\_len,\ \textcolor{keywordtype}{unsigned}\ payload\_len);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ span<uint8\_t>\ pdu;}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ byte\_offset\ =\ 0;}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{comment}{///\ \(\backslash\)brief\ Class\ that\ manages\ the\ encoding\ of\ DL-\/SCH\ MAC\ PDUs\ that\ will\ be\ stored\ in\ Transport\ Blocks.}}
+\DoxyCodeLine{00097\ \textcolor{keyword}{class}\ dl\_sch\_pdu\_assembler}
+\DoxyCodeLine{00098\ \{}
+\DoxyCodeLine{00099\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00100\ \ \ \textcolor{keyword}{explicit}\ dl\_sch\_pdu\_assembler(mac\_dl\_ue\_manager\&\ ue\_mng\_);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Encodes\ a\ MAC\ DL-\/SCH\ PDU\ with\ the\ provided\ scheduler\ information.}}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rnti\ RNTI\ for\ which\ the\ MAC\ PDU\ was\ allocated.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ h\_id\ HARQ-\/Id\ of\ the\ HARQ\ process\ used\ for\ this\ PDU\ transmission.}}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ tb\_idx\ Transport\ block\ index\ of\ the\ HARQ\ process\ used\ for\ this\ PDU\ transmission.}}
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ tb\_info\ The\ information\ relative\ to\ the\ transport\ block\ allocated\ by\ the\ scheduler.\ This\ class\ contains}}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ a\ list\ of\ LCIDs\ of\ the\ subPDUs\ to\ allocated\ together\ with\ how\ many\ bytes\ each\ subPDU\ should\ take.}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ tb\_size\_bytes\ Number\ of\ bytes\ allocated\ for\ the\ Transport\ Block.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Byte\ container\ with\ assembled\ PDU.\ This\ container\ length\ should\ be\ lower\ or\ equal\ to\ \(\backslash\)c\ tb\_size\_bytes.}}
+\DoxyCodeLine{00110\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ assemble\_newtx\_pdu(rnti\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rnti,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ harq\_id\_t\ \ \ \ \ \ \ \ \ \ \ \ \ h\_id,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ tb\_idx,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ dl\_msg\_tb\_info\&\ tb\_info,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ tb\_size\_bytes);}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Fetches\ and\ assembles\ MAC\ DL-\/SCH\ PDU\ that\ corresponds\ to\ a\ HARQ\ retransmission.}}
+\DoxyCodeLine{00117\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rnti\ RNTI\ for\ which\ the\ MAC\ PDU\ was\ allocated.}}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ h\_id\ HARQ-\/Id\ of\ the\ HARQ\ process\ used\ for\ this\ PDU\ transmission.}}
+\DoxyCodeLine{00119\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ tb\_idx\ Transport\ block\ index\ of\ the\ HARQ\ process\ used\ for\ this\ PDU\ transmission.}}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ tb\_size\_bytes\ Number\ of\ bytes\ allocated\ for\ the\ Transport\ Block.}}
+\DoxyCodeLine{00121\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ Byte\ container\ with\ assembled\ PDU.}}
+\DoxyCodeLine{00122\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ assemble\_retx\_pdu(rnti\_t\ rnti,\ harq\_id\_t\ harq\_id,\ \textcolor{keywordtype}{unsigned}\ tb\_idx,\ \textcolor{keywordtype}{unsigned}\ tbs\_bytes);}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00125\ \ \ \textcolor{keyword}{class}\ pdu\_log\_builder;}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ Assemble\ MAC\ SDUs\ for\ a\ given\ LCID.}}
+\DoxyCodeLine{00128\ \ \ \textcolor{keywordtype}{void}\ assemble\_sdus(dl\_sch\_pdu\&\ ue\_pdu,\ rnti\_t\ rnti,\ \textcolor{keyword}{const}\ dl\_msg\_lc\_info\&\ subpdu,\ pdu\_log\_builder\&\ pdu\_logger);}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///\ Assemble\ MAC\ subPDU\ with\ a\ CE.}}
+\DoxyCodeLine{00131\ \ \ \textcolor{keywordtype}{void}\ assemble\_ce(dl\_sch\_pdu\&\ ue\_pdu,\ rnti\_t\ rnti,\ \textcolor{keyword}{const}\ dl\_msg\_lc\_info\&\ subpdu,\ pdu\_log\_builder\&\ pdu\_logger);}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ mac\_dl\_ue\_manager\&\ ue\_mng;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{//\ memory\ buffer\ to\ avoid\ allocations\ during\ formatting\ of\ pdus}}
+\DoxyCodeLine{00137\ \ \ fmt::memory\_buffer\ fmtbuf;}
+\DoxyCodeLine{00138\ \};}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

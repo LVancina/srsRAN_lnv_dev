@@ -1,0 +1,90 @@
+\doxysection{ue\+\_\+repository.\+h}
+\hypertarget{ue__repository_8h_source}{}\label{ue__repository_8h_source}\index{lib/scheduler/ue\_scheduling/ue\_repository.h@{lib/scheduler/ue\_scheduling/ue\_repository.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}../config/sched\_config\_manager.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}ue.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/ring\_buffer.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/unique\_function.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1ue__repository}{ue\_repository}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1slotted__id__table}{ue\_list}}\ =\ \mbox{\hyperlink{classsrsran_1_1slotted__id__table}{slotted\_id\_table<du\_ue\_index\_t,\ std::unique\_ptr<ue>}},\ MAX\_NOF\_DU\_UES>;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{using\ }value\_type\ \ \ \ \ =\ ue\_list::value\_type;}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{using\ }iterator\ \ \ \ \ \ \ =\ ue\_list::iterator;}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{using\ }const\_iterator\ =\ ue\_list::const\_iterator;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1ue__repository}{ue\_repository}}();}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ue__repository_a2d7fa4451390d04c7316d4fcacf5a37f}{slot\_indication}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ sl\_tx);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1ue__repository_a8d4b4805828ab1b0375fa323b73c3d6c}{contains}}(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.contains(ue\_index);\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{classsrsran_1_1ue}{ue}}\&\ \ \ \ \ \ \ operator[](\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \{\ \textcolor{keywordflow}{return}\ *ues[ue\_index];\ \}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{const}\ ue\&\ operator[](\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ *ues[ue\_index];\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00054\ \ \ ue*\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1ue__repository_a7232dfc6fc7f10f9d3a8a228358e189b}{find\_by\_rnti}}(\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti);}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{const}\ ue*\ \mbox{\hyperlink{classsrsran_1_1ue__repository_a7232dfc6fc7f10f9d3a8a228358e189b}{find\_by\_rnti}}(\mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ rnti)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ue__repository_ace9030f7d1957a751d741be57e325a74}{add\_ue}}(std::unique\_ptr<ue>\ u);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1ue__repository_a1597db37f0f883b1c604ce7acf2f9713}{schedule\_ue\_rem}}(ue\_config\_delete\_event\ ev);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ ue*\ \ \ \ \ \ \ find(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \{\ \textcolor{keywordflow}{return}\ ues.contains(ue\_index)\ ?\ ues[ue\_index].get()\ :\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{const}\ ue*\ find(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.contains(ue\_index)\ ?\ ues[ue\_index].get()\ :\ \textcolor{keyword}{nullptr};\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{size\_t}\ size()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.size();\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{bool}\ empty()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.empty();\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ iterator\ \ \ \ \ \ \ begin()\ \{\ \textcolor{keywordflow}{return}\ ues.begin();\ \}}
+\DoxyCodeLine{00071\ \ \ iterator\ \ \ \ \ \ \ end()\ \{\ \textcolor{keywordflow}{return}\ ues.end();\ \}}
+\DoxyCodeLine{00072\ \ \ const\_iterator\ begin()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.begin();\ \}}
+\DoxyCodeLine{00073\ \ \ const\_iterator\ end()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.end();\ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ const\_iterator\ lower\_bound(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ ues.lower\_bound(ue\_index);\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ Repository\ of\ UEs.}}
+\DoxyCodeLine{00081\ \ \ ue\_list\ ues;}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{//\ Mapping\ of\ RNTIs\ to\ UE\ indexes.}}
+\DoxyCodeLine{00084\ \ \ std::vector<std::pair<rnti\_t,\ du\_ue\_index\_t>>\ rnti\_to\_ue\_index\_lookup;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{//\ Queue\ of\ UEs\ marked\ for\ later\ removal.}}
+\DoxyCodeLine{00087\ \ \ ring\_buffer<ue\_config\_delete\_event>\ ues\_to\_rem\{MAX\_NOF\_DU\_UES\};}
+\DoxyCodeLine{00088\ \};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

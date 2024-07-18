@@ -1,0 +1,120 @@
+\doxysection{ldpc\+\_\+encoder\+\_\+neon.\+h}
+\hypertarget{ldpc__encoder__neon_8h_source}{}\label{ldpc__encoder__neon_8h_source}\index{lib/phy/upper/channel\_coding/ldpc/ldpc\_encoder\_neon.h@{lib/phy/upper/channel\_coding/ldpc/ldpc\_encoder\_neon.h}}
+\mbox{\hyperlink{ldpc__encoder__neon_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ LDPC\ encoder\ -\/\ Declarations\ for\ NEON-\/optimized\ version.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{ldpc__encoder__impl_8h}{"{}ldpc\_encoder\_impl.h"{}}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ \(\backslash\)brief\ LDPC\ encoder\ implementation\ based\ on\ NEON\ intrinsics.}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ \(\backslash\)warning\ Instantiating\ an\ object\ of\ this\ class\ entails\ a\ heap\ memory\ allocation.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder__neon}{ldpc\_encoder\_neon}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder__impl}{ldpc\_encoder\_impl}}}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{void}\ select\_strategy()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00038\ \ \ \textcolor{keywordtype}{void}\ load\_input(\textcolor{keyword}{const}\ bit\_buffer\&\ in)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{void}\ preprocess\_systematic\_bits()\ \textcolor{keyword}{override}\ \{\ (\textcolor{keyword}{this}-\/>*systematic\_bits)();\ \}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{void}\ encode\_high\_rate()\ \textcolor{keyword}{override}\ \{\ (\textcolor{keyword}{this}-\/>*high\_rate)();\ \}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{void}\ encode\_ext\_region()\ \textcolor{keyword}{override}\ \{\ (\textcolor{keyword}{this}-\/>*ext\_region)();\ \}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ write\_codeblock(bit\_buffer\&\ out)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Alias\ for\ pointer\ to\ private\ methods.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{using}\ strategy\_method\ =\ \textcolor{keywordtype}{void}\ (ldpc\_encoder\_neon::*)();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Placeholder\ for\ strategy\ implementation\ of\ preprocess\_systematic\_bits.}}
+\DoxyCodeLine{00048\ \ \ strategy\_method\ systematic\_bits;}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Placeholder\ for\ strategy\ implementation\ of\ encode\_high\_rate.}}
+\DoxyCodeLine{00050\ \ \ strategy\_method\ high\_rate;}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Placeholder\ for\ strategy\ implementation\ of\ encode\_ext\_region.}}
+\DoxyCodeLine{00052\ \ \ strategy\_method\ ext\_region;}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Helper\ method\ to\ set\ the\ high-\/rate\ encoding\ strategy.}}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{static}\ strategy\_method}
+\DoxyCodeLine{00057\ \ \ select\_hr\_strategy(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ current\_bg,\ uint8\_t\ current\_ls\_index,\ \textcolor{keywordtype}{unsigned}\ node\_size\_neon);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ Helper\ method\ to\ set\ the\ strategy\ for\ the\ systematic\ bits.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{static}\ strategy\_method\ select\_sys\_bits\_strategy(\mbox{\hyperlink{namespacesrsran_a706194bb5a137df4a318956519521e66}{ldpc\_base\_graph\_type}}\ current\_bg,\ \textcolor{keywordtype}{unsigned}\ node\_size\_neon);}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Helper\ method\ to\ set\ the\ extended-\/region\ encoding\ strategy.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{static}\ strategy\_method\ select\_ext\_strategy(\textcolor{keywordtype}{unsigned}\ node\_size\_neon);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Long\ lifting\ size\ version\ of\ preprocess\_systematic\_bits\ -\/\ short\ lifting\ size.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ BG\_K\_PH\ \ \ \ \ \ \ \ \ \ \ \ Placeholder\ for\ the\ number\ of\ information\ nodes\ (i.e.,\ K)\ for\ the\ current\ base\ graph.}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ BG\_M\_PH\ \ \ \ \ \ \ \ \ \ \ \ Placeholder\ for\ the\ number\ of\ check\ nodes\ (i.e.,\ M)\ for\ the\ current\ base\ graph.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ BG\_K\_PH,\ \textcolor{keywordtype}{unsigned}\ BG\_M\_PH,\ \textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{void}\ systematic\_bits\_inner();}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Carries\ out\ the\ high-\/rate\ region\ encoding\ for\ BG1\ and\ lifting\ size\ index\ 6\ -\/\ long\ lifting\ size.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ high\_rate\_bg1\_i6\_inner();}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Carries\ out\ the\ high-\/rate\ region\ encoding\ for\ BG1\ and\ lifting\ size\ index\ in\ \{0,\ 1,\ 2,\ 3,\ 4,\ 5,\ 7\}\ -\/\ long}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ lifting\ size.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ high\_rate\_bg1\_other\_inner();}
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Carries\ out\ the\ high-\/rate\ region\ encoding\ for\ BG2\ and\ lifting\ size\ index\ in\ \{3,\ 7\}\ -\/\ long\ lifting\ size.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ high\_rate\_bg2\_i3\_7\_inner();}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Carries\ out\ the\ high-\/rate\ region\ encoding\ for\ BG2\ and\ lifting\ size\ index\ in\ \{0,\ 1,\ 2,\ 4,\ 5,\ 6\}\ -\/\ long}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ lifting\ size.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ high\_rate\_bg2\_other\_inner();}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Carries\ out\ the\ extended\ region\ encoding\ when\ the\ lifting\ size\ is\ long.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)tparam\ NODE\_SIZE\_NEON\_PH\ \ Placeholder\ for\ the\ number\ of\ NEON\ registers\ used\ to\ represent\ a\ code\ node.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NODE\_SIZE\_NEON\_PH>}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{void}\ ext\_region\_inner();}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \textcolor{comment}{///\ Buffer\ containing\ the\ codeblock.}}
+\DoxyCodeLine{00096\ \ \ std::array<uint8\_t,\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::MAX\_BG\_N\_FULL\ *\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::MAX\_LIFTING\_SIZE>\ codeblock\_buffer;}
+\DoxyCodeLine{00097\ \ \ \textcolor{comment}{///\ Length\ of\ the\ portion\ of\ the\ codeblock\ buffer\ actually\ used\ for\ the\ current\ configuration\ (as\ a\ number\ of\ NEON}}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ registers).}}
+\DoxyCodeLine{00099\ \ \ size\_t\ codeblock\_used\_size\ =\ 0;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \textcolor{comment}{///\ Auxiliary\ buffer\ for\ storing\ chunks\ of\ codeblocks\ (corresponds\ to\ the\ four\ redundancy\ nodes\ of\ the\ high-\/rate}}
+\DoxyCodeLine{00102\ \ \ \textcolor{comment}{///\ region).}}
+\DoxyCodeLine{00103\ \ \ std::array<uint8\_t,\ \mbox{\hyperlink{classsrsran_1_1ldpc__encoder__impl_a2a66846209c2a5033bcb1aa9c8d4f84f}{bg\_hr\_parity\_nodes}}\ *\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::MAX\_LIFTING\_SIZE>\ auxiliary\_buffer;}
+\DoxyCodeLine{00104\ \ \ \textcolor{comment}{///\ Length\ of\ the\ extended\ region\ actually\ used\ for\ the\ current\ configuration\ (as\ a\ number\ of\ NEON\ registers).}}
+\DoxyCodeLine{00105\ \ \ size\_t\ length\_extended\ =\ 0;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{///\ Auxiliary\ buffer\ for\ storing\ a\ single\ node\ during\ rotations.}}
+\DoxyCodeLine{00108\ \ \ std::array<uint8\_t,\ \mbox{\hyperlink{namespacesrsran_1_1ldpc}{ldpc}}::MAX\_LIFTING\_SIZE>\ rotated\_node\_buffer;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ Node\ size\ as\ a\ number\ of\ NEON\ vectors.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{unsigned}\ node\_size\_neon\ =\ 0;}
+\DoxyCodeLine{00112\ \};}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

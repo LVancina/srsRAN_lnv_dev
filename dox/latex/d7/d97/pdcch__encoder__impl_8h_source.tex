@@ -1,0 +1,123 @@
+\doxysection{pdcch\+\_\+encoder\+\_\+impl.\+h}
+\hypertarget{pdcch__encoder__impl_8h_source}{}\label{pdcch__encoder__impl_8h_source}\index{lib/phy/upper/channel\_processors/pdcch\_encoder\_impl.h@{lib/phy/upper/channel\_processors/pdcch\_encoder\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/crc\_calculator.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/polar/polar\_allocator.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/polar/polar\_code.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/polar/polar\_encoder.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/polar/polar\_interleaver.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_coding/polar/polar\_rate\_matcher.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdcch\_encoder.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pdcch/pdcch\_constants.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{comment}{///\ \(\backslash\)brief\ PDCCH\ encoder,\ as\ per\ TS38.212\ Section\ 7.3.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{///}}
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ For\ the\ PHY\ Downlink\ Control\ CHannel\ (PDCCH)\ it\ carries\ out\ CRC\ attachment,}}
+\DoxyCodeLine{00040\ \textcolor{comment}{///\ Polar\ encoding\ and\ rate\ matching.}}
+\DoxyCodeLine{00041\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdcch__encoder__impl}{pdcch\_encoder\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdcch__encoder}{pdcch\_encoder}}}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Defines\ CRC\ length\ in\ bits.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ CRC\_LEN\ =\ 24;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Defines\ RNTI\ length\ in\ bits.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ RNTI\_LEN\ =\ 16;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Defines\ the\ maximum\ payload\ size\ in\ bits,\ including\ 24\ CRC\ bits.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ MAX\_K\ =\ pdcch\_constants::MAX\_DCI\_PAYLOAD\_SIZE\ +\ CRC\_LEN;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ std::unique\_ptr<crc\_calculator>\ \ \ \ \ crc24c;}
+\DoxyCodeLine{00054\ \ \ std::unique\_ptr<polar\_interleaver>\ \ interleaver;}
+\DoxyCodeLine{00055\ \ \ std::unique\_ptr<polar\_allocator>\ \ \ \ alloc;}
+\DoxyCodeLine{00056\ \ \ std::unique\_ptr<polar\_code>\ \ \ \ \ \ \ \ \ code;}
+\DoxyCodeLine{00057\ \ \ std::unique\_ptr<polar\_encoder>\ \ \ \ \ \ encoder;}
+\DoxyCodeLine{00058\ \ \ std::unique\_ptr<polar\_rate\_matcher>\ rm;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ Temporary\ payload\ with\ CRC\ appended.}}
+\DoxyCodeLine{00061\ \ \ std::array<uint8\_t,\ MAX\_K\ +\ CRC\_LEN>\ temp\_c;}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Temporary\ encoded\ data\ prior\ to\ rate\ matching.}}
+\DoxyCodeLine{00063\ \ \ std::array<uint8\_t,\ polar\_code::NMAX>\ temp\_d;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ CRC\ attachment}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ c\ \ \ \ \ Payload\ with\ CRC\ attached}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ a\ \ \ \ \ Payload}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ rnti\ \ RNTI\ used\ for\ CRC\ bits\ scrambling}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ CRC\ attachment\ follows\ TS\ 38.312\ section\ 7.3.2}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ crc\_attach(span<uint8\_t>\&\ c,\ span<\textcolor{keyword}{const}\ uint8\_t>\ a,\ \textcolor{keywordtype}{unsigned}\ rnti);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Payload\ encoding}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ d\ Data\ after\ encoding}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ c\ Payload\ after\ CRC\ attachment}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Channel\ codding\ follows\ TS\ 38.312\ section\ 7.3.3}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ channel\_coding(span<uint8\_t>\ d,\ span<\textcolor{keyword}{const}\ uint8\_t>\ c);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Rate\ matching\ of\ the\ encoded\ data}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ f\ Data\ after\ rate\ matching}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ d\ Data\ after\ encoding}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Rate\ matching\ follows\ TS\ 38.312\ section\ 7.3.4}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ rate\_matching(span<uint8\_t>\ f,\ span<\textcolor{keyword}{const}\ uint8\_t>\ d);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00091\ \ \ pdcch\_encoder\_impl(std::unique\_ptr<crc\_calculator>\ \ \ \ \ crc24c\_,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_interleaver>\ \ interleaver\_,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_allocator>\ \ \ \ alloc\_,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_code>\ \ \ \ \ \ \ \ \ code\_,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_encoder>\ \ \ \ \ \ encoder\_,}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<polar\_rate\_matcher>\ rm\_)\ :}
+\DoxyCodeLine{00097\ \ \ \ \ crc24c(std::move(crc24c\_)),}
+\DoxyCodeLine{00098\ \ \ \ \ interleaver(std::move(interleaver\_)),}
+\DoxyCodeLine{00099\ \ \ \ \ alloc(std::move(alloc\_)),}
+\DoxyCodeLine{00100\ \ \ \ \ code(std::move(code\_)),}
+\DoxyCodeLine{00101\ \ \ \ \ encoder(std::move(encoder\_)),}
+\DoxyCodeLine{00102\ \ \ \ \ rm(std::move(rm\_))}
+\DoxyCodeLine{00103\ \ \ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(crc24c,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00105\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(crc24c-\/>get\_generator\_poly()\ ==\ crc\_generator\_poly::CRC24C,\ \textcolor{stringliteral}{"{}Invalid\ CRC\ calculator."{}});}
+\DoxyCodeLine{00106\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(interleaver,\ \textcolor{stringliteral}{"{}Invalid\ polar\ interleaver."{}});}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(alloc,\ \textcolor{stringliteral}{"{}Invalid\ polar\ allocator."{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(code,\ \textcolor{stringliteral}{"{}Invalid\ polar\ code."{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(encoder,\ \textcolor{stringliteral}{"{}Invalid\ polar\ encoder."{}});}
+\DoxyCodeLine{00110\ \ \ \ \ \mbox{\hyperlink{error__handling_8h_ab56816f05213537f249f6de5802f1151}{report\_fatal\_error\_if\_not}}(rm,\ \textcolor{stringliteral}{"{}Invalid\ polar\ rate\ matcher."{}});}
+\DoxyCodeLine{00111\ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{//\ See\ interface\ for\ the\ documentation.}}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdcch__encoder__impl_a328dbf4585eb760e2b74540640742f47}{encode}}(span<uint8\_t>\ encoded,\ span<\textcolor{keyword}{const}\ uint8\_t>\ data,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdcch__encoder_1_1config__t}{config\_t}}\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

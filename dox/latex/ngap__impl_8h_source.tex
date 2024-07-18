@@ -1,0 +1,140 @@
+\doxysection{ngap\+\_\+impl.\+h}
+\hypertarget{ngap__impl_8h_source}{}\label{ngap__impl_8h_source}\index{lib/ngap/ngap\_impl.h@{lib/ngap/ngap\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}ngap\_context.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}procedures/ngap\_transaction\_manager.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}ue\_context/ngap\_ue\_context.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/asn1/ngap/ngap.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/ue\_manager.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ngap/ngap.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ngap/ngap\_configuration.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl}{ngap\_impl}}\ final\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__interface}{ngap\_interface}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl}{ngap\_impl}}(\mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__configuration}{ngap\_configuration}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ngap\_cfg\_,}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__ue__creation__notifier}{ngap\_cu\_cp\_ue\_creation\_notifier}}\&\ \ \ cu\_cp\_ue\_creation\_notifier\_,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__cu__cp__du__repository__notifier}{ngap\_cu\_cp\_du\_repository\_notifier}}\&\ cu\_cp\_du\_repository\_notifier\_,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__ue__task__scheduler}{ngap\_ue\_task\_scheduler}}\&\ \ \ \ \ \ \ \ \ \ \ \ task\_sched\_,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__ue__manager}{ngap\_ue\_manager}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_manager\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__message__notifier}{ngap\_message\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ ngap\_notifier\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ctrl\_exec\_);}
+\DoxyCodeLine{00049\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl}{\string~ngap\_impl}}();}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a82c950210f6c3627656c2dc0d8dbc2cf}{update\_ue\_index}}(ue\_index\_t\ new\_ue\_index,\ ue\_index\_t\ old\_ue\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ ngap\ connection\ manager\ functions}}
+\DoxyCodeLine{00054\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ngap\_ng\_setup\_result>}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a6b3967f5c42bf3dd63d0a6a5e3bf38ca}{handle\_ng\_setup\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__ng__setup__request}{ngap\_ng\_setup\_request}}\&\ request)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_ada7ac1fb075a09ffbae70edf26d81f82}{handle\_initial\_ue\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__initial__ue__message}{cu\_cp\_initial\_ue\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a66d0054933024143aba4b9e1ac7a7009}{handle\_ul\_nas\_transport\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ul__nas__transport}{cu\_cp\_ul\_nas\_transport}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{//\ ngap\ message\ handler\ functions}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_ac890da7ddf124b1f3e17b6cf74ee7fea}{handle\_message}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__message}{ngap\_message}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{void}\ handle\_connection\_loss()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ ngap\ control\ message\ handler\ functions}}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_ae34d1b1269796c7ac129808d194a05b0}{handle\_ue\_context\_release\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1cu__cp__ue__context__release__request}{cu\_cp\_ue\_context\_release\_request}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<ngap\_handover\_preparation\_response>}}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_ad4e40b3d808dee658d31b3a34d05a98c}{handle\_handover\_preparation\_request}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1srs__cu__cp_1_1ngap__handover__preparation__request}{ngap\_handover\_preparation\_request}}\&\ msg)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a4ea34aa86f218780eb7fdc0cfe2e4d3d}{handle\_inter\_cu\_ho\_rrc\_recfg\_complete}}(\textcolor{keyword}{const}\ ue\_index\_t\ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1nr__cell__global__id__t}{nr\_cell\_global\_id\_t}}\&\ cgi,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ tac)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ ngap\_statistics\_handler}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a424f3f06c577c02e0e2c3d2f98468155}{get\_nof\_ues}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ ue\_ctxt\_list.size();\ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{//\ ngap\_ue\_context\_removal\_handler}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__impl_a1393921f2bd46cf1ecab1cd2c0499e4e}{remove\_ue\_context}}(ue\_index\_t\ ue\_index)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ngap__message__handler}{ngap\_message\_handler}}\&\ \ \ \ \ \ \ \ \ \ \ \ get\_ngap\_message\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00079\ \ \ ngap\_event\_handler\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_ngap\_event\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00080\ \ \ ngap\_connection\_manager\&\ \ \ \ \ \ \ \ \ get\_ngap\_connection\_manager()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00081\ \ \ ngap\_nas\_message\_handler\&\ \ \ \ \ \ \ \ get\_ngap\_nas\_message\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00082\ \ \ ngap\_control\_message\_handler\&\ \ \ \ get\_ngap\_control\_message\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00083\ \ \ ngap\_ue\_control\_manager\&\ \ \ \ \ \ \ \ \ get\_ngap\_ue\_control\_manager()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00084\ \ \ ngap\_statistics\_handler\&\ \ \ \ \ \ \ \ \ get\_ngap\_statistics\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00085\ \ \ ngap\_ue\_context\_removal\_handler\&\ get\_ngap\_ue\_context\_removal\_handler()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ handle\_initiating\_message(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1init__msg__s}{asn1::ngap::init\_msg\_s}}\&\ msg);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{void}\ handle\_dl\_nas\_transport\_message(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::dl\_nas\_transport\_s}}\&\ msg);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ handle\_initial\_context\_setup\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::init\_context\_setup\_request\_s}}\&\ request);}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu\_session\_resource\_setup\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::pdu\_session\_res\_setup\_request\_s}}\&\ request);}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu\_session\_resource\_modify\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::pdu\_session\_res\_modify\_request\_s}}\&\ request);}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordtype}{void}\ handle\_pdu\_session\_resource\_release\_command(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::pdu\_session\_res\_release\_cmd\_s}}\&\ command);}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_context\_release\_command(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::ue\_context\_release\_cmd\_s}}\&\ cmd);}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{void}\ handle\_paging(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::paging\_s}}\&\ msg);}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00122\ \ \ \textcolor{keywordtype}{void}\ handle\_handover\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::ho\_request\_s}}\&\ msg);}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00126\ \ \ \textcolor{keywordtype}{void}\ handle\_error\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{classasn1_1_1elementary__procedure__option}{asn1::ngap::error\_ind\_s}}\&\ msg);}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{void}\ handle\_successful\_outcome(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1successful__outcome__s}{asn1::ngap::successful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{void}\ handle\_unsuccessful\_outcome(\textcolor{keyword}{const}\ \mbox{\hyperlink{structasn1_1_1ngap_1_1unsuccessful__outcome__s}{asn1::ngap::unsuccessful\_outcome\_s}}\&\ outcome);}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00140\ \ \ \textcolor{keywordtype}{void}\ schedule\_error\_indication(ue\_index\_t\ ue\_index,\ cause\_t\ cause,\ optional<amf\_ue\_id\_t>\ amf\_ue\_id\ =\ \{\});}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \textcolor{keywordtype}{void}\ on\_ue\_context\_setup\_timer\_expired(ue\_index\_t\ ue\_index);}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ ngap\_context\_t\ context;}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00149\ \ \ ngap\_ue\_context\_list\ ue\_ctxt\_list;}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ ngap\_cu\_cp\_ue\_creation\_notifier\&\ \ \ cu\_cp\_ue\_creation\_notifier;}
+\DoxyCodeLine{00152\ \ \ ngap\_cu\_cp\_du\_repository\_notifier\&\ cu\_cp\_du\_repository\_notifier;}
+\DoxyCodeLine{00153\ \ \ ngap\_ue\_task\_scheduler\&\ \ \ \ \ \ \ \ \ \ \ \ task\_sched;}
+\DoxyCodeLine{00154\ \ \ ngap\_ue\_manager\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_manager;}
+\DoxyCodeLine{00155\ \ \ ngap\_message\_notifier\&\ \ \ \ \ \ \ \ \ \ \ \ \ ngap\_notifier;}
+\DoxyCodeLine{00156\ \ \ task\_executor\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ctrl\_exec;}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ ngap\_transaction\_manager\ ev\_mng;}
+\DoxyCodeLine{00159\ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

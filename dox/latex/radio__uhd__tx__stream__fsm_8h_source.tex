@@ -1,0 +1,180 @@
+\doxysection{radio\+\_\+uhd\+\_\+tx\+\_\+stream\+\_\+fsm.\+h}
+\hypertarget{radio__uhd__tx__stream__fsm_8h_source}{}\label{radio__uhd__tx__stream__fsm_8h_source}\index{lib/radio/uhd/radio\_uhd\_tx\_stream\_fsm.h@{lib/radio/uhd/radio\_uhd\_tx\_stream\_fsm.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <condition\_variable>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ push}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ ignored\ "{}-\/Wall"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#else\ }\textcolor{comment}{//\ \_\_clang\_\_}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ ignored\ "{}-\/Wsuggest-\/override"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ \_\_clang\_\_}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <uhd/types/metadata.hpp>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <uhd/types/time\_spec.hpp>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ pop}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm}{radio\_uhd\_tx\_stream\_fsm}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{double}\ WAIT\_EOB\_ACK\_TIMEOUT\_S\ =\ 0.01;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{enum\ class}\ states\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ UNINITIALIZED\ =\ 0,}
+\DoxyCodeLine{00051\ \ \ \ \ START\_BURST,}
+\DoxyCodeLine{00053\ \ \ \ \ IN\_BURST,}
+\DoxyCodeLine{00055\ \ \ \ \ END\_OF\_BURST,}
+\DoxyCodeLine{00057\ \ \ \ \ WAIT\_END\_OF\_BURST,}
+\DoxyCodeLine{00059\ \ \ \ \ WAIT\_STOP,}
+\DoxyCodeLine{00061\ \ \ \ \ STOPPED}
+\DoxyCodeLine{00062\ \ \ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \ \ states\ state;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{mutable}\ std::mutex\ mutex;}
+\DoxyCodeLine{00070\ \ \ std::condition\_variable\ cvar;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ uhd::time\_spec\_t\ wait\_eob\_timeout\ =\ uhd::time\_spec\_t();}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm_ab30bd8e3336a855e4c2bcc4cbf01748a}{init\_successful}}()}
+\DoxyCodeLine{00077\ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00079\ \ \ \ \ state\ =\ states::START\_BURST;}
+\DoxyCodeLine{00080\ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm_a9a5cf54aa0637e0ad22a80dc62835f66}{async\_event\_late\_underflow}}(\textcolor{keyword}{const}\ uhd::time\_spec\_t\&\ time\_spec)}
+\DoxyCodeLine{00086\ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ states::IN\_BURST)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ state\ \ \ \ \ \ \ \ \ \ \ \ =\ states::END\_OF\_BURST;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ wait\_eob\_timeout\ =\ time\_spec;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ wait\_eob\_timeout\ +=\ WAIT\_EOB\_ACK\_TIMEOUT\_S;}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm_a090c0212de1138142edf180dcc034d88}{async\_event\_end\_of\_burst\_ack}}()}
+\DoxyCodeLine{00098\ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ states::WAIT\_END\_OF\_BURST)\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ state\ =\ states::START\_BURST;}
+\DoxyCodeLine{00102\ \ \ \ \ \}}
+\DoxyCodeLine{00103\ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm_a0011309fb1566c196ca2e119f37b4994}{on\_transmit}}(uhd::tx\_metadata\_t\&\ metadata,\ uhd::time\_spec\_t\&\ time\_spec,\ \textcolor{keywordtype}{bool}\ is\_empty,\ \textcolor{keywordtype}{bool}\ tail\_padding)}
+\DoxyCodeLine{00112\ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{switch}\ (state)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::WAIT\_END\_OF\_BURST:}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Do\ nothing\ if\ the\ wait\ for\ end-\/of-\/burst\ timeout\ has\ not\ expired.}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wait\_eob\_timeout.get\_real\_secs()\ >=\ time\_spec.get\_real\_secs())\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Otherwise\ go\ into\ start\ burst\ state\ and\ handle\ the\ state.}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ state\ =\ states::START\_BURST;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::START\_BURST:}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ start\ of\ burst\ flag\ and\ time\ spec.}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!is\_empty)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ metadata.has\_time\_spec\ \ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ metadata.start\_of\_burst\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ metadata.end\_of\_burst\ \ \ =\ tail\_padding;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ metadata.time\_spec\ \ \ \ \ \ =\ time\_spec;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Transition\ to\ in-\/burst.}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!tail\_padding)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ state\ =\ states::IN\_BURST;}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::IN\_BURST:}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (is\_empty\ ||\ tail\_padding)\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Signal\ end\ of\ burst\ to\ UHD.}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ metadata.end\_of\_burst\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Transition\ to\ start\ burst\ without\ waiting\ for\ the\ EOB\ ACK.}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ state\ =\ states::START\_BURST;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::END\_OF\_BURST:}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Flag\ end-\/of-\/burst.}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ metadata.end\_of\_burst\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ state\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ states::WAIT\_END\_OF\_BURST;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wait\_eob\_timeout\ ==\ uhd::time\_spec\_t())\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ wait\_eob\_timeout\ =\ time\_spec;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ wait\_eob\_timeout\ +=\ WAIT\_EOB\_ACK\_TIMEOUT\_S;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::UNINITIALIZED:}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::WAIT\_STOP:}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::STOPPED:}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ignore\ transmission.}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{comment}{//\ Transmission\ shall\ not\ be\ ignored.}}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00165\ \ \ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{keywordtype}{void}\ stop(uhd::tx\_metadata\_t\&\ metadata)}
+\DoxyCodeLine{00168\ \ \ \{}
+\DoxyCodeLine{00169\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keywordflow}{if}\ (state\ ==\ states::IN\_BURST)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ metadata.end\_of\_burst\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00172\ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ state\ =\ states::WAIT\_STOP;}
+\DoxyCodeLine{00174\ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordtype}{bool}\ is\_stopping()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00177\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00178\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordflow}{return}\ state\ ==\ states::WAIT\_STOP;}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordtype}{void}\ wait\_stop()}
+\DoxyCodeLine{00183\ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{while}\ (state\ !=\ states::STOPPED)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ cvar.wait(lock);}
+\DoxyCodeLine{00187\ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \}}
+\DoxyCodeLine{00189\ }
+\DoxyCodeLine{00191\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1radio__uhd__tx__stream__fsm_a7e356fe790adfec64fe79180865db109}{async\_task\_stopped}}()}
+\DoxyCodeLine{00192\ \ \ \{}
+\DoxyCodeLine{00193\ \ \ \ \ std::unique\_lock<std::mutex>\ lock(mutex);}
+\DoxyCodeLine{00194\ \ \ \ \ state\ =\ states::STOPPED;}
+\DoxyCodeLine{00195\ \ \ \ \ cvar.notify\_all();}
+\DoxyCodeLine{00196\ \ \ \}}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

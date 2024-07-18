@@ -1,0 +1,144 @@
+\doxysection{pdsch\+\_\+processor\+\_\+concurrent\+\_\+impl.\+h}
+\hypertarget{pdsch__processor__concurrent__impl_8h_source}{}\label{pdsch__processor__concurrent__impl_8h_source}\index{lib/phy/upper/channel\_processors/pdsch\_processor\_concurrent\_impl.h@{lib/phy/upper/channel\_processors/pdsch\_processor\_concurrent\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{pdsch__codeblock__processor_8h}{"{}pdsch\_codeblock\_processor.h"{}}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_mapper.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_processors/pdsch\_processor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/signal\_processors/dmrs\_pdsch\_processor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/memory\_pool/concurrent\_thread\_local\_object\_pool.h"{}}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ Implements\ a\ PDSCH\ processor\ with\ concurrent\ codeblock\ processing.}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ \(\backslash\)remark\ The\ number\ of\ PDSCH\ codeblock\ processor\ instances\ contained\ in\ \(\backslash\)ref\ cb\_processor\_pool\ must\ be\ equal\ to\ or}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ greater\ than\ the\ number\ of\ consumers\ in\ \(\backslash\)ref\ executor.\ Otherwise,\ an\ assertion\ is\ triggered\ at\ runtime.}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{pdsch\_processor\_concurrent\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor}{pdsch\_processor}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Codeblock\ processor\ pool\ type.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{using}\ codeblock\_processor\_pool\ =\ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool}{concurrent\_thread\_local\_object\_pool}}<\mbox{\hyperlink{classsrsran_1_1pdsch__codeblock__processor}{pdsch\_codeblock\_processor}}>;}
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ PDSCH\ DM-\/RS\ generator\ pool\ type.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{using}\ pdsch\_dmrs\_generator\_pool\ =\ \mbox{\hyperlink{classsrsran_1_1concurrent__thread__local__object__pool}{concurrent\_thread\_local\_object\_pool}}<\mbox{\hyperlink{classsrsran_1_1dmrs__pdsch__processor}{dmrs\_pdsch\_processor}}>;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Creates\ a\ concurrent\ PDSCH\ processor\ with\ all\ the\ dependencies.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ segmenter\_\ \ \ \ \ \ \ \ \ LDPC\ transmitter\ segmenter.}}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ cb\_processor\_pool\_\ Codeblock\ processor\ pool.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ scrambler\_\ \ \ \ \ \ \ \ \ Scrambling\ pseudo-\/random\ generator.}}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ dmrs\_\ \ \ \ \ \ \ \ \ \ \ \ \ \ DM-\/RS\ for\ PDSCH\ generator.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ executor\_\ \ \ \ \ \ \ \ \ \ Asynchronous\ task\ executor.}}
+\DoxyCodeLine{00051\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{pdsch\_processor\_concurrent\_impl}}(std::shared\_ptr<codeblock\_processor\_pool>\ \ cb\_processor\_pool\_,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<pseudo\_random\_generator>\ \ \ scrambler\_,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<pdsch\_dmrs\_generator\_pool>\ dmrs\_generator\_pool\_,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ executor\_)\ :}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{scrambler}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{std}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{move}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{scrambler\_}})),}
+\DoxyCodeLine{00056\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{cb\_processor\_pool}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{std}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{move}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{cb\_processor\_pool\_}})),}
+\DoxyCodeLine{00057\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{dmrs\_generator\_pool}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{std}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{move}}(\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_afbce1d83f2a76af8aba92ce20a21eaef}{dmrs\_generator\_pool\_}})),}
+\DoxyCodeLine{00058\ \ \ \ \ executor(executor\_)}
+\DoxyCodeLine{00059\ \ \ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(scrambler,\ \textcolor{stringliteral}{"{}Invalid\ scrambler\ pointer."{}});}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(cb\_processor\_pool,\ \textcolor{stringliteral}{"{}Invalid\ CB\ processor\ pool\ pointer."{}});}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(dmrs\_generator\_pool,\ \textcolor{stringliteral}{"{}Invalid\ DM-\/RS\ pointer."{}});}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl_ab1cb53e223cef66194ac508064e67f42}{process}}(resource\_grid\_mapper\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mapper,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__notifier}{pdsch\_processor\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notifier,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<span<\textcolor{keyword}{const}\ uint8\_t>,\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor_a6c6105b34bc5b25ffb234eddcbfe3f71}{MAX\_NOF\_TRANSPORT\_BLOCKS}}>\ data,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__processor_1_1pdu__t}{pdu\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ number\ of\ RE\ used\ for\ mapping\ PDSCH\ data.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ The\ number\ of\ RE\ excludes\ the\ elements\ described\ by\ \(\backslash\)c\ pdu\ as\ reserved\ and\ the\ RE\ used\ for\ DM-\/RS.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ pdu\ Describes\ a\ PDSCH\ transmission.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ number\ of\ resource\ elements.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ compute\_nof\_data\_re(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__processor_1_1pdu__t}{pdu\_t}}\&\ pdu);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Saves\ process()\ parameters\ for\ future\ uses\ during\ an\ asynchronous\ execution.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{void}\ save\_inputs(resource\_grid\_mapper\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mapper,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__notifier}{pdsch\_processor\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notifier,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<span<\textcolor{keyword}{const}\ uint8\_t>,\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor_a6c6105b34bc5b25ffb234eddcbfe3f71}{MAX\_NOF\_TRANSPORT\_BLOCKS}}>\ data,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__processor_1_1pdu__t}{pdu\_t}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdu);}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ Creates\ code\ block\ processing\ batches\ and\ starts\ the\ asynchronous\ processing.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keywordtype}{void}\ fork\_cb\_batches();}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ Processes\ PDSCH\ DM-\/RS.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{void}\ process\_dmrs();}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ Pseudo-\/random\ generator.}}
+\DoxyCodeLine{00093\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ scrambler;}
+\DoxyCodeLine{00094\ \ \ \textcolor{comment}{///\ Pool\ of\ code\ block\ processors.}}
+\DoxyCodeLine{00095\ \ \ std::shared\_ptr<codeblock\_processor\_pool>\ cb\_processor\_pool;}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ DM-\/RS\ processor.}}
+\DoxyCodeLine{00097\ \ \ std::shared\_ptr<pdsch\_dmrs\_generator\_pool>\ dmrs\_generator\_pool;}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Asynchronous\ task\ executor.}}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ executor;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ resource\_grid\_mapper*\ \ \ \ \ mapper;}
+\DoxyCodeLine{00102\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__notifier}{pdsch\_processor\_notifier}}*\ notifier;}
+\DoxyCodeLine{00103\ \ \ span<\textcolor{keyword}{const}\ uint8\_t>\ \ \ \ \ \ \ data;}
+\DoxyCodeLine{00104\ \ \ \mbox{\hyperlink{classsrsran_1_1pdsch__processor}{pdsch\_processor}}::\mbox{\hyperlink{structsrsran_1_1pdsch__processor_1_1pdu__t}{pdu\_t}}\ \ \ \ config;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ Transport\ block\ size\ of\ the\ current\ transmission.}}
+\DoxyCodeLine{00107\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ tbs;}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ Number\ of\ codeblocks\ of\ the\ current\ transmission.}}
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_cb\ =\ 0;}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ Number\ of\ modulated\ channel\ symbols.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_ch\_symbols\ =\ 0;}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Number\ of\ information\ bits\ per\ codeblock.}}
+\DoxyCodeLine{00113\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ cb\_info\_bits\ =\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{units}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{bits}}(0);}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ LDPC\ segment\ length.}}
+\DoxyCodeLine{00115\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ segment\_length\ =\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{units}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{bits}}(0);}
+\DoxyCodeLine{00116\ \ \ \textcolor{comment}{///\ Number\ of\ zeros\ that\ must\ be\ applied\ to\ the\ transport\ block.}}
+\DoxyCodeLine{00117\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ zero\_pad\ =\ \mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{units}}::\mbox{\hyperlink{classsrsran_1_1pdsch__processor__concurrent__impl}{bits}}(0);}
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ Base\ codeblock\ metadata.}}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{structsrsran_1_1codeblock__metadata}{codeblock\_metadata}}\ cb\_metadata;}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ PDSCH\ transmission\ allocation\ pattern.}}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\ allocation;}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ PDSCH\ transmission\ reserved\ elements\ pattern.}}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{classsrsran_1_1re__pattern__list}{re\_pattern\_list}}\ reserved;}
+\DoxyCodeLine{00124\ \ \ \textcolor{comment}{///\ Precoding\ configuration\ scaled.}}
+\DoxyCodeLine{00125\ \ \ \mbox{\hyperlink{classsrsran_1_1precoding__configuration}{precoding\_configuration}}\ precoding;}
+\DoxyCodeLine{00126\ \ \ \textcolor{comment}{///\ Rate\ matching\ length\ in\ bits\ for\ each\ of\ the\ segments.}}
+\DoxyCodeLine{00127\ \ \ static\_vector<units::bits,\ MAX\_NOF\_SEGMENTS>\ rm\_length;}
+\DoxyCodeLine{00128\ \ \ \textcolor{comment}{///\ Codeblock\ bit\ offset\ within\ the\ codeword.}}
+\DoxyCodeLine{00129\ \ \ static\_vector<units::bits,\ MAX\_NOF\_SEGMENTS>\ cw\_offset;}
+\DoxyCodeLine{00130\ \ \ \textcolor{comment}{///\ Codeblock\ resource\ block\ offset.}}
+\DoxyCodeLine{00131\ \ \ static\_vector<\textcolor{keywordtype}{unsigned},\ MAX\_NOF\_SEGMENTS>\ re\_offset;}
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ Pending\ code\ block\ batch\ counter.}}
+\DoxyCodeLine{00133\ \ \ std::atomic<\textcolor{keywordtype}{unsigned}>\ cb\_batch\_counter;}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ Pending\ asynchronous\ task\ counter\ (DM-\/RS\ and\ CB\ processing).}}
+\DoxyCodeLine{00135\ \ \ std::atomic<\textcolor{keywordtype}{unsigned}>\ async\_task\_counter;}
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

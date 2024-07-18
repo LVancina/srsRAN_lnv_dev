@@ -1,0 +1,217 @@
+\doxysection{bsr\+\_\+format.\+h}
+\hypertarget{bsr__format_8h_source}{}\label{bsr__format_8h_source}\index{include/srsran/mac/bsr\_format.h@{include/srsran/mac/bsr\_format.h}}
+\mbox{\hyperlink{bsr__format_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ \ Logical\ Channel\ Group\ and\ UL\ Buffer\ Size\ format\ definition\ and\ levels\ according\ to\ 3GPP\ TS38.321}}
+\DoxyCodeLine{00025\ \textcolor{comment}{///\ version\ 15.3.0}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/scheduler/config/logical\_channel\_group.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/error\_handling.h"{}}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{comment}{///\ TS\ 38.321,\ 6.1.3.1\ -\/\ Buffer\ Status\ Report\ MAC\ CEs}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a6cf999d5340bd0ec2a53bd85a7fe1e59}{bsr\_format}}\ \{\ SHORT\_BSR,\ LONG\_BSR,\ SHORT\_TRUNC\_BSR,\ LONG\_TRUNC\_BSR\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ to\_string(\mbox{\hyperlink{namespacesrsran_a6cf999d5340bd0ec2a53bd85a7fe1e59}{bsr\_format}}\ bsr)}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ std::array<\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*,\ 4>\ names\ =\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Short\ BSR"{}},\ \textcolor{stringliteral}{"{}Long\ BSR"{}},\ \textcolor{stringliteral}{"{}Short\ Truncated\ BSR"{}},\ \textcolor{stringliteral}{"{}Long\ Truncated\ BSR"{}}\};}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordflow}{return}\ (size\_t)bsr\ <\ names.size()\ ?\ names[(size\_t)bsr]\ :\ \textcolor{stringliteral}{"{}Invalid\ BSR\ format"{}};}
+\DoxyCodeLine{00043\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{comment}{///\ \(\backslash\)c\ periodicBSR-\/Timer,\ as\ part\ of\ BSR-\/Config,\ TS\ 38.331.}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}\ \{}
+\DoxyCodeLine{00047\ \ \ sf1\ \ \ \ \ \ =\ 1,}
+\DoxyCodeLine{00048\ \ \ sf5\ \ \ \ \ \ =\ 5,}
+\DoxyCodeLine{00049\ \ \ sf10\ \ \ \ \ =\ 10,}
+\DoxyCodeLine{00050\ \ \ sf16\ \ \ \ \ =\ 16,}
+\DoxyCodeLine{00051\ \ \ sf20\ \ \ \ \ =\ 20,}
+\DoxyCodeLine{00052\ \ \ sf32\ \ \ \ \ =\ 32,}
+\DoxyCodeLine{00053\ \ \ sf40\ \ \ \ \ =\ 40,}
+\DoxyCodeLine{00054\ \ \ sf64\ \ \ \ \ =\ 64,}
+\DoxyCodeLine{00055\ \ \ sf80\ \ \ \ \ =\ 80,}
+\DoxyCodeLine{00056\ \ \ sf128\ \ \ \ =\ 128,}
+\DoxyCodeLine{00057\ \ \ sf160\ \ \ \ =\ 160,}
+\DoxyCodeLine{00058\ \ \ sf320\ \ \ \ =\ 320,}
+\DoxyCodeLine{00059\ \ \ sf640\ \ \ \ =\ 640,}
+\DoxyCodeLine{00060\ \ \ sf1280\ \ \ =\ 1280,}
+\DoxyCodeLine{00061\ \ \ sf2560\ \ \ =\ 2560,}
+\DoxyCodeLine{00062\ \ \ infinity\ =\ 0}
+\DoxyCodeLine{00063\ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{comment}{///\ Return\ the\ value\ of\ \(\backslash\)ref\ periodic\_bsr\_timer.}}
+\DoxyCodeLine{00066\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{std}}::\mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{underlying\_type}}<\mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{periodic\_bsr\_timer}}>::\mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{type}}\ \mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{periodic\_bsr\_timer\_to\_value}}(\mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{periodic\_bsr\_timer}}\ \mbox{\hyperlink{namespacesrsran_a98acea21aa39ff9f5cb712eb41c23e4e}{timer}})}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<std::underlying\_type<periodic\_bsr\_timer>::type>(timer);}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{///\ Return\ the\ enum\ value\ of\ \(\backslash\)ref\ periodic\_bsr\_timer\ corresponding\ to\ give\ value.}}
+\DoxyCodeLine{00072\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}\ \mbox{\hyperlink{namespacesrsran_aaaf2de2ba7139b756f4d5d951259b9ce}{to\_periodic\_bsr\_timer}}(\textcolor{keywordtype}{unsigned}\ timer\_value)}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordflow}{switch}\ (timer\_value)\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{case}\ 1:}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf1;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{case}\ 5:}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf5;}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{case}\ 10:}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf10;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{case}\ 16:}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf16;}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{case}\ 20:}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf20;}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{case}\ 32:}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf32;}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{case}\ 40:}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf40;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{case}\ 64:}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf64;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{case}\ 80:}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf80;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{case}\ 128:}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf128;}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{case}\ 160:}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf160;}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{case}\ 320:}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf320;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{case}\ 640:}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf640;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{case}\ 1280:}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf1280;}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{case}\ 2560:}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::sf2560;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{case}\ 0:}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}::infinity;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ periodicBSR-\/Timer\ value=\{\}"{}},\ timer\_value);}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{comment}{///\ \(\backslash\)c\ retxBSR-\/Timer,\ as\ part\ of\ BSR-\/Config,\ TS\ 38.331.}}
+\DoxyCodeLine{00113\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}\ \{}
+\DoxyCodeLine{00114\ \ \ sf10\ \ \ \ =\ 10,}
+\DoxyCodeLine{00115\ \ \ sf20\ \ \ \ =\ 20,}
+\DoxyCodeLine{00116\ \ \ sf40\ \ \ \ =\ 40,}
+\DoxyCodeLine{00117\ \ \ sf80\ \ \ \ =\ 80,}
+\DoxyCodeLine{00118\ \ \ sf160\ \ \ =\ 160,}
+\DoxyCodeLine{00119\ \ \ sf320\ \ \ =\ 320,}
+\DoxyCodeLine{00120\ \ \ sf640\ \ \ =\ 640,}
+\DoxyCodeLine{00121\ \ \ sf1280\ \ =\ 1280,}
+\DoxyCodeLine{00122\ \ \ sf2560\ \ =\ 2560,}
+\DoxyCodeLine{00123\ \ \ sf5120\ \ =\ 5120,}
+\DoxyCodeLine{00124\ \ \ sf10240\ =\ 10240}
+\DoxyCodeLine{00125\ \};}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{comment}{///\ Return\ the\ value\ of\ \(\backslash\)ref\ retx\_bsr\_timer.}}
+\DoxyCodeLine{00128\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{std}}::\mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{underlying\_type}}<\mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{periodic\_bsr\_timer}}>::\mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{type}}\ \mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{retx\_bsr\_timer\_to\_value}}(\mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{retx\_bsr\_timer}}\ \mbox{\hyperlink{namespacesrsran_a2ac86eb17b2b524dbeec92988ed15fad}{timer}})}
+\DoxyCodeLine{00129\ \{}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<std::underlying\_type<periodic\_bsr\_timer>::type>(timer);}
+\DoxyCodeLine{00131\ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \textcolor{comment}{///\ Return\ the\ enum\ value\ of\ \(\backslash\)ref\ retx\_bsr\_timer\ corresponding\ to\ give\ value.}}
+\DoxyCodeLine{00134\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}\ \mbox{\hyperlink{namespacesrsran_ace01114f3a2cfad4d2dbc5f2b6729c5b}{to\_retx\_bsr\_timer}}(\textcolor{keywordtype}{unsigned}\ timer\_value)}
+\DoxyCodeLine{00135\ \{}
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordflow}{switch}\ (timer\_value)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{case}\ 10:}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf10;}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{case}\ 20:}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf20;}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordflow}{case}\ 40:}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf40;}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordflow}{case}\ 80:}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf80;}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{case}\ 160:}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf160;}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordflow}{case}\ 320:}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf320;}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{case}\ 640:}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf640;}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{case}\ 1280:}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf1280;}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{case}\ 2560:}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf2560;}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{case}\ 5120:}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf5120;}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{case}\ 10240:}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}::sf10240;}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ retxBSR-\/Timer\ value=\{\}"{}},\ timer\_value);}
+\DoxyCodeLine{00161\ \ \ \}}
+\DoxyCodeLine{00162\ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{comment}{///\ \(\backslash\)c\ logicalChannelSR-\/DelayTimer,\ as\ part\ of\ BSR-\/Config,\ TS\ 38.331.}}
+\DoxyCodeLine{00165\ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}\ \{}
+\DoxyCodeLine{00166\ \ \ sf20\ \ \ =\ 20,}
+\DoxyCodeLine{00167\ \ \ sf40\ \ \ =\ 40,}
+\DoxyCodeLine{00168\ \ \ sf64\ \ \ =\ 64,}
+\DoxyCodeLine{00169\ \ \ sf128\ \ =\ 128,}
+\DoxyCodeLine{00170\ \ \ sf512\ \ =\ 512,}
+\DoxyCodeLine{00171\ \ \ sf1024\ =\ 1024,}
+\DoxyCodeLine{00172\ \ \ sf2560\ =\ 2560}
+\DoxyCodeLine{00173\ \};}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \textcolor{comment}{///\ Return\ the\ value\ of\ \(\backslash\)ref\ logical\_channel\_sr\_delay\_timer.}}
+\DoxyCodeLine{00176\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{std}}::\mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{underlying\_type}}<\mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{periodic\_bsr\_timer}}>::\mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{type}}\ \mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{lc\_sr\_delay\_timer\_to\_value}}(\mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{logical\_channel\_sr\_delay\_timer}}\ \mbox{\hyperlink{namespacesrsran_a3dfe36d9bccd305d941d303ae8dd1a7a}{timer}})}
+\DoxyCodeLine{00177\ \{}
+\DoxyCodeLine{00178\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{static\_cast}<std::underlying\_type<periodic\_bsr\_timer>::type>(timer);}
+\DoxyCodeLine{00179\ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \textcolor{comment}{///\ Return\ the\ enum\ value\ of\ \(\backslash\)ref\ logical\_channel\_sr\_delay\_timer\ corresponding\ to\ give\ value.}}
+\DoxyCodeLine{00182\ \textcolor{keyword}{inline}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}\ \mbox{\hyperlink{namespacesrsran_a11055496ea07f128b31557d05457549c}{to\_lc\_sr\_delay\_timer}}(\textcolor{keywordtype}{unsigned}\ timer\_value)}
+\DoxyCodeLine{00183\ \{}
+\DoxyCodeLine{00184\ \ \ \textcolor{keywordflow}{switch}\ (timer\_value)\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keywordflow}{case}\ 20:}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf20;}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordflow}{case}\ 40:}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf40;}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordflow}{case}\ 64:}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf64;}
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordflow}{case}\ 128:}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf128;}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordflow}{case}\ 512:}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf512;}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{case}\ 1024:}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf1024;}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{case}\ 2560:}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}::sf2560;}
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ report\_fatal\_error(\textcolor{stringliteral}{"{}Invalid\ logicalChannelSR-\/DelayTimer\ value=\{\}"{}},\ timer\_value);}
+\DoxyCodeLine{00201\ \ \ \}}
+\DoxyCodeLine{00202\ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{comment}{///\ \(\backslash\)c\ BSR-\/Config,\ TS\ 38.331.}}
+\DoxyCodeLine{00205\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1bsr__config}{bsr\_config}}\ \{}
+\DoxyCodeLine{00206\ \ \ \mbox{\hyperlink{namespacesrsran_a78eb11858bef1e9d55f76dfe7c97e63b}{periodic\_bsr\_timer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ periodic\_timer;}
+\DoxyCodeLine{00207\ \ \ \mbox{\hyperlink{namespacesrsran_a4d15eba29b404cbb50cff45cb0ad4618}{retx\_bsr\_timer}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ retx\_timer;}
+\DoxyCodeLine{00208\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}<\mbox{\hyperlink{namespacesrsran_a04fcb4f16453f75844949699674ef8b1}{logical\_channel\_sr\_delay\_timer}}>\ lc\_sr\_delay\_timer;}
+\DoxyCodeLine{00209\ \};}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

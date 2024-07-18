@@ -135,7 +135,7 @@ private:
 
     // Interfacing to a shared external HARQ buffer context repository.
     unsigned nof_cbs                   = MAX_NOF_SEGMENTS;
-    uint64_t acc100_ext_harq_buff_size = bbdev_accelerator->get_harq_buff_size_bytes();
+    unsigned acc100_ext_harq_buff_size = bbdev_accelerator->get_harq_buff_size().value();
     std::shared_ptr<ext_harq_buffer_context_repository> harq_buffer_context =
         create_ext_harq_buffer_context_repository(nof_cbs, acc100_ext_harq_buff_size, false);
     if (!harq_buffer_context) {
@@ -229,15 +229,9 @@ private:
       return nullptr;
     }
 
-    std::shared_ptr<time_alignment_estimator_factory> ta_estimator_factory =
-        create_time_alignment_estimator_dft_factory(dft_factory);
-    if (!ta_estimator_factory) {
-      return nullptr;
-    }
-
     // Create port channel estimator factory.
     std::shared_ptr<port_channel_estimator_factory> port_chan_estimator_factory =
-        create_port_channel_estimator_factory_sw(ta_estimator_factory);
+        create_port_channel_estimator_factory_sw(dft_factory);
     if (!port_chan_estimator_factory) {
       return nullptr;
     }
@@ -325,12 +319,7 @@ protected:
     ASSERT_NE(pusch_proc_factory, nullptr) << "Invalid PUSCH processor factory.";
 
     // Create actual PUSCH processor.
-#if 0
-    srslog::init();
-    pusch_proc = pusch_proc_factory->create(srslog::fetch_basic_logger("PUSCH"));
-#else
     pusch_proc = pusch_proc_factory->create();
-#endif
     ASSERT_NE(pusch_proc, nullptr);
 
     // Create actual PUSCH processor validator.
@@ -377,9 +366,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   ASSERT_EQ(expected_data, data);
 
   // Make sure SINR is normal.
-  optional<float> sinr_dB = results_notifier.get_sch_entries().front().csi.get_sinr_dB();
-  ASSERT_TRUE(sinr_dB.has_value());
-  ASSERT_TRUE(std::isnormal(sinr_dB.value()));
+  ASSERT_TRUE(std::isnormal(results_notifier.get_sch_entries().front().csi.get_sinr_dB()));
 
   // Skip the rest of the assertions if UCI is not present.
   if ((config.uci.nof_harq_ack == 0) && (config.uci.nof_csi_part1 == 0) && config.uci.csi_part2_size.entries.empty()) {
@@ -392,9 +379,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortest)
   const auto& uci_entry = uci_entries.front();
 
   // Make sure SINR reported in UCI is normal.
-  sinr_dB = uci_entry.csi.get_sinr_dB();
-  ASSERT_TRUE(sinr_dB.has_value());
-  ASSERT_TRUE(std::isnormal(sinr_dB.value()));
+  ASSERT_TRUE(std::isnormal(uci_entry.csi.get_sinr_dB()));
 
   // Verify HARQ-ACK result.
   if (config.uci.nof_harq_ack > 0) {
@@ -460,9 +445,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   ASSERT_FALSE(sch_entry.data.tb_crc_ok);
 
   // Make sure SINR is infinity.
-  optional<float> sinr_dB = results_notifier.get_sch_entries().front().csi.get_sinr_dB();
-  ASSERT_TRUE(sinr_dB.has_value());
-  ASSERT_TRUE(std::isinf(sinr_dB.value()));
+  ASSERT_TRUE(std::isinf(results_notifier.get_sch_entries().front().csi.get_sinr_dB()));
 
   // Skip the rest of the assertions if UCI is not present.
   if ((config.uci.nof_harq_ack == 0) && (config.uci.nof_csi_part1 == 0) && config.uci.csi_part2_size.entries.empty()) {
@@ -475,8 +458,7 @@ TEST_P(PuschProcessorFixture, PuschProcessorVectortestZero)
   const auto& uci_entry = uci_entries.front();
 
   // Make sure SINR reported in UCI is normal.
-  sinr_dB = uci_entry.csi.get_sinr_dB();
-  ASSERT_TRUE(std::isinf(sinr_dB.value()));
+  ASSERT_TRUE(std::isinf(uci_entry.csi.get_sinr_dB()));
 
   // Verify HARQ-ACK result is invalid.
   if (config.uci.nof_harq_ack > 0) {

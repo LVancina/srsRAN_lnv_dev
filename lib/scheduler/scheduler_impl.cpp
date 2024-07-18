@@ -43,9 +43,6 @@ bool scheduler_impl::handle_cell_configuration_request(const sched_cell_configur
     return false;
   }
 
-  // Update logger with new cell index.
-  sched_ev_logger.enqueue(scheduler_event_logger::cell_creation_event{msg.cell_index, cell_cfg->pci});
-
   // Check if it is a new DU Cell Group.
   if (not groups.contains(msg.cell_group_index)) {
     // If it is a new group, create a new instance.
@@ -102,13 +99,6 @@ void scheduler_impl::handle_ue_removal_request(du_ue_index_t ue_index)
   du_cell_group_index_t grp_idx = cfg_mng.get_cell_group_index(ue_index);
   srsran_assert(grp_idx != INVALID_DU_CELL_GROUP_INDEX, "UE={} not yet created", ue_index);
   groups[grp_idx]->get_ue_configurator().handle_ue_deletion(std::move(ue_del_ev));
-}
-
-void scheduler_impl::handle_ue_config_applied(du_ue_index_t ue_index)
-{
-  du_cell_group_index_t grp_idx = cfg_mng.get_cell_group_index(ue_index);
-  srsran_assert(grp_idx != INVALID_DU_CELL_GROUP_INDEX, "UE={} not yet created", ue_index);
-  groups[grp_idx]->get_ue_configurator().handle_ue_config_applied(ue_index);
 }
 
 void scheduler_impl::handle_rach_indication(const rach_indication_message& msg)

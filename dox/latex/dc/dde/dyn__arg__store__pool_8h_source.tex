@@ -1,0 +1,91 @@
+\doxysection{dyn\+\_\+arg\+\_\+store\+\_\+pool.\+h}
+\hypertarget{dyn__arg__store__pool_8h_source}{}\label{dyn__arg__store__pool_8h_source}\index{include/srsran/srslog/detail/support/dyn\_arg\_store\_pool.h@{include/srsran/srslog/detail/support/dyn\_arg\_store\_pool.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/detail/support/backend\_capacity.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/core.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace}\ srslog\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ detail\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Keeps\ a\ pool\ of\ dynamic\_format\_arg\_store\ objects.\ The\ main\ reason\ for\ this\ class\ is\ that\ the\ arg\ store\ objects\ are}}
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ implemented\ with\ std::vectors,\ so\ we\ want\ to\ avoid\ allocating\ memory\ each\ time\ we\ create\ a\ new\ object.\ Instead,}}
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ reserve\ memory\ for\ each\ vector\ during\ initialization\ and\ recycle\ the\ objects.}}
+\DoxyCodeLine{00035\ \textcolor{keyword}{class}\ dyn\_arg\_store\_pool}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00038\ \ \ dyn\_arg\_store\_pool()}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ pool.resize(\mbox{\hyperlink{backend__capacity_8h_ab4804562280f29e5845293ec334b3707}{SRSLOG\_QUEUE\_CAPACITY}});}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ elem\ :\ pool)\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{comment}{//\ Reserve\ for\ 10\ normal\ and\ 2\ named\ arguments.}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ elem.reserve(10,\ 2);}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \ \ free\_list.reserve(\mbox{\hyperlink{backend__capacity_8h_ab4804562280f29e5845293ec334b3707}{SRSLOG\_QUEUE\_CAPACITY}});}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ elem\ :\ pool)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ free\_list.push\_back(\&elem);}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Returns\ a\ pointer\ to\ a\ free\ dyn\ arg\ store\ object,\ otherwise\ returns\ nullptr.}}
+\DoxyCodeLine{00052\ \ \ fmt::dynamic\_format\_arg\_store<fmt::format\_context>*\ alloc()}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ scoped\_lock\ lock(m);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (free\_list.empty())\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{auto}*\ p\ =\ free\_list.back();}
+\DoxyCodeLine{00060\ \ \ \ \ free\_list.pop\_back();}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ Deallocate\ the\ given\ dyn\ arg\ store\ object\ returning\ it\ to\ the\ pool.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keywordtype}{void}\ dealloc(fmt::dynamic\_format\_arg\_store<fmt::format\_context>*\ p)}
+\DoxyCodeLine{00067\ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (!p)\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ p-\/>clear();}
+\DoxyCodeLine{00073\ \ \ \ \ scoped\_lock\ lock(m);}
+\DoxyCodeLine{00074\ \ \ \ \ free\_list.push\_back(p);}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00078\ \ \ std::vector<fmt::dynamic\_format\_arg\_store<fmt::format\_context>>\ \ pool;}
+\DoxyCodeLine{00079\ \ \ std::vector<fmt::dynamic\_format\_arg\_store<fmt::format\_context>*>\ free\_list;}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{mutable}\ mutex\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m;}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

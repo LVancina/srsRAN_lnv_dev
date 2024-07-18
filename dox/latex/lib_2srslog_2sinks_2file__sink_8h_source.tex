@@ -1,0 +1,112 @@
+\doxysection{file\+\_\+sink.\+h}
+\hypertarget{lib_2srslog_2sinks_2file__sink_8h_source}{}\label{lib_2srslog_2sinks_2file__sink_8h_source}\index{lib/srslog/sinks/file\_sink.h@{lib/srslog/sinks/file\_sink.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}file\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/sink.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }srslog\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrslog_1_1sink}{sink}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}(std::string\ name,\ \textcolor{keywordtype}{size\_t}\ max\_size\_,\ \textcolor{keywordtype}{bool}\ force\_flush\_,\ std::unique\_ptr<log\_formatter>\ f)\ :}
+\DoxyCodeLine{00037\ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1sink}{sink}}(std::move(f)),}
+\DoxyCodeLine{00038\ \ \ \ \ max\_size((max\_size\_\ ==\ 0)\ ?\ 0\ :\ std::max<size\_t>(max\_size\_,\ 4\ *\ 1024)),}
+\DoxyCodeLine{00039\ \ \ \ \ force\_flush(force\_flush\_),}
+\DoxyCodeLine{00040\ \ \ \ \ base\_filename(std::move(name))}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00045\ \ \ \mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrslog_1_1file__sink}{file\_sink}}\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{detail::error\_string}}\ \mbox{\hyperlink{classsrslog_1_1file__sink_aeef71c2286f25955ced7a64c3afa5ba1}{write}}(\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer}{detail::memory\_buffer}}\ buffer)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00048\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Create\ a\ new\ file\ the\ first\ time\ we\ hit\ this\ method.}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{if}\ (is\_first\_write())\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ assert(!handler\ \&\&\ \textcolor{stringliteral}{"{}No\ handler\ should\ be\ created\ yet"{}});}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{auto}\ err\_str\ =\ create\_file())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ err\_str;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ Do\ not\ bother\ doing\ any\ work\ when\ the\ file\ was\ closed\ on\ a\ previous}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ error.}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{if}\ (!handler)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00061\ \ \ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{auto}\ err\_str\ =\ handle\_rotation(buffer.\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer_a911bbffed1ea236e25f5533ad1183791}{size}}()))\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ err\_str;}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (force\_flush)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \mbox{\hyperlink{classsrslog_1_1file__sink_aa22d9ba36bca69a2d6090cd22969fdb0}{flush}}();}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{return}\ handler.\mbox{\hyperlink{classsrslog_1_1file__utils_1_1file_ad07253657cab84fb7e9daf133eca55ad}{write}}(buffer);}
+\DoxyCodeLine{00072\ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{detail::error\_string}}\ \mbox{\hyperlink{classsrslog_1_1file__sink_a3393b7ae20a7557517ce70884f8fef07}{write\_error}}(\mbox{\hyperlink{classsrslog_1_1detail_1_1memory__buffer}{detail::memory\_buffer}}\ input\_buffer)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrslog_1_1file__sink_aeef71c2286f25955ced7a64c3afa5ba1}{write}}(input\_buffer);\ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1error__string}{detail::error\_string}}\ \mbox{\hyperlink{classsrslog_1_1file__sink_aa22d9ba36bca69a2d6090cd22969fdb0}{flush}}()\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ handler.\mbox{\hyperlink{classsrslog_1_1file__utils_1_1file_a7cde6bc69c56d58f1015345451ba415e}{flush}}();\ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00080\ \ \ uint32\_t\ \mbox{\hyperlink{classsrslog_1_1file__sink_a6443858b024ce99d36b7b31eb3783682}{get\_file\_index}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ file\_index;\ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{bool}\ is\_first\_write()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ file\_index\ ==\ 0;\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \ \ detail::error\_string\ create\_file()}
+\DoxyCodeLine{00089\ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{return}\ handler.\mbox{\hyperlink{classsrslog_1_1file__utils_1_1file_ac104918e45f47b7372eab90820b17110}{create}}(file\_utils::build\_filename\_with\_index(base\_filename,\ file\_index++));}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00095\ \ \ detail::error\_string\ handle\_rotation(\textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{00096\ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ assert(handler\ \&\&\ \textcolor{stringliteral}{"{}Expected\ a\ valid\ file\ handle"{}});}
+\DoxyCodeLine{00098\ \ \ \ \ current\_size\ +=\ size;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{if}\ (max\_size\ \&\&\ current\_size\ >=\ max\_size)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ current\_size\ =\ size;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ create\_file();}
+\DoxyCodeLine{00102\ \ \ \ \ \}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00107\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ max\_size;}
+\DoxyCodeLine{00108\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ force\_flush;}
+\DoxyCodeLine{00109\ \ \ \textcolor{keyword}{const}\ std::string\ base\_filename;}
+\DoxyCodeLine{00110\ \ \ file\_utils::file\ \ handler;}
+\DoxyCodeLine{00111\ \ \ \textcolor{keywordtype}{size\_t}\ \ \ \ \ \ \ \ \ \ \ \ current\_size\ =\ 0;}
+\DoxyCodeLine{00112\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ file\_index\ \ \ =\ 0;}
+\DoxyCodeLine{00113\ \};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

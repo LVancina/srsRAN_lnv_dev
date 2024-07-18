@@ -1,0 +1,116 @@
+\doxysection{ue\+\_\+task\+\_\+scheduler.\+h}
+\hypertarget{ue__task__scheduler_8h_source}{}\label{ue__task__scheduler_8h_source}\index{lib/cu\_cp/ue\_manager/ue\_task\_scheduler.h@{lib/cu\_cp/ue\_manager/ue\_task\_scheduler.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/cu\_cp/cu\_cp\_types.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/async/fifo\_async\_task\_scheduler.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }srs\_cu\_cp\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }ue\_task\_scheduler\_manager;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{using\ }ue\_element\ =\ std::pair<const\ ue\_index\_t,\ std::unique\_ptr<fifo\_async\_task\_scheduler>>;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00043\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}\&\ parent\_,\ ue\_element\&\ ue\_sched\_)\ :\ parent(\&parent\_),\ ue\_sched(\&ue\_sched\_)}
+\DoxyCodeLine{00044\ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \}}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ noexcept\ :}
+\DoxyCodeLine{00047\ \ \ \ \ parent(std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.parent,\ \textcolor{keyword}{nullptr})),\ ue\_sched(std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.ue\_sched,\ \textcolor{keyword}{nullptr}))}
+\DoxyCodeLine{00048\ \ \ \{}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00051\ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler_ac6c05e7f404a7e7a2856db6cd36fec3e}{stop}}();}
+\DoxyCodeLine{00053\ \ \ \ \ parent\ \ \ =\ std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.parent,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00054\ \ \ \ \ ue\_sched\ =\ std::exchange(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.ue\_sched,\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{\string~ue\_task\_scheduler}}()\ \{\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler_ac6c05e7f404a7e7a2856db6cd36fec3e}{stop}}();\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler_ac5602d5ab2310ad98682a4b6470bfaa9}{schedule\_async\_task}}(\mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\ task)}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ srsran\_assert(parent\ !=\ \textcolor{keyword}{nullptr},\ \textcolor{stringliteral}{"{}UE\ task\ scheduler\ not\ set"{}});}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ ue\_sched-\/>second-\/>schedule(std::move(task));}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler_ae18ecf9d2f316458d1e04b7e0ea9b02a}{create\_timer}}();}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ get\_timer\_factory();}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler_ac6c05e7f404a7e7a2856db6cd36fec3e}{stop}}();}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}*\ parent\ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00080\ \ \ ue\_element*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_sched\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler__manager}{ue\_task\_scheduler\_manager}}(\mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ timers\_,\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ exec\_,\ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger\_);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}}\ create\_ue\_task\_sched(ue\_index\_t\ ue\_idx);}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{//\ UE\ task\ scheduler}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{void}\ handle\_ue\_async\_task(ue\_index\_t\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<void>}}\&\&\ task);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ clear\_pending\_tasks(ue\_index\_t\ ue\_index);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsrsran_1_1async__task}{async\_task<bool>}}\ dispatch\_and\_await\_task\_completion(ue\_index\_t\ ue\_index,\ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task);}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ \ \ make\_unique\_timer();}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ get\_timer\_manager();}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1srs__cu__cp_1_1ue__task__scheduler}{ue\_task\_scheduler}};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{keywordtype}{void}\ rem\_ue\_task\_loop(ue\_index\_t\ ue\_idx);}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{classsrsran_1_1timer__manager}{timer\_manager}}\&\ \ \ \ \ \ \ \ timers;}
+\DoxyCodeLine{00109\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ exec;}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{//\ task\ event\ loops\ indexed\ by\ ue\_index}}
+\DoxyCodeLine{00113\ \ \ std::unordered\_map<ue\_index\_t,\ std::unique\_ptr<fifo\_async\_task\_scheduler>>\ ue\_ctrl\_loop;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \mbox{\hyperlink{classsrsran_1_1fifo__async__task__scheduler}{fifo\_async\_task\_scheduler}}\ ues\_to\_rem;}
+\DoxyCodeLine{00116\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \}\ \textcolor{comment}{//\ namespace\ srs\_cu\_cp}}
+\DoxyCodeLine{00119\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

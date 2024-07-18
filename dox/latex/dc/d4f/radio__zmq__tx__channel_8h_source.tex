@@ -1,0 +1,138 @@
+\doxysection{radio\+\_\+zmq\+\_\+tx\+\_\+channel.\+h}
+\hypertarget{radio__zmq__tx__channel_8h_source}{}\label{radio__zmq__tx__channel_8h_source}\index{lib/radio/zmq/radio\_zmq\_tx\_channel.h@{lib/radio/zmq/radio\_zmq\_tx\_channel.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{radio__zmq__tx__channel__fsm_8h}{"{}radio\_zmq\_tx\_channel\_fsm.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/blocking\_queue.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_reader.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/radio/radio\_notification\_handler.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srslog/srslog.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/async/async\_queue.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{atomic}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{set}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{zmq}\textcolor{preprocessor}{.}\textcolor{preprocessor}{h}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel}{radio\_zmq\_tx\_channel}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Lists\ the\ supported\ socket\ types.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::set<\textcolor{keywordtype}{int}>\ VALID\_SOCKET\_TYPES;}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Wait\ time\ after\ a\ buffer\ try\ push\ failed.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{const}\ std::chrono::microseconds\ circ\_buffer\_try\_push\_sleep\{1\};}
+\DoxyCodeLine{00045\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ trials\ for\ binding.}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BIND\_MAX\_TRIALS\ =\ 10;}
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Sleep\ time\ after\ a\ bind\ failure\ in\ seconds.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ BIND\_FAILURE\_SLEEP\_SECONDS\ =\ 1;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Indicates\ the\ stream\ identifier.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ stream\_id;}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ Channel\ identifier.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{unsigned}\ channel\_id;}
+\DoxyCodeLine{00054\ \ \ \textcolor{comment}{///\ Indicates\ the\ stream\ identifier\ string.}}
+\DoxyCodeLine{00055\ \ \ std::string\ channel\_id\_str;}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ Indicates\ the\ current\ state\ of\ the\ stream.}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__zmq__tx__channel__fsm}{radio\_zmq\_tx\_channel\_fsm}}\ state\_fsm;}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ ZMQ\ socket.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}*\ sock\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///\ ZMQ\ socket\ type.}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{int}\ socket\_type;}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ Logger.}}
+\DoxyCodeLine{00063\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ Stores\ transmit\ buffer.}}
+\DoxyCodeLine{00065\ \ \ blocking\_queue<cf\_t>\ circular\_buffer;}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Transmission\ buffer.}}
+\DoxyCodeLine{00067\ \ \ std::vector<cf\_t>\ buffer;}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ Notification\ handler.}}
+\DoxyCodeLine{00069\ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notification\_handler;}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Asynchronous\ task\ executor.}}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ async\_executor;}
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{///\ Indicates\ the\ number\ of\ transmitted\ samples.\ Protected\ for\ concurrent\ read-\/write.}}
+\DoxyCodeLine{00073\ \ \ std::atomic<uint64\_t>\ sample\_count\ =\ \{0\};}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ Protects\ concurrent\ transmit\ alignment\ operations\ from\ the\ receiver\ thread.}}
+\DoxyCodeLine{00075\ \ \ std::mutex\ \ \ \ \ \ \ \ \ \ \ \ \ \ transmit\_alignment\_mutex;}
+\DoxyCodeLine{00076\ \ \ std::condition\_variable\ transmit\_alignment\_cvar;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ std::atomic<\textcolor{keywordtype}{bool}>\ is\_tx\_enabled\ =\ \{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ Transmits\ a\ single\ sample.}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{void}\ transmit\_samples(span<\textcolor{keyword}{const}\ cf\_t>\ data);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ Describes\ the\ necessary\ parameters\ to\ create\ a\ ZMQ\ Tx\ channel.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description}{channel\_description}}\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ socket\ type.}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_ac3f972dc39e9de86c9320a3e9bbeee8c}{socket\_type}};}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ address\ to\ bind.}}
+\DoxyCodeLine{00089\ \ \ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_ace456f5d1d54815714ca9d15892aec1c}{address}};}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{///\ Stream\ identifier.}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_a01ff4d5734de07076d9102860a0b2684}{stream\_id}};}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{///\ Channel\ identifier.}}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_a0f72d9abcbd29121ae300b8b80ba4a8f}{channel\_id}};}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{///\ Stream\ identifier\ string.}}
+\DoxyCodeLine{00095\ \ \ \ \ std::string\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_aa84d348b7f362b5fd1293118175a5a8e}{channel\_id\_str}};}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{///\ Logging\ level.}}
+\DoxyCodeLine{00097\ \ \ \ \ srslog::basic\_levels\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_ac27846f67f88f5befb950be32e20a546}{log\_level}};}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ socket\ send\ and\ receive\ timeout\ in\ milliseconds.\ It\ is\ ignored\ if\ it\ is\ zero.}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_ad13bb165eea93dac1eefcb1b6ff32895}{trx\_timeout\_ms}};}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{///\ Indicates\ the\ socket\ linger\ timeout\ in\ milliseconds.\ If\ is\ ignored\ if\ trx\_timeout\_ms\ is\ zero.}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_a1209a5cbe417bd0c42fa7568773f525e}{linger\_timeout\_ms}};}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{comment}{///\ Buffer\ size.}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description_ace743f074592e82c58199ef107dcb83d}{buffer\_size}};}
+\DoxyCodeLine{00104\ \ \ \};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ radio\_zmq\_tx\_channel(\textcolor{keywordtype}{void}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zmq\_context,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1radio__zmq__tx__channel_1_1channel__description}{channel\_description}}\&\ \ config,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1radio__notification__handler}{radio\_notification\_handler}}\&\ notification\_handler,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ async\_executor\_);}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \string~radio\_zmq\_tx\_channel();}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{bool}\ is\_successful()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ state\_fsm.is\_initiated();\ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keywordtype}{void}\ receive\_request();}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{keywordtype}{void}\ send\_response();}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \textcolor{keywordtype}{void}\ run\_async();}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \textcolor{keywordtype}{bool}\ align(uint64\_t\ timestamp,\ std::chrono::milliseconds\ timeout);}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \textcolor{keywordtype}{void}\ transmit(span<\textcolor{keyword}{const}\ cf\_t>\ buffer);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{void}\ start(uint64\_t\ init\_time);}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{void}\ wait\_stop();}
+\DoxyCodeLine{00130\ \};}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

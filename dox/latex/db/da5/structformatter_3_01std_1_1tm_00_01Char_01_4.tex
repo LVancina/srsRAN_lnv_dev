@@ -1,0 +1,89 @@
+\doxysection{formatter\texorpdfstring{$<$}{<} std\+::tm, Char \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structformatter_3_01std_1_1tm_00_01Char_01_4}{}\label{structformatter_3_01std_1_1tm_00_01Char_01_4}\index{formatter$<$ std::tm, Char $>$@{formatter$<$ std::tm, Char $>$}}
+
+
+Collaboration diagram for formatter\texorpdfstring{$<$}{<} std\+::tm, Char \texorpdfstring{$>$}{>}\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{d3/d6d/structformatter_3_01std_1_1tm_00_01Char_01_4__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Parse\+Context $>$ }\\auto \mbox{\hyperlink{structformatter_3_01std_1_1tm_00_01Char_01_4_a48e18c3d8fc0bf234d6981a60828f5ca}{parse}} (Parse\+Context \&ctx) -\/$>$ decltype(ctx.\+begin())
+\item 
+{\footnotesize template$<$typename Format\+Context $>$ }\\auto \mbox{\hyperlink{structformatter_3_01std_1_1tm_00_01Char_01_4_ab9ede05d9788f38bfc435af29d7fefe0}{format}} (const std\+::tm \&tm, Format\+Context \&ctx) -\/$>$ decltype(ctx.\+out())
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structformatter_3_01std_1_1tm_00_01Char_01_4_a2a9d9612580cc86f7670f68eb150ca95}\label{structformatter_3_01std_1_1tm_00_01Char_01_4_a2a9d9612580cc86f7670f68eb150ca95} 
+\mbox{\hyperlink{classbasic__memory__buffer}{basic\+\_\+memory\+\_\+buffer}}$<$ Char $>$ {\bfseries tm\+\_\+format}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structformatter_3_01std_1_1tm_00_01Char_01_4_ab9ede05d9788f38bfc435af29d7fefe0}\label{structformatter_3_01std_1_1tm_00_01Char_01_4_ab9ede05d9788f38bfc435af29d7fefe0} 
+\index{formatter$<$ std::tm, Char $>$@{formatter$<$ std::tm, Char $>$}!format@{format}}
+\index{format@{format}!formatter$<$ std::tm, Char $>$@{formatter$<$ std::tm, Char $>$}}
+\doxysubsubsection{\texorpdfstring{format()}{format()}}
+{\footnotesize\ttfamily template$<$typename Char $>$ \\
+template$<$typename Format\+Context $>$ \\
+auto \mbox{\hyperlink{structformatter}{formatter}}$<$ std\+::tm, Char $>$\+::format (\begin{DoxyParamCaption}\item[{const std\+::tm \&}]{tm,  }\item[{Format\+Context \&}]{ctx }\end{DoxyParamCaption}) -\/$>$ decltype(ctx.\+out()) \hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00417\ \ \ \ \ \mbox{\hyperlink{classbasic__memory__buffer}{basic\_memory\_buffer<Char>}}\ buf;}
+\DoxyCodeLine{00418\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ start\ =\ buf.\mbox{\hyperlink{classdetail_1_1buffer_ac72e23b3cef99b3e4b6a13f7cf86a421}{size}}();}
+\DoxyCodeLine{00419\ \ \ \ \ \textcolor{keywordflow}{for}\ (;;)\ \{}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ size\ =\ buf.\mbox{\hyperlink{classdetail_1_1buffer_a052710e423be8292ca133c6fc1acce94}{capacity}}()\ -\/\ start;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\ =\ detail::strftime(\&buf[start],\ size,\ \&tm\_format[0],\ \&tm);}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ !=\ 0)\ \{}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ buf.\mbox{\hyperlink{classdetail_1_1buffer_a047b15e5092d670624e39b98348725ce}{resize}}(start\ +\ count);}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ >=\ tm\_format.\mbox{\hyperlink{classdetail_1_1buffer_ac72e23b3cef99b3e4b6a13f7cf86a421}{size}}()\ *\ 256)\ \{}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ buffer\ is\ 256\ times\ larger\ than\ the\ format\ string,\ assume}}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ that\ \`{}strftime`\ gives\ an\ empty\ result.\ There\ doesn't\ seem\ to\ be\ a}}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ better\ way\ to\ distinguish\ the\ two\ cases:}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ https://github.com/fmtlib/fmt/issues/367}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ MIN\_GROWTH\ =\ 10;}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ buf.\mbox{\hyperlink{classdetail_1_1buffer_aac32786dc8067500882d17ab2bdcc691}{reserve}}(buf.\mbox{\hyperlink{classdetail_1_1buffer_a052710e423be8292ca133c6fc1acce94}{capacity}}()\ +\ (size\ >\ MIN\_GROWTH\ ?\ size\ :\ MIN\_GROWTH));}
+\DoxyCodeLine{00435\ \ \ \ \ \}}
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{keywordflow}{return}\ std::copy(buf.begin(),\ buf.end(),\ ctx.out());}
+\DoxyCodeLine{00437\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structformatter_3_01std_1_1tm_00_01Char_01_4_a48e18c3d8fc0bf234d6981a60828f5ca}\label{structformatter_3_01std_1_1tm_00_01Char_01_4_a48e18c3d8fc0bf234d6981a60828f5ca} 
+\index{formatter$<$ std::tm, Char $>$@{formatter$<$ std::tm, Char $>$}!parse@{parse}}
+\index{parse@{parse}!formatter$<$ std::tm, Char $>$@{formatter$<$ std::tm, Char $>$}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}}
+{\footnotesize\ttfamily template$<$typename Char $>$ \\
+template$<$typename Parse\+Context $>$ \\
+auto \mbox{\hyperlink{structformatter}{formatter}}$<$ std\+::tm, Char $>$\+::parse (\begin{DoxyParamCaption}\item[{Parse\+Context \&}]{ctx }\end{DoxyParamCaption}) -\/$>$ decltype(ctx.\+begin()) \hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00405\ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ctx.begin();}
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ ctx.end()\ \&\&\ *it\ ==\ \textcolor{charliteral}{':'})\ ++it;}
+\DoxyCodeLine{00407\ \ \ \ \ \textcolor{keyword}{auto}\ end\ =\ it;}
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{while}\ (end\ !=\ ctx.end()\ \&\&\ *end\ !=\ \textcolor{charliteral}{'\}'})\ ++end;}
+\DoxyCodeLine{00409\ \ \ \ \ tm\_format.\mbox{\hyperlink{classdetail_1_1buffer_aac32786dc8067500882d17ab2bdcc691}{reserve}}(detail::to\_unsigned(end\ -\/\ it\ +\ 1));}
+\DoxyCodeLine{00410\ \ \ \ \ tm\_format.\mbox{\hyperlink{classdetail_1_1buffer_ab12c0beccf64adf0091468e357ed4b92}{append}}(it,\ end);}
+\DoxyCodeLine{00411\ \ \ \ \ tm\_format.push\_back(\textcolor{charliteral}{'\(\backslash\)0'});}
+\DoxyCodeLine{00412\ \ \ \ \ \textcolor{keywordflow}{return}\ end;}
+\DoxyCodeLine{00413\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+external/fmt/include/fmt/chrono.\+h\end{DoxyCompactItemize}

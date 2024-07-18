@@ -161,7 +161,7 @@ bool bit_decoder::unpack_bytes(srsran::span<uint8_t> bytes)
   }
   if (offset == 0) {
     // Aligned case
-    std::copy(it, it + bytes.size(), bytes.begin());
+    std::copy(buffer.begin(), buffer.end(), bytes.begin());
     it += bytes.size();
   } else {
     // Unaligned case

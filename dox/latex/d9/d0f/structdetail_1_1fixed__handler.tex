@@ -1,0 +1,106 @@
+\doxysection{detail\+::fixed\+\_\+handler Struct Reference}
+\hypertarget{structdetail_1_1fixed__handler}{}\label{structdetail_1_1fixed__handler}\index{detail::fixed\_handler@{detail::fixed\_handler}}
+
+
+Collaboration diagram for detail\+::fixed\+\_\+handler\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=250pt]{db/dea/structdetail_1_1fixed__handler__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+digits\+::result \mbox{\hyperlink{structdetail_1_1fixed__handler_ab9acaf777ee54b98f6169bac1483e787}{on\+\_\+start}} (uint64\+\_\+t divisor, uint64\+\_\+t remainder, uint64\+\_\+t error, \mbox{\hyperlink{classint}{int}} \&exp)
+\item 
+digits\+::result \mbox{\hyperlink{structdetail_1_1fixed__handler_a10ad7dbb5ca338a1773853047da3b250}{on\+\_\+digit}} (\mbox{\hyperlink{classchar}{char}} digit, uint64\+\_\+t divisor, uint64\+\_\+t remainder, uint64\+\_\+t error, \mbox{\hyperlink{classint}{int}}, \mbox{\hyperlink{classbool}{bool}} integral)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structdetail_1_1fixed__handler_a78a98c903bca4009a5e73a3d2315f7ce}\label{structdetail_1_1fixed__handler_a78a98c903bca4009a5e73a3d2315f7ce} 
+\mbox{\hyperlink{classchar}{char}} \texorpdfstring{$\ast$}{*} {\bfseries buf}
+\item 
+\Hypertarget{structdetail_1_1fixed__handler_ad106b35080d9eb7342b517a4a2990abe}\label{structdetail_1_1fixed__handler_ad106b35080d9eb7342b517a4a2990abe} 
+\mbox{\hyperlink{classint}{int}} {\bfseries size}
+\item 
+\Hypertarget{structdetail_1_1fixed__handler_ad4d829fb18d6472488b6167e35aaf7e5}\label{structdetail_1_1fixed__handler_ad4d829fb18d6472488b6167e35aaf7e5} 
+\mbox{\hyperlink{classint}{int}} {\bfseries precision}
+\item 
+\Hypertarget{structdetail_1_1fixed__handler_ae21abd3ac1c15afbc67845f14cc2421d}\label{structdetail_1_1fixed__handler_ae21abd3ac1c15afbc67845f14cc2421d} 
+\mbox{\hyperlink{classint}{int}} {\bfseries exp10}
+\item 
+\Hypertarget{structdetail_1_1fixed__handler_a628fd0af627cad64a97cd22184783bc8}\label{structdetail_1_1fixed__handler_a628fd0af627cad64a97cd22184783bc8} 
+\mbox{\hyperlink{classbool}{bool}} {\bfseries fixed}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structdetail_1_1fixed__handler_a10ad7dbb5ca338a1773853047da3b250}\label{structdetail_1_1fixed__handler_a10ad7dbb5ca338a1773853047da3b250} 
+\index{detail::fixed\_handler@{detail::fixed\_handler}!on\_digit@{on\_digit}}
+\index{on\_digit@{on\_digit}!detail::fixed\_handler@{detail::fixed\_handler}}
+\doxysubsubsection{\texorpdfstring{on\_digit()}{on\_digit()}}
+{\footnotesize\ttfamily digits\+::result detail\+::fixed\+\_\+handler\+::on\+\_\+digit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classchar}{char}}}]{digit,  }\item[{uint64\+\_\+t}]{divisor,  }\item[{uint64\+\_\+t}]{remainder,  }\item[{uint64\+\_\+t}]{error,  }\item[{\mbox{\hyperlink{classint}{int}}}]{,  }\item[{\mbox{\hyperlink{classbool}{bool}}}]{integral }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00917\ \ \ \ \ FMT\_ASSERT(remainder\ <\ divisor,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00918\ \ \ \ \ buf[size++]\ =\ digit;}
+\DoxyCodeLine{00919\ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ <\ precision)\ \textcolor{keywordflow}{return}\ digits::more;}
+\DoxyCodeLine{00920\ \ \ \ \ \textcolor{keywordflow}{if}\ (!integral)\ \{}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ if\ error\ *\ 2\ <\ divisor\ with\ overflow\ prevention.}}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \textcolor{comment}{//\ The\ check\ is\ not\ needed\ for\ the\ integral\ part\ because\ error\ =\ 1}}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \textcolor{comment}{//\ and\ divisor\ >\ (1\ <<\ 32)\ there.}}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (error\ >=\ divisor\ ||\ error\ >=\ divisor\ -\/\ error)\ \textcolor{keywordflow}{return}\ digits::error;}
+\DoxyCodeLine{00925\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ FMT\_ASSERT(error\ ==\ 1\ \&\&\ divisor\ >\ 2,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00927\ \ \ \ \ \}}
+\DoxyCodeLine{00928\ \ \ \ \ \textcolor{keyword}{auto}\ dir\ =\ get\_round\_direction(divisor,\ remainder,\ error);}
+\DoxyCodeLine{00929\ \ \ \ \ \textcolor{keywordflow}{if}\ (dir\ !=\ round\_direction::up)}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dir\ ==\ round\_direction::down\ ?\ digits::done\ :\ digits::error;}
+\DoxyCodeLine{00931\ \ \ \ \ ++buf[size\ -\/\ 1];}
+\DoxyCodeLine{00932\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ size\ -\/\ 1;\ i\ >\ 0\ \&\&\ buf[i]\ >\ \textcolor{charliteral}{'9'};\ -\/-\/i)\ \{}
+\DoxyCodeLine{00933\ \ \ \ \ \ \ buf[i]\ =\ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ ++buf[i\ -\/\ 1];}
+\DoxyCodeLine{00935\ \ \ \ \ \}}
+\DoxyCodeLine{00936\ \ \ \ \ \textcolor{keywordflow}{if}\ (buf[0]\ >\ \textcolor{charliteral}{'9'})\ \{}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ buf[0]\ =\ \textcolor{charliteral}{'1'};}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ buf[size++]\ =\ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{00939\ \ \ \ \ \}}
+\DoxyCodeLine{00940\ \ \ \ \ \textcolor{keywordflow}{return}\ digits::done;}
+\DoxyCodeLine{00941\ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structdetail_1_1fixed__handler_ab9acaf777ee54b98f6169bac1483e787}\label{structdetail_1_1fixed__handler_ab9acaf777ee54b98f6169bac1483e787} 
+\index{detail::fixed\_handler@{detail::fixed\_handler}!on\_start@{on\_start}}
+\index{on\_start@{on\_start}!detail::fixed\_handler@{detail::fixed\_handler}}
+\doxysubsubsection{\texorpdfstring{on\_start()}{on\_start()}}
+{\footnotesize\ttfamily digits\+::result detail\+::fixed\+\_\+handler\+::on\+\_\+start (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{divisor,  }\item[{uint64\+\_\+t}]{remainder,  }\item[{uint64\+\_\+t}]{error,  }\item[{\mbox{\hyperlink{classint}{int}} \&}]{exp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00900\ \ \ \ \ \textcolor{comment}{//\ Non-\/fixed\ formats\ require\ at\ least\ one\ digit\ and\ no\ precision\ adjustment.}}
+\DoxyCodeLine{00901\ \ \ \ \ \textcolor{keywordflow}{if}\ (!fixed)\ \textcolor{keywordflow}{return}\ digits::more;}
+\DoxyCodeLine{00902\ \ \ \ \ \textcolor{comment}{//\ Adjust\ fixed\ precision\ by\ exponent\ because\ it\ is\ relative\ to\ decimal}}
+\DoxyCodeLine{00903\ \ \ \ \ \textcolor{comment}{//\ point.}}
+\DoxyCodeLine{00904\ \ \ \ \ precision\ +=\ exp\ +\ exp10;}
+\DoxyCodeLine{00905\ \ \ \ \ \textcolor{comment}{//\ Check\ if\ precision\ is\ satisfied\ just\ by\ leading\ zeros,\ e.g.}}
+\DoxyCodeLine{00906\ \ \ \ \ \textcolor{comment}{//\ format("{}\{:.2f\}"{},\ 0.001)\ gives\ "{}0.00"{}\ without\ generating\ any\ digits.}}
+\DoxyCodeLine{00907\ \ \ \ \ \textcolor{keywordflow}{if}\ (precision\ >\ 0)\ \textcolor{keywordflow}{return}\ digits::more;}
+\DoxyCodeLine{00908\ \ \ \ \ \textcolor{keywordflow}{if}\ (precision\ <\ 0)\ \textcolor{keywordflow}{return}\ digits::done;}
+\DoxyCodeLine{00909\ \ \ \ \ \textcolor{keyword}{auto}\ dir\ =\ get\_round\_direction(divisor,\ remainder,\ error);}
+\DoxyCodeLine{00910\ \ \ \ \ \textcolor{keywordflow}{if}\ (dir\ ==\ round\_direction::unknown)\ \textcolor{keywordflow}{return}\ digits::error;}
+\DoxyCodeLine{00911\ \ \ \ \ buf[size++]\ =\ dir\ ==\ round\_direction::up\ ?\ \textcolor{charliteral}{'1'}\ :\ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{00912\ \ \ \ \ \textcolor{keywordflow}{return}\ digits::done;}
+\DoxyCodeLine{00913\ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+external/fmt/include/fmt/format-\/inl.\+h\end{DoxyCompactItemize}

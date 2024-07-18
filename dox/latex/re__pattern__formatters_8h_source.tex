@@ -1,0 +1,61 @@
+\doxysection{re\+\_\+pattern\+\_\+formatters.\+h}
+\hypertarget{re__pattern__formatters_8h_source}{}\label{re__pattern__formatters_8h_source}\index{include/srsran/phy/support/re\_pattern\_formatters.h@{include/srsran/phy/support/re\_pattern\_formatters.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/support/re\_pattern.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/format\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <fmt/format.h>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ \(\backslash\)brief\ Custom\ formatter\ for\ \(\backslash\)c\ re\_pattern.}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00032\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::re\_pattern>\ \{}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{classsrsran_1_1delimited__formatter}{srsran::delimited\_formatter}}\ \mbox{\hyperlink{structfmt_1_1formatter_3_01srsran_1_1re__pattern_01_4_a317a91defe6b965e1af16a329820a4d3}{helper}};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00037\ \ \ \mbox{\hyperlink{structfmt_1_1formatter_3_01srsran_1_1re__pattern_01_4_a0f39d6e6247f55eeb325fd8e4ec328e5}{formatter}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{return}\ helper.\mbox{\hyperlink{classsrsran_1_1delimited__formatter_a912882cff013608c84c80510c4a75a79}{parse}}(ctx);}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1re__pattern}{srsran::re\_pattern}}\&\ pattern,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ helper.\mbox{\hyperlink{classsrsran_1_1delimited__formatter_a51c730285b37ddaaf185b855f392dc02}{format\_always}}(}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ ctx,\ \textcolor{stringliteral}{"{}symb=\{:n\}"{}},\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classsrsran_1_1bounded__bitset}{srsran::bounded\_bitset<srsran::MAX\_NSYMB\_PER\_SLOT>}}\textcolor{keyword}{>}(pattern.symbols));}
+\DoxyCodeLine{00050\ \ \ \ \ helper.\mbox{\hyperlink{classsrsran_1_1delimited__formatter_a51c730285b37ddaaf185b855f392dc02}{format\_always}}(ctx,\ \textcolor{stringliteral}{"{}rb=\{:n\}"{}},\ pattern.prb\_mask);}
+\DoxyCodeLine{00051\ \ \ \ \ helper.\mbox{\hyperlink{classsrsran_1_1delimited__formatter_a51c730285b37ddaaf185b855f392dc02}{format\_always}}(ctx,\ \textcolor{stringliteral}{"{}re=\{:n\}"{}},\ \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{classsrsran_1_1bounded__bitset}{srsran::bounded\_bitset<srsran::NRE>}}\textcolor{keyword}{>}(pattern.re\_mask));}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.out();}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

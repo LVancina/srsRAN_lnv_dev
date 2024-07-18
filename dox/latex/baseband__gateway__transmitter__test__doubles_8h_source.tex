@@ -1,0 +1,61 @@
+\doxysection{baseband\+\_\+gateway\+\_\+transmitter\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{baseband__gateway__transmitter__test__doubles_8h_source}{}\label{baseband__gateway__transmitter__test__doubles_8h_source}\index{tests/unittests/gateways/baseband/baseband\_gateway\_transmitter\_test\_doubles.h@{tests/unittests/gateways/baseband/baseband\_gateway\_transmitter\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}baseband\_gateway\_buffer\_test\_doubles.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/baseband\_gateway\_transmitter.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter__spy}{baseband\_gateway\_transmitter\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter}{baseband\_gateway\_transmitter}}}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1baseband__gateway__transmitter__spy_1_1entry__t}{entry\_t}}\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__transmitter__metadata}{baseband\_gateway\_transmitter\_metadata}}\ metadata;}
+\DoxyCodeLine{00035\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}\ \ \ \ \ data;}
+\DoxyCodeLine{00036\ \ \ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter__spy_af89a59ea542683fb578b18fde764cee8}{transmit}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ data,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__transmitter__metadata}{baseband\_gateway\_transmitter\_metadata}}\&\ md)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00041\ \ \ \ \ entries.emplace\_back();}
+\DoxyCodeLine{00042\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1baseband__gateway__transmitter__spy_1_1entry__t}{entry\_t}}\&\ entry\ =\ entries.back();}
+\DoxyCodeLine{00043\ \ \ \ \ entry.metadata\ =\ md;}
+\DoxyCodeLine{00044\ \ \ \ \ entry.data\ \ \ \ \ =\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__read__only}{baseband\_gateway\_buffer\_read\_only}}(data);}
+\DoxyCodeLine{00045\ \ \ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{const}\ std::vector<entry\_t>\&\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter__spy_a8fb0fd932e72bd3350fd3e1fc1494f28}{get\_entries}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ entries;\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__transmitter__spy_adc27ec9e47043f87a9791ca5bf03e6ee}{clear}}()\ \{\ entries.clear();\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00054\ \ \ std::vector<entry\_t>\ entries;}
+\DoxyCodeLine{00055\ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

@@ -1,0 +1,118 @@
+\doxysection{task\+\_\+executor\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{task__executor__test__doubles_8h_source}{}\label{task__executor__test__doubles_8h_source}\index{tests/unittests/support/task\_executor\_test\_doubles.h@{tests/unittests/support/task\_executor\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/blocking\_queue.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks}{manual\_task\_worker\_always\_enqueue\_tasks}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks}{manual\_task\_worker\_always\_enqueue\_tasks}}(\textcolor{keywordtype}{size\_t}\ q\_size)\ :\ t\_id(std::this\_thread::get\_id()),\ pending\_tasks(q\_size)\ \{\}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ std::thread::id\ get\_thread\_id()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ t\_id;\ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_ac29b1564220e3ece4cb83e9bbaf42803}{execute}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_ae6cb0d9c5db98409ef72dca279038868}{defer}}(std::move(task));\ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_ae6cb0d9c5db98409ef72dca279038868}{defer}}(\mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ task)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00044\ \ \ \ \ pending\_tasks.push\_blocking(std::move(task));}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00046\ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{bool}\ has\_pending\_tasks()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ not\ pending\_tasks.empty();\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keywordtype}{bool}\ is\_stopped()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ pending\_tasks.is\_stopped();\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordtype}{void}\ stop()}
+\DoxyCodeLine{00053\ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ is\_stopped())\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ pending\_tasks.stop();}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{void}\ request\_stop()}
+\DoxyCodeLine{00060\ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_ae6cb0d9c5db98409ef72dca279038868}{defer}}([\textcolor{keyword}{this}]()\ \{\ stop();\ \});}
+\DoxyCodeLine{00062\ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_ac2b509fbc54d492b555e4ab91e92b3dd}{run\_pending\_tasks}}()}
+\DoxyCodeLine{00066\ \ \ \{}
+\DoxyCodeLine{00067\ \ \ \ \ assert\_thread\_id();}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{bool}\ ret\ =\ \textcolor{keyword}{false},\ success\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ t;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ success\ =\ pending\_tasks.try\_pop(t);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (success)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ t();}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ ret\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (success);}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_aee450eb5312a66acbb86a04617865b6c}{try\_run\_next}}()}
+\DoxyCodeLine{00082\ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ assert\_thread\_id();}
+\DoxyCodeLine{00084\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ t;}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ success\ =\ pending\_tasks.try\_pop(t);}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ success)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ t();}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1manual__task__worker__always__enqueue__tasks_aa62bce002baf0d3d530ad2994152a6c0}{run\_next\_blocking}}()}
+\DoxyCodeLine{00095\ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ assert\_thread\_id();}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ success\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00098\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1unique__function}{unique\_task}}\ t\ \ \ \ \ \ \ =\ pending\_tasks.pop\_blocking(\&success);}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ success)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00101\ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \ \ t();}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00104\ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{bool}\ has\_thread\_id()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ t\_id\ !=\ std::thread::id\{\};\ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \textcolor{keywordtype}{void}\ assert\_thread\_id()}
+\DoxyCodeLine{00110\ \ \ \{}
+\DoxyCodeLine{00111\ \ \ \ \ srsran\_assert(t\_id\ ==\ std::this\_thread::get\_id(),\ \textcolor{stringliteral}{"{}run()\ caller\ thread\ should\ not\ change."{}});}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ std::thread::id\ \ \ \ \ \ \ \ \ \ \ \ \ t\_id;}
+\DoxyCodeLine{00115\ \ \ blocking\_queue<unique\_task>\ pending\_tasks;}
+\DoxyCodeLine{00116\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

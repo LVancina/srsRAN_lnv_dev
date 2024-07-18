@@ -39,19 +39,13 @@ pdu_session_manager_impl::pdu_session_manager_impl(ue_index_t                   
                                                    network_interface_config&                        net_config_,
                                                    n3_interface_config&                             n3_config_,
                                                    cu_up_ue_logger&                                 logger_,
-                                                   unique_timer&                               ue_inactivity_timer_,
-                                                   timer_factory                               ue_dl_timer_factory_,
-                                                   timer_factory                               ue_ul_timer_factory_,
-                                                   timer_factory                               ue_ctrl_timer_factory_,
-                                                   f1u_cu_up_gateway&                          f1u_gw_,
-                                                   gtpu_teid_pool&                             f1u_teid_allocator_,
-                                                   gtpu_tunnel_common_tx_upper_layer_notifier& gtpu_tx_notifier_,
-                                                   gtpu_demux_ctrl&                            gtpu_rx_demux_,
-                                                   task_executor&                              ue_dl_exec_,
-                                                   task_executor&                              ue_ul_exec_,
-                                                   task_executor&                              ue_ctrl_exec_,
-                                                   task_executor&                              crypto_exec_,
-                                                   dlt_pcap&                                   gtpu_pcap_) :
+                                                   unique_timer&                        ue_inactivity_timer_,
+                                                   timer_factory                        timers_,
+                                                   f1u_cu_up_gateway&                   f1u_gw_,
+                                                   gtpu_teid_pool&                      f1u_teid_allocator_,
+                                                   gtpu_tunnel_tx_upper_layer_notifier& gtpu_tx_notifier_,
+                                                   gtpu_demux_ctrl&                     gtpu_rx_demux_,
+                                                   dlt_pcap&                            gtpu_pcap_) :
   ue_index(ue_index_),
   qos_cfg(std::move(qos_cfg_)),
   security_info(security_info_),
@@ -59,20 +53,13 @@ pdu_session_manager_impl::pdu_session_manager_impl(ue_index_t                   
   n3_config(n3_config_),
   logger(logger_),
   ue_inactivity_timer(ue_inactivity_timer_),
-  ue_dl_timer_factory(ue_dl_timer_factory_),
-  ue_ul_timer_factory(ue_ul_timer_factory_),
-  ue_ctrl_timer_factory(ue_ctrl_timer_factory_),
+  timers(timers_),
   gtpu_tx_notifier(gtpu_tx_notifier_),
   f1u_teid_allocator(f1u_teid_allocator_),
   gtpu_rx_demux(gtpu_rx_demux_),
-  ue_dl_exec(ue_dl_exec_),
-  ue_ul_exec(ue_ul_exec_),
-  ue_ctrl_exec(ue_ctrl_exec_),
-  crypto_exec(crypto_exec_),
   gtpu_pcap(gtpu_pcap_),
   f1u_gw(f1u_gw_)
 {
-  (void)ue_ctrl_exec;
 }
 
 drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&                         new_session,
@@ -81,31 +68,30 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
   // prepare DRB creation result
   drb_setup_result drb_result = {};
   drb_result.success          = false;
-  drb_result.cause            = e1ap_cause_radio_network_t::unspecified;
+  drb_result.cause            = cause_radio_network_t::unspecified;
   drb_result.drb_id           = drb_to_setup.drb_id;
 
-  // Make sure 5QI exists before creating DRB.
+  // get DRB from list and create context
+  new_session.drbs.emplace(drb_to_setup.drb_id, std::make_unique<drb_context>(drb_to_setup.drb_id));
+  auto& new_drb = new_session.drbs.at(drb_to_setup.drb_id);
+
+  // Create QoS flows
   if (drb_to_setup.qos_flow_info_to_be_setup.empty()) {
     return drb_result;
   }
   five_qi_t five_qi =
       drb_to_setup.qos_flow_info_to_be_setup.begin()->qos_flow_level_qos_params.qos_characteristics.get_five_qi();
   if (qos_cfg.find(five_qi) == qos_cfg.end()) {
-    drb_result.cause = e1ap_cause_radio_network_t::not_supported_5qi_value;
+    drb_result.cause = cause_radio_network_t::not_supported_5qi_value;
     return drb_result;
   }
 
-  // get DRB from list and create context
-  new_session.drbs.emplace(drb_to_setup.drb_id, std::make_unique<drb_context>(drb_to_setup.drb_id));
-  auto& new_drb = new_session.drbs.at(drb_to_setup.drb_id);
-
-  // Create Qos Flows
   uint32_t nof_flow_success = 0;
   for (const auto& qos_flow_info : drb_to_setup.qos_flow_info_to_be_setup) {
     // prepare QoS flow creation result
     qos_flow_setup_result flow_result = {};
     flow_result.success               = false;
-    flow_result.cause                 = e1ap_cause_radio_network_t::unspecified;
+    flow_result.cause                 = cause_radio_network_t::unspecified;
     flow_result.qos_flow_id           = qos_flow_info.qos_flow_id;
 
     if (!new_session.sdap->is_mapped(qos_flow_info.qos_flow_id) &&
@@ -124,8 +110,8 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
       // fail if mapping already exists
       flow_result.success = false;
       flow_result.cause   = new_session.sdap->is_mapped(qos_flow_info.qos_flow_id)
-                                ? e1ap_cause_radio_network_t::multiple_qos_flow_id_instances
-                                : e1ap_cause_radio_network_t::not_supported_5qi_value;
+                                ? cause_radio_network_t::multiple_qos_flow_id_instances
+                                : cause_radio_network_t::not_supported_5qi_value;
       logger.log_error("Cannot overwrite existing mapping for {}", qos_flow_info.qos_flow_id);
     }
 
@@ -138,7 +124,7 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
     logger.log_error(
         "Failed to create {} for {}: Could not map any QoS flow", drb_to_setup.drb_id, new_session.pdu_session_id);
     new_session.drbs.erase(drb_to_setup.drb_id);
-    drb_result.cause   = e1ap_cause_radio_network_t::unspecified;
+    drb_result.cause   = cause_radio_network_t::unspecified;
     drb_result.success = false;
     return drb_result;
   }
@@ -148,7 +134,7 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
     logger.log_error(
         "Failed to create {} for {}: Could not find 5QI. {}", drb_to_setup.drb_id, new_session.pdu_session_id, five_qi);
     new_session.drbs.erase(drb_to_setup.drb_id);
-    drb_result.cause   = e1ap_cause_radio_network_t::not_supported_5qi_value;
+    drb_result.cause   = cause_radio_network_t::not_supported_5qi_value;
     drb_result.success = false;
     return drb_result;
   }
@@ -158,17 +144,12 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
   pdcp_msg.ue_index                             = ue_index;
   pdcp_msg.rb_id                                = drb_to_setup.drb_id;
   pdcp_msg.config                               = make_pdcp_drb_config(drb_to_setup.pdcp_cfg, new_session.security_ind);
-  pdcp_msg.config.custom                        = qos_cfg.at(five_qi).pdcp_custom_cfg;
+  pdcp_msg.config.custom                        = qos_cfg.at(five_qi).pdcp_custom;
   pdcp_msg.tx_lower                             = &new_drb->pdcp_to_f1u_adapter;
   pdcp_msg.tx_upper_cn                          = &new_drb->pdcp_tx_to_e1ap_adapter;
   pdcp_msg.rx_upper_dn                          = &new_drb->pdcp_to_sdap_adapter;
   pdcp_msg.rx_upper_cn                          = &new_drb->pdcp_rx_to_e1ap_adapter;
-  pdcp_msg.ue_dl_timer_factory                  = ue_dl_timer_factory;
-  pdcp_msg.ue_ul_timer_factory                  = ue_ul_timer_factory;
-  pdcp_msg.ue_ctrl_timer_factory                = ue_ctrl_timer_factory;
-  pdcp_msg.ue_dl_executor                       = &ue_dl_exec;
-  pdcp_msg.ue_ul_executor                       = &ue_ul_exec;
-  pdcp_msg.crypto_executor                      = &crypto_exec;
+  pdcp_msg.timers                               = timers;
   new_drb->pdcp                                 = srsran::create_pdcp_entity(pdcp_msg);
 
   security::sec_128_as_config sec_128 = security::truncate_config(security_info);
@@ -200,8 +181,6 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
   new_drb->pdcp_rx_to_e1ap_adapter.connect_e1ap(); // TODO: pass actual E1AP handler
 
   // Create  F1-U bearer
-  new_drb->f1u_cfg = qos_cfg.at(five_qi).f1u_cfg;
-
   expected<gtpu_teid_t> ret = f1u_teid_allocator.request_teid();
   if (not ret.has_value()) {
     logger.log_error("Could not allocate ul_teid");
@@ -209,20 +188,17 @@ drb_setup_result pdu_session_manager_impl::handle_drb_to_setup_item(pdu_session&
   }
   gtpu_teid_t f1u_ul_teid = ret.value();
 
-  up_transport_layer_info f1u_ul_tunnel_addr(transport_layer_address::create_from_string(net_config.f1u_bind_addr),
-                                             f1u_ul_teid);
-
-  new_drb->f1u          = f1u_gw.create_cu_bearer(ue_index,
+  up_transport_layer_info f1u_ul_tunnel_addr;
+  f1u_ul_tunnel_addr.tp_address.from_string(net_config.f1u_bind_addr);
+  f1u_ul_tunnel_addr.gtp_teid = f1u_ul_teid;
+  new_drb->f1u                = f1u_gw.create_cu_bearer(ue_index,
                                          drb_to_setup.drb_id,
-                                         new_drb->f1u_cfg,
                                          f1u_ul_tunnel_addr,
                                          new_drb->f1u_to_pdcp_adapter,
                                          new_drb->f1u_to_pdcp_adapter,
-                                         ue_ul_exec,
-                                         ue_dl_timer_factory,
-                                         ue_inactivity_timer);
-  new_drb->f1u_ul_teid  = f1u_ul_teid;
-  drb_result.gtp_tunnel = f1u_ul_tunnel_addr;
+                                         timers);
+  new_drb->f1u_ul_teid        = f1u_ul_teid;
+  drb_result.gtp_tunnel       = f1u_ul_tunnel_addr;
 
   // Connect F1-U's "F1-U->PDCP adapter" directly to PDCP
   new_drb->f1u_to_pdcp_adapter.connect_pdcp(new_drb->pdcp->get_rx_lower_interface(),
@@ -246,7 +222,7 @@ pdu_session_setup_result pdu_session_manager_impl::setup_pdu_session(const e1ap_
   pdu_session_setup_result pdu_session_result = {};
   pdu_session_result.success                  = false;
   pdu_session_result.pdu_session_id           = session.pdu_session_id;
-  pdu_session_result.cause                    = e1ap_cause_radio_network_t::unspecified;
+  pdu_session_result.cause                    = cause_radio_network_t::unspecified;
 
   if (pdu_sessions.find(session.pdu_session_id) != pdu_sessions.end()) {
     logger.log_error("PDU Session with {} already exists", session.pdu_session_id);
@@ -272,16 +248,15 @@ pdu_session_setup_result pdu_session_manager_impl::setup_pdu_session(const e1ap_
   // Allocate local TEID
   new_session->local_teid = allocate_local_teid(new_session->pdu_session_id);
 
-  // Advertise either local or external IP address of N3 interface
-  const std::string& n3_addr = net_config.n3_ext_addr.empty() || net_config.n3_ext_addr == "auto"
-                                   ? net_config.n3_bind_addr
-                                   : net_config.n3_ext_addr;
-  pdu_session_result.gtp_tunnel =
-      up_transport_layer_info(transport_layer_address::create_from_string(n3_addr), new_session->local_teid);
+  up_transport_layer_info n3_dl_tunnel_addr;
+  n3_dl_tunnel_addr.tp_address.from_string(net_config.n3_bind_addr);
+  n3_dl_tunnel_addr.gtp_teid    = new_session->local_teid;
+  pdu_session_result.gtp_tunnel = n3_dl_tunnel_addr;
 
   // Create SDAP entity
-  sdap_entity_creation_message sdap_msg = {ue_index, session.pdu_session_id, &new_session->sdap_to_gtpu_adapter};
-  new_session->sdap                     = create_sdap(sdap_msg);
+  sdap_entity_creation_message sdap_msg = {
+      ue_index, session.pdu_session_id, ue_inactivity_timer, &new_session->sdap_to_gtpu_adapter};
+  new_session->sdap = create_sdap(sdap_msg);
 
   // Create GTPU entity
   gtpu_tunnel_ngu_creation_message msg = {};
@@ -294,7 +269,7 @@ pdu_session_setup_result pdu_session_manager_impl::setup_pdu_session(const e1ap_
   msg.rx_lower                         = &new_session->gtpu_to_sdap_adapter;
   msg.tx_upper                         = &gtpu_tx_notifier;
   msg.gtpu_pcap                        = &gtpu_pcap;
-  msg.ue_dl_timer_factory              = ue_dl_timer_factory;
+  msg.timers                           = timers;
   new_session->gtpu                    = create_gtpu_tunnel_ngu(msg);
 
   // Connect adapters
@@ -302,8 +277,7 @@ pdu_session_setup_result pdu_session_manager_impl::setup_pdu_session(const e1ap_
   new_session->gtpu_to_sdap_adapter.connect_sdap(new_session->sdap->get_sdap_tx_sdu_handler());
 
   // Register tunnel at demux
-  if (!gtpu_rx_demux.add_tunnel(
-          new_session->local_teid, ue_dl_exec, new_session->gtpu->get_rx_upper_layer_interface())) {
+  if (!gtpu_rx_demux.add_tunnel(new_session->local_teid, new_session->gtpu->get_rx_upper_layer_interface())) {
     logger.log_error(
         "PDU Session {} cannot be created. TEID {} already exists", session.pdu_session_id, new_session->local_teid);
     return pdu_session_result;
@@ -316,13 +290,13 @@ pdu_session_setup_result pdu_session_manager_impl::setup_pdu_session(const e1ap_
   }
 
   // Ref: TS 38.463 Sec. 8.3.1.2:
-  // For each PDU session for which the Security Indication IE is included in the PDU Session Resource To Setup List
-  // IE of the BEARER CONTEXT SETUP REQUEST message, and the Integrity Protection Indication IE or Confidentiality
+  // For each PDU session for which the Security Indication IE is included in the PDU Session Resource To Setup List IE
+  // of the BEARER CONTEXT SETUP REQUEST message, and the Integrity Protection Indication IE or Confidentiality
   // Protection Indication IE is set to "preferred", then the gNB-CU-UP should, if supported, perform user plane
   // integrity protection or ciphering, respectively, for the concerned PDU session and shall notify whether it
   // performed the user plane integrity protection or ciphering by including the Integrity Protection Result IE or
-  // Confidentiality Protection Result IE, respectively, in the PDU Session Resource Setup List IE of the BEARER
-  // CONTEXT SETUP RESPONSE message.
+  // Confidentiality Protection Result IE, respectively, in the PDU Session Resource Setup List IE of the BEARER CONTEXT
+  // SETUP RESPONSE message.
   if (security_result_required(session.security_ind)) {
     pdu_session_result.security_result = security_result_t{};
     auto& sec_res                      = pdu_session_result.security_result.value();
@@ -346,7 +320,7 @@ pdu_session_manager_impl::modify_pdu_session(const e1ap_pdu_session_res_to_modif
   pdu_session_modification_result pdu_session_result;
   pdu_session_result.success        = false;
   pdu_session_result.pdu_session_id = session.pdu_session_id;
-  pdu_session_result.cause          = e1ap_cause_radio_network_t::unspecified;
+  pdu_session_result.cause          = cause_radio_network_t::unspecified;
 
   if (pdu_sessions.find(session.pdu_session_id) == pdu_sessions.end()) {
     logger.log_error("PDU Session {} doesn't exists", session.pdu_session_id);
@@ -366,7 +340,7 @@ pdu_session_manager_impl::modify_pdu_session(const e1ap_pdu_session_res_to_modif
     // prepare DRB modification result
     drb_setup_result drb_result = {};
     drb_result.success          = false;
-    drb_result.cause            = e1ap_cause_radio_network_t::unspecified;
+    drb_result.cause            = cause_radio_network_t::unspecified;
     drb_result.drb_id           = drb_to_mod.drb_id;
 
     // find DRB in PDU session
@@ -397,19 +371,13 @@ pdu_session_manager_impl::modify_pdu_session(const e1ap_pdu_session_res_to_modif
       drb->f1u_ul_teid = ret.value();
 
       // Create UL UP TNL address.
-      up_transport_layer_info f1u_ul_tunnel_addr(transport_layer_address::create_from_string(net_config.f1u_bind_addr),
-                                                 drb->f1u_ul_teid);
+      up_transport_layer_info f1u_ul_tunnel_addr;
+      f1u_ul_tunnel_addr.tp_address.from_string(net_config.f1u_bind_addr);
+      f1u_ul_tunnel_addr.gtp_teid = drb->f1u_ul_teid;
 
       // create new F1-U and connect it. This will automatically disconnect the old F1-U.
-      drb->f1u = f1u_gw.create_cu_bearer(ue_index,
-                                         drb->drb_id,
-                                         drb->f1u_cfg, // reuse previous F1-U config
-                                         f1u_ul_tunnel_addr,
-                                         drb->f1u_to_pdcp_adapter,
-                                         drb->f1u_to_pdcp_adapter,
-                                         ue_dl_exec,
-                                         ue_dl_timer_factory,
-                                         ue_inactivity_timer);
+      drb->f1u = f1u_gw.create_cu_bearer(
+          ue_index, drb->drb_id, f1u_ul_tunnel_addr, drb->f1u_to_pdcp_adapter, drb->f1u_to_pdcp_adapter, timers);
       drb_iter->second->pdcp_to_f1u_adapter.disconnect_f1u();
 
       drb_result.gtp_tunnel = f1u_ul_tunnel_addr;
@@ -417,10 +385,10 @@ pdu_session_manager_impl::modify_pdu_session(const e1ap_pdu_session_res_to_modif
 
     // F1-U apply modification
     if (!drb_to_mod.dl_up_params.empty()) {
-      f1u_gw.attach_dl_teid(
-          up_transport_layer_info(transport_layer_address::create_from_string(net_config.f1u_bind_addr),
-                                  drb_iter->second->f1u_ul_teid),
-          drb_to_mod.dl_up_params[0].up_tnl_info);
+      up_transport_layer_info f1u_ul_tunnel_addr;
+      f1u_ul_tunnel_addr.tp_address.from_string(net_config.f1u_bind_addr);
+      f1u_ul_tunnel_addr.gtp_teid = drb_iter->second->f1u_ul_teid;
+      f1u_gw.attach_dl_teid(f1u_ul_tunnel_addr, drb_to_mod.dl_up_params[0].up_tnl_info);
 
       drb_iter->second->pdcp_to_f1u_adapter.connect_f1u(drb_iter->second->f1u->get_tx_sdu_handler());
     }
@@ -503,37 +471,22 @@ void pdu_session_manager_impl::remove_pdu_session(pdu_session_id_t pdu_session_i
     return;
   }
 
-  disconnect_pdu_session(pdu_session_id);
-
-  pdu_sessions.erase(pdu_session_id);
-  logger.log_info("Removing PDU session with {}", pdu_session_id);
-}
-
-void pdu_session_manager_impl::disconnect_pdu_session(pdu_session_id_t pdu_session_id)
-{
-  if (pdu_sessions.find(pdu_session_id) == pdu_sessions.end()) {
-    logger.log_error("PDU session {} not found", pdu_session_id);
-    return;
-  }
-
   // Disconnect all UL tunnels for this PDU session.
   auto& pdu_session = pdu_sessions.at(pdu_session_id);
-  pdu_session->stop();
   for (const auto& drb : pdu_session->drbs) {
-    if (!f1u_teid_allocator.release_teid(drb.second->f1u_ul_teid)) {
+    logger.log_debug("Disconnecting CU bearer with UL-TEID={}", drb.second->f1u_ul_teid);
+    up_transport_layer_info f1u_ul_tunnel_addr;
+    f1u_ul_tunnel_addr.tp_address.from_string(net_config.f1u_bind_addr);
+    f1u_ul_tunnel_addr.gtp_teid = drb.second->f1u_ul_teid;
+    f1u_gw.disconnect_cu_bearer(f1u_ul_tunnel_addr);
+    if (f1u_teid_allocator.release_teid(drb.second->f1u_ul_teid)) {
       logger.log_error(
           "{} could not remove ul_teid at session termination. ul_teid={}", pdu_session_id, drb.second->f1u_ul_teid);
     }
   }
-  logger.log_info("Disconnecting PDU session with {}", pdu_session_id);
-}
 
-void pdu_session_manager_impl::disconnect_all_pdu_sessions()
-{
-  logger.log_debug("Disconnecting all PDU sessions");
-  for (const auto& pdu_session_it : pdu_sessions) {
-    disconnect_pdu_session(pdu_session_it.first);
-  }
+  pdu_sessions.erase(pdu_session_id);
+  logger.log_info("Removing PDU session with {}", pdu_session_id);
 }
 
 size_t pdu_session_manager_impl::get_nof_pdu_sessions()

@@ -1,0 +1,179 @@
+\doxysection{context.\+h}
+\hypertarget{context_8h_source}{}\label{context_8h_source}\index{include/srsran/srslog/context.h@{include/srsran/srslog/context.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/srslog/detail/support/tmpl\_utils.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace\ }srslog\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{enum\ class}\ metric\_kind\ \{}
+\DoxyCodeLine{00033\ \ \ numeric,\ }
+\DoxyCodeLine{00034\ \ \ \textcolor{keywordtype}{string}\ \ \ }
+\DoxyCodeLine{00035\ \};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00042\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container}{metrics\_container}}\ \{}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Arg>}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_a99ad819388aa104537f6c21ee67e2b59}{write}}(Arg\&\&\ arg)}
+\DoxyCodeLine{00046\ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ \ \ \ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00048\ \ \ \ \ std::get<index>(metrics).value\ =\ std::forward<Arg>(arg);}
+\DoxyCodeLine{00049\ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_a1c7c2345a6cb5dbc558429e839455742}{read}}()\ const\ -\/>\ const\ decltype(T::value)\&}
+\DoxyCodeLine{00054\ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<index>(metrics).value;}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00061\ \ \ T\&\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_a90c58e61c5f3d12d9f7812be7ca66e8e}{get}}()}
+\DoxyCodeLine{00062\ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<index>(metrics);}
+\DoxyCodeLine{00065\ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00069\ \ \ \textcolor{keyword}{const}\ T\&\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_ae8d56fd145a8e53f04407621c79efa54}{get}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{return}\ std::get<index>(metrics);}
+\DoxyCodeLine{00073\ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00078\ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_abe7b9242b189e0ff1a5754aa5e2b3c69}{at}}(std::size\_t\ i)\ -\/>\ \textcolor{keyword}{typename}\ T::value\_type\&}
+\DoxyCodeLine{00079\ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{auto}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ elem\ \ =\ std::get<index>(metrics);}
+\DoxyCodeLine{00082\ \ \ \ \ assert(i\ <\ elem.size()\ \&\&\ \textcolor{stringliteral}{"{}Invalid\ index"{}});}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{return}\ elem[i];}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00089\ \ \ \textcolor{keyword}{auto}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_ab5f04ad3b4317d409950b40bca23df22}{at}}(std::size\_t\ i)\ \textcolor{keyword}{const}\ -\/>\ \textcolor{keyword}{const}\ \textcolor{keyword}{typename}\ T::value\_type\&}
+\DoxyCodeLine{00090\ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{constexpr}\ std::size\_t\ index\ =\ detail::get\_type\_index\_in\_tuple<T,\ Ts...>();}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ \ \ \ \ \ \ \ \ \ \ elem\ \ =\ std::get<index>(metrics);}
+\DoxyCodeLine{00093\ \ \ \ \ assert(i\ <\ elem.size()\ \&\&\ \textcolor{stringliteral}{"{}Invalid\ index"{}});}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{return}\ elem[i];}
+\DoxyCodeLine{00095\ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{const}\ std::tuple<Ts...>\&\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container_a0e2316ae8200c8b577fb19c27c6810b5}{contents}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ metrics;\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00101\ \ \ std::tuple<Ts...>\ metrics;}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00107\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Name,\ \textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00108\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1metric__list}{metric\_list}}\ :\ \textcolor{keyword}{public}\ T\ \{}
+\DoxyCodeLine{00110\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrslog_1_1metric__list_a92a0ba02f253d2d25f441e897e7b420b}{name}}()\ \{\ \textcolor{keywordflow}{return}\ Name::name();\ \}}
+\DoxyCodeLine{00111\ \};}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00116\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ =\ \textcolor{keywordtype}{void}>}
+\DoxyCodeLine{00117\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1metric__kind__selector}{metric\_kind\_selector}}\ \{}
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ metric\_kind\ kind\ =\ metric\_kind::string;}
+\DoxyCodeLine{00119\ \};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Ty,\ \textcolor{keyword}{typename}\ Name,\ \textcolor{keyword}{typename}\ Units>}
+\DoxyCodeLine{00125\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1metric}{metric}}\ \{}
+\DoxyCodeLine{00127\ \ \ Ty\ \mbox{\hyperlink{structsrslog_1_1metric_a552b4b3eea62cb3c12a99b1a6ae84ffe}{value}}\{\};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00130\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrslog_1_1metric_af1bc05ce97735d63aa8651f40ffbfa0d}{name}}()\ \{\ \textcolor{keywordflow}{return}\ Name::name();\ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00133\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrslog_1_1metric_a632d37241f32625e4bb3242689a148ec}{units}}()\ \{\ \textcolor{keywordflow}{return}\ Units::units();\ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{keyword}{static}\ metric\_kind\ \mbox{\hyperlink{structsrslog_1_1metric_a8410915c3dd57ada36db15441180ae95}{kind}}()\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structsrslog_1_1metric__kind__selector}{metric\_kind\_selector<metric<Ty,\ Name,\ Units>}}>\mbox{\hyperlink{structsrslog_1_1metric_a8410915c3dd57ada36db15441180ae95}{::kind}};\ \}}
+\DoxyCodeLine{00137\ \};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00141\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Ty,\ \textcolor{keyword}{typename}\ Name,\ \textcolor{keyword}{typename}\ Units>}
+\DoxyCodeLine{00142\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1metric__kind__selector}{metric\_kind\_selector}}<\mbox{\hyperlink{structsrslog_1_1metric}{metric}}<Ty,\ Name,\ Units>,\ typename\ std::enable\_if<std::is\_arithmetic<Ty>::value>::type>\ \{}
+\DoxyCodeLine{00143\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ metric\_kind\ kind\ =\ metric\_kind::numeric;}
+\DoxyCodeLine{00144\ \};}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00149\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Name,\ \textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00150\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1metric__set}{metric\_set}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container}{detail::metrics\_container}}<Ts...>\ \{}
+\DoxyCodeLine{00152\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{structsrslog_1_1metric__set_af8b5b3e6d5f35a61813666ee449f7559}{name}}()\ \{\ \textcolor{keywordflow}{return}\ Name::name();\ \}}
+\DoxyCodeLine{00153\ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00158\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00159\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrslog_1_1context}{context}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrslog_1_1detail_1_1metrics__container}{detail::metrics\_container}}<Ts...>\ \{}
+\DoxyCodeLine{00160\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrslog_1_1context}{context}}(std::string\ n)\ :\ name\_str(std::move(n))\ \{\}}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00163\ \ \ \textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{structsrslog_1_1context_a452bdd4f4dbbc776be77cdea6f065f79}{name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ name\_str;\ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00166\ \ \ \textcolor{keyword}{const}\ std::string\ name\_str;}
+\DoxyCodeLine{00167\ \};}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00174\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Name,\ \textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00175\ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrslog_1_1metric__set}{build\_metric\_set\_type}}\ =\ \mbox{\hyperlink{structsrslog_1_1metric__set}{metric\_set<Name,\ typename\ std::decay<Ts>::type}}...>;}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00182\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Ts>}
+\DoxyCodeLine{00183\ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrslog_1_1context}{build\_context\_type}}\ =\ \mbox{\hyperlink{structsrslog_1_1context}{context<typename\ std::decay<Ts>::type}}...>;}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00197\ \textcolor{preprocessor}{\#define\ DECLARE\_METRIC(\_name\_rep,\ \_type,\ \_value\_type,\ \_units)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00198\ \textcolor{preprocessor}{\ \ namespace\ metric\_info\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00199\ \textcolor{preprocessor}{\ \ struct\ \_type\#\#\_\_units\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00200\ \textcolor{preprocessor}{\ \ \ \ static\ const\ char*\ units()\ \{\ return\ \_units;\ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00201\ \textcolor{preprocessor}{\ \ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00202\ \textcolor{preprocessor}{\ \ struct\ \_type\#\#\_\_name\_rep\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00203\ \textcolor{preprocessor}{\ \ \ \ static\ const\ char*\ name()\ \{\ return\ \_name\_rep;\ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00204\ \textcolor{preprocessor}{\ \ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00205\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00206\ \textcolor{preprocessor}{\ \ using\ \_type\ =\ srslog::\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00207\ \textcolor{preprocessor}{\ \ \ \ \ \ metric<typename\ std::decay<\_value\_type>::type,\ metric\_info::\_type\#\#\_\_name\_rep,\ metric\_info::\_type\#\#\_\_units>}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00221\ \textcolor{preprocessor}{\#define\ DECLARE\_METRIC\_SET(\_name\_rep,\ \_type,\ ...)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00222\ \textcolor{preprocessor}{\ \ namespace\ metric\_set\_info\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00223\ \textcolor{preprocessor}{\ \ struct\ \_type\#\#\_\_name\_rep\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00224\ \textcolor{preprocessor}{\ \ \ \ static\ const\ char*\ name()\ \{\ return\ \_name\_rep;\ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00225\ \textcolor{preprocessor}{\ \ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00226\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00227\ \textcolor{preprocessor}{\ \ using\ \_type\ =\ srslog::detail::build\_metric\_set\_type<metric\_set\_info::\_type\#\#\_\_name\_rep,\ \_\_VA\_ARGS\_\_>}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00240\ \textcolor{preprocessor}{\#define\ DECLARE\_METRIC\_LIST(\_name\_rep,\ \_type,\ \_list\_type)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00241\ \textcolor{preprocessor}{\ \ namespace\ list\_info\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00242\ \textcolor{preprocessor}{\ \ struct\ \_type\#\#\_\_name\_rep\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00243\ \textcolor{preprocessor}{\ \ \ \ static\ const\ char*\ name()\ \{\ return\ \_name\_rep;\ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00244\ \textcolor{preprocessor}{\ \ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00245\ \textcolor{preprocessor}{\ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00246\ \textcolor{preprocessor}{\ \ using\ \_type\ =\ srslog::metric\_list<list\_info::\_type\#\#\_\_name\_rep,\ typename\ std::decay<\_list\_type>::type>}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \}\ \textcolor{comment}{//\ namespace\ srslog}}
+
+\end{DoxyCode}

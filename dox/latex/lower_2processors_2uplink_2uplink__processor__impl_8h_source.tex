@@ -1,0 +1,108 @@
+\doxysection{uplink\+\_\+processor\+\_\+impl.\+h}
+\hypertarget{lower_2processors_2uplink_2uplink__processor__impl_8h_source}{}\label{lower_2processors_2uplink_2uplink__processor__impl_8h_source}\index{lib/phy/lower/processors/uplink/uplink\_processor\_impl.h@{lib/phy/lower/processors/uplink/uplink\_processor\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tensor_8h}{srsran/adt/tensor.h}}"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/gateways/baseband/buffer/baseband\_gateway\_buffer\_dynamic.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/prach/prach\_processor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/puxch/puxch\_processor.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/uplink\_processor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/processors/uplink/uplink\_processor\_baseband.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/lower/sampling\_rate.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{cyclic__prefix_8h}{srsran/ran/cyclic\_prefix.h}}"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl}{lower\_phy\_uplink\_processor\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor}{lower\_phy\_uplink\_processor}},\ \textcolor{keyword}{private}\ \mbox{\hyperlink{classsrsran_1_1uplink__processor__baseband}{uplink\_processor\_baseband}}}
+\DoxyCodeLine{00040\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration_a679a185dc0edcd103ff54502a3440236}{sector\_id}};}
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration_abb4f16a556e554a8db26f8804ac3534d}{scs}};}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration_ab85d0cabebc631d63e6233dc34fd5887}{cp}};}
+\DoxyCodeLine{00051\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1sampling__rate}{sampling\_rate}}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration_ac73c349b22759e01005597b8ffb913d4}{rate}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration_aa33e6b4becc9c654e7162e9e7ea014aa}{nof\_rx\_ports}};}
+\DoxyCodeLine{00054\ \ \ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl_a0915feeb9682c355066869aea020b2b0}{lower\_phy\_uplink\_processor\_impl}}(std::unique\_ptr<prach\_processor>\ prach\_proc\_,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<puxch\_processor>\ puxch\_proc\_,}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1lower__phy__uplink__processor__impl_1_1configuration}{configuration}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ config);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl_a38f9fb81d756c52b0eafc2ed291f563c}{connect}}(\mbox{\hyperlink{classsrsran_1_1uplink__processor__notifier}{uplink\_processor\_notifier}}\&\ notifier,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1prach__processor__notifier}{prach\_processor\_notifier}}\&\ \ prach\_notifier,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1puxch__processor__notifier}{puxch\_processor\_notifier}}\&\ \ puxch\_notifier)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{classsrsran_1_1prach__processor__request__handler}{prach\_processor\_request\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl_a7b971d05d2399dfc5612f9b9cc31c52b}{get\_prach\_request\_handler}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00073\ \ \ \mbox{\hyperlink{classsrsran_1_1puxch__processor__request__handler}{puxch\_processor\_request\_handler}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl_aeeb12a6e6045a1cdf19307300b88da08}{get\_puxch\_request\_handler}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00076\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__processor__baseband}{uplink\_processor\_baseband}}\&\ \mbox{\hyperlink{classsrsran_1_1lower__phy__uplink__processor__impl_a6d45facca4242f3dddaf50d772a2cb65}{get\_baseband}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{enum\ class}\ fsm\_states\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ alignment,}
+\DoxyCodeLine{00084\ \ \ \ \ collecting}
+\DoxyCodeLine{00085\ \ \ \};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{void}\ process(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ samples,\ \mbox{\hyperlink{namespacesrsran_a4057ba65348ba48e6202d60aea8e6235}{baseband\_gateway\_timestamp}}\ timestamp)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{void}\ process\_alignment(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ samples,\ \mbox{\hyperlink{namespacesrsran_a4057ba65348ba48e6202d60aea8e6235}{baseband\_gateway\_timestamp}}\ timestamp);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ process\_symbol\_boundary(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ samples,\ \mbox{\hyperlink{namespacesrsran_a4057ba65348ba48e6202d60aea8e6235}{baseband\_gateway\_timestamp}}\ timestamp);}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{void}\ process\_collecting(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__reader}{baseband\_gateway\_buffer\_reader}}\&\ samples,\ \mbox{\hyperlink{namespacesrsran_a4057ba65348ba48e6202d60aea8e6235}{baseband\_gateway\_timestamp}}\ timestamp);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00106\ \ \ fsm\_states\ state\ =\ fsm\_states::alignment;}
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordtype}{unsigned}\ sector\_id;}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ scs;}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_rx\_ports;}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_slots\_per\_subframe;}
+\DoxyCodeLine{00116\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\_per\_slot;}
+\DoxyCodeLine{00118\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_samples\_per\_subframe;}
+\DoxyCodeLine{00120\ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\_per\_subframe;}
+\DoxyCodeLine{00125\ \ \ \textcolor{keywordtype}{unsigned}\ temp\_buffer\_write\_index;}
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{unsigned}\ current\_symbol\_index;}
+\DoxyCodeLine{00129\ \ \ \textcolor{keywordtype}{unsigned}\ current\_symbol\_size;}
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{namespacesrsran_a4057ba65348ba48e6202d60aea8e6235}{baseband\_gateway\_timestamp}}\ current\_symbol\_timestamp;}
+\DoxyCodeLine{00133\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ current\_slot;}
+\DoxyCodeLine{00135\ \ \ std::vector<unsigned>\ symbol\_sizes;}
+\DoxyCodeLine{00137\ \ \ \mbox{\hyperlink{classsrsran_1_1baseband__gateway__buffer__dynamic}{baseband\_gateway\_buffer\_dynamic}}\ temp\_buffer;}
+\DoxyCodeLine{00139\ \ \ std::unique\_ptr<prach\_processor>\ prach\_proc;}
+\DoxyCodeLine{00141\ \ \ std::unique\_ptr<puxch\_processor>\ puxch\_proc;}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{classsrsran_1_1uplink__processor__notifier}{uplink\_processor\_notifier}}*\ notifier\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00144\ \};}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

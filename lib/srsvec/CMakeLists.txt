@@ -33,7 +33,6 @@ set(SOURCES
         prod.cpp
         sc_prod.cpp
         subtract.cpp
-        unwrap.cpp
 )
 
 add_library(srsvec STATIC ${SOURCES})

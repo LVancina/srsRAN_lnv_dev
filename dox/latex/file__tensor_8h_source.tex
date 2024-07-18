@@ -1,0 +1,73 @@
+\doxysection{file\+\_\+tensor.\+h}
+\hypertarget{file__tensor_8h_source}{}\label{file__tensor_8h_source}\index{include/srsran/support/file\_tensor.h@{include/srsran/support/file\_tensor.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/file\_vector.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{template}\ <\textcolor{keywordtype}{unsigned}\ NDIMS,\ \textcolor{keyword}{typename}\ T,\ \textcolor{keyword}{typename}\ Index\_type\ =\ \textcolor{keywordtype}{unsigned}>}
+\DoxyCodeLine{00037\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1file__tensor}{file\_tensor}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file\_name;}
+\DoxyCodeLine{00041\ \ \ std::array<unsigned,\ NDIMS>\ dimension\_sizes;}
+\DoxyCodeLine{00042\ \ \ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ op;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1file__tensor_aaf88c81941d7f7f29ff0f5990ee96026}{file\_tensor}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ filename,\ \textcolor{keyword}{const}\ std::array<unsigned,\ NDIMS>\ dim\_sizes,\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8}{openmode}}\ op\_\ =\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8abefe72871b2de8f4f0e20108517e31fe}{openmode::read\_only}})\ :}
+\DoxyCodeLine{00054\ \ \ \ \ file\_name(filename),\ dimension\_sizes(dim\_sizes),\ op(op\_)}
+\DoxyCodeLine{00055\ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{classsrsran_1_1file__tensor_a9791ea3163c4e0869035111714b722d5}{get\_file\_name}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ file\_name;\ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor}{dynamic\_tensor<NDIMS,\ T,\ Index\_type>}}\ \mbox{\hyperlink{classsrsran_1_1file__tensor_a9c28a66bb0baea1b4dafe52d36d98709}{read}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00067\ \textcolor{keyword}{\ \ }\{}
+\DoxyCodeLine{00068\ \ \ \ \ report\_fatal\_error\_if\_not(op\ !=\ \mbox{\hyperlink{namespacesrsran_affd14c65e81360074c4f5d7c48221ad8a2629564984b808cf7e6cfc61a0286d69}{openmode::write\_only}},\ \textcolor{stringliteral}{"{}The\ file\_vector\ was\ created\ with\ write-\/only\ permissions."{}});}
+\DoxyCodeLine{00069\ \ \ \ \ std::ifstream\ binary\_file(file\_name,\ std::ios::in\ |\ std::ios::binary);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ report\_fatal\_error\_if\_not(binary\_file.is\_open(),\ \textcolor{stringliteral}{"{}Error\ opening\ file\ '\{\}'.\ \{\}."{}},\ file\_name,\ strerror(errno));}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dynamic__tensor}{dynamic\_tensor<NDIMS,\ T,\ Index\_type>}}\ read\_data(dimension\_sizes);}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<T>}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flat\_tensor\_view(read\_data.\mbox{\hyperlink{classsrsran_1_1dynamic__tensor_a622e571cf6fa34e33e87741bb96edb53}{get\_data}}());}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ T\ read\_value;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{while}\ (binary\_file.read(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{char}*\textcolor{keyword}{>}(\&read\_value),\ \textcolor{keyword}{sizeof}(T)))\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ flat\_tensor\_view.\mbox{\hyperlink{classsrsran_1_1span_aba246e5b3823bd74386f72c2b8586cc6}{front}}()\ =\ read\_value;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ flat\_tensor\_view\ \ \ \ \ \ \ \ \ =\ flat\_tensor\_view.\mbox{\hyperlink{classsrsran_1_1span_afa8aa6b2df95cc96ece6e86cf47068e2}{last}}(flat\_tensor\_view.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ -\/\ 1);}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ report\_fatal\_error\_if\_not(flat\_tensor\_view.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}()\ ==\ 0,\ \textcolor{stringliteral}{"{}Not\ all\ tensor\ elements\ have\ been\ filled."{}});}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{return}\ read\_data;}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

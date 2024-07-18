@@ -28,7 +28,7 @@
 
 namespace srsran {
 
-/// Used to configure Sounding Reference Signal transmissions or to configure Sounding Reference Signal
+/// Used to configure sounding reference signal transmissions or to configure sounding reference signal
 /// measurements for CLI.
 /// \remark See TS 38.331, "SRS-Config".
 struct srs_config {

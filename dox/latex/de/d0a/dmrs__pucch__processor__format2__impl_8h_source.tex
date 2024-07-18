@@ -1,0 +1,87 @@
+\doxysection{dmrs\+\_\+pucch\+\_\+processor\+\_\+format2\+\_\+impl.\+h}
+\hypertarget{dmrs__pucch__processor__format2__impl_8h_source}{}\label{dmrs__pucch__processor__format2__impl_8h_source}\index{lib/phy/upper/signal\_processors/pucch/dmrs\_pucch\_processor\_format2\_impl.h@{lib/phy/upper/signal\_processors/pucch/dmrs\_pucch\_processor\_format2\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/pseudo\_random\_generator.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/signal\_processors/dmrs\_pucch\_processor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/signal\_processors/port\_channel\_estimator.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/pucch/pucch\_constants.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{///\ Generic\ implementation\ of\ a\ DM-\/RS\ channel\ estimator\ for\ PUCCH\ Format\ 2.}}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor__format2__impl}{dmrs\_pucch\_processor\_format2\_impl}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor}{dmrs\_pucch\_processor}}}
+\DoxyCodeLine{00034\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{using}\ layer\_dmrs\_pattern\ =\ \mbox{\hyperlink{classsrsran_1_1port__channel__estimator}{port\_channel\_estimator}}::\mbox{\hyperlink{structsrsran_1_1port__channel__estimator_1_1layer__dmrs__pattern}{layer\_dmrs\_pattern}};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ dmrs\_pucch\_processor\_format2\_impl(std::unique\_ptr<pseudo\_random\_generator>\ prg\_,}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<port\_channel\_estimator>\ \ ch\_est\_)\ :}
+\DoxyCodeLine{00040\ \ \ \ \ prg(std::move(prg\_)),\ ch\_estimator(std::move(ch\_est\_))}
+\DoxyCodeLine{00041\ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(prg,\ \textcolor{stringliteral}{"{}Invalid\ pseudo\ random\ generator."{}});}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(ch\_estimator,\ \textcolor{stringliteral}{"{}Invalid\ port\ channel\ estimator."{}});}
+\DoxyCodeLine{00044\ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pucch__processor__format2__impl_a72804a4798a6b7fb5579e779921e1d3c}{estimate}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ ce\_,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00049\ \ \ \textcolor{comment}{///\ Number\ of\ DM-\/RS\ RE\ per\ Resource\ Block.}}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_DMRS\_PER\_RB\ =\ 4;}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///\ Pseudo-\/random\ sequence\ generator\ instance.}}
+\DoxyCodeLine{00052\ \ \ std::unique\_ptr<pseudo\_random\_generator>\ prg;}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ Antenna\ port\ channel\ estimator.}}
+\DoxyCodeLine{00054\ \ \ std::unique\_ptr<port\_channel\_estimator>\ ch\_estimator;}
+\DoxyCodeLine{00055\ \ \ \textcolor{comment}{///\ Buffer\ for\ DM-\/RS\ symbols.}}
+\DoxyCodeLine{00056\ \ \ dmrs\_symbol\_list\ temp\_symbols;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Computes\ the\ initial\ pseudo-\/random\ state.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ Implemented\ according\ to\ TS38.211\ Section\ 6.4.1.3.2.1.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ symbol\ OFDM\ symbol\ index.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ PUCCH\ configuration\ parameters.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \ \ \ The\ initial\ pseudo-\/random\ state.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{unsigned}\ c\_init(\textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ a\ DM-\/RS\ sequence\ according\ to\ TS38.211\ Section\ 6.4.1.3.2.1.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ sequence\ \ Sequence\ destination.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ symbol\ \ \ \ Symbol\ index.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ start\_prb\ Index\ of\ first\ PRB\ allocated\ for\ DM-\/RS\ in\ the\ current\ symbol.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ \ \ Required\ parameters\ to\ calculate\ the\ sequences.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{void}\ generate\_sequence(span<cf\_t>\ sequence,\ \textcolor{keywordtype}{unsigned}\ symbol,\ \textcolor{keywordtype}{unsigned}\ start\_prb,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ the\ PUCCH\ DM-\/RS\ allocation\ pattern.}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///\ Implements\ the\ PUCCH\ DM-\/RS\ mapping,\ as\ described\ in\ TS38.211\ Section\ 6.4.1.3.2.2.}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ config\ Configuration\ parameters.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ DM-\/RS\ allocation\ pattern.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{static}\ layer\_dmrs\_pattern\ generate\_dmrs\_pattern(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pucch__processor_1_1config__t}{config\_t}}\&\ config);}
+\DoxyCodeLine{00080\ \};}
+\DoxyCodeLine{00081\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

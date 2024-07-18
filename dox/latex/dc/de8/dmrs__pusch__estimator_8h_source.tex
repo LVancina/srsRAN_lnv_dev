@@ -1,0 +1,94 @@
+\doxysection{dmrs\+\_\+pusch\+\_\+estimator.\+h}
+\hypertarget{dmrs__pusch__estimator_8h_source}{}\label{dmrs__pusch__estimator_8h_source}\index{include/srsran/phy/upper/signal\_processors/dmrs\_pusch\_estimator.h@{include/srsran/phy/upper/signal\_processors/dmrs\_pusch\_estimator.h}}
+\mbox{\hyperlink{dmrs__pusch__estimator_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{///\ \(\backslash\)file}}
+\DoxyCodeLine{00024\ \textcolor{comment}{///\ \(\backslash\)brief\ PUSCH\ channel\ estimator\ interface\ declaration.}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/channel\_estimation.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/dmrs\_mapping.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/cyclic\_prefix.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{class}\ resource\_grid\_reader;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{///\ DM-\/RS-\/based\ PUSCH\ channel\ estimator\ interface.}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pusch__estimator}{dmrs\_pusch\_estimator}}}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ Parameters\ required\ to\ receive\ the\ demodulation\ reference\ signals\ described\ in\ 3GPP\ TS38.211\ Section\ 6.4.1.1.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration}{configuration}}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{///\ Slot\ context\ for\ sequence\ initialization.}}
+\DoxyCodeLine{00046\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_ac91e336629f15e1b395cedfb21af19e4}{slot}};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ DL\ DM-\/RS\ configuration\ type.}}
+\DoxyCodeLine{00048\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1dmrs__type}{dmrs\_type}}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_aff15cdaead2b3c9cde0d9c5130196e4e}{type}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{///\ PUSCH\ DM-\/RS\ scrambling\ ID.}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_aa8dd7b409656fad54a14a8fea0862320}{scrambling\_id}};}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{///\ DM-\/RS\ sequence\ initialization\ (parameter\ \(\backslash\)f\$n\_\{SCID\}\(\backslash\)f\$\ in\ the\ TS).}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_ae0375d670358545aadac9e8d8a027b86}{n\_scid}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)brif\ DM-\/RS\ amplitude\ scaling\ factor.}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{///\ Parameter\ \(\backslash\)f\$\(\backslash\)beta\ \_\{\(\backslash\)textup\{PUSCH\}\}\string^\{\(\backslash\)textup\{DMRS\}\}\(\backslash\)f\$\ as\ per\ TS38.211\ Section\ 6.4.1.1.3.\ It\ must\ be\ set}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{///\ to\ \(\backslash\)f\$\(\backslash\)beta\ \_\{\(\backslash\)textup\{PUSCH\}\}\string^\{\(\backslash\)textup\{DMRS\}\}=10\string^\{-\/\(\backslash\)beta\_\{\(\backslash\)textup\{DMRS\}\}/20\}\(\backslash\)f\$,\ as\ per\ TS38.214}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{///\ Section\ 6.2.2,\ where\ \(\backslash\)f\$\(\backslash\)beta\_\{\(\backslash\)textup\{DMRS\}\}\(\backslash\)f\$\ is\ the\ PUSCH\ EPRE\ to\ DM-\/RS\ EPRE\ ratio\ expressed\ in\ decibels,\ as}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{///\ specified\ in\ TS38.214\ Table\ 6.2.2-\/1.}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{///\ \(\backslash\)sa\ get\_sch\_to\_dmrs\_ratio\_dB()}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_a3574b62eb4c00197918e22e597be97fa}{scaling}};}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{///\ Cyclic\ prefix.}}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_aae270f71bbc06bd9def81c5df3f4ccb9}{c\_prefix}}\ =\ \mbox{\hyperlink{classsrsran_1_1cyclic__prefix}{cyclic\_prefix}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{::}}\mbox{\hyperlink{classsrsran_1_1cyclic__prefix_adb112068f1eb62e47a74b63b90d92b65a464683a58c4e07f845370a0eb40a0b67}{NORMAL}};}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{///\ DM-\/RS\ position\ mask.\ Indicates\ the\ OFDM\ symbols\ carrying\ DM-\/RS\ within\ the\ slot.}}
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_abe92275035763636e8299fb39acfcc5b}{bounded\_bitset}}<\mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_abe92275035763636e8299fb39acfcc5b}{MAX\_NSYMB\_PER\_SLOT}}>\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_abe92275035763636e8299fb39acfcc5b}{symbols\_mask}};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{///\ Allocation\ RB\ list:\ the\ entries\ set\ to\ true\ are\ used\ for\ transmission.}}
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acebde2dcf861411e87aa88134f71caff}{bounded\_bitset}}<\mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acebde2dcf861411e87aa88134f71caff}{MAX\_RB}}>\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acebde2dcf861411e87aa88134f71caff}{rb\_mask}};}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{///\ First\ OFDM\ symbol\ within\ the\ slot\ for\ which\ the\ channel\ should\ be\ estimated.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_a671d2b88f67da4e215723933e5af0668}{first\_symbol}}\ =\ 0;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ OFDM\ symbols\ for\ which\ the\ channel\ should\ be\ estimated.}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_a31a1fad2074afbf3dbdd5712e99c0dd1}{nof\_symbols}}\ =\ 0;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{///\ Number\ of\ transmit\ layers.}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_a0f08cd823b2ae260774044c70ed34e52}{nof\_tx\_layers}}\ =\ 0;}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{///\ List\ of\ receive\ ports.}}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acb2e33c8ddc5300a3d2e572aef16bfe1}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acb2e33c8ddc5300a3d2e572aef16bfe1}{uint8\_t}},\ DMRS\_MAX\_NPORTS>\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration_acb2e33c8ddc5300a3d2e572aef16bfe1}{rx\_ports}};}
+\DoxyCodeLine{00076\ \ \ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ Default\ destructor.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{virtual}\ \string~\mbox{\hyperlink{classsrsran_1_1dmrs__pusch__estimator_a1892a5f8fa071b0e2abeabf431c76050}{dmrs\_pusch\_estimator}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Estimates\ the\ PUSCH\ propagation\ channel.}}
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ estimate\ Channel\ estimate.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ grid\ \ \ \ \ Received\ resource\ grid.}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ \ config\ \ \ DM-\/RS\ configuration\ parameters.\ They\ characterize\ the\ DM-\/RS\ symbols\ and\ their\ indices.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1dmrs__pusch__estimator_ac4b1765e6367bc75ddb078e63d39e12f}{estimate}}(\mbox{\hyperlink{classsrsran_1_1channel__estimate}{channel\_estimate}}\&\ estimate,\ \textcolor{keyword}{const}\ resource\_grid\_reader\&\ grid,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1dmrs__pusch__estimator_1_1configuration}{configuration}}\&\ config)\ =\ 0;}
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

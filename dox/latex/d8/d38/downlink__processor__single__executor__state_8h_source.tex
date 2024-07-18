@@ -1,0 +1,138 @@
+\doxysection{downlink\+\_\+processor\+\_\+single\+\_\+executor\+\_\+state.\+h}
+\hypertarget{downlink__processor__single__executor__state_8h_source}{}\label{downlink__processor__single__executor__state_8h_source}\index{lib/phy/upper/downlink\_processor\_single\_executor\_state.h@{lib/phy/upper/downlink\_processor\_single\_executor\_state.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ \(\backslash\)brief\ Downlink\ processor\ state\ management\ class.}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ Represents\ the\ internal\ state\ of\ the\ upper\ PHY\ downlink\ processor\ single\ executor\ implementation.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ downlink\_processor\_single\_executor\_state}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ downlink\_processor\_single\_executor\_state()\ :\ state(states::idle),\ pending\_pdus(0)}
+\DoxyCodeLine{00036\ \ \ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{comment}{//\ Do\ nothing.}}
+\DoxyCodeLine{00038\ \ \ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \textcolor{comment}{///\ Possible\ states\ of\ the\ downlink\ proecsosr.}}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ states\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{///\ The\ processor\ is\ ready\ for\ a\ new\ resource\ grid.}}
+\DoxyCodeLine{00043\ \ \ \ \ idle,}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{///\ The\ DL\ PDUs\ are\ accepted\ and\ processed.}}
+\DoxyCodeLine{00045\ \ \ \ \ processing,}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ No\ new\ DL\ PDUs\ are\ accepted.\ The\ resource\ grid\ is\ sent\ when\ there\ are\ no\ ongoing\ processing\ tasks.}}
+\DoxyCodeLine{00047\ \ \ \ \ finishing}
+\DoxyCodeLine{00048\ \ \ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ Resource\ grid\ configured\ callback.\ It\ is\ meant\ to\ be\ called\ when\ a\ new\ resource\ grid\ has\ been\ accepted.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{void}\ on\_resource\_grid\_configured()}
+\DoxyCodeLine{00052\ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ (state\ ==\ states::idle),\ \textcolor{stringliteral}{"{}DL\ processor\ grid\ was\ configured\ in\ an\ invalid\ state,\ i.e.,\ \{\}."{}},\ to\_string(state));}
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((pending\_pdus\ ==\ 0),\ \textcolor{stringliteral}{"{}DL\ processor\ grid\ was\ configured\ with\ \{\}\ pending\ PDUs."{}},\ pending\_pdus);}
+\DoxyCodeLine{00056\ \ \ \ \ state\ =\ states::processing;}
+\DoxyCodeLine{00057\ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Finish\ processing\ PDUs\ callback.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \(\backslash\)c\ true\ if\ the\ resource\ grid\ can\ be\ immediately\ sent,\ \(\backslash\)c\ false\ otherwise.}}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{bool}\ on\_finish\_requested()}
+\DoxyCodeLine{00063\ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ (state\ !=\ states::idle),\ \textcolor{stringliteral}{"{}DL\ processor\ finish\ was\ requested\ in\ an\ invalid\ state,\ i.e.,\ \{\}."{}},\ to\_string(state));}
+\DoxyCodeLine{00066\ \ \ \ \ state\ =\ states::finishing;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ (pending\_pdus\ ==\ 0);}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ Resource\ grid\ sent\ callback.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{void}\ on\_grid\_sent()}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}((pending\_pdus\ ==\ 0),\ \textcolor{stringliteral}{"{}Grid\ was\ sent\ with\ \{\}\ pending\ PDUs."{}},\ pending\_pdus);}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ (state\ ==\ states::finishing),\ \textcolor{stringliteral}{"{}DL\ processor\ grid\ was\ sent\ in\ an\ invalid\ state,\ i.e.,\ \{\}."{}},\ to\_string(state));}
+\DoxyCodeLine{00076\ \ \ \ \ state\ =\ states::idle;}
+\DoxyCodeLine{00077\ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ Task\ creation\ callback.\ Increases\ the\ pending\ task\ counter.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ on\_task\_creation()}
+\DoxyCodeLine{00081\ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{srsran__assert_8h_ab080308588b563333b9da75e3746eed6}{srsran\_assert}}(}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ (state\ ==\ states::processing),\ \textcolor{stringliteral}{"{}DL\ processor\ task\ created\ in\ an\ invalid\ state,\ i.e.,\ \{\}."{}},\ to\_string(state));}
+\DoxyCodeLine{00084\ \ \ \ \ increase\_pending\_pdus();}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ Task\ completion\ callback.\ Decreases\ the\ pending\ task\ counter\ and\ checks\ wether\ the\ resource\ grid\ can\ be\ sent.}}
+\DoxyCodeLine{00088\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ \(\backslash\)c\ true\ if\ the\ resource\ grid\ can\ be\ immediately\ sent,\ \(\backslash\)c\ false\ otherwise.}}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{bool}\ on\_task\_completion()}
+\DoxyCodeLine{00091\ \ \ \{}
+\DoxyCodeLine{00092\ \ \ \ \ decrease\_pending\_pdus();}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{return}\ (state\ ==\ states::finishing)\ \&\&\ (pending\_pdus\ ==\ 0);}
+\DoxyCodeLine{00094\ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Checks\ wether\ the\ current\ state\ allows\ for\ a\ new\ resource\ grid\ to\ be\ configured.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{bool}\ is\_idle()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ state\ ==\ states::idle;\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{///\ Checks\ wether\ the\ current\ state\ allows\ for\ a\ new\ task\ to\ be\ enqueued.}}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{bool}\ is\_processing()\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ state\ ==\ states::processing;\ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ Increases\ the\ pending\ PDU\ counter.}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ increase\_pending\_pdus()\ \{\ ++pending\_pdus;\ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \textcolor{comment}{///\ Decreases\ the\ pending\ PDU\ counter.}}
+\DoxyCodeLine{00107\ \ \ \textcolor{keywordtype}{void}\ decrease\_pending\_pdus()}
+\DoxyCodeLine{00108\ \ \ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{if}\ (pending\_pdus\ >\ 0)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ -\/-\/pending\_pdus;}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \textcolor{keyword}{static}\ std::string\ to\_string(states\ state\_)}
+\DoxyCodeLine{00115\ \ \ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{switch}\ (state\_)\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::idle:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}idle"{}};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::processing:}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}processing"{}};}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ states::finishing:}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}finishing"{}};}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{comment}{///\ Downlink\ processor\ current\ state.}}
+\DoxyCodeLine{00128\ \ \ states\ state;}
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Number\ of\ pending\ PDUs\ to\ process\ before\ sending\ the\ resource\ grid.}}
+\DoxyCodeLine{00130\ \ \ \textcolor{keywordtype}{unsigned}\ pending\_pdus;}
+\DoxyCodeLine{00131\ \};}
+\DoxyCodeLine{00132\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

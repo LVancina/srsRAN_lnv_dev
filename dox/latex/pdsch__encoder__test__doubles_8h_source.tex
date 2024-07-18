@@ -1,0 +1,55 @@
+\doxysection{pdsch\+\_\+encoder\+\_\+test\+\_\+doubles.\+h}
+\hypertarget{pdsch__encoder__test__doubles_8h_source}{}\label{pdsch__encoder__test__doubles_8h_source}\index{tests/unittests/phy/upper/channel\_processors/pdsch\_encoder\_test\_doubles.h@{tests/unittests/phy/upper/channel\_processors/pdsch\_encoder\_test\_doubles.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}../../phy\_test\_utils.h"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}srsran/phy/upper/channel\_processors/channel\_processor\_factories.h"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1pdsch__encoder__spy}{pdsch\_encoder\_spy}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1pdsch__encoder}{pdsch\_encoder}}}
+\DoxyCodeLine{00011\ \{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{struct\ }entry\_t\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1pdsch__encoder_1_1configuration}{configuration}}\ \ \ \ \ \ \ \ config;}
+\DoxyCodeLine{00015\ \ \ \ \ std::vector<uint8\_t>\ transport\_block;}
+\DoxyCodeLine{00016\ \ \ \ \ std::vector<uint8\_t>\ codeword;}
+\DoxyCodeLine{00017\ \ \ \};}
+\DoxyCodeLine{00018\ \ \ std::vector<entry\_t>\ entries;}
+\DoxyCodeLine{00019\ \ \ std::mt19937\ \ \ \ \ \ \ \ \ rgen;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00022\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1pdsch__encoder__spy_a54c94556324d4f5b3c7f1251268700d4}{encode}}(\mbox{\hyperlink{classsrsran_1_1span}{span<uint8\_t>}}\ codeword,\ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ uint8\_t>}}\ transport\_block,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pdsch__encoder_1_1configuration}{configuration}}\&\ cfg)\textcolor{keyword}{\ override}}
+\DoxyCodeLine{00023\ \textcolor{keyword}{\ \ }\{\ \textcolor{comment}{//\ Generate\ new\ entry.}}
+\DoxyCodeLine{00024\ \ \ \ \ entry\_t\ entry\ =\ \{\};}
+\DoxyCodeLine{00025\ \ \ \ \ entry.config\ \ =\ cfg;}
+\DoxyCodeLine{00026\ \ \ \ \ entry.codeword.resize(codeword.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}());}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ Fill\ data.}}
+\DoxyCodeLine{00029\ \ \ \ \ entry.transport\_block.resize(transport\_block.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}());}
+\DoxyCodeLine{00030\ \ \ \ \ srsvec::copy(entry.transport\_block,\ transport\_block);}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ Generate\ encoded\ message.}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ i\ =\ 0,\ len\ =\ codeword.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ i\ !=\ len;\ ++i)\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ codeword[i]\ \ \ \ \ \ \ =\ \textcolor{keyword}{static\_cast<}uint8\_t\textcolor{keyword}{>}(rgen()\ \&\ 0x1);}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ entry.codeword[i]\ =\ codeword[i];}
+\DoxyCodeLine{00036\ \ \ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ Append\ entry.}}
+\DoxyCodeLine{00039\ \ \ \ \ entries.emplace\_back(entry);}
+\DoxyCodeLine{00040\ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reset()\ \{\ entries.clear();\ \}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ get\_nof\_entries()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ entries.\mbox{\hyperlink{classsrsran_1_1span_ad0e376d95ca916144eac76f27f0654ac}{size}}();\ \}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{const}\ std::vector<entry\_t>\&\ get\_entries()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ entries;\ \}}
+\DoxyCodeLine{00045\ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ PHY\_SPY\_FACTORY\_TEMPLATE(pdsch\_encoder);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

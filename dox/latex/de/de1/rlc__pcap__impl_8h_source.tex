@@ -1,0 +1,61 @@
+\doxysection{rlc\+\_\+pcap\+\_\+impl.\+h}
+\hypertarget{rlc__pcap__impl_8h_source}{}\label{rlc__pcap__impl_8h_source}\index{lib/pcap/rlc\_pcap\_impl.h@{lib/pcap/rlc\_pcap\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{backend__pcap__writer_8h}{"{}backend\_pcap\_writer.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/byte\_buffer.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/pcap/rlc\_pcap.h"{}}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class}\ rlc\_pcap\_impl\ \textcolor{keyword}{final}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__pcap}{rlc\_pcap}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ rlc\_pcap\_impl(\textcolor{keyword}{const}\ std::string\&\ filename,\ \textcolor{keywordtype}{bool}\ capture\_srb,\ \textcolor{keywordtype}{bool}\ capture\_drb,\ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ backend\_exec);}
+\DoxyCodeLine{00035\ \ \ \string~rlc\_pcap\_impl()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00036\ \ \ rlc\_pcap\_impl(\textcolor{keyword}{const}\ rlc\_pcap\_impl\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00037\ \ \ rlc\_pcap\_impl\&\ operator=(\textcolor{keyword}{const}\ rlc\_pcap\_impl\&\ other)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00038\ \ \ rlc\_pcap\_impl(rlc\_pcap\_impl\&\&\ other)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00039\ \ \ rlc\_pcap\_impl\&\ operator=(rlc\_pcap\_impl\&\&\ other)\ \ \ \ \ \ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{keywordtype}{void}\ close()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00042\ \ \ \textcolor{keywordtype}{bool}\ is\_write\_enabled()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ writer.is\_write\_enabled();\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keywordtype}{void}\ push\_pdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pcap__rlc__pdu__context}{pcap\_rlc\_pdu\_context}}\&\ context,\ \textcolor{keyword}{const}\ span<uint8\_t>\ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{void}\ push\_pdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1pcap__rlc__pdu__context}{pcap\_rlc\_pdu\_context}}\&\ context,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\&\ pdu)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{bool}\ srb\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00049\ \ \ \textcolor{keywordtype}{bool}\ drb\_enabled\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ srslog::basic\_logger\&\ logger;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{classsrsran_1_1backend__pcap__writer}{backend\_pcap\_writer}}\ writer;}
+\DoxyCodeLine{00054\ \};}
+\DoxyCodeLine{00055\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

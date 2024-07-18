@@ -231,7 +231,7 @@ void ldpc_decoder_neon::compute_soft_bits(span<log_likelihood_ratio>       this_
   }
 }
 
-bool ldpc_decoder_neon::get_hard_bits(bit_buffer& out)
+void ldpc_decoder_neon::get_hard_bits(bit_buffer& out)
 {
   // Buffer to hold the soft bits.
   std::array<log_likelihood_ratio, MAX_LIFTING_SIZE * MAX_BG_K> temp_llr;
@@ -259,5 +259,5 @@ bool ldpc_decoder_neon::get_hard_bits(bit_buffer& out)
   span<const log_likelihood_ratio> llr_read_buffer(temp_llr.begin(), llr_write_buffer.begin());
 
   // Convert to hard bits.
-  return hard_decision(out, llr_read_buffer);
+  hard_decision(out, llr_read_buffer);
 }

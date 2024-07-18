@@ -47,9 +47,9 @@ struct ru_ofh_sector_configuration {
   optional<bs_channel_bandwidth_fr1> ru_operating_bw;
 
   /// DU transmission window timing parameters.
-  ofh::tx_window_timing_parameters tx_window_timing_params;
+  ofh::du_tx_window_timing_parameters tx_window_timing_params;
   /// Reception window timing parameters.
-  ofh::rx_window_timing_parameters rx_window_timing_params;
+  ofh::du_rx_window_timing_parameters rx_window_timing_params;
 
   /// Enables the Control-Plane PRACH message signalling.
   bool is_prach_control_plane_enabled = false;
@@ -86,10 +86,8 @@ struct ru_ofh_sector_configuration {
   ether::mac_address mac_dst_address;
   /// Source MAC address, corresponds to Distributed Unit MAC address.
   ether::mac_address mac_src_address;
-  /// Tag control information field for C-Plane.
-  uint16_t tci_cp;
-  /// Tag control information field for U-Plane.
-  uint16_t tci_up;
+  /// Tag control information field.
+  uint16_t tci;
 
   /// PRACH eAxC.
   static_vector<unsigned, ofh::MAX_NOF_SUPPORTED_EAXC> prach_eaxc;

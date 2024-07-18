@@ -1,0 +1,106 @@
+\doxysection{low\+\_\+papr\+\_\+sequence\+\_\+generator\+\_\+impl.\+h}
+\hypertarget{low__papr__sequence__generator__impl_8h_source}{}\label{low__papr__sequence__generator__impl_8h_source}\index{lib/phy/upper/sequence\_generators/low\_papr\_sequence\_generator\_impl.h@{lib/phy/upper/sequence\_generators/low\_papr\_sequence\_generator\_impl.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/upper/sequence\_generators/low\_papr\_sequence\_generator.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace}\ srsran\ \{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{comment}{///\ \(\backslash\)brief\ Describes\ a\ generic\ low\ PAPR\ sequence\ generation\ implementation.}}
+\DoxyCodeLine{00030\ \textcolor{comment}{///}}
+\DoxyCodeLine{00031\ \textcolor{comment}{///\ \(\backslash\)attention\ This\ generic\ class\ implementation\ is\ not\ optimized\ for\ real-\/time\ execution.}}
+\DoxyCodeLine{00032\ \textcolor{keyword}{class}\ low\_papr\_sequence\_generator\_impl\ :\ \textcolor{keyword}{public}\ low\_papr\_sequence\_generator}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{///\ Defines\ the\ maximum\ number\ of\ short\ sequences.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{unsigned}\ NOF\_ZC\_SEQ\ =\ 30;}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ Defines\ Phi\ values\ for\ M\_sc=6\ Table\ 5.2.2.2-\/1\ in\ TS\ 38.211.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<std::array<\textcolor{keywordtype}{float},\ 6>,\ NOF\_ZC\_SEQ>\ phi\_M\_sc\_6;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{comment}{///\ Defines\ Phi\ values\ for\ M\_sc=12\ Table\ 5.2.2.2-\/2\ in\ TS\ 38.211.}}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<std::array<\textcolor{keywordtype}{float},\ 12>,\ NOF\_ZC\_SEQ>\ phi\_M\_sc\_12;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{///\ Defines\ Phi\ values\ for\ M\_sc=18\ Table\ 5.2.2.2-\/3\ in\ TS\ 38.211.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<std::array<\textcolor{keywordtype}{float},\ 18>,\ NOF\_ZC\_SEQ>\ phi\_M\_sc\_18;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{///\ Defines\ Phi\ values\ for\ M\_sc=24\ Table\ 5.2.2.2-\/4\ in\ TS\ 38.211.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::array<std::array<\textcolor{keywordtype}{float},\ 24>,\ NOF\_ZC\_SEQ>\ phi\_M\_sc\_24;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$\ for\ base\ sequences\ of\ length\ 6.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg\_0dot5prb(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$\ for\ base\ sequences\ of\ length\ 12.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00058\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg\_1prb(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$\ for\ base\ sequences\ of\ length\ 18.}}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00066\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg\_1dot5prb(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$\ for\ base\ sequences\ of\ length\ 24.}}
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00071\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg\_2prb(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$\ for\ base\ sequences\ of\ length\ 36\ or}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ larger.}}
+\DoxyCodeLine{00076\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00077\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ v\ Indicates\ the\ sequence\ base\ index\ \{0,1\}.}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg\_mprb(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u,\ \textcolor{keywordtype}{unsigned}\ v);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ argument\ for\ the\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\(\backslash\)f\$.}}
+\DoxyCodeLine{00083\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00084\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ tmp\_arg\ Argument\ generation\ destination.}}
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ u\ Indicates\ the\ sequence\ group\ index\ \{0,29\}.}}
+\DoxyCodeLine{00086\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ v\ Indicates\ the\ sequence\ base\ index\ \{0,1\}.}}
+\DoxyCodeLine{00087\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ r\_uv\_arg(span<\textcolor{keywordtype}{float}>\ tmp\_arg,\ \textcolor{keywordtype}{unsigned}\ u,\ \textcolor{keywordtype}{unsigned}\ v);}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Generates\ sequence\ \(\backslash\)f\$r\string^\{(\(\backslash\)alpha,\ \(\backslash\)beta)\}\_\{u,v\}(n)\ =\ e\string^\{-\/j\ (temp\_arg[n]\ +\ \(\backslash\)alpha\ \(\backslash\)times\ n)\ \ \}\(\backslash\)f\$}}
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ \(\backslash\)param[out]\ sequence\ Sequence\ generation\ destination.}}
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ alpha\ Provides\ parameter\ \(\backslash\)f\$\(\backslash\)alpha\(\backslash\)f\$.}}
+\DoxyCodeLine{00092\ \ \ \textcolor{comment}{///\ \(\backslash\)param[in]\ tmp\_arg\ Provides\ the\ complex\ exponential\ argument.}}
+\DoxyCodeLine{00093\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ cexp(span<cf\_t>\ sequence,\ \textcolor{keywordtype}{float}\ alpha,\ \textcolor{keyword}{const}\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{float}>\ tmp\_arg);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ generate(span<cf\_t>\ sequence,\ \textcolor{keywordtype}{unsigned}\ u,\ \textcolor{keywordtype}{unsigned}\ v,\ \textcolor{keywordtype}{float}\ alpha)\ \textcolor{keyword}{const}\ override;}
+\DoxyCodeLine{00098\ \};}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

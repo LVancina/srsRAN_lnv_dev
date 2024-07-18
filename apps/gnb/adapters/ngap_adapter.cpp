@@ -51,16 +51,6 @@ public:
   {
     srsran_assert(msg_handler != nullptr, "Adapter is disconnected");
 
-    if (pcap_writer.is_write_enabled()) {
-      byte_buffer   packed_pdu;
-      asn1::bit_ref bref{packed_pdu};
-      if (msg.pdu.pack(bref) == asn1::SRSASN_SUCCESS) {
-        pcap_writer.push_pdu(std::move(packed_pdu));
-      } else {
-        logger.warning("Failed to encode NGAP Tx PDU.");
-      }
-    }
-
     if (msg.pdu.type().value == asn1::ngap::ngap_pdu_c::types_opts::init_msg and
         msg.pdu.init_msg().value.type().value ==
             asn1::ngap::ngap_elem_procs_o::init_msg_c::types_opts::ng_setup_request) {
@@ -142,11 +132,13 @@ public:
 
   void disconnect() override
   {
-    // Delete the packer.
-    packer.reset();
-
-    // Stop new IO events.
-    sctp_gateway.reset();
+    if (sctp_gateway != nullptr) {
+      if (not broker.unregister_fd(sctp_gateway->get_socket_fd())) {
+        logger.error("NGAP Gateway failed to stop SCTP socket");
+      }
+      packer.reset();
+      sctp_gateway.reset();
+    }
   }
 
   void connect_cu_cp(ngap_message_handler& msg_handler_, ngap_event_handler& ev_handler_) override
@@ -164,8 +156,10 @@ public:
       return;
     }
     logger.info("TNL connection to AMF ({}:{}) established", sctp_cfg.connect_address, sctp_cfg.connect_port);
-    if (!sctp_gateway->subscribe_to(broker)) {
-      report_fatal_error("Failed to register N2 (SCTP) network gateway at IO broker.");
+    bool success = broker.register_fd(sctp_gateway->get_socket_fd(), [this](int fd) { sctp_gateway->receive(); });
+    if (!success) {
+      report_fatal_error("Failed to register N2 (SCTP) network gateway at IO broker. socket_fd={}",
+                         sctp_gateway->get_socket_fd());
     }
   }
 
@@ -179,11 +173,7 @@ public:
   // Called by io-broker for each Rx PDU.
   void on_new_pdu(byte_buffer pdu) override
   {
-    // Note: on_new_pdu could be dispatched right before disconnect() is called.
-    if (packer == nullptr) {
-      logger.warning("Dropping NGAP PDU. Cause: Received PDU while packer is not ready or disconnected");
-      return;
-    }
+    srsran_assert(packer != nullptr, "Adapter is disconnected");
     packer->handle_packed_pdu(pdu);
   }
 

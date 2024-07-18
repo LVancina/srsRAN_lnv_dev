@@ -1,0 +1,176 @@
+\doxysection{scheduler\+\_\+configurator.\+h}
+\hypertarget{scheduler__configurator_8h_source}{}\label{scheduler__configurator_8h_source}\index{include/srsran/scheduler/scheduler\_configurator.h@{include/srsran/scheduler/scheduler\_configurator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/time\_alignment\_group\_config.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/carrier\_configuration.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/lcid.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/pci.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/phy\_time\_unit.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/prach/prach\_constants.h"{}}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/sib/sib\_configuration.h"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/slot\_pdu\_capacity\_constants.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/slot\_point.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/sr\_configuration.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/ssb\_configuration.h"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/subcarrier\_spacing.h"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}srsran/ran/tdd/tdd\_ul\_dl\_config.h"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/bwp\_configuration.h"{}}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/dmrs.h"{}}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/logical\_channel\_config.h"{}}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/serving\_cell\_config.h"{}}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/config/si\_scheduling\_config.h"{}}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}srsran/scheduler/scheduler\_dci.h"{}}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00051\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__grid__resource}{sched\_grid\_resource}}\ \{}
+\DoxyCodeLine{00052\ \ \ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \ \ \ \ \ prbs;}
+\DoxyCodeLine{00053\ \ \ \mbox{\hyperlink{structsrsran_1_1ofdm__symbol__range}{ofdm\_symbol\_range}}\ symbols;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__grid__resource}{sched\_grid\_resource}}\&\ rhs)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ prbs\ ==\ rhs.prbs\ and\ symbols\ ==\ rhs.symbols;\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__grid__resource}{sched\_grid\_resource}}\&\ rhs)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !(rhs\ ==\ *\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{bool}\ is\_empty()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ prbs.empty()\ and\ symbols.empty();\ \}}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message}{sched\_cell\_configuration\_request\_message}}\ \{}
+\DoxyCodeLine{00065\ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ \ \ \ \ \ \ cell\_index;}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{namespacesrsran_a42e64ab4491198c0eb3d9415e05ca976}{du\_cell\_group\_index\_t}}\ cell\_group\_index;}
+\DoxyCodeLine{00067\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nof\_beams;\ \textcolor{comment}{//\ (0..64)}}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{namespacesrsran_ae2a7787d776e7d6ee8959beb6b368286}{pci\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pci;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \mbox{\hyperlink{structsrsran_1_1dl__config__common}{dl\_config\_common}}\ dl\_cfg\_common;}
+\DoxyCodeLine{00071\ \ \ \mbox{\hyperlink{structsrsran_1_1ul__config__common}{ul\_config\_common}}\ ul\_cfg\_common;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00074\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<tdd\_ul\_dl\_config\_common>}}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_ace5d3c64354606de1b7d32c342745afe}{tdd\_ul\_dl\_cfg\_common}};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{namespacesrsran_aca64228c7486db8ce1f0a3118e8cedc8}{subcarrier\_spacing}}\ \ \ \ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_a86e58fde4c441afb25ccbf6abf410343}{scs\_common}};}
+\DoxyCodeLine{00078\ \ \ \mbox{\hyperlink{structsrsran_1_1carrier__configuration}{carrier\_configuration}}\ dl\_carrier;}
+\DoxyCodeLine{00079\ \ \ \mbox{\hyperlink{structsrsran_1_1carrier__configuration}{carrier\_configuration}}\ ul\_carrier;}
+\DoxyCodeLine{00080\ \ \ \mbox{\hyperlink{structsrsran_1_1ssb__configuration}{ssb\_configuration}}\ \ \ \ \ ssb\_config;}
+\DoxyCodeLine{00081\ \ \ \mbox{\hyperlink{namespacesrsran_a3c5416bf7ff59c183bb2047d936b55ef}{dmrs\_typeA\_position}}\ \ \ dmrs\_typeA\_pos;}
+\DoxyCodeLine{00083\ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_acd9751a1677b0dfbc910313830261681}{coreset0}};}
+\DoxyCodeLine{00085\ \ \ uint8\_t\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_a2c60ea59f5162317f13ebb41992f6f80}{searchspace0}};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00088\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_a1e8ca061b919891d73c6228f20750d96}{sib1\_payload\_size}};}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<si\_scheduling\_config>}}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_ac6f23de897fd9c1de89c0d6c5619f391}{si\_scheduling}};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00094\ \ \ std::vector<sched\_grid\_resource>\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_ad115700b1bdf1bb646918d4eeb801eec}{pucch\_guardbands}};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00097\ \ \ std::vector<zp\_csi\_rs\_resource>\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_af37e7f65e2cf43d465d374d51077541b}{zp\_csi\_rs\_list}};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00100\ \ \ std::vector<nzp\_csi\_rs\_resource>\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message_afe6235366e1b0d12c1be548d9f670af3}{nzp\_csi\_rs\_res\_list}};}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \textcolor{keywordtype}{unsigned}\ ntn\_cs\_koffset\ =\ 0;}
+\DoxyCodeLine{00103\ \};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__ue__resource__alloc__config}{sched\_ue\_resource\_alloc\_config}}\ \{}
+\DoxyCodeLine{00108\ \ \ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__resource__alloc__config_afe4e71eac3dd010aa684a485e4207af9}{pdsch\_grant\_size\_limits}}\{0,\ \mbox{\hyperlink{namespacesrsran_ad1ba5b00d91f36c10973b0b36719e438}{MAX\_NOF\_PRBS}}\};}
+\DoxyCodeLine{00110\ \ \ \mbox{\hyperlink{structsrsran_1_1prb__interval}{prb\_interval}}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__resource__alloc__config_ae64c449df31a278c33032ad4cb0c8753}{pusch\_grant\_size\_limits}}\{0,\ \mbox{\hyperlink{namespacesrsran_ad1ba5b00d91f36c10973b0b36719e438}{MAX\_NOF\_PRBS}}\};}
+\DoxyCodeLine{00112\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__resource__alloc__config_a9ab962b26e6125d3b5c8b42d3e27ae31}{max\_pdsch\_harq\_retxs}}\ =\ 4;}
+\DoxyCodeLine{00114\ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__resource__alloc__config_adf6c3f2ef3d9d677c3da4f276fad56e6}{max\_pusch\_harq\_retxs}}\ =\ 4;}
+\DoxyCodeLine{00115\ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00118\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__ue__config__request}{sched\_ue\_config\_request}}\ \{}
+\DoxyCodeLine{00120\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<std::vector<logical\_channel\_config>}}>\ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request_a92059b25d37644524f8f0d336b6236a3}{lc\_config\_list}};}
+\DoxyCodeLine{00122\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<std::vector<scheduling\_request\_to\_addmod>}}>\ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request_a92208a4d801977a808de710339f9a5c3}{sched\_request\_config\_list}};}
+\DoxyCodeLine{00124\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<std::vector<cell\_config\_dedicated>}}>\ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request_a80de481ce70774d7de293166c54df1bb}{cells}};}
+\DoxyCodeLine{00126\ \ \ \mbox{\hyperlink{classsrsran_1_1optional}{optional<sched\_ue\_resource\_alloc\_config>}}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request_a67da94f7a8769c1b482c1c0ca0c72ed0}{res\_alloc\_cfg}};}
+\DoxyCodeLine{00127\ \};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00130\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message}{sched\_ue\_creation\_request\_message}}\ \{}
+\DoxyCodeLine{00131\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index;}
+\DoxyCodeLine{00132\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ crnti;}
+\DoxyCodeLine{00134\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message_aba74797021fef9c0776eb153c276a36a}{starts\_in\_fallback}};}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request}{sched\_ue\_config\_request}}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message_aa2f7fca825abb9ac2c1ac910d2b6f0a1}{cfg}};}
+\DoxyCodeLine{00138\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<tag,\ MAX\_NOF\_TAGS>}}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message_ac7856d0467ce5212e822076a200a34dc}{tag\_config}};}
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00142\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__ue__reconfiguration__message}{sched\_ue\_reconfiguration\_message}}\ \{}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ ue\_index;}
+\DoxyCodeLine{00144\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnti;}
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{structsrsran_1_1sched__ue__config__request}{sched\_ue\_config\_request}}\ cfg;}
+\DoxyCodeLine{00146\ \};}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00149\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1sched__ue__delete__message}{sched\_ue\_delete\_message}}\ \{}
+\DoxyCodeLine{00150\ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index;}
+\DoxyCodeLine{00151\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ crnti;}
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00155\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}\ \{}
+\DoxyCodeLine{00156\ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ cell\_index;}
+\DoxyCodeLine{00157\ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ slot\_rx;}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rach__indication__message_1_1preamble}{preamble}}\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ preamble\_id;}
+\DoxyCodeLine{00161\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \ \ \ \ \ \ \ tc\_rnti;}
+\DoxyCodeLine{00162\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1phy__time__unit}{phy\_time\_unit}}\ time\_advance;}
+\DoxyCodeLine{00163\ \ \ \};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1rach__indication__message_1_1occasion}{occasion}}\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rach__indication__message_1_1occasion_a023f3f44728909f29f5c674e031e201e}{start\_symbol}};}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frequency\_index;}
+\DoxyCodeLine{00169\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<preamble,\ MAX\_PREAMBLES\_PER\_PRACH\_OCCASION>}}\ preambles;}
+\DoxyCodeLine{00170\ \ \ \};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector<occasion,\ MAX\_PRACH\_OCCASIONS\_PER\_SLOT>}}\ occasions;}
+\DoxyCodeLine{00173\ \};}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00176\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1scheduler__configurator}{scheduler\_configurator}}}
+\DoxyCodeLine{00177\ \{}
+\DoxyCodeLine{00178\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00179\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1scheduler__configurator}{\string~scheduler\_configurator}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00180\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ handle\_cell\_configuration\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__cell__configuration__request__message}{sched\_cell\_configuration\_request\_message}}\&\ msg)\ =\ 0;}
+\DoxyCodeLine{00181\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ handle\_rach\_indication(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rach__indication__message}{rach\_indication\_message}}\&\ msg)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00182\ \};}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1scheduler__ue__configurator}{scheduler\_ue\_configurator}}}
+\DoxyCodeLine{00185\ \{}
+\DoxyCodeLine{00186\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00187\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1scheduler__ue__configurator}{\string~scheduler\_ue\_configurator}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00188\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ handle\_ue\_creation\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__creation__request__message}{sched\_ue\_creation\_request\_message}}\&\ ue\_request)\ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00189\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ handle\_ue\_reconfiguration\_request(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1sched__ue__reconfiguration__message}{sched\_ue\_reconfiguration\_message}}\&\ ue\_request)\ =\ 0;}
+\DoxyCodeLine{00190\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ handle\_ue\_removal\_request(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00191\ \};}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00194\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1sched__configuration__notifier}{sched\_configuration\_notifier}}}
+\DoxyCodeLine{00195\ \{}
+\DoxyCodeLine{00196\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00197\ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classsrsran_1_1sched__configuration__notifier}{\string~sched\_configuration\_notifier}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00198\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_ue\_config\_complete(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index,\ \textcolor{keywordtype}{bool}\ ue\_creation\_result)\ =\ 0;}
+\DoxyCodeLine{00199\ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ on\_ue\_delete\_response(\mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ ue\_index)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00200\ \};}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

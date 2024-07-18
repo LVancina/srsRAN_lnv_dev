@@ -1,0 +1,93 @@
+\doxysection{mac\+\_\+to\+\_\+fapi\+\_\+translator.\+h}
+\hypertarget{mac__to__fapi__translator_8h_source}{}\label{mac__to__fapi__translator_8h_source}\index{lib/fapi\_adaptor/mac/mac\_to\_fapi\_translator.h@{lib/fapi\_adaptor/mac/mac\_to\_fapi\_translator.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/fapi/messages.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}srsran/fapi\_adaptor/precoding\_matrix\_mapper.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}srsran/fapi\_adaptor/uci\_part2\_correspondence\_mapper.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}srsran/mac/mac\_cell\_result.h"{}}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace\ }fapi\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }slot\_last\_message\_notifier;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }slot\_message\_gateway;}
+\DoxyCodeLine{00035\ \}\ \textcolor{comment}{//\ namespace\ fapi}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }fapi\_adaptor\ \{}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator}{mac\_to\_fapi\_translator}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1mac__cell__result__notifier}{mac\_cell\_result\_notifier}}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator}{mac\_to\_fapi\_translator}}(\mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logger\_,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__message__gateway}{fapi::slot\_message\_gateway}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg\_gw\_,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__last__message__notifier}{fapi::slot\_last\_message\_notifier}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ last\_msg\_notifier\_,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<precoding\_matrix\_mapper>\ \ \ \ \ \ \ \ \ pm\_mapper\_,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<uci\_part2\_correspondence\_mapper>\ part2\_mapper\_,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cell\_nof\_prbs\_)\ :}
+\DoxyCodeLine{00052\ \ \ \ \ logger(logger\_),}
+\DoxyCodeLine{00053\ \ \ \ \ msg\_gw(msg\_gw\_),}
+\DoxyCodeLine{00054\ \ \ \ \ last\_msg\_notifier(last\_msg\_notifier\_),}
+\DoxyCodeLine{00055\ \ \ \ \ pm\_mapper(std::move(pm\_mapper\_)),}
+\DoxyCodeLine{00056\ \ \ \ \ part2\_mapper(std::move(part2\_mapper\_)),}
+\DoxyCodeLine{00057\ \ \ \ \ cell\_nof\_prbs(cell\_nof\_prbs\_)}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ srsran\_assert(pm\_mapper,\ \textcolor{stringliteral}{"{}Invalid\ precoding\ matrix\ mapper"{}});}
+\DoxyCodeLine{00060\ \ \ \ \ srsran\_assert(part2\_mapper,\ \textcolor{stringliteral}{"{}Invalid\ Part2\ mapper"{}});}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator_a80ba7a09b76c852ce89a1689107ef7c1}{on\_new\_downlink\_scheduler\_results}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__dl__sched__result}{mac\_dl\_sched\_result}}\&\ dl\_res)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00067\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator_a3c528fd905a14735515d278d292c7058}{on\_new\_downlink\_data}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__dl__data__result}{mac\_dl\_data\_result}}\&\ dl\_data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator_a402867ce9af3ed782271f03652767b0d}{on\_new\_uplink\_scheduler\_results}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1mac__ul__sched__result}{mac\_ul\_sched\_result}}\&\ ul\_res)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \textcolor{comment}{//\ See\ interface\ for\ documentation.}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1fapi__adaptor_1_1mac__to__fapi__translator_a3862769c2da7345dfef4793709b4ffbb}{on\_cell\_results\_completion}}(\mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}})\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ handle\_ul\_dci\_request(\mbox{\hyperlink{classsrsran_1_1span}{span<const\ pdcch\_ul\_information>}}\ pdcch\_info,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1span}{span<const\ dci\_payload>}}\ \ \ \ \ \ \ \ \ \ payloads,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a457973e91fb03d0c262578c3bdf460f0a5e97994ed38a2b2f984f3b2b75012bf8}{slot}},}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\_last\_message\_in\_slot);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00084\ \ \ \mbox{\hyperlink{classsrslog_1_1detail_1_1logger__impl}{srslog::basic\_logger}}\&\ logger;}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__message__gateway}{fapi::slot\_message\_gateway}}\&\ msg\_gw;}
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsrsran_1_1fapi_1_1slot__last__message__notifier}{fapi::slot\_last\_message\_notifier}}\&\ last\_msg\_notifier;}
+\DoxyCodeLine{00090\ \ \ std::unique\_ptr<precoding\_matrix\_mapper>\ pm\_mapper;}
+\DoxyCodeLine{00092\ \ \ std::unique\_ptr<uci\_part2\_correspondence\_mapper>\ part2\_mapper;}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ cell\_nof\_prbs;}
+\DoxyCodeLine{00095\ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \}\ \textcolor{comment}{//\ namespace\ fapi\_adaptor}}
+\DoxyCodeLine{00098\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

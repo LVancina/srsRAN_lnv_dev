@@ -109,8 +109,7 @@ class pusch_processor_pool : public pusch_processor
 {
 public:
   /// Creates a PUSCH processor pool from a list of processors. Ownership is transferred to the pool.
-  explicit pusch_processor_pool(span<std::unique_ptr<pusch_processor>> processors_, bool blocking_) :
-    logger(srslog::fetch_basic_logger("PHY")), free_list(processors_.size()), blocking(blocking_)
+  explicit pusch_processor_pool(span<std::unique_ptr<pusch_processor>> processors_) : free_list(processors_.size())
   {
     unsigned index = 0;
     for (std::unique_ptr<pusch_processor>& processor : processors_) {
@@ -126,34 +125,12 @@ public:
                const resource_grid_reader&      grid,
                const pdu_t&                     pdu) override
   {
-    // Try to get an available worker.
-    optional<unsigned> index;
-    do {
-      index = free_list.try_pop();
-    } while (blocking && !index.has_value());
+    // Try to get a worker.
+    optional<unsigned> index = free_list.try_pop();
 
     // If no worker is available.
     if (!index.has_value()) {
-      logger.warning(
-          pdu.slot.sfn(), pdu.slot.slot_index(), "PUSCH processing queue is full. Dropping PUSCH {:s}.", pdu);
-
-      // Report data-related discarded result if shared channel data is present.
-      if (pdu.codeword.has_value()) {
-        pusch_processor_result_data discarded_results;
-        discarded_results.data.tb_crc_ok            = false;
-        discarded_results.data.nof_codeblocks_total = 0;
-        discarded_results.data.ldpc_decoder_stats.reset();
-        discarded_results.csi = channel_state_information();
-        notifier.on_sch(discarded_results);
-      }
-
-      // Report control-related discarded result if HARQ-ACK feedback is present.
-      if (pdu.uci.nof_harq_ack > 0) {
-        pusch_processor_result_control discarded_results;
-        discarded_results.harq_ack = pusch_uci_field{uci_payload_type(pdu.uci.nof_harq_ack), uci_status::unknown};
-        discarded_results.csi      = channel_state_information();
-        notifier.on_uci(discarded_results);
-      }
+      srslog::fetch_basic_logger("PHY").warning("Insufficient number of PUSCH processors. Dropping PUSCH {:s}.", pdu);
       return;
     }
 
@@ -162,10 +139,8 @@ public:
   }
 
 private:
-  srslog::basic_logger&                        logger;
   std::vector<detail::pusch_processor_wrapper> processors;
   detail::pusch_processor_free_list            free_list;
-  bool                                         blocking;
 };
 
 } // namespace srsran

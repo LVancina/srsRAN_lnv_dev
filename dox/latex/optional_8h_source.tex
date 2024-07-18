@@ -1,0 +1,404 @@
+\doxysection{optional.\+h}
+\hypertarget{optional_8h_source}{}\label{optional_8h_source}\index{include/srsran/adt/optional.h@{include/srsran/adt/optional.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}srsran/support/srsran\_assert.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1in__place__t}{in\_place\_t}}\ \{\};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1nullopt__t}{nullopt\_t}}\ \{}
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{explicit}\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{structsrsran_1_1nullopt__t}{nullopt\_t}}(\textcolor{keywordtype}{int}\ )\ \{\}}
+\DoxyCodeLine{00036\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{structsrsran_1_1nullopt__t}{nullopt\_t}}\ \mbox{\hyperlink{namespacesrsran_a2e817fa4d4a8084eb1746ee8d1440679}{nullopt}}\{0\};}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1non__trivial__oper__tag}{non\_trivial\_oper\_tag}}\ \{\};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00047\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}\ \{}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{using\ }storageT\ =\ std::remove\_const\_t<T>;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ Storage\ for\ trivially\ destructible\ type.}}
+\DoxyCodeLine{00051\ \ \ template\ <typename\ U,\ bool\ =\ std::is\_trivially\_destructible<U>::value>}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{union\ }\mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}()\ noexcept\ :\ dummy()\ \{\}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}(\mbox{\hyperlink{structsrsran_1_1in__place__t}{in\_place\_t}},\ Args\&\&...\ args)\ :\ val(std::forward<Args>(args)...)}
+\DoxyCodeLine{00056\ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{char}\ dummy;}
+\DoxyCodeLine{00060\ \ \ \ \ U\ \ \ \ val;}
+\DoxyCodeLine{00061\ \ \ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ Storage\ for\ non-\/trivially\ destructible\ type.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{union\ }\mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}<U,\ false>\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}()\ noexcept\ :\ dummy()\ \{\}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{storage\_type}}(\mbox{\hyperlink{structsrsran_1_1in__place__t}{in\_place\_t}},\ Args\&\&...\ args)\ :\ val(std::forward<Args>(args)...)}
+\DoxyCodeLine{00069\ \ \ \ \ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ User-\/defined\ destructor\ in\ case\ T\ is\ not\ trivially\ destructible.}}
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{unionsrsran_1_1detail_1_1base__optional__storage_1_1storage__type}{\string~storage\_type}}()\ \{\}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{char}\ dummy;}
+\DoxyCodeLine{00076\ \ \ \ \ U\ \ \ \ val;}
+\DoxyCodeLine{00077\ \ \ \};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}()\ noexcept\ :\ payload(),\ has\_val(false)\ \{\}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}(\mbox{\hyperlink{structsrsran_1_1in__place__t}{in\_place\_t}}\ \mbox{\hyperlink{structsrsran_1_1tag}{tag}},\ Args\&\&...\ args)\ :}
+\DoxyCodeLine{00082\ \ \ \ \ payload(\mbox{\hyperlink{structsrsran_1_1tag}{tag}},\ std::forward<Args>(args)...),\ has\_val(true)}
+\DoxyCodeLine{00083\ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keyword}{explicit}\ base\_optional\_storage(\textcolor{keyword}{const}\ base\_optional\_storage<T>\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}},\ non\_trivial\_oper\_tag\ )\ noexcept\ :}
+\DoxyCodeLine{00086\ \ \ \ \ has\_val(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)}
+\DoxyCodeLine{00087\ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ construct\_(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val);}
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keyword}{explicit}\ base\_optional\_storage(base\_optional\_storage<T>\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}},\ non\_trivial\_oper\_tag\ )\ noexcept\ :}
+\DoxyCodeLine{00093\ \ \ \ \ has\_val(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)}
+\DoxyCodeLine{00094\ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ construct\_(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val));}
+\DoxyCodeLine{00097\ \ \ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ base\_optional\_storage(\textcolor{keyword}{const}\ base\_optional\_storage<T>\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00101\ \ \ base\_optional\_storage(base\_optional\_storage<T>\&\&)\ noexcept\ \ \ \ \ \ \ \ \ \ \ \ =\ default;}
+\DoxyCodeLine{00102\ \ \ base\_optional\_storage\&\ operator=(const\ base\_optional\_storage<T>\&)\ \ \ \ \ =\ default;}
+\DoxyCodeLine{00103\ \ \ base\_optional\_storage\&\ operator=(base\_optional\_storage<T>\&\&)\ noexcept\ =\ default;}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ template\ <typename...\ Args>}
+\DoxyCodeLine{00106\ \ \ constexpr\ \textcolor{keywordtype}{void}\ construct\_(Args\&\&...\ args)\ noexcept(std::is\_nothrow\_constructible<storageT,\ Args...>::value)}
+\DoxyCodeLine{00107\ \ \ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{new}\ (\&payload.val)\ storageT(std::forward<Args>(args)...);}
+\DoxyCodeLine{00109\ \ \ \ \ has\_val\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00110\ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ destroy\_()\ noexcept}
+\DoxyCodeLine{00113\ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ has\_val\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00115\ \ \ \ \ payload.val.\string~storageT();}
+\DoxyCodeLine{00116\ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ reset\_()\ noexcept}
+\DoxyCodeLine{00119\ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{if}\ (has\_val)\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ destroy\_();}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ copy\_assign\_(\textcolor{keyword}{const}\ base\_optional\_storage<T>\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00126\ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ ==\ \&\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00129\ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val\ and\ has\_val)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ this-\/>payload.val\ =\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val;}
+\DoxyCodeLine{00132\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ this-\/>construct\_(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ this-\/>reset\_();}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ move\_assign\_(base\_optional\_storage<T>\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ std::is\_nothrow\_move\_constructible<T>::value\ and\ std::is\_nothrow\_move\_assignable<T>::value)}
+\DoxyCodeLine{00143\ \ \ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val\ and\ has\_val)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ this-\/>payload.val\ =\ std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val);}
+\DoxyCodeLine{00146\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.has\_val)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ this-\/>construct\_(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}.payload.val));}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ this-\/>reset\_();}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ storage\_type<storageT>\ payload;}
+\DoxyCodeLine{00156\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ has\_val\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00157\ \};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00160\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ IsTriviallyDestructible\ =\ std::is\_trivially\_destructible<T>::value,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ isTriviallyCopyable\ =}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_trivially\_copy\_constructible<T>::value\ and\ std::is\_trivially\_copy\_assignable<T>::value,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ isTriviallyMovable\ =}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_trivially\_move\_constructible<T>::value\ and\ std::is\_trivially\_move\_assignable<T>::value>}
+\DoxyCodeLine{00166\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}};}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \textcolor{comment}{//\ Specialization\ for\ trivial\ dtor/copy/move.}}
+\DoxyCodeLine{00169\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00170\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ true,\ true,\ true>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>}
+\DoxyCodeLine{00171\ \{}
+\DoxyCodeLine{00172\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00173\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>::base\_optional\_storage;}
+\DoxyCodeLine{00174\ \};}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{comment}{//\ Specialization\ for\ non-\/trivial\ copy.}}
+\DoxyCodeLine{00177\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00178\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ true,\ false,\ true>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>}
+\DoxyCodeLine{00179\ \{}
+\DoxyCodeLine{00180\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00181\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>::base\_optional\_storage;}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}()\ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00184\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{\string~optional\_storage}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00185\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_copy\_constructible<T>::value)\ :}
+\DoxyCodeLine{00186\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage<T>}}(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}},\ \mbox{\hyperlink{structsrsran_1_1detail_1_1non__trivial__oper__tag}{non\_trivial\_oper\_tag}}\{\})}
+\DoxyCodeLine{00187\ \ \ \{}
+\DoxyCodeLine{00188\ \ \ \}}
+\DoxyCodeLine{00189\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&)\ \textcolor{keyword}{noexcept}\ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00190\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&)\ \textcolor{keyword}{noexcept}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00193\ \ \ \{}
+\DoxyCodeLine{00194\ \ \ \ \ this-\/>copy\_assign\_(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});}
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00196\ \ \ \}}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \textcolor{comment}{//\ Specialization\ for\ non-\/trivial\ move.}}
+\DoxyCodeLine{00200\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00201\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ true,\ true,\ false>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>}
+\DoxyCodeLine{00202\ \{}
+\DoxyCodeLine{00203\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00204\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>::base\_optional\_storage;}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00207\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{\string~optional\_storage}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00208\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00209\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_move\_constructible<T>::value)\ :}
+\DoxyCodeLine{00210\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage<T>}}(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}),\ \mbox{\hyperlink{structsrsran_1_1detail_1_1non__trivial__oper__tag}{non\_trivial\_oper\_tag}}\{\})}
+\DoxyCodeLine{00211\ \ \ \{}
+\DoxyCodeLine{00212\ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ std::is\_nothrow\_move\_constructible<T>::value\ and\ std::is\_nothrow\_move\_assignable<T>::value)}
+\DoxyCodeLine{00217\ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ this-\/>move\_assign\_(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}));}
+\DoxyCodeLine{00219\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00220\ \ \ \}}
+\DoxyCodeLine{00221\ \};}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \textcolor{comment}{//\ Specialization\ for\ non-\/trivial\ move\ and\ copy.}}
+\DoxyCodeLine{00224\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00225\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ true,\ false,\ false>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>}
+\DoxyCodeLine{00226\ \{}
+\DoxyCodeLine{00227\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00228\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage}}<T>::base\_optional\_storage;}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}()\ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00231\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{\string~optional\_storage}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00232\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_copy\_constructible<T>::value)\ :}
+\DoxyCodeLine{00233\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage<T>}}(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}},\ \mbox{\hyperlink{structsrsran_1_1detail_1_1non__trivial__oper__tag}{non\_trivial\_oper\_tag}}\{\})}
+\DoxyCodeLine{00234\ \ \ \{}
+\DoxyCodeLine{00235\ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_move\_constructible<T>::value)\ :}
+\DoxyCodeLine{00237\ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1detail_1_1base__optional__storage}{base\_optional\_storage<T>}}(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}),\ \mbox{\hyperlink{structsrsran_1_1detail_1_1non__trivial__oper__tag}{non\_trivial\_oper\_tag}}\{\})}
+\DoxyCodeLine{00238\ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \}}
+\DoxyCodeLine{00240\ }
+\DoxyCodeLine{00241\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})}
+\DoxyCodeLine{00242\ \ \ \{}
+\DoxyCodeLine{00243\ \ \ \ \ this-\/>copy\_assign\_(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}});}
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00245\ \ \ \}}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&\ \mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}})\ \textcolor{keyword}{noexcept}(}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ std::is\_nothrow\_move\_constructible<T>::value\ and\ std::is\_nothrow\_move\_assignable<T>::value)}
+\DoxyCodeLine{00249\ \ \ \{}
+\DoxyCodeLine{00250\ \ \ \ \ this-\/>move\_assign\_(std::move(\mbox{\hyperlink{namespacesrsran_aaf684a2cfa98b7f333de7041525a5b29a795f3202b17cb6bc3d4b771d8c6c9eaf}{other}}));}
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00252\ \ \ \}}
+\DoxyCodeLine{00253\ \};}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \textcolor{comment}{//\ Specialization\ for\ non-\/trivial\ dtor.}}
+\DoxyCodeLine{00256\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T,\ \textcolor{keywordtype}{bool}\ TrivialCopy,\ \textcolor{keywordtype}{bool}\ TrivialMove>}
+\DoxyCodeLine{00257\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ false,\ TrivialCopy,\ TrivialMove>\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ true,\ false,\ false>}
+\DoxyCodeLine{00258\ \{}
+\DoxyCodeLine{00259\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00260\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}<T,\ \textcolor{keyword}{true},\ \textcolor{keyword}{false},\ \textcolor{keyword}{false}>::optional\_storage;}
+\DoxyCodeLine{00261\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}()\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00262\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00263\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_move\_constructible<T>::value)\ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00264\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00265\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\ operator=(\mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{optional\_storage}}\&\&)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_move\_assignable<T>::value)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{\string~optional\_storage}}()\ \{\ this-\/>reset\_();\ \}}
+\DoxyCodeLine{00268\ \};}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00279\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00280\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsrsran_1_1optional}{optional}}}
+\DoxyCodeLine{00281\ \{}
+\DoxyCodeLine{00282\ \ \ \textcolor{comment}{//\ SFINAE\ helpers.}}
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ U>}
+\DoxyCodeLine{00284\ \ \ \textcolor{keyword}{using\ }is\_self\ =\ std::is\_same<optional<T>,\ std::remove\_const\_t<std::decay\_t<U>>>;}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{using\ }value\_type\ =\ T;}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00290\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}(\mbox{\hyperlink{structsrsran_1_1nullopt__t}{nullopt\_t}}\ )\ :\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}()\ \{\}}
+\DoxyCodeLine{00291\ \ \ template\ <typename\ U\ =\ T,\ std::enable\_if\_t<not\ is\_self<U>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00292\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{classsrsran_1_1optional}{optional}}(U\&\&\ u)\ :\ storage(\mbox{\hyperlink{structsrsran_1_1in__place__t}{in\_place\_t}}\{\},\ std::forward<U>(u))}
+\DoxyCodeLine{00293\ \ \ \{}
+\DoxyCodeLine{00294\ \ \ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00298\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{bool}\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ storage.has\_val;\ \}}
+\DoxyCodeLine{00299\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{explicit}\ \textcolor{keyword}{operator}\ bool()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}();\ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \textcolor{keyword}{constexpr}\ T\&\ value()\ \&\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00302\ \ \ \{}
+\DoxyCodeLine{00303\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}(),\ \textcolor{stringliteral}{"{}Invalid\ optional<T>\ access"{}});}
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keywordflow}{return}\ storage.payload.val;}
+\DoxyCodeLine{00305\ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \textcolor{keyword}{constexpr}\ T\&\&\ value()\ \&\&\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00307\ \ \ \{}
+\DoxyCodeLine{00308\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}(),\ \textcolor{stringliteral}{"{}Invalid\ optional<T>\ access"{}});}
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(storage.payload.val);}
+\DoxyCodeLine{00310\ \ \ \}}
+\DoxyCodeLine{00311\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ T\&\ value()\ const\&\ noexcept}
+\DoxyCodeLine{00312\ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}(),\ \textcolor{stringliteral}{"{}Invalid\ optional<T>\ access"{}});}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{return}\ storage.payload.val;}
+\DoxyCodeLine{00315\ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ T\&\&\ value()\ const\&\&\ noexcept}
+\DoxyCodeLine{00317\ \ \ \{}
+\DoxyCodeLine{00318\ \ \ \ \ srsran\_assert(\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}(),\ \textcolor{stringliteral}{"{}Invalid\ optional<T>\ access"{}});}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keywordflow}{return}\ std::move(storage.payload.val);}
+\DoxyCodeLine{00320\ \ \ \}}
+\DoxyCodeLine{00321\ \ \ \textcolor{keyword}{constexpr}\ T*\ \ \ \ \ \ \ \ operator-\/>()\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \&value();\ \}}
+\DoxyCodeLine{00322\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ T*\ \ operator-\/>()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \&value();\ \}}
+\DoxyCodeLine{00323\ \ \ \textcolor{keyword}{constexpr}\ T\&\ \ \ \ \ \ \ \ operator*()\ \&\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ value();\ \}}
+\DoxyCodeLine{00324\ \ \ \textcolor{keyword}{constexpr}\ T\&\&\ \ \ \ \ \ \ operator*()\ \&\&\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ value();\ \}}
+\DoxyCodeLine{00325\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ T\&\ \ operator*()\ const\&\ noexcept\ \{\ \textcolor{keywordflow}{return}\ value();\ \}}
+\DoxyCodeLine{00326\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ T\&\&\ operator*()\ const\&\&\ noexcept\ \{\ \textcolor{keywordflow}{return}\ value();\ \}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ optional\&\ operator=(nullopt\_t\ )\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00329\ \ \ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1optional_a9b71297f971116f04b4a5a81c4dd55f2}{reset}}();}
+\DoxyCodeLine{00331\ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00332\ \ \ \}}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00335\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}...\ Args>}
+\DoxyCodeLine{00336\ \ \ \textcolor{keyword}{constexpr}\ T\&\ \mbox{\hyperlink{classsrsran_1_1optional_ace23a99aaa630fa921abca90844f8bb3}{emplace}}(Args\&\&...\ args)\ \textcolor{keyword}{noexcept}(std::is\_nothrow\_constructible<T,\ Args...>::value)}
+\DoxyCodeLine{00337\ \ \ \{}
+\DoxyCodeLine{00338\ \ \ \ \ storage.reset\_();}
+\DoxyCodeLine{00339\ \ \ \ \ storage.construct\_(std::forward<Args>(args)...);}
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{keywordflow}{return}\ value();}
+\DoxyCodeLine{00341\ \ \ \}}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00344\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1optional_a9b71297f971116f04b4a5a81c4dd55f2}{reset}}()\ noexcept\ \{\ storage.reset\_();\ \}}
+\DoxyCodeLine{00345\ }
+\DoxyCodeLine{00346\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00347\ \ \ \mbox{\hyperlink{classsrsran_1_1detail_1_1optional__storage}{detail::optional\_storage<T>}}\ storage;}
+\DoxyCodeLine{00348\ \};}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00351\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ optional<T>\&\ lhs,\ \textcolor{keyword}{const}\ optional<T>\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00352\ \{}
+\DoxyCodeLine{00353\ \ \ \textcolor{keywordflow}{return}\ lhs.has\_value()\ ==\ rhs.has\_value()\ and\ (not\ lhs.has\_value()\ or\ lhs.value()\ ==\ rhs.value());}
+\DoxyCodeLine{00354\ \}}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00357\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ optional<T>\&\ lhs,\ \textcolor{keyword}{const}\ T\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00358\ \{}
+\DoxyCodeLine{00359\ \ \ \textcolor{keywordflow}{return}\ lhs.has\_value()\ and\ lhs.value()\ ==\ rhs;}
+\DoxyCodeLine{00360\ \}}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00362\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00363\ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ T\&\ lhs,\ \textcolor{keyword}{const}\ optional<T>\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00364\ \{}
+\DoxyCodeLine{00365\ \ \ \textcolor{keywordflow}{return}\ rhs.has\_value()\ and\ lhs\ ==\ rhs.value();}
+\DoxyCodeLine{00366\ \}}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00369\ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ optional<T>\&\ lhs,\ \textcolor{keyword}{const}\ optional<T>\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00370\ \{}
+\DoxyCodeLine{00371\ \ \ \textcolor{keywordflow}{return}\ not(lhs\ ==\ rhs);}
+\DoxyCodeLine{00372\ \}}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00375\ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ optional<T>\&\ lhs,\ \textcolor{keyword}{const}\ T\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00376\ \{}
+\DoxyCodeLine{00377\ \ \ \textcolor{keywordflow}{return}\ not(lhs\ ==\ rhs);}
+\DoxyCodeLine{00378\ \}}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00381\ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ T\&\ lhs,\ \textcolor{keyword}{const}\ optional<T>\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00382\ \{}
+\DoxyCodeLine{00383\ \ \ \textcolor{keywordflow}{return}\ not(lhs\ ==\ rhs);}
+\DoxyCodeLine{00384\ \}}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00387\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{namespacesrsran_a61ae9e5cec54f199c3fef7bba70a3ebb}{operator<}}(\textcolor{keyword}{const}\ optional<T>\&\ lhs,\ \textcolor{keyword}{const}\ optional<T>\&\ rhs)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00388\ \{}
+\DoxyCodeLine{00389\ \ \ \textcolor{keywordflow}{return}\ rhs.has\_value()\ and\ ((lhs.has\_value()\ and\ lhs.value()\ <\ rhs.value())\ or\ (not\ lhs.has\_value()));}
+\DoxyCodeLine{00390\ \}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \textcolor{keyword}{namespace\ }fmt\ \{}
+\DoxyCodeLine{00395\ }
+\DoxyCodeLine{00397\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00398\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structformatter}{formatter}}<\mbox{\hyperlink{namespacesrsran}{srsran}}::optional<T>>\ \{}
+\DoxyCodeLine{00399\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00400\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00401\ \ \ \{}
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00403\ \ \ \}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00406\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ \mbox{\hyperlink{classsrsran_1_1optional}{srsran::optional<T>}}\&\ optval,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00407\ \ \ \{}
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keywordflow}{if}\ (!optval.\mbox{\hyperlink{classsrsran_1_1optional_a2f160539a76c3f4dd0b50b339b81202e}{has\_value}}())\ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\{na\}\}"{}});}
+\DoxyCodeLine{00410\ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),\ \textcolor{stringliteral}{"{}\{\}"{}},\ optval.value());}
+\DoxyCodeLine{00412\ \ \ \}}
+\DoxyCodeLine{00413\ \};}
+\DoxyCodeLine{00414\ }
+\DoxyCodeLine{00415\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

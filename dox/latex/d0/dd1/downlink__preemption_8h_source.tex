@@ -1,0 +1,84 @@
+\doxysection{downlink\+\_\+preemption.\+h}
+\hypertarget{downlink__preemption_8h_source}{}\label{downlink__preemption_8h_source}\index{include/srsran/ran/pdcch/downlink\_preemption.h@{include/srsran/ran/pdcch/downlink\_preemption.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/optional.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/static\_vector.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/du\_types.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/ran/rnti.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/units.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{cstdint}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{///\ \(\backslash\)brief\ UE\ configuration\ to\ monitor\ PDCCH\ for\ INT\_RNTI\ (interruption).}}
+\DoxyCodeLine{00035\ \textcolor{comment}{///}}
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ The\ identifiers\ are\ inspired\ by\ TS38.331\ Section\ as\ 6.3.2\ (see\ field\ \(\backslash\)e\ DownlinkPreemption).}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption}{downlink\_preemption}}\ \{}
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Set\ selection\ for\ DL-\/preemption\ indication.}}
+\DoxyCodeLine{00039\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.213,\ clause\ 11.2.}}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{enum}\ \textcolor{keyword}{class}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_a119ac90df27b166188212b005654518d}{time\_frequency\_set}}\ \{\ set0,\ set1\ \};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Indication\ of\ 14\ bit\ INT\ values\ inside\ DCI\ payload.}}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{///\ \(\backslash\)remark\ See\ TS\ 38.213,\ clause\ 11.2.}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell}{int\_configuration\_per\_serving\_cell}}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a5b995a7b11715f3042e18281c21991ff}{du\_cell\_index\_t}}\ serving\_cell\_id;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{///\ Starting\ position\ (in\ bits)\ of\ the\ 14\ bit\ INT\ value\ applicable\ for\ this\ serving\ cell\ within\ the\ DCI\ payload.}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{///\ Must\ be\ multiples\ of\ 14\ (bit).\ See\ TS\ 38.213,\ clause\ 11.2.}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{///\ Values\ \{0..maxINT-\/DCI-\/PayloadSize-\/1\},\ where\ maxINT-\/DCI-\/PayloadSize\ =\ 126.}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell_ac47d04319398635a595511989523a3b5}{position\_in\_dci}};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell}{int\_configuration\_per\_serving\_cell}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00052\ \ \ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::tie(serving\_cell\_id,\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell_ac47d04319398635a595511989523a3b5}{position\_in\_dci}})\ ==\ std::tie(rhs.serving\_cell\_id,\ rhs\mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell_ac47d04319398635a595511989523a3b5}{.}}\mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell_ac47d04319398635a595511989523a3b5}{position\_in\_dci}});}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell}{int\_configuration\_per\_serving\_cell}}\&\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(rhs\ ==\ *\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00057\ \ \ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \textcolor{comment}{///\ RNTI\ used\ for\ indication\ pre-\/emption\ in\ DL.}}
+\DoxyCodeLine{00060\ \ \ \mbox{\hyperlink{namespacesrsran_a1d83bcd76f2b7c6251855be8472a46f5}{rnti\_t}}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_adf5525b7e9d8584394bf2417f2eb5d99}{int\_rnti}};}
+\DoxyCodeLine{00061\ \ \ \textcolor{comment}{///\ Determines\ how\ the\ UE\ interprets\ the\ DL\ preemption\ DCI\ payload.}}
+\DoxyCodeLine{00062\ \ \ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_a119ac90df27b166188212b005654518d}{time\_frequency\_set}}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_a039f500273d2a0e456f3b82307c9565f}{time\_freq\_set}};}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ Total\ length\ of\ the\ DCI\ payload\ scrambled\ with\ INT-\/RNTI.\ Values\ \{0..maxINT-\/DCI-\/PayloadSize\},\ where}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ maxINT-\/DCI-\/PayloadSize\ =\ 126.}}
+\DoxyCodeLine{00065\ \ \ units::\mbox{\hyperlink{classsrsran_1_1units_1_1bits}{bits}}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_a436df90ace74317a382dbe0df59330da}{dci\_payload\_size}};}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ Indicates\ (per\ serving\ cell)\ the\ position\ of\ the\ 14\ bit\ INT\ values\ inside\ the\ DCI\ payload.}}
+\DoxyCodeLine{00067\ \ \ \mbox{\hyperlink{classsrsran_1_1static__vector}{static\_vector}}<\mbox{\hyperlink{structsrsran_1_1downlink__preemption_1_1int__configuration__per__serving__cell}{int\_configuration\_per\_serving\_cell}},\ MAX\_NOF\_DU\_CELLS>\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption_a7479b0ae6cf177b6fb8ef2cb804d3443}{int\_cfg}};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{bool}\ operator==(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption}{downlink\_preemption}}\&\ rhs)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00070\ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{return}\ std::tie(int\_rnti,\ time\_freq\_set,\ dci\_payload\_size,\ int\_cfg)\ ==}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ std::tie(rhs.int\_rnti,\ rhs.time\_freq\_set,\ rhs.dci\_payload\_size,\ rhs.int\_cfg);}
+\DoxyCodeLine{00073\ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{bool}\ operator!=(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1downlink__preemption}{downlink\_preemption}}\&\ rhs)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ !(rhs\ ==\ *\textcolor{keyword}{this});\ \}}
+\DoxyCodeLine{00076\ \};}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

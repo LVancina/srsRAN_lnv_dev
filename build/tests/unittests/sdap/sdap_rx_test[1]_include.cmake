@@ -1,0 +1,5 @@
+if(EXISTS "/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/sdap/sdap_rx_test[1]_tests.cmake")
+  include("/home/lucas/thesis/dev/srsRAN_Project/build/tests/unittests/sdap/sdap_rx_test[1]_tests.cmake")
+else()
+  add_test(sdap_rx_test_NOT_BUILT sdap_rx_test_NOT_BUILT)
+endif()

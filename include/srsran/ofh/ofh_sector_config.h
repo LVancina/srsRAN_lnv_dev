@@ -54,15 +54,13 @@ struct sector_configuration {
   ether::mac_address mac_dst_address;
   /// Source MAC address, corresponds to the Distributed Unit MAC address.
   ether::mac_address mac_src_address;
-  /// Tag control information field for C-Plane.
-  uint16_t tci_cp;
-  /// Tag control information field for U-Plane.
-  uint16_t tci_up;
+  /// Tag control information field.
+  uint16_t tci;
 
   /// DU transmission window timing parameters.
-  tx_window_timing_parameters tx_window_timing_params;
+  du_tx_window_timing_parameters tx_window_timing_params;
   /// Reception window timing parameters.
-  rx_window_timing_parameters rx_window_timing_params;
+  du_rx_window_timing_parameters rx_window_timing_params;
 
   /// Cyclic prefix.
   cyclic_prefix cp;
@@ -135,7 +133,7 @@ struct sector_dependencies {
   std::shared_ptr<ofh::uplane_rx_symbol_notifier> notifier;
   /// Optional Ethernet gateway.
   optional<std::unique_ptr<ether::gateway>> eth_gateway;
-  /// Optional Ethernet receiver.
+  /// Optional  Ethernet receiver.
   optional<std::unique_ptr<ether::receiver>> eth_receiver;
 };
 

@@ -1,0 +1,112 @@
+\doxysection{byte\+\_\+buffer\+\_\+range\+\_\+helpers.\+h}
+\hypertarget{byte__buffer__range__helpers_8h_source}{}\label{byte__buffer__range__helpers_8h_source}\index{include/srsran/adt/detail/byte\_buffer\_range\_helpers.h@{include/srsran/adt/detail/byte\_buffer\_range\_helpers.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}byte\_buffer\_segment\_list.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{namespace\ }detail\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ByteBufferType,}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ Container,}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<not\ std::is\_convertible<Container,\ span<const\ uint8\_t>>::value\ and}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ not\ is\_byte\_buffer\_range<Container>::value,}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00037\ \textcolor{keywordtype}{bool}\ compare\_byte\_buffer\_range(\textcolor{keyword}{const}\ ByteBufferType\&\ t,\ \textcolor{keyword}{const}\ Container\&\ u)}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{static\_assert}(is\_byte\_buffer\_range<ByteBufferType>::value,\ \textcolor{stringliteral}{"{}Invalid\ byte\ buffer\ type\ passed\ as\ argument"{}});}
+\DoxyCodeLine{00040\ \ \ \textcolor{keywordflow}{return}\ std::equal(t.begin(),\ t.end(),\ u.begin(),\ u.end());}
+\DoxyCodeLine{00041\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ByteBufferType,}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ U,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<std::is\_convertible<U,\ span<const\ uint8\_t>>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00048\ \textcolor{keywordtype}{bool}\ compare\_byte\_buffer\_range(\textcolor{keyword}{const}\ ByteBufferType\&\ buffer,\ \textcolor{keyword}{const}\ U\&\ container)}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{static\_assert}(is\_byte\_buffer\_range<ByteBufferType>::value,\ \textcolor{stringliteral}{"{}Invalid\ byte\ buffer\ type\ passed\ as\ argument"{}});}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \textcolor{keywordflow}{if}\ (buffer.length()\ !=\ container.size())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00054\ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ const\_byte\_buffer\_segment\_span\_range\ segments\ =\ buffer.segments();}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{auto}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ other\_it\ =\ container.begin();}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordflow}{for}\ (span<const\ uint8\_t>\ seg\ :\ segments)\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ std::equal(seg.begin(),\ seg.end(),\ other\_it,\ other\_it\ +\ seg.size()))\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00061\ \ \ \ \ \}}
+\DoxyCodeLine{00062\ \ \ \ \ other\_it\ +=\ seg.size();}
+\DoxyCodeLine{00063\ \ \ \}}
+\DoxyCodeLine{00064\ \ \ srsran\_sanity\_check(other\_it\ ==\ container.end(),\ \textcolor{stringliteral}{"{}segment\ list\ is\ in\ invalid\ state"{}});}
+\DoxyCodeLine{00065\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00066\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ByteBufferType1,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{typename}\ ByteBufferType2,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ std::enable\_if\_t<is\_byte\_buffer\_range<ByteBufferType2>::value,\ \textcolor{keywordtype}{int}>\ =\ 0>}
+\DoxyCodeLine{00073\ \textcolor{keywordtype}{bool}\ compare\_byte\_buffer\_range(\textcolor{keyword}{const}\ ByteBufferType1\&\ lhs,\ \textcolor{keyword}{const}\ ByteBufferType2\&\ rhs)}
+\DoxyCodeLine{00074\ \{}
+\DoxyCodeLine{00075\ \ \ \textcolor{keyword}{static\_assert}(is\_byte\_buffer\_range<ByteBufferType1>::value,\ \textcolor{stringliteral}{"{}Invalid\ byte\ buffer\ type\ passed\ as\ argument"{}});}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordflow}{if}\ (lhs.length()\ !=\ rhs.length())\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ const\_byte\_buffer\_segment\_span\_range\ segments1\ =\ lhs.segments();}
+\DoxyCodeLine{00081\ \ \ const\_byte\_buffer\_segment\_span\_range\ segments2\ =\ rhs.segments();}
+\DoxyCodeLine{00082\ \ \ \textcolor{keyword}{auto}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ seg\_it1\ \ \ =\ segments1.begin();}
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{auto}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ seg\_it2\ \ \ =\ segments2.begin();}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordflow}{if}\ (seg\_it1-\/>begin()\ ==\ seg\_it2-\/>begin()\ and\ seg\_it1-\/>end()\ ==\ seg\_it2-\/>end())\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ shortcut\ in\ case\ the\ two\ byte\ buffers\ point\ to\ the\ same\ underlying\ memory.}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \textcolor{keywordtype}{unsigned}\ offset1\ =\ 0;}
+\DoxyCodeLine{00090\ \ \ \textcolor{keywordtype}{unsigned}\ offset2\ =\ 0;}
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordflow}{while}\ (seg\_it1\ !=\ segments1.end()\ and\ seg\_it2\ !=\ segments2.end())\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ to\_cmp\ =\ std::min(seg\_it1-\/>size()\ -\/\ offset1,\ seg\_it2-\/>size()\ -\/\ offset2);}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{if}\ (not\ std::equal(seg\_it1-\/>begin()\ +\ offset1,\ seg\_it1-\/>begin()\ +\ offset1\ +\ to\_cmp,\ seg\_it2-\/>begin()\ +\ offset2))\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ offset1\ +=\ to\_cmp;}
+\DoxyCodeLine{00097\ \ \ \ \ offset2\ +=\ to\_cmp;}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{if}\ (offset1\ ==\ seg\_it1-\/>size())\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ ++seg\_it1;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ offset1\ =\ 0;}
+\DoxyCodeLine{00101\ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordflow}{if}\ (offset2\ ==\ seg\_it2-\/>size())\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ ++seg\_it2;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ offset2\ =\ 0;}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \}}
+\DoxyCodeLine{00107\ \ \ srsran\_sanity\_check(seg\_it1\ ==\ segments1.end()\ and\ seg\_it2\ ==\ segments2.end(),\ \textcolor{stringliteral}{"{}byte\ buffers\ are\ in\ invalid\ state"{}});}
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00109\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \}\ \textcolor{comment}{//\ namespace\ detail}}
+\DoxyCodeLine{00112\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

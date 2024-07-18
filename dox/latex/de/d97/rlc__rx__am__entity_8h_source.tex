@@ -1,0 +1,355 @@
+\doxysection{rlc\+\_\+rx\+\_\+am\+\_\+entity.\+h}
+\hypertarget{rlc__rx__am__entity_8h_source}{}\label{rlc__rx__am__entity_8h_source}\index{lib/rlc/rlc\_rx\_am\_entity.h@{lib/rlc/rlc\_rx\_am\_entity.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__am__interconnect_8h}{"{}rlc\_am\_interconnect.h"{}}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__am__pdu_8h}{"{}rlc\_am\_pdu.h"{}}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \mbox{\hyperlink{rlc__rx__entity_8h}{"{}rlc\_rx\_entity.h"{}}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/executors/task\_executor.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/sdu\_window.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/timers.h"{}}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}fmt/format.h"{}}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{<}\textcolor{preprocessor}{set}\textcolor{preprocessor}{>}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{///\ AM\ SDU\ segment\ container}}
+\DoxyCodeLine{00037\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment}{rlc\_rx\_am\_sdu\_segment}}\ \{}
+\DoxyCodeLine{00038\ \ \ \mbox{\hyperlink{namespacesrsran_a325c27da08346f5cd691cc27c8149798}{rlc\_si\_field}}\ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a2a8f7776bd8ac940d7a787c1ca7bf8e2}{si}};\ \ \ \ \ \ \textcolor{comment}{///<\ Segmentation\ info}}
+\DoxyCodeLine{00039\ \ \ uint16\_t\ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a537a250025f0f33b6a3061bcca038948}{so}};\ \ \ \ \ \ \textcolor{comment}{///<\ Segment\ offset\ (SO)}}
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_ab4580e4835647702cd722a2ce7c25a95}{payload}};\ \textcolor{comment}{///<\ Payload\ (SDU\ segment)}}
+\DoxyCodeLine{00041\ \};}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{///\ AM\ SDU\ segment\ compare\ object}}
+\DoxyCodeLine{00044\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment__cmp}{rlc\_rx\_am\_sdu\_segment\_cmp}}\ \{}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{bool}\ operator()(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment}{rlc\_rx\_am\_sdu\_segment}}\&\ a,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment}{rlc\_rx\_am\_sdu\_segment}}\&\ b)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ a\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a537a250025f0f33b6a3061bcca038948}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a537a250025f0f33b6a3061bcca038948}{so}}\ <\ b\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a537a250025f0f33b6a3061bcca038948}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment_a537a250025f0f33b6a3061bcca038948}{so}};\ \}}
+\DoxyCodeLine{00046\ \};}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{comment}{///\ Container\ to\ collect\ received\ SDU\ segments\ and\ to\ assemble\ the\ SDU\ upon\ completion}}
+\DoxyCodeLine{00049\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__info}{rlc\_rx\_am\_sdu\_info}}\ \{}
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ TODO:\ Refactor\ this\ struct.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{comment}{//\ Move\ the\ following\ rlc\_rx\_am\ methods\ here:}}
+\DoxyCodeLine{00052\ \ \ \textcolor{comment}{//\ -\/\ add\ segments\ without\ duplicates}}
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ -\/\ assemble\ SDU}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fully\_received\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ has\_gap\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00056\ \ \ std::set<rlc\_rx\_am\_sdu\_segment,\ rlc\_rx\_am\_sdu\_segment\_cmp>\ segments;\ \textcolor{comment}{//\ Set\ of\ segments\ with\ SO\ as\ key}}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsrsran_1_1byte__buffer__chain}{byte\_buffer\_chain}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sdu\ =\ \{\};}
+\DoxyCodeLine{00058\ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{comment}{///\ \(\backslash\)brief\ Rx\ state\ variables}}
+\DoxyCodeLine{00061\ \textcolor{comment}{///\ Ref:\ 3GPP\ TS\ 38.322\ version\ 16.2.0\ Section\ 7.1}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state}{rlc\_rx\_am\_state}}\ \{}
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ RX\_Next\ –\ Receive\ state\ variable}}
+\DoxyCodeLine{00064\ \ \ \textcolor{comment}{///\ This\ state\ variable\ holds\ the\ value\ of\ the\ SN\ following\ the\ last\ in-\/sequence\ completely\ received\ RLC\ SDU,\ and\ it}}
+\DoxyCodeLine{00065\ \ \ \textcolor{comment}{///\ serves\ as\ the\ lower\ edge\ of\ the\ receiving\ window.\ It\ is\ initially\ set\ to\ 0,\ and\ is\ updated\ whenever\ the\ AM\ RLC}}
+\DoxyCodeLine{00066\ \ \ \textcolor{comment}{///\ entity\ receives\ an\ RLC\ SDU\ with\ SN\ =\ RX\_Next.}}
+\DoxyCodeLine{00067\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_a5f38fb1ce910683b80b0f4152366860d}{rx\_next}}\ =\ 0;}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ RX\_Next\_Status\_Trigger\ –\ t-\/Reassembly\ state\ variable}}
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{///\ This\ state\ variable\ holds\ the\ value\ of\ the\ SN\ following\ the\ SN\ of\ the\ RLC\ SDU\ which\ triggered\ t-\/Reassembly.}}
+\DoxyCodeLine{00071\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_a0d31d8c83910799533270ab0fc55728b}{rx\_next\_status\_trigger}}\ =\ 0;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ RX\_Highest\_Status\ –\ Maximum\ STATUS\ transmit\ state\ variable}}
+\DoxyCodeLine{00074\ \ \ \textcolor{comment}{///\ This\ state\ variable\ holds\ the\ highest\ possible\ value\ of\ the\ SN\ which\ can\ be\ indicated\ by\ "{}ACK\_SN"{}\ when\ a\ STATUS}}
+\DoxyCodeLine{00075\ \ \ \textcolor{comment}{///\ PDU\ needs\ to\ be\ constructed.\ It\ is\ initially\ set\ to\ 0.}}
+\DoxyCodeLine{00076\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_ae3c1a73acad8bea3a9c90863e7b56a39}{rx\_highest\_status}}\ =\ 0;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ RX\_Next\_Highest\ –\ Highest\ received\ state\ variable}}
+\DoxyCodeLine{00079\ \ \ \textcolor{comment}{///\ This\ state\ variable\ holds\ the\ value\ of\ the\ SN\ following\ the\ SN\ of\ the\ RLC\ SDU\ with\ the\ highest\ SN\ among\ received}}
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{///\ RLC\ SDUs.\ It\ is\ initially\ set\ to\ 0.}}
+\DoxyCodeLine{00081\ \ \ uint32\_t\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_aa791211a124cb176410289c9994dd851}{rx\_next\_highest}}\ =\ 0;}
+\DoxyCodeLine{00082\ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keyword}{class}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity}{rlc\_rx\_am\_entity}}\ :\ \textcolor{keyword}{public}\ rlc\_rx\_entity,\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__status__provider}{rlc\_rx\_am\_status\_provider}}}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00087\ \ \ \textcolor{comment}{///\ Config\ storage}}
+\DoxyCodeLine{00088\ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__config}{rlc\_rx\_am\_config}}\ cfg;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \textcolor{comment}{///\ Rx\ state\ variables}}
+\DoxyCodeLine{00091\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state}{rlc\_rx\_am\_state}}\ st;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{///\ Maximum\ number\ of\ visited\ SNs\ in\ the\ RX\ window\ when\ building\ a\ status\ report.}}
+\DoxyCodeLine{00094\ \ \ uint32\_t\ max\_nof\_sn\_per\_status\_report;\ \textcolor{comment}{//\ keep\ this\ attribute\ close\ to\ st\ (cache)}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \textcolor{comment}{///\ Status\ handler}}
+\DoxyCodeLine{00097\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__am__status__handler}{rlc\_tx\_am\_status\_handler}}*\ status\_handler\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00098\ \ \ \textcolor{comment}{///\ Status\ notifier}}
+\DoxyCodeLine{00099\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__tx__am__status__notifier}{rlc\_tx\_am\_status\_notifier}}*\ status\_notifier\ =\ \textcolor{keywordtype}{nullptr};}
+\DoxyCodeLine{00100\ \ \ \textcolor{comment}{///\ Indicates\ whether\ a\ status\ report\ is\ required}}
+\DoxyCodeLine{00101\ \ \ std::atomic<\textcolor{keywordtype}{bool}>\ do\_status\ =\ \{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ Rx\ counter\ modulus}}
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{const}\ uint32\_t\ mod;}
+\DoxyCodeLine{00105\ \ \ \textcolor{comment}{///\ AM\ window\ size}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{const}\ uint32\_t\ am\_window\_size;}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{///\ Rx\ window}}
+\DoxyCodeLine{00109\ \ \ std::unique\_ptr<sdu\_window<rlc\_rx\_am\_sdu\_info>>\ rx\_window;}
+\DoxyCodeLine{00110\ \ \ \textcolor{comment}{///\ Indicates\ the\ rx\_window\ has\ not\ been\ changed,\ i.e.\ no\ need\ to\ rebuild\ status\ report.}}
+\DoxyCodeLine{00111\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ rx\_window\_not\_changed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///\ Indicates\ the\ rx\_window\ has\ been\ changed,\ i.e.\ need\ to\ rebuild\ status\ report.}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ rx\_window\_changed\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \textcolor{comment}{///\ Pre-\/allocated\ status\ reports\ for\ (re)-\/building,\ caching,\ and\ sharing\ with\ TX\ entity}}
+\DoxyCodeLine{00116\ \ \ std::array<\mbox{\hyperlink{classsrsran_1_1rlc__am__status__pdu}{rlc\_am\_status\_pdu}},\ 3>\ status\_buf;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \textcolor{comment}{///\ Status\ report\ for\ (re)-\/building}}
+\DoxyCodeLine{00119\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__am__status__pdu}{rlc\_am\_status\_pdu}}*\ status\_builder\ =\ \&\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity}{status\_buf}}[0];}
+\DoxyCodeLine{00120\ \ \ \textcolor{comment}{///\ Status\ report\ for\ caching}}
+\DoxyCodeLine{00121\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__am__status__pdu}{rlc\_am\_status\_pdu}}*\ status\_cached\ =\ \&\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity}{status\_buf}}[1];}
+\DoxyCodeLine{00122\ \ \ \textcolor{comment}{///\ Status\ report\ for\ sharing}}
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__am__status__pdu}{rlc\_am\_status\_pdu}}*\ status\_shared\ =\ \&\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity}{status\_buf}}[2];}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \textcolor{comment}{///\ Size\ of\ the\ cached\ status\ report}}
+\DoxyCodeLine{00126\ \ \ std::atomic<uint32\_t>\ status\_report\_size;}
+\DoxyCodeLine{00127\ \ \ std::atomic<\textcolor{keywordtype}{bool}>\ \ \ \ \ status\_prohibit\_timer\_is\_running\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \textcolor{comment}{///\ Mutex\ for\ controlled\ access\ to\ the\ cached\ status\ report,\ e.g.\ read\ by\ the\ Tx\ entity\ in\ a\ different\ executor}}
+\DoxyCodeLine{00130\ \ \ std::mutex\ status\_report\_mutex;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ t-\/StatusProhibit}}
+\DoxyCodeLine{00133\ \ \ \textcolor{comment}{///\ This\ timer\ is\ used\ by\ the\ receiving\ side\ of\ an\ AM\ RLC\ entity\ in\ order\ to\ prohibit\ transmission\ of\ a\ STATUS\ PDU}}
+\DoxyCodeLine{00134\ \ \ \textcolor{comment}{///\ (see\ sub\ clause\ 5.3.4).}}
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{///\ Ref:\ TS\ 38.322\ Sec.\ 7.3}}
+\DoxyCodeLine{00136\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ status\_prohibit\_timer;}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ t-\/Reassembly}}
+\DoxyCodeLine{00139\ \ \ \textcolor{comment}{///\ This\ timer\ is\ used\ by\ the\ receiving\ side\ of\ an\ AM\ RLC\ entity\ [...]\ in\ order\ to\ detect\ loss\ of\ RLC\ PDUs\ at\ lower}}
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{///\ layer\ (see\ sub\ clauses\ 5.2.2.2\ and\ 5.2.3.2).\ If\ t-\/Reassembly\ is\ running,\ t-\/Reassembly\ shall\ not\ be\ started}}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{///\ additionally,\ i.e.only\ one\ t-\/Reassembly\ per\ RLC\ entity\ is\ running\ at\ a\ given\ time.}}
+\DoxyCodeLine{00142\ \ \ \textcolor{comment}{///\ Ref:\ TS\ 38.322\ Sec.\ 7.3}}
+\DoxyCodeLine{00143\ \ \ \mbox{\hyperlink{classsrsran_1_1unique__timer}{unique\_timer}}\ reassembly\_timer;}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ ue\_executor;}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \mbox{\hyperlink{structsrsran_1_1pcap__rlc__pdu__context}{pcap\_rlc\_pdu\_context}}\ pcap\_context;}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00150\ \ \ rlc\_rx\_am\_entity(uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ du\_index\_,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespacesrsran_a511ed22603607d4a784c0f1807648b47}{du\_ue\_index\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_index,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rb__id__t}{rb\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rb\_id,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__config}{rlc\_rx\_am\_config}}\&\ \ \ \ \ \ \ \ \ \ \ config,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__rx__upper__layer__data__notifier}{rlc\_rx\_upper\_layer\_data\_notifier}}\&\ upper\_dn\_,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1timer__factory}{timer\_factory}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ timers,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1task__executor}{task\_executor}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ue\_executor,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ metrics\_enabled,}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__pcap}{rlc\_pcap}}\&\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcap\_);}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{//\ Rx/Tx\ interconnect}}
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ set\_status\_handler(\mbox{\hyperlink{classsrsran_1_1rlc__tx__am__status__handler}{rlc\_tx\_am\_status\_handler}}*\ status\_handler\_)\ \{\ status\_handler\ =\ status\_handler\_;\ \}}
+\DoxyCodeLine{00162\ \ \ \textcolor{keywordtype}{void}\ set\_status\_notifier(\mbox{\hyperlink{classsrsran_1_1rlc__tx__am__status__notifier}{rlc\_tx\_am\_status\_notifier}}*\ status\_notifier\_)\ \{\ status\_notifier\ =\ status\_notifier\_;\ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{//\ Interfaces\ for\ lower\ layers}}
+\DoxyCodeLine{00165\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_a99c640c41aa46f6710d0607b0a1fcbcc}{handle\_pdu}}(\mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ buf)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \textcolor{comment}{//\ Status\ provider\ for\ Tx\ entity}}
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{classsrsran_1_1rlc__am__status__pdu}{rlc\_am\_status\_pdu}}\&\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_ad92f2b9382aab5788250fa51f1366127}{get\_status\_pdu}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00169\ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ get\_status\_pdu\_length()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00170\ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ status\_report\_required()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \textcolor{comment}{///\ Inform\ the\ Tx\ entity\ that\ a\ status\ report\ is\ triggered\ (whenever\ do\_status\ is\ set\ to\ true\ and\ t-\/statusProhibit\ is}}
+\DoxyCodeLine{00173\ \ \ \textcolor{comment}{///\ not\ running),\ or\ its\ size\ has\ changed\ (e.g.\ further\ PDUs\ have\ been\ received)}}
+\DoxyCodeLine{00174\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_a59bc273574decbc39e0bd190e894476a}{notify\_status\_report\_changed}}();}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00177\ \textcolor{comment}{\ \ \ *\ Window\ helpers}}
+\DoxyCodeLine{00178\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Helper\ function\ for\ arithmetic\ comparisons\ of\ state\ variables\ or\ SN\ values}}
+\DoxyCodeLine{00181\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{///\ When\ performing\ arithmetic\ comparisons\ of\ state\ variables\ or\ SN\ values,\ a\ modulus\ base\ shall\ be\ used.}}
+\DoxyCodeLine{00183\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00184\ \ \ \textcolor{comment}{///\ (...)\ RX\_Next\ shall\ be\ assumed\ as\ the\ modulus\ base\ at\ the\ (...)\ receiving\ side\ of\ an\ AM\ RLC\ entity\ (...).\ This}}
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{///\ modulus\ base\ is\ subtracted\ from\ all\ the\ values\ involved,\ and\ then\ an\ absolute\ comparison\ is\ performed\ (e.g.}}
+\DoxyCodeLine{00186\ \ \ \textcolor{comment}{///\ RX\_Next\ <=\ SN\ <\ RX\_Next\ +\ AM\_Window\_Size\ is\ evaluated\ as\ [RX\_Next\ –\ RX\_Next]\ modulo\ 2\string^[sn-\/FieldLength]\ <=\ [SN\ –}}
+\DoxyCodeLine{00187\ \ \ \textcolor{comment}{///\ RX\_Next]\ modulo\ 2\string^[sn-\/FieldLength]\ <\ [RX\_Next\ +\ AM\_Window\_Size\ –\ RX\_Next]\ modulo\ 2\string^[sn-\/FieldLength]),\ where}}
+\DoxyCodeLine{00188\ \ \ \textcolor{comment}{///\ sn-\/FieldLength\ is\ 12\ or\ 18\ for\ 12\ bit\ SN\ and\ 18\ bit\ SN,\ respectively.}}
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00190\ \ \ \textcolor{comment}{///\ Ref:\ TS\ 38.322\ Sec.\ 7.1}}
+\DoxyCodeLine{00191\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00192\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ The\ sequence\ number\ to\ be\ rebased\ from\ RX\_Next}}
+\DoxyCodeLine{00193\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ The\ rebased\ value\ of\ sn}}
+\DoxyCodeLine{00194\ \ \ uint32\_t\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{rx\_mod\_base}}(uint32\_t\ sn)\ \textcolor{keyword}{const}\ \{\ \textcolor{keywordflow}{return}\ (sn\ -\/\ st\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_a5f38fb1ce910683b80b0f4152366860d}{.}}\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state_a5f38fb1ce910683b80b0f4152366860d}{rx\_next}})\ \%\ mod;\ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \textcolor{comment}{///\ Checks\ whether\ a\ sequence\ number\ is\ inside\ the\ current\ Rx\ window}}
+\DoxyCodeLine{00197\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ The\ sequence\ number\ to\ be\ checked}}
+\DoxyCodeLine{00198\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ sn\ is\ inside\ the\ Rx\ window,\ false\ otherwise}}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_aad274ab50d6a72b1ed33c1827b9a30bf}{inside\_rx\_window}}(uint32\_t\ sn)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00200\ \ \ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{comment}{//\ RX\_Next\ <=\ SN\ <\ RX\_Next\ +\ AM\_Window\_Size}}
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{rx\_mod\_base}}\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{(}}sn\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{)}}\ <\ am\_window\_size;}
+\DoxyCodeLine{00203\ \ \ \}}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \textcolor{comment}{///\ This\ function\ is\ used\ to\ check\ if\ the\ Rx\_Highest\_Status\ is\ valid\ when\ t-\/Reasseambly\ expires.}}
+\DoxyCodeLine{00206\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{///\ ACK\_SN\ may\ be\ equal\ to\ RX\_NEXT\ +\ AM\_Window\_Size\ if\ the\ PDU\ with\ SN=RX\_NEXT+AM\_Window\_Size\ has\ been\ received\ by\ the}}
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{///\ RX.\ An\ ACK\_SN\ ==\ Rx\_Next\ should\ not\ update\ Rx\_Highest\_Status,\ it\ should\ be\ updated\ when\ Rx\_Next\ is\ updated.}}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\ The\ sequence\ number\ to\ be\ checked}}
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ sn\ is\ a\ valid\ ACK\_SN,\ false\ otherwise}}
+\DoxyCodeLine{00211\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_aabe9ef92e15580943ba06e003ceb2536}{valid\_ack\_sn}}(uint32\_t\ sn)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00212\ \ \ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{comment}{//\ RX\_Next\ <\ SN\ <=\ RX\_Next\ +\ AM\_Window\_Size}}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{return}\ (0\ <\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{rx\_mod\_base}}\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{(}}sn\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{)}})\ \&\&\ (\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{rx\_mod\_base}}\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{(}}sn\mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_abe3135881a67cfced087174567df69e4}{)}}\ <=\ am\_window\_size);}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00218\ \textcolor{comment}{\ \ \ *\ Testing\ helpers}}
+\DoxyCodeLine{00219\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{///\ Set\ the\ internal\ state\ variables}}
+\DoxyCodeLine{00221\ \ \ \textcolor{comment}{///\ Note:\ This\ function\ should\ only\ be\ used\ for\ testing}}
+\DoxyCodeLine{00222\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ st\_\ The\ state\ variables\ to\ be\ set}}
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_a1d878fba3d449db26a3521a5e2c8aab2}{set\_state}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state}{rlc\_rx\_am\_state}}\&\ st\_)\ \{\ \textcolor{keyword}{this}-\/>st\ =\ st\_;\ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{comment}{///\ Get\ the\ internal\ state\ variables}}
+\DoxyCodeLine{00227\ \ \ \textcolor{comment}{///\ Note:\ This\ function\ should\ only\ be\ used\ for\ testing}}
+\DoxyCodeLine{00228\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00229\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ A\ copy\ of\ the\ internal\ state\ variables}}
+\DoxyCodeLine{00230\ \ \ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__state}{rlc\_rx\_am\_state}}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_ae094631ee62e14ce57db8f76cb176717}{get\_state}}()\ \{\ \textcolor{keywordflow}{return}\ st;\ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{///\ Get\ whether\ the\ reassembly\ timer\ is\ running}}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{///\ Note:\ This\ function\ should\ only\ be\ used\ for\ testing}}
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00235\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ true\ is\ t-\/Reassembly\ is\ running}}
+\DoxyCodeLine{00236\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classsrsran_1_1rlc__rx__am__entity_a8b952e9ecba9ffba097b3e7307506cf3}{is\_t\_reassembly\_running}}()\ \{\ \textcolor{keywordflow}{return}\ reassembly\_timer\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{.}}\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{is\_running}}\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{(}}\mbox{\hyperlink{classsrsran_1_1unique__timer_a600954b52cb062982a086792c201b9d9}{)}};\ \}}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{///\ Handles\ a\ received\ control\ PDU.\ The\ PDU\ is\ unpacked\ and\ forwarded\ to\ the\ Rx\ entity}}
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ buf\ The\ control\ PDU\ to\ be\ handled\ (including\ header\ and\ payload)}}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{void}\ handle\_control\_pdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ buf);}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \textcolor{comment}{///\ Handles\ a\ received\ data\ PDU\ which\ contains\ an\ SDU\ or\ SDU\ segment,\ puts\ it\ into\ the\ receive\ window\ if\ required,}}
+\DoxyCodeLine{00244\ \ \ \textcolor{comment}{///\ reassembles\ the\ SDU\ if\ possible\ and\ forwards\ it\ to\ upper\ layer.}}
+\DoxyCodeLine{00245\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ buf\ The\ data\ PDU\ to\ be\ handled\ (including\ header\ and\ payload)}}
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordtype}{void}\ handle\_data\_pdu(\mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ buf);}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{///\ Handles\ a\ received\ data\ PDU\ which\ contains\ an\ SDU,\ puts\ it\ into\ the\ receive\ window\ and\ forwards\ it\ to\ upper\ layer.}}
+\DoxyCodeLine{00250\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00251\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ header\ The\ header\ of\ the\ PDU,\ used\ for\ sanity\ check}}
+\DoxyCodeLine{00252\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ payload\ The\ PDU\ payload,\ i.e.\ the\ SDU}}
+\DoxyCodeLine{00253\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ SDU\ was\ stored.\ False\ otherwise\ (i.e.\ SDU\ was\ dropped).}}
+\DoxyCodeLine{00254\ \ \ \textcolor{keywordtype}{bool}\ handle\_full\_data\_sdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__am__pdu__header}{rlc\_am\_pdu\_header}}\&\ header,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ payload);}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ \ \ \textcolor{comment}{///\ Handles\ a\ received\ data\ PDU\ which\ contains\ an\ SDU\ segment,\ puts\ it\ into\ the\ receive\ window\ if\ required,}}
+\DoxyCodeLine{00257\ \ \ \textcolor{comment}{///\ reassembles\ the\ SDU\ if\ possible\ and\ forwards\ it\ to\ upper\ layer.}}
+\DoxyCodeLine{00258\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00259\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ header\ The\ header\ of\ the\ PDU,\ used\ for\ sanity\ check\ and\ tracking\ of\ the\ segment\ offset}}
+\DoxyCodeLine{00260\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ payload\ The\ PDU\ payload,\ i.e.\ the\ SDU\ segment}}
+\DoxyCodeLine{00261\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ segment\ was\ added\ and\ repository\ was\ changed.\ False\ otherwise\ (i.e.\ new\ segment\ was\ dropped).}}
+\DoxyCodeLine{00262\ \ \ \textcolor{keywordtype}{bool}\ handle\_segment\_data\_sdu(\textcolor{keyword}{const}\ \mbox{\hyperlink{structsrsran_1_1rlc__am__pdu__header}{rlc\_am\_pdu\_header}}\&\ header,\ \mbox{\hyperlink{classsrsran_1_1byte__buffer__slice}{byte\_buffer\_slice}}\ payload);}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \textcolor{comment}{///\ Stores\ a\ newly\ received\ SDU\ segment\ and\ avoids\ overlapping\ bytes.}}
+\DoxyCodeLine{00265\ \ \ \textcolor{comment}{///\ Overlaps\ are\ prevented\ by\ either\ trimming\ the\ new\ or\ previously\ received\ segment;\ or\ dropping\ the\ new\ segment}}
+\DoxyCodeLine{00266\ \ \ \textcolor{comment}{///\ entirely\ if\ all\ of\ its\ bytes\ are\ already\ present.}}
+\DoxyCodeLine{00267\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00268\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sdu\_info\ Container/Info\ object\ of\ the\ associated\ SDU}}
+\DoxyCodeLine{00269\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ new\_segment\ The\ newly\ received\ SDU\ segment}}
+\DoxyCodeLine{00270\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ True\ if\ segment\ was\ added\ and\ repository\ was\ changed.\ False\ otherwise\ (i.e.\ new\ segment\ was\ dropped).}}
+\DoxyCodeLine{00271\ \ \ \textcolor{keywordtype}{bool}\ store\_segment(\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__info}{rlc\_rx\_am\_sdu\_info}}\&\ sdu\_info,\ \mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__segment}{rlc\_rx\_am\_sdu\_segment}}\ new\_segment);}
+\DoxyCodeLine{00272\ }
+\DoxyCodeLine{00273\ \ \ \textcolor{comment}{///\ Iterates\ the\ received\ SDU\ segments\ to\ check\ whether\ it\ is\ fully\ received\ and\ whether\ the\ received\ segments\ are}}
+\DoxyCodeLine{00274\ \ \ \textcolor{comment}{///\ contiguous\ or\ have\ gaps.}}
+\DoxyCodeLine{00275\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00276\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ rx\_sdu\ Container/Info\ object\ to\ be\ inspected}}
+\DoxyCodeLine{00277\ \ \ \textcolor{keywordtype}{void}\ update\_segment\_inventory(\mbox{\hyperlink{structsrsran_1_1rlc__rx__am__sdu__info}{rlc\_rx\_am\_sdu\_info}}\&\ rx\_sdu)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \ \ \textcolor{comment}{///\ Rebuilds\ the\ cached\ status\_report\ according\ to\ missing\ SDUs\ and\ SDU\ segments\ in\ rx\_window}}
+\DoxyCodeLine{00280\ \ \ \textcolor{comment}{///\ and\ resets\ the\ rx\_window\_changed\ flag}}
+\DoxyCodeLine{00281\ \ \ \textcolor{keywordtype}{void}\ refresh\_status\_report();}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \textcolor{comment}{///\ Swaps\ the\ cached\ status\_report\ with\ the\ newly\ built\ version}}
+\DoxyCodeLine{00284\ \ \ \textcolor{keywordtype}{void}\ store\_status\_report();}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \textcolor{keywordtype}{void}\ on\_expired\_status\_prohibit\_timer();}
+\DoxyCodeLine{00287\ }
+\DoxyCodeLine{00288\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ on\_expired\_reassembly\_timer\ Handler\ for\ expired\ reassembly\ timer}}
+\DoxyCodeLine{00289\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00290\ \ \ \textcolor{comment}{///\ Note:\ This\ function\ shall\ be\ executed\ by\ the\ same\ executor\ that\ calls\ handle\_sdu(),\ i.e.\ the\ ue\_executor,}}
+\DoxyCodeLine{00291\ \ \ \textcolor{comment}{///\ in\ order\ to\ avoid\ incidential\ blocking\ of\ those\ critical\ paths.}}
+\DoxyCodeLine{00292\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00293\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ timeout\_id\ The\ timer\ ID}}
+\DoxyCodeLine{00294\ \ \ \textcolor{keywordtype}{void}\ on\_expired\_reassembly\_timer();}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \textcolor{comment}{///\ Creates\ the\ rx\_window\ according\ to\ sn\_size}}
+\DoxyCodeLine{00297\ \ \ \textcolor{comment}{///\ \(\backslash\)param\ sn\_size\ Size\ of\ the\ sequence\ number\ (SN)}}
+\DoxyCodeLine{00298\ \ \ \textcolor{comment}{///\ \(\backslash\)return\ unique\ pointer\ to\ rx\_window\ instance}}
+\DoxyCodeLine{00299\ \ \ std::unique\_ptr<sdu\_window<rlc\_rx\_am\_sdu\_info>>\ create\_rx\_window(rlc\_am\_sn\_size\ sn\_size);}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \textcolor{keywordtype}{void}\ log\_state(srslog::basic\_levels\ level)\ \{\ logger.log(level,\ \textcolor{stringliteral}{"{}RX\ entity\ state.\ \{\}"{}},\ st);\ \}}
+\DoxyCodeLine{00302\ \};}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \textcolor{keyword}{namespace}\ fmt\ \{}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00309\ \textcolor{keyword}{struct}\ formatter<srsran::rlc\_rx\_am\_sdu\_info>\ \{}
+\DoxyCodeLine{00310\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00311\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00312\ \ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00314\ \ \ \}}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00317\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::rlc\_rx\_am\_sdu\_info\&\ info,\ FormatContext\&\ ctx)}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00319\ \ \ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}nof\_segments=\{\}\ has\_gap=\{\}\ fully\_received=\{\}\ sdu\_len=\{\}"{}},}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.segments.size(),}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.has\_gap,}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.fully\_received,}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ info.sdu.length());}
+\DoxyCodeLine{00326\ \ \ \}}
+\DoxyCodeLine{00327\ \};}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \textcolor{keyword}{template}\ <>}
+\DoxyCodeLine{00330\ \textcolor{keyword}{struct}\ formatter<srsran::rlc\_rx\_am\_state>\ \{}
+\DoxyCodeLine{00331\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ ParseContext>}
+\DoxyCodeLine{00332\ \ \ \textcolor{keyword}{auto}\ parse(ParseContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(ctx.begin())}
+\DoxyCodeLine{00333\ \ \ \{}
+\DoxyCodeLine{00334\ \ \ \ \ \textcolor{keywordflow}{return}\ ctx.begin();}
+\DoxyCodeLine{00335\ \ \ \}}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ FormatContext>}
+\DoxyCodeLine{00338\ \ \ \textcolor{keyword}{auto}\ format(\textcolor{keyword}{const}\ srsran::rlc\_rx\_am\_state\&\ st,\ FormatContext\&\ ctx)\ -\/>\ \textcolor{keyword}{decltype}(std::declval<FormatContext>().out())}
+\DoxyCodeLine{00339\ \ \ \{}
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{keywordflow}{return}\ format\_to(ctx.out(),}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rx\_next=\{\}\ rx\_next\_status\_trigger=\{\}\ rx\_highest\_status=\{\}\ rx\_next\_highest=\{\}"{}},}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.rx\_next,}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.rx\_next\_status\_trigger,}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.rx\_highest\_status,}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ st.rx\_next\_highest);}
+\DoxyCodeLine{00346\ \ \ \}}
+\DoxyCodeLine{00347\ \};}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \}\ \textcolor{comment}{//\ namespace\ fmt}}
+
+\end{DoxyCode}

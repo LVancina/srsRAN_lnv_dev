@@ -1,0 +1,93 @@
+\doxysection{srsran\+::pucch\+\_\+guardbands\+\_\+scheduler Class Reference}
+\hypertarget{classsrsran_1_1pucch__guardbands__scheduler}{}\label{classsrsran_1_1pucch__guardbands__scheduler}\index{srsran::pucch\_guardbands\_scheduler@{srsran::pucch\_guardbands\_scheduler}}
+
+
+{\ttfamily \#include $<$pucch\+\_\+guardbands\+\_\+scheduler.\+h$>$}
+
+
+
+Collaboration diagram for srsran\+::pucch\+\_\+guardbands\+\_\+scheduler\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{d3/df4/classsrsran_1_1pucch__guardbands__scheduler__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsrsran_1_1pucch__guardbands__scheduler_a5eee10ea5cddafa493e53a2f251a1320}{pucch\+\_\+guardbands\+\_\+scheduler}} (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\+\_\+configuration}} \&\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cell\+\_\+cfg\+\_\+}})
+\item 
+\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} \mbox{\hyperlink{classsrsran_1_1pucch__guardbands__scheduler_abd893d72863b1d965665ba1d5b82ada4}{run\+\_\+slot}} (\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\+\_\+resource\+\_\+allocator}} \&res\+\_\+alloc)
+\begin{DoxyCompactList}\small\item\em Runs the PUCCH guardbands scheduler. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class implements a scheduler that pre-\/reserve the PUCCH resources\textquotesingle{} REs on the scheduler grid, to prevent the PUSCH allocator from using them. The pre-\/reserved REs are hereby referred as PUCCH guardbands. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classsrsran_1_1pucch__guardbands__scheduler_a5eee10ea5cddafa493e53a2f251a1320}\label{classsrsran_1_1pucch__guardbands__scheduler_a5eee10ea5cddafa493e53a2f251a1320} 
+\index{srsran::pucch\_guardbands\_scheduler@{srsran::pucch\_guardbands\_scheduler}!pucch\_guardbands\_scheduler@{pucch\_guardbands\_scheduler}}
+\index{pucch\_guardbands\_scheduler@{pucch\_guardbands\_scheduler}!srsran::pucch\_guardbands\_scheduler@{srsran::pucch\_guardbands\_scheduler}}
+\doxysubsubsection{\texorpdfstring{pucch\_guardbands\_scheduler()}{pucch\_guardbands\_scheduler()}}
+{\footnotesize\ttfamily pucch\+\_\+guardbands\+\_\+scheduler\+::pucch\+\_\+guardbands\+\_\+scheduler (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{const}} \mbox{\hyperlink{classsrsran_1_1cell__configuration}{cell\+\_\+configuration}} \&}]{cell\+\_\+cfg\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00029\ \ \ cell\_cfg\{\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{cell\_cfg\_}}\},\ logger(srslog::fetch\_basic\_logger(\textcolor{stringliteral}{"{}SCHED"{}}))\{\};}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classsrsran_1_1pucch__guardbands__scheduler_abd893d72863b1d965665ba1d5b82ada4}\label{classsrsran_1_1pucch__guardbands__scheduler_abd893d72863b1d965665ba1d5b82ada4} 
+\index{srsran::pucch\_guardbands\_scheduler@{srsran::pucch\_guardbands\_scheduler}!run\_slot@{run\_slot}}
+\index{run\_slot@{run\_slot}!srsran::pucch\_guardbands\_scheduler@{srsran::pucch\_guardbands\_scheduler}}
+\doxysubsubsection{\texorpdfstring{run\_slot()}{run\_slot()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{void}} pucch\+\_\+guardbands\+\_\+scheduler\+::run\+\_\+slot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structsrsran_1_1cell__resource__allocator}{cell\+\_\+resource\+\_\+allocator}} \&}]{res\+\_\+alloc }\end{DoxyParamCaption})}
+
+
+
+Runs the PUCCH guardbands scheduler. 
+
+When called for the first time, this function pre-\/reserves the PUCCH\textquotesingle{}s REs over the entire grid, until the last (farthest in the future) usable slot. From the second time onwards, the scheduler pre-\/reserves the PUCCH for the last usable slot of the grid. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em res\+\_\+alloc} & resource grid. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \textcolor{comment}{//\ If\ called\ for\ the\ first\ time,\ pre-\/reserves\ the\ PUCCH\ resource\ over\ the\ entire\ grid,\ until\ the\ last\ (farthest\ in\ the}}
+\DoxyCodeLine{00044\ \ \ \textcolor{comment}{//\ future)\ usable\ slot.}}
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordflow}{if}\ (first\_run\_slot)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}\ =\ 0;\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}\ <\ res\_alloc.max\_ul\_slot\_alloc\_delay\ +\ 1;\ ++\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}})\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{comment}{//\ Do\ not\ schedule\ PUCCH\ guardbands\ on\ DL\ slots.}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{grid\_sl\_point}}\{res\_alloc[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}].slot\};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ cell\_cfg.is\_ul\_enabled(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{grid\_sl\_point}}))\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ allocate\_pucch\_guardbands(res\_alloc[\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{sl}}]);}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \ \ first\_run\_slot\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{//\ After\ the\ first\ time,\ pre-\/reserves\ the\ PUCCH\ resource\ on\ the\ grid\ only\ for\ the\ last\ slot.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ Do\ not\ schedule\ PUCCH\ guardbands\ on\ DL\ slots.}}
+\DoxyCodeLine{00059\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1slot__point}{slot\_point}}\ \mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{grid\_sl\_point}}\{res\_alloc[res\_alloc.max\_ul\_slot\_alloc\_delay].slot\};}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{not}}\ cell\_cfg.is\_ul\_enabled(\mbox{\hyperlink{namespacesrsran_a58e7c9f2c51a9ad6a0899b46d5315723}{grid\_sl\_point}}))\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ allocate\_pucch\_guardbands(res\_alloc[res\_alloc.max\_ul\_slot\_alloc\_delay]);}
+\DoxyCodeLine{00064\ \ \ \}}
+\DoxyCodeLine{00065\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+lib/scheduler/pucch\+\_\+scheduling/pucch\+\_\+guardbands\+\_\+scheduler.\+h\item 
+lib/scheduler/pucch\+\_\+scheduling/pucch\+\_\+guardbands\+\_\+scheduler.\+cpp\end{DoxyCompactItemize}

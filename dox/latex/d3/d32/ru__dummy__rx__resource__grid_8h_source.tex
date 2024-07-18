@@ -1,0 +1,124 @@
+\doxysection{ru\+\_\+dummy\+\_\+rx\+\_\+resource\+\_\+grid.\+h}
+\hypertarget{ru__dummy__rx__resource__grid_8h_source}{}\label{ru__dummy__rx__resource__grid_8h_source}\index{lib/ru/dummy/ru\_dummy\_rx\_resource\_grid.h@{lib/ru/dummy/ru\_dummy\_rx\_resource\_grid.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ 2021-\/2024\ Software\ Radio\ Systems\ Limited}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ This\ file\ is\ part\ of\ srsRAN.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ srsRAN\ is\ free\ software:\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ it\ under\ the\ terms\ of\ the\ GNU\ Affero\ General\ Public\ License\ as}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ published\ by\ the\ Free\ Software\ Foundation,\ either\ version\ 3\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ the\ License,\ or\ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ srsRAN\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ GNU\ Affero\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ GNU\ Affero\ General\ Public\ License\ can\ be\ found\ in}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ *\ the\ LICENSE\ file\ in\ the\ top-\/level\ directory\ of\ this\ distribution}}
+\DoxyCodeLine{00019\ \textcolor{comment}{\ *\ and\ at\ http://www.gnu.org/licenses/.}}
+\DoxyCodeLine{00020\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00021\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{pragma}\ \textcolor{preprocessor}{once}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}../../phy/support/resource\_grid\_dimensions.h"{}}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/adt/tensor.h"{}}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/phy/support/resource\_grid\_reader.h"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/srsvec/copy.h"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#}\textcolor{preprocessor}{include}\ \textcolor{preprocessor}{"{}srsran/support/complex\_normal\_random.h"{}}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{namespace}\ \mbox{\hyperlink{namespacesrsran}{srsran}}\ \{}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{///\ Implements\ a\ resource\ grid\ reader\ that\ contains\ always\ the\ same\ random\ data.}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{class}\ ru\_dummy\_rx\_resource\_grid\ :\ \textcolor{keyword}{public}\ resource\_grid\_reader}
+\DoxyCodeLine{00035\ \{}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ \ \ ru\_dummy\_rx\_resource\_grid(\textcolor{keywordtype}{unsigned}\ seed,\ \textcolor{keywordtype}{unsigned}\ nof\_subc,\ \textcolor{keywordtype}{unsigned}\ nof\_symbols,\ \textcolor{keywordtype}{unsigned}\ nof\_ports)\ :}
+\DoxyCodeLine{00038\ \ \ \ \ rg\_buffer(\{nof\_subc,\ nof\_symbols,\ nof\_ports\})}
+\DoxyCodeLine{00039\ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ std::mt19937\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rgen(seed);}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{classsrsran_1_1complex__normal__distribution}{complex\_normal\_distribution}}<cf\_t>\ dist(0,\ 1);}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ span<cf\_t>\ data\ =\ rg\_buffer.get\_data();}
+\DoxyCodeLine{00044\ \ \ \ \ std::generate(data.begin(),\ data.end(),\ [\&rgen,\ \&dist]()\ \{\ \textcolor{keywordflow}{return}\ dist(rgen);\ \});}
+\DoxyCodeLine{00045\ \ \ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_base\ for\ documentation.}}
+\DoxyCodeLine{00048\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_ports()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ rg\_buffer.get\_dimension\_size(resource\_grid\_dimensions::port);\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_base\ for\ documentation.}}
+\DoxyCodeLine{00051\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_subc()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ rg\_buffer.get\_dimension\_size(resource\_grid\_dimensions::subc);\ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_base\ for\ documentation.}}
+\DoxyCodeLine{00054\ \ \ \textcolor{keywordtype}{unsigned}\ get\_nof\_symbols()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ rg\_buffer.get\_dimension\_size(resource\_grid\_dimensions::symbol);\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordtype}{bool}\ is\_empty(\textcolor{keywordtype}{unsigned}\ port)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00058\ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ This\ grid\ is\ never\ empty.}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00061\ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{bool}\ is\_empty()\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00065\ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ This\ grid\ is\ never\ empty.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00071\ \ \ span<cf\_t>\ get(span<cf\_t>\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init,\ span<\textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}>\ mask)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00072\ \ \ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{//\ Count\ number\ of\ elements.}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\ =\ std::accumulate(}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ mask.begin(),\ mask.end(),\ 0U,\ [](\textcolor{keywordtype}{unsigned}\ count,\ \textcolor{keywordtype}{bool}\ active\_re)\ \{\ \textcolor{keywordflow}{return}\ count\ +\ (active\_re\ ?\ 1U\ :\ 0U);\ \});}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ get(symbols,\ nof\_symbols);}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00081\ \ \ span<cf\_t>\ get(span<cf\_t>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ symbols,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ port,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ l,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\_init,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ bounded\_bitset<MAX\_RB\ *\ NRE>\&\ mask)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00086\ \ \ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{//\ Count\ number\ of\ elements.}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ nof\_symbols\ =\ mask.count();}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{return}\ get(symbols,\ nof\_symbols);}
+\DoxyCodeLine{00091\ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{void}\ get(span<cf\_t>\ symbols,\ \textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l,\ \textcolor{keywordtype}{unsigned}\ k\_init)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}}
+\DoxyCodeLine{00095\ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ srsvec::copy(symbols,\ rg\_buffer.get\_data().first(symbols.size()));}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{comment}{//\ See\ resource\_grid\_reader\ for\ documentation.}}
+\DoxyCodeLine{00100\ \ \ span<\textcolor{keyword}{const}\ cf\_t>\ get\_view(\textcolor{keywordtype}{unsigned}\ port,\ \textcolor{keywordtype}{unsigned}\ l)\ \textcolor{keyword}{const}\ \textcolor{keyword}{override}\ \{\ \textcolor{keywordflow}{return}\ rg\_buffer.get\_view(\{l,\ port\});\ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00103\ \ \ \textcolor{comment}{///\ Gets\ a\ number\ of\ symbols.}}
+\DoxyCodeLine{00104\ \ \ span<cf\_t>\ get(span<cf\_t>\ symbols,\ \textcolor{keywordtype}{unsigned}\ nof\_symbols)\ \textcolor{keyword}{const}}
+\DoxyCodeLine{00105\ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ srsvec::copy(symbols.first(nof\_symbols),\ rg\_buffer.get\_data().first(nof\_symbols));}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{return}\ symbols.last(symbols.size()\ -\/\ nof\_symbols);}
+\DoxyCodeLine{00109\ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \textcolor{comment}{///\ \(\backslash\)brief\ Stores\ the\ resource\ grid\ data.}}
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{///}}
+\DoxyCodeLine{00113\ \ \ \textcolor{comment}{///\ The\ resource\ grid\ buffer\ is\ a\ three-\/dimensional\ array\ with\ the\ dimensions\ representing,\ in\ order,\ subcarriers,}}
+\DoxyCodeLine{00114\ \ \ \textcolor{comment}{///\ OFDM\ symbols\ and\ antenna\ ports.}}
+\DoxyCodeLine{00115\ \ \ dynamic\_tensor<\textcolor{keyword}{static\_cast}<\textcolor{keywordtype}{unsigned}>(\mbox{\hyperlink{namespacesrsran_a350b159ce9ae745dd1d2817cb7dd543b}{resource\_grid\_dimensions}}::all),\ cf\_t,\ \mbox{\hyperlink{namespacesrsran_a350b159ce9ae745dd1d2817cb7dd543b}{resource\_grid\_dimensions}}>\ rg\_buffer;}
+\DoxyCodeLine{00116\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \}\ \textcolor{comment}{//\ namespace\ srsran}}
+
+\end{DoxyCode}

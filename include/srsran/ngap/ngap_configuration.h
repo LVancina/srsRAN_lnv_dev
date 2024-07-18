@@ -23,7 +23,6 @@
 #pragma once
 
 #include "srsran/cu_cp/cu_cp_types.h"
-#include "srsran/ran/gnb_id.h"
 #include <chrono>
 #include <map>
 #include <string>
@@ -34,12 +33,12 @@ namespace srs_cu_cp {
 
 /// \brief NGAP configuration
 struct ngap_configuration {
-  gnb_id_t               gnb_id{0, 22};
+  unsigned               gnb_id = 0;
   std::string            ran_node_name;
   std::string            plmn; /// Full PLMN as string (without possible filler digit) e.g. "00101"
   unsigned               tac;
   std::vector<s_nssai_t> slice_configurations;
-  std::chrono::seconds   pdu_session_setup_timeout; // timeout for pdu session setup in seconds
+  std::chrono::seconds   ue_context_setup_timeout; // timeout for ue context setup in seconds
 };
 
 } // namespace srs_cu_cp

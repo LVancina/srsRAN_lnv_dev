@@ -62,11 +62,11 @@ void rlc_tx_um_entity::handle_sdu(rlc_sdu sdu_)
                     "TX SDU. sdu_len={} pdcp_sn={} {}",
                     sdu_.buf.length(),
                     sdu_.pdcp_sn,
-                    sdu_queue.get_state());
+                    sdu_queue);
     metrics.metrics_add_sdus(1, sdu_length);
     handle_changed_buffer_state();
   } else {
-    logger.log_info("Dropped SDU. sdu_len={} pdcp_sn={} {}", sdu_length, sdu_.pdcp_sn, sdu_queue.get_state());
+    logger.log_info("Dropped SDU. sdu_len={} pdcp_sn={} {}", sdu_length, sdu_.pdcp_sn, sdu_queue);
     metrics.metrics_add_lost_sdus(1);
   }
 }
@@ -104,7 +104,7 @@ size_t rlc_tx_um_entity::pull_pdu(span<uint8_t> mac_sdu_buf)
   // Get a new SDU, if none is currently being transmitted
   if (sdu.buf.empty()) {
     srsran_sanity_check(next_so == 0, "New TX SDU, but next_so={} > 0.", next_so);
-    logger.log_debug("Reading SDU from sdu_queue. {}", sdu_queue.get_state());
+    logger.log_debug("Reading SDU from sdu_queue. {}", sdu_queue);
     if (not sdu_queue.read(sdu)) {
       logger.log_debug("SDU queue empty. grant_len={}", grant_len);
       return {};
@@ -269,8 +269,7 @@ uint32_t rlc_tx_um_entity::get_buffer_state()
   std::lock_guard<std::mutex> lock(mutex);
 
   // minimum bytes needed to tx all queued SDUs + each header
-  rlc_sdu_queue_lockfree::state_t queue_state = sdu_queue.get_state();
-  uint32_t                        queue_bytes = queue_state.n_bytes + queue_state.n_sdus * head_len_full;
+  uint32_t queue_bytes = sdu_queue.size_bytes() + sdu_queue.size_sdus() * head_len_full;
 
   // minimum bytes needed to tx SDU under segmentation + header (if applicable)
   uint32_t segment_bytes = 0;
