@@ -27,6 +27,7 @@
 #include "srsran/ngap/ngap.h"
 #include "srsran/pcap/dlt_pcap.h"
 #include "srsran/srslog/srslog.h"
+#include "srsran/ngap/ngap_e2_notifier.h"     //lnv - added dependency
 #include <cstdio>
 
 namespace srsran {
@@ -39,6 +40,7 @@ class ngap_asn1_packer : public srs_cu_cp::ngap_message_handler
 public:
   ngap_asn1_packer(sctp_network_gateway_data_handler& gw,
                    ngap_message_notifier&             amf_notifier_,
+                   ngap_e2_notifier&                  e2_notifier_,     //lnv - added e2_notifier_
                    ngap_message_handler&              ngap,
                    dlt_pcap&                          pcap_);
 
@@ -50,6 +52,7 @@ private:
   srslog::basic_logger&              logger;
   sctp_network_gateway_data_handler& gw;
   ngap_message_notifier&             amf_notifier;
+  ngap_e2_notifier&                  e2_notifier;       //lnv - added e2_notifier
   ngap_message_handler&              ngap;
   dlt_pcap&                          pcap;
 };

@@ -32,9 +32,11 @@ set(SOURCES
         procedures/ngap_handover_preparation_procedure.cpp
         procedures/ngap_handover_resource_allocation_procedure.cpp
         procedures/ngap_ue_context_release_procedure.cpp
+        ngap_e2_notifier.cpp        # lnv - added source file
     )
 
 add_library(srsran_ngap STATIC ${SOURCES})
 target_link_libraries(srsran_ngap ngap_asn1 srsran_cu_cp srsran_support)
+message("***Including ngap_e2_notifier.cpp in srsran_ngap***")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

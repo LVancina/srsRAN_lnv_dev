@@ -29,9 +29,10 @@ using namespace srs_cu_cp;
 
 ngap_asn1_packer::ngap_asn1_packer(sctp_network_gateway_data_handler& gw_,
                                    ngap_message_notifier&             amf_notifier_,
+                                   ngap_e2_notifier&                  e2_notifier_,     //lnv - added e2_notifier
                                    ngap_message_handler&              ngap_handler,
                                    dlt_pcap&                          pcap_) :
-  logger(srslog::fetch_basic_logger("NGAP")), gw(gw_), amf_notifier(amf_notifier_), ngap(ngap_handler), pcap(pcap_)
+  logger(srslog::fetch_basic_logger("NGAP")), gw(gw_), amf_notifier(amf_notifier_), e2_notifier(e2_notifier_), ngap(ngap_handler), pcap(pcap_)
 {
 }
 
@@ -73,5 +74,10 @@ void ngap_asn1_packer::handle_message(const srs_cu_cp::ngap_message& msg)
   if (pcap.is_write_enabled()) {
     pcap.push_pdu(tx_pdu.copy());
   }
-  gw.handle_pdu(tx_pdu);
+  //lnv - Should the pdu go to the ngap_notifier now or in the gw.handle_pdu function?
+  if (e2_notifier.is_active()) {
+    e2_notifier.push_message(tx_pdu.copy());
+    //wait for a response?
+  }
+  gw.handle_pdu(tx_pdu);    //This actually sends the message over the socket
 }

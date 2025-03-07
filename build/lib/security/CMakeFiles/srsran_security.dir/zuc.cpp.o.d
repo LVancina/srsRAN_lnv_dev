@@ -1,4 +1,0 @@
-lib/security/CMakeFiles/srsran_security.dir/zuc.cpp.o: \
- /home/lucas/thesis/dev/srsRAN_Project/lib/security/zuc.cpp \
- /usr/include/stdc-predef.h \
- /home/lucas/thesis/dev/srsRAN_Project/include/srsran/security/zuc.h

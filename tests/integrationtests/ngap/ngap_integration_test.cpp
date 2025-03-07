@@ -51,7 +51,8 @@ public:
     nw_config(nw_config_),
     epoll_broker(create_io_broker(io_broker_type::epoll)),
     gw(create_sctp_network_gateway({nw_config, *this, *this})),
-    packer(*gw, *this, *this, pcap)
+   e2_notifier(),
+    packer(*gw, *this,e2_notifier, *this, pcap)
   {
     gw->create_and_connect();
     bool success = epoll_broker->register_fd(gw->get_socket_fd(), [this](int fd) { gw->receive(); });
@@ -83,6 +84,7 @@ private:
   const sctp_network_gateway_config&    nw_config;
   std::unique_ptr<io_broker>            epoll_broker;
   std::unique_ptr<sctp_network_gateway> gw;
+  ngap_e2_notifier                     e2_notifier;
   ngap_asn1_packer                      packer;
   ngap_interface*                       ngap = nullptr;
   null_dlt_pcap                         pcap;

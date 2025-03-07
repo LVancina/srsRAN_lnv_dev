@@ -55,8 +55,10 @@ protected:
     gw           = std::make_unique<dummy_network_gateway_data_handler>();
     amf_notifier = std::make_unique<dummy_ngap_message_notifier>();
     ngap         = std::make_unique<dummy_ngap_message_handler>();
+    // e2_notifier  = std::make_unique<ngap_e2_notifier>();
+    // ngap_e2_notifier e2_notifier;
 
-    packer = std::make_unique<srsran::srs_cu_cp::ngap_asn1_packer>(*gw, *amf_notifier, *ngap, pcap);
+    packer = std::make_unique<srsran::srs_cu_cp::ngap_asn1_packer>(*gw, *amf_notifier, e2_notifier, *ngap, pcap);     //lnv - added e2_notifier to arguments list
   }
 
   void TearDown() override
@@ -68,6 +70,7 @@ protected:
   std::unique_ptr<dummy_network_gateway_data_handler>  gw;
   std::unique_ptr<dummy_ngap_message_notifier>         amf_notifier;
   std::unique_ptr<dummy_ngap_message_handler>          ngap;
+  ngap_e2_notifier                                     e2_notifier;           //lnv - added ngap_e2_notifier
   std::unique_ptr<srsran::srs_cu_cp::ngap_asn1_packer> packer;
   srslog::basic_logger&                                test_logger = srslog::fetch_basic_logger("TEST");
   null_dlt_pcap                                        pcap;
