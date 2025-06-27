@@ -31,12 +31,15 @@ TEST_F(ngap_e2_notifier_test, PushAndReportMessage) {
     // ngap_e2_notifier notifier;
 
     // Initialize byte_buffer with proper data
-    std::vector<uint8_t> data = {0x01, 0x02, 0x03};
-    byte_buffer msg(data.begin(), data.end());
+    std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+    byte_buffer tmp_msg(data.begin(), data.begin() + data.size() / 2);
+    byte_buffer tmp_msg2(data.begin() + data.size() / 2, data.end());
+    byte_buffer msg(data.begin(), data.begin() + data.size() / 2);
+    byte_buffer msg2(data.begin() + data.size() / 2, data.end());
 
     // Push the message to the notifier
-    ASSERT_EQ(notifier->push_message(std::move(msg)), 1);
-    // ASSERT_EQ(notifier->push_message(msg), 1);
+    ASSERT_EQ(notifier->push_message(std::move(tmp_msg)), 1);
+    ASSERT_EQ(notifier->push_message(std::move(tmp_msg2)), 1);
 
     // Prepare an output queue
     std::deque<byte_buffer> out_queue;
@@ -45,6 +48,13 @@ TEST_F(ngap_e2_notifier_test, PushAndReportMessage) {
     notifier->report_message(out_queue);
 
     // Verify the message was moved to the out_queue
-    ASSERT_EQ(out_queue.size(), 2);
+    ASSERT_EQ(out_queue.size(), 1);
     EXPECT_EQ(out_queue.front(), msg);
+
+    // Report the second message from the notifier
+    notifier->report_message(out_queue);
+
+    // Verify the message was moved to the out_queue
+    ASSERT_EQ(out_queue.size(), 2);
+    EXPECT_EQ(out_queue.back(), msg2);
 }
