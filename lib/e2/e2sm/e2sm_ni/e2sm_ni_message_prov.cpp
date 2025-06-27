@@ -12,7 +12,7 @@ e2sm_ni_message_prov::e2sm_ni_message_prov(std::vector<std::string> supported_in
 }
 
 void e2sm_ni_message_prov::report_messages(ngap_e2_notifier& notifier) {
-    /// TODO - There can be more than one notifier. How can I handle multiple updating at the same time.
+    /// TODO - There can be more than one notifier. How can I handle multiple updating at the same time?
     notifier.report_message(if_messages);
     /// TODO - mutual exclusion needed for shared queue.
 }
@@ -21,6 +21,18 @@ byte_buffer e2sm_ni_message_prov::get_next_message() {
     byte_buffer next = std::move(if_messages.front());
     if_messages.pop_front();
     return next;
+}
+
+int e2sm_ni_message_prov::num_messages() {
+    return this->if_messages.size();
+}
+
+byte_buffer e2sm_ni_message_prov::front() {
+    return this->if_messages.front().copy();
+}
+
+bool e2sm_ni_message_prov::empty() {
+    return this->if_messages.empty();
 }
 
 /// Helper functions as needed...

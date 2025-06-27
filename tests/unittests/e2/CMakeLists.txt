@@ -66,4 +66,9 @@ add_executable(ngap_e2_notifier_test lnv_unittests/ngap_e2_notifier_test.cpp)
 target_link_libraries(ngap_e2_notifier_test srsran_ngap srslog srsran_network srsran_e2 e2ap_asn1 srsran_pcap srsran_gateway gtest gtest_main)
 target_include_directories(ngap_e2_notifier_test PRIVATE ${CMAKE_SOURCE_DIR})
 gtest_discover_tests(ngap_e2_notifier_test)
+
+add_executable(e2sm_ni_message_prov_test lnv_unittests/e2sm_ni_message_prov_test.cpp)
+target_link_libraries(e2sm_ni_message_prov_test srsran_ngap srslog srsran_network srsran_e2 e2ap_asn1 srsran_pcap srsran_gateway srsran_support gtest gtest_main)
+target_include_directories(e2sm_ni_message_prov_test PRIVATE ${CMAKE_SOURCE_DIR})
+gtest_discover_tests(e2sm_ni_message_prov_test)
 # ***END LNV TESTS***

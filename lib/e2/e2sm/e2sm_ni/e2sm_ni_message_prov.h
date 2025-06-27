@@ -22,6 +22,12 @@ public:
 
     byte_buffer get_next_message();
 
+    int num_messages();
+
+    byte_buffer front();
+
+    bool empty();
+
     /// Helper functions to check if an interface is supported, etc...
 private:
     std::vector<std::string> supported_interfaces;

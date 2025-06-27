@@ -32,7 +32,7 @@
 
 namespace srsran {
 
-enum e2sm_service_model_t { KPM, RC, UNKNOWN_SM };
+enum e2sm_service_model_t { KPM, RC, NI, UNKNOWN_SM };    //lnv - Added 'NI' to the enumerated SMs
 
 struct e2sm_event_trigger_definition {
   enum e2sm_ric_service_type_t { REPORT, INSERT, POLICY, UNKNOWN };
