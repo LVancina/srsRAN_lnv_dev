@@ -9,13 +9,18 @@
 #include <deque>
 
 using namespace srsran;
-using namespace srs_cu_cp;
+// using namespace srs_cu_cp;
 
 class ngap_e2_notifier //: public interface_notifier    To-Do: Implement parent class later
 {
-    std::deque<ngap_message> ngap_messages;
+public:
+    short report_messages(std::deque<byte_buffer>& out_queue);
 
-    int report_messages(std::deque<ngap_message>& out_queue, bool active=true);
+    int push_message(byte_buffer msg);
 
-    int push_message(ngap_message msg);
+    bool is_active();
+
+private:
+    std::deque<byte_buffer> ngap_messages;
+    bool active;
 };

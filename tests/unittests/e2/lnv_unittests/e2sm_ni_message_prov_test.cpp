@@ -68,7 +68,7 @@ TEST_F(e2sm_ni_message_prov_test, GetNextMessage) {
     ni_msg_prov->report_messages(notifier);
     
     // Act
-    byte_buffer retrieved_msg = ni_msg_prov->get_next_message();
+    byte_buffer retrieved_msg = ni_msg_prov->get_next_msg();
 
     // Assert
     EXPECT_EQ(retrieved_msg, msg1);

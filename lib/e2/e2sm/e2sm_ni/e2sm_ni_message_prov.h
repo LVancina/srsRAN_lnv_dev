@@ -17,6 +17,24 @@
 #include "srsran/f1ap/du/f1ap_du.h"
 #include <map>
 #include <numeric>
+#include <deque>
 
 using namespace srsran;
 
+class e2sm_ni_message_prov
+{
+public:
+    e2sm_ni_message_prov(std::vector<std::string> supported_interfaces_);
+    short report_messages(ngap_e2_notifier& notifier); //TODO - abstract the notifier class with polymorphism
+    byte_buffer get_next_msg();
+
+    bool empty();
+
+    int num_messages();
+
+    byte_buffer front();
+
+private:
+    std::vector<std::string> supported_interfaces;
+    std::deque<byte_buffer> if_messages;
+};
