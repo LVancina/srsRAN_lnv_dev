@@ -3,17 +3,15 @@
 * lnv
 */
 
-#pragma once
-
-#include "e2sm_ni_message_prov.h"
+#include "e2sm/e2sm_ni/e2sm_ni_message_prov.h"
 #include <iostream>
 
 using namespace srsran;
 
 //Constructor
 e2sm_ni_message_prov::e2sm_ni_message_prov(
-    std::vector<std::string> supported_interfaces_,
-    std::deque<byte_buffer> if_messages_) : supported_interfaces(supported_interfaces_) {
+    std::vector<std::string> supported_interfaces_) : supported_interfaces(supported_interfaces_) {
+        this->if_messages = std::deque<byte_buffer>{};
         std::cout << "message provider instantiated" << std::endl;
         // Additional checks
      }

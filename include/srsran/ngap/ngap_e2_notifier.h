@@ -14,11 +14,15 @@ using namespace srsran;
 class ngap_e2_notifier //: public interface_notifier    To-Do: Implement parent class later
 {
 public:
+    ngap_e2_notifier();
+
     short report_messages(std::deque<byte_buffer>& out_queue);
 
     int push_message(byte_buffer msg);
 
     bool is_active();
+    
+    byte_buffer get_next_message();
 
 private:
     std::deque<byte_buffer> ngap_messages;

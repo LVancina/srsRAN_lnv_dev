@@ -3,9 +3,7 @@
 * lnv
 */
 
-#pragma once
-
-#include "e2sm_ni_impl.h"
+#include "e2sm/e2sm_ni/e2sm_ni_impl.h"
 
 namespace srsran {
 

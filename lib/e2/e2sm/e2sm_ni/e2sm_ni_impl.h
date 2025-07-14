@@ -9,7 +9,7 @@
 // #include "srsran/asn1/e2ap/e2sm_kpm.h"
 #include "srsran/e2/e2.h"
 #include "srsran/e2/e2sm/e2sm.h"
-#include "lib/e2/e2sm/e2sm_ni/e2sm_ni_message_prov.h"
+#include "e2sm/e2sm_ni/e2sm_ni_message_prov.h"
 // #include "srsran/e2/e2sm/e2sm_kpm.h"
 #include <map>
 

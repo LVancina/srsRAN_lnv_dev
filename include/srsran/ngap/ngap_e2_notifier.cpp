@@ -4,6 +4,7 @@
 */
 
 #include "ngap_e2_notifier.h"
+#include "srsran/adt/byte_buffer.h"
 #include <iostream>
 
 using namespace srsran;
@@ -30,6 +31,7 @@ short ngap_e2_notifier::report_messages(std::deque<byte_buffer>& out_queue) {
         // Move the front message from ngap_messages to out_queue
         out_queue.push_back(ngap_messages.front());
         ngap_messages.pop_front();
+        num_messages += 1;
     }
 
     return num_messages; // Return the number of messages reported
@@ -42,6 +44,10 @@ int ngap_e2_notifier::push_message(byte_buffer msg) {
     std::cout << "Message pushed to ngap_messages queue." << std::endl;
     return 1; // Return 1 to indicate the message was successfully added
 }
+
+// byte_buffer ngap_e2_notifier::get_next_message() {  
+//     byte_buffer nxt_msg = std::move(out_queue.front())
+// }
 
 bool ngap_e2_notifier::is_active() {
     return this->active;
