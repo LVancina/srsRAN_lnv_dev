@@ -20,7 +20,9 @@ public:
 
     int push_message(byte_buffer msg);
 
-    bool is_active();
+    bool is_active() const;
+
+    bool empty() const;
     
     byte_buffer get_next_message();
 

@@ -40,7 +40,7 @@ short ngap_e2_notifier::report_messages(std::deque<byte_buffer>& out_queue) {
 // Push message function
 int ngap_e2_notifier::push_message(byte_buffer msg) {
     // Add the msg to ngap_messages queue
-    ngap_messages.push_back(msg);
+    ngap_messages.push_back(std::move(msg));
     std::cout << "Message pushed to ngap_messages queue." << std::endl;
     return 1; // Return 1 to indicate the message was successfully added
 }
@@ -49,6 +49,10 @@ int ngap_e2_notifier::push_message(byte_buffer msg) {
 //     byte_buffer nxt_msg = std::move(out_queue.front())
 // }
 
-bool ngap_e2_notifier::is_active() {
+bool ngap_e2_notifier::is_active() const {
     return this->active;
+}
+
+bool ngap_e2_notifier::empty() const {
+    return this->ngap_messages.empty();
 }
