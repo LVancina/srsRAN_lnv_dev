@@ -3,7 +3,8 @@
 * lnv
 */
 
-#include "e2sm/e2sm_ni/e2sm_ni_message_prov.h"
+#include "e2sm_ni_message_prov.h"
+// #include "../../e2sm/e2sm_ni/e2sm_ni_message_prov.h"
 #include <iostream>
 
 using namespace srsran;

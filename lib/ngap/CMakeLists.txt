@@ -22,6 +22,7 @@ set(SOURCES
         ngap_factory.cpp
         ngap_impl.cpp
         ngap_asn1_packer.cpp
+        ngap_e2_notifier.cpp
         ngap_validators/ngap_validators.cpp
         procedures/ng_setup_procedure.cpp
         procedures/ngap_initial_context_setup_procedure.cpp
@@ -35,6 +36,9 @@ set(SOURCES
     )
 
 add_library(srsran_ngap STATIC ${SOURCES})
+target_include_directories(srsran_ngap
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)    #lnv - adding directory
 target_link_libraries(srsran_ngap ngap_asn1 srsran_cu_cp srsran_support)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})

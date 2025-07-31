@@ -6,7 +6,7 @@
 #include "lib/e2/e2sm/e2sm_ni/e2sm_ni_message_prov.h"
 // #include "/home/lucas/thesis/srsRAN_lnv_dev/include/srsran/ngap/ngap_e2_notifier.h"
 #include <gtest/gtest.h>
-#include "srsran/ngap/ngap_e2_notifier.h"
+#include "lib/ngap/ngap_e2_notifier.h"
 #include "tests/unittests/e2/common/e2_test_helpers.h"
 #include "srsran/support/async/async_test_utils.h"
 #include "srsran/support/test_utils.h"

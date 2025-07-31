@@ -5,7 +5,9 @@
 
 #pragma once
 
-#include "srsran/ngap/ngap_message.h"
+// #include "srsran/ngap/ngap_message.h"
+#include "srsran/adt/byte_buffer.h"
+#include <iostream>
 #include <deque>
 
 using namespace srsran;

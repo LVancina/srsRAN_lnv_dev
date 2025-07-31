@@ -5,7 +5,7 @@
 *   and edited by Lucas Vancina.
 */
 
-#include "srsran/ngap/ngap_e2_notifier.h"
+#include "lib/ngap/ngap_e2_notifier.h"
 #include <gtest/gtest.h>
 
 using namespace srsran;
@@ -20,7 +20,7 @@ protected:
 TEST_F(NgapE2NotifierTest, PushMessageActivatesNotifier) {
     byte_buffer msg = {'H', 'e', 'l', 'l', 'o'};
     EXPECT_EQ(notifier.is_active(), false);
-    notifier.push_message(msg);
+    notifier.push_message(std::move(msg));
     EXPECT_EQ(notifier.is_active(), true);
 }
 
@@ -28,17 +28,16 @@ TEST_F(NgapE2NotifierTest, PushMessageActivatesNotifier) {
 TEST_F(NgapE2NotifierTest, MessageOrdering) {
     byte_buffer msg1 = {'1'};
     byte_buffer msg2 = {'2'};
-    notifier.push_message(msg1);
-    notifier.push_message(msg2);
+    notifier.push_message(std::move(msg1));
+    notifier.push_message(std::move(msg2));
 
-    std::vector<byte_buffer> tmp_messages = {};
+    std::deque<byte_buffer> tmp_messages = {};
 
     notifier.report_messages(tmp_messages);
-    // auto out1 = notifier.get_next_message();
-    // auto out2 = notifier.get_next_message();
+    auto out1 = notifier.get_next_message();
+    auto out2 = notifier.get_next_message();
 
-    auto out1 = tmp_messages.front();
-    auto out2 = tmp_messages;
+    // auto out1 = std::move(tmp_messages.front());
 
     EXPECT_EQ(out1, msg1);
     EXPECT_EQ(out2, msg2);

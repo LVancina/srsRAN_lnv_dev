@@ -47,6 +47,6 @@ set(SOURCES
  )
 
 add_library(srsran_e2 STATIC ${SOURCES})
-target_link_libraries(srsran_e2 e2ap_asn1 srsran_support)
+target_link_libraries(srsran_e2 srsran_ngap e2ap_asn1 srsran_support) #lnv - added srsran_ngap
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
