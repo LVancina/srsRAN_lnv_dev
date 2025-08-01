@@ -68,10 +68,10 @@ TEST_F(e2sm_ni_message_prov_test, ReportMessages) {
 // Test get_next_message function
 TEST_F(e2sm_ni_message_prov_test, GetNextMessage) {
     // Arrange
-    ni_msg_prov->report_messages(notifier);
+    short num_messages = ni_msg_prov->report_messages(notifier);
     
     // Act
-    EXPECT_EQ(ni_msg_prov->num_messages(), 2);
+    EXPECT_EQ(num_messages, 2);
     byte_buffer retrieved_msg1 = ni_msg_prov->get_next_msg();
     byte_buffer retrieved_msg2 = ni_msg_prov->get_next_msg();
 

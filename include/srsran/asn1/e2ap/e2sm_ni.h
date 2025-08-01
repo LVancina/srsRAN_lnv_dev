@@ -39,7 +39,7 @@ struct e2_sm_ni_action_definition_format1_s {
   std::string ni_type;
   std::string ni_id;        //This should be an enumerated list of available interfaces
   short ni_direction;       //This should be implemented as some kind of flag
-  byte_buffer message;
+  srsran::byte_buffer message;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
