@@ -37,6 +37,8 @@ public:
 
     byte_buffer front();
 
+    byte_buffer back();
+
 private:
     std::vector<std::string> supported_interfaces;
     std::deque<byte_buffer> if_messages;

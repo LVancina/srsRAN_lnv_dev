@@ -17,30 +17,36 @@ protected:
 };
 
 // Test that push_message stores a message and activates the notifier
-TEST_F(NgapE2NotifierTest, PushMessageActivatesNotifier) {
+TEST_F(NgapE2NotifierTest, ReportMessagesActivatesNotifier) {
     byte_buffer msg = {'H', 'e', 'l', 'l', 'o'};
     EXPECT_EQ(notifier.is_active(), false);
-    notifier.push_message(std::move(msg));
+    notifier.push_message(msg.copy());
+    std::deque<byte_buffer> out_queue = {};
+    short num_messages = notifier.report_messages(out_queue);
     EXPECT_EQ(notifier.is_active(), true);
+    EXPECT_EQ(num_messages, 1);
+    EXPECT_EQ(out_queue[0], msg);
 }
 
 // Test that get_next_message retrieves messages in FIFO order
 TEST_F(NgapE2NotifierTest, MessageOrdering) {
     byte_buffer msg1 = {'1'};
     byte_buffer msg2 = {'2'};
-    notifier.push_message(std::move(msg1));
-    notifier.push_message(std::move(msg2));
+    notifier.push_message(msg1.copy());
+    notifier.push_message(msg2.copy());
 
     std::deque<byte_buffer> tmp_messages = {};
 
     notifier.report_messages(tmp_messages);
-    auto out1 = notifier.get_next_message();
-    auto out2 = notifier.get_next_message();
+    auto out1 = tmp_messages[0].copy();
+    auto out2 = tmp_messages[1].copy();
 
     // auto out1 = std::move(tmp_messages.front());
 
     EXPECT_EQ(out1, msg1);
+    EXPECT_FALSE(out1.empty());
     EXPECT_EQ(out2, msg2);
+    EXPECT_FALSE(out2.empty());
     EXPECT_TRUE(notifier.empty());
 }
 

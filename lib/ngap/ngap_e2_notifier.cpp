@@ -29,11 +29,13 @@ short ngap_e2_notifier::report_messages(std::deque<byte_buffer>& out_queue) {
     // Begin moving messages from ngap_messages into out_queue until active is false
     while (active && !ngap_messages.empty()) {
         // Move the front message from ngap_messages to out_queue
+        std::cout << "reporting message" << std::endl;
         out_queue.push_back(ngap_messages.front());
         ngap_messages.pop_front();
         num_messages += 1;
     }
 
+    std::cout << "Report messages complete" << std::endl;
     return num_messages; // Return the number of messages reported
 }
 
@@ -46,8 +48,14 @@ int ngap_e2_notifier::push_message(byte_buffer msg) {
 }
 
 byte_buffer ngap_e2_notifier::get_next_message() {  
+    std::cout << "Entered get_next_message" << std::endl;
+    byte_buffer empty_buf = {};
+    if (ngap_messages.empty()) {
+        return empty_buf;
+    }
     byte_buffer nxt_msg = std::move(this->ngap_messages.front());
     this->ngap_messages.pop_front();
+    std::cout << "Exiting get_next_message" << std::endl;
     return nxt_msg;
 }
 

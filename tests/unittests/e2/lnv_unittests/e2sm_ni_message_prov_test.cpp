@@ -19,11 +19,13 @@ protected:
     void SetUp() override {
         ni_msg_prov = new e2sm_ni_message_prov(supported_interfaces);
         msg1 = {'T', 'e', 's', 't'};
-        tmp_msg1 = {'T', 'e', 's', 't'};
+        // tmp_msg1 = {'T', 'e', 's', 't'};
         msg2 = {'D', 'a', 't', 'a'};
-        tmp_msg2 = {'D', 'a', 't', 'a'};
-        notifier.push_message(std::move(tmp_msg1));
-        notifier.push_message(std::move(tmp_msg2));
+        // tmp_msg2 = {'D', 'a', 't', 'a'};
+        // tmp_msg1 = msg1.copy();
+        // tmp_msg2 = msg2.copy();
+        notifier.push_message(msg1.copy());
+        notifier.push_message(msg2.copy());
     }
 
     void TearDown() override {
@@ -33,7 +35,8 @@ protected:
     std::vector<std::string> supported_interfaces = {"NG"};
     ngap_e2_notifier notifier;
     e2sm_ni_message_prov* ni_msg_prov;
-    byte_buffer msg1, msg2, tmp_msg1, tmp_msg2;
+    byte_buffer msg1, msg2;
+    // byte_buffer msg1, msg2, tmp_msg1, tmp_msg2;
 };
 
 // // Test ngap_e2_notifier behavior
@@ -57,21 +60,24 @@ TEST_F(e2sm_ni_message_prov_test, ReportMessages) {
 
     // Assert
     EXPECT_TRUE(notifier.is_active());
-    ASSERT_EQ(ni_msg_prov->num_messages(), 1); // Only the first message is pushed per function call
+    ASSERT_EQ(ni_msg_prov->num_messages(), 2); // Only the first message is pushed per function call
     EXPECT_EQ(ni_msg_prov->front(), msg1);
+    EXPECT_EQ(ni_msg_prov->back(), msg2);
 }
 
 // Test get_next_message function
 TEST_F(e2sm_ni_message_prov_test, GetNextMessage) {
     // Arrange
-    notifier.push_message(std::move(tmp_msg1));
     ni_msg_prov->report_messages(notifier);
     
     // Act
-    byte_buffer retrieved_msg = ni_msg_prov->get_next_msg();
+    EXPECT_EQ(ni_msg_prov->num_messages(), 2);
+    byte_buffer retrieved_msg1 = ni_msg_prov->get_next_msg();
+    byte_buffer retrieved_msg2 = ni_msg_prov->get_next_msg();
 
     // Assert
-    EXPECT_EQ(retrieved_msg, msg1);
+    EXPECT_EQ(retrieved_msg1, msg1);
+    EXPECT_EQ(retrieved_msg2, msg2);
     EXPECT_TRUE(ni_msg_prov->empty());
 }
 

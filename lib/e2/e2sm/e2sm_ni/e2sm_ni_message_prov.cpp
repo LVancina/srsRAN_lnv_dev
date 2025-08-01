@@ -38,6 +38,10 @@ int e2sm_ni_message_prov::num_messages() {
 }
 
 byte_buffer e2sm_ni_message_prov::front() {
-    byte_buffer front = std::move(if_messages.front());
-    return front;
+    // byte_buffer front = std::move(if_messages.front());
+    return if_messages.front().copy();
+}
+
+byte_buffer e2sm_ni_message_prov::back() {
+    return if_messages.back().copy();
 }
