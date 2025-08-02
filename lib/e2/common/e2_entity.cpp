@@ -27,6 +27,8 @@
 #include "../e2sm/e2sm_rc/e2sm_rc_control_action_du_executor.h"
 #include "../e2sm/e2sm_rc/e2sm_rc_control_service_impl.h"
 #include "../e2sm/e2sm_rc/e2sm_rc_impl.h"
+#include "../e2sm/e2sm_ni/e2sm_ni_message_prov.h"    //lnv - additional include
+                                                     //
 #include "e2_impl.h"
 #include "e2_subscription_manager_impl.h"
 #include "e2sm/e2sm_kpm/e2sm_kpm_du_meas_provider_impl.h"
@@ -81,6 +83,19 @@ e2_entity::e2_entity(e2ap_configuration&            cfg_,
     e2sm_handlers.push_back(std::move(e2sm_rc_packer));
     e2sm_mngr->add_e2sm_service(e2sm_rc_asn1_packer::oid, std::move(e2sm_rc_iface));
   }
+
+  *****************************************************************************
+  // lnv - Adding e2sm_ni
+  if (cfg.e2sm_ni_enabled) {
+    std::vector<std::string> supported_interfaces = {"NG"};    //TODO - Find a better place for this
+    auto e2sm_ni_msg_prov = std::make_unique<e2sm_ni_message_prov>(supported_interfaces);
+    // auto e2sm_ni_packer = std::make_unique<e2sm_ni_asn1_packer>();
+    auto e2sm_ni_iface = std::make_unique<e2sm_ni_impl>(/*params*/);
+    e2sm_handlers.push_back(std::move(e2sm_ni_packer));
+    e2sm_mngr->add_e2sm_service(e2sm_ni_asn1_packer::oid, std::move(e2sm_ni_iface));
+    subscription_mngr->add_ran_function_oid(e2sm_ni_asn1_packer::ran_func_id, e2sm_ni_asn1_packer::oid);
+  }
+  *****************************************************************************
 
   decorated_e2_iface = std::make_unique<e2_impl>(cfg_, timers_, *e2_pdu_notifier, *subscription_mngr, *e2sm_mngr);
   e2_client_->connect_e2ap(e2_pdu_notifier.get(), this, this);
