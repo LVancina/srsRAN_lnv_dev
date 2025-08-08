@@ -34,6 +34,7 @@ struct e2ap_configuration {
   unsigned    max_setup_retries = 5;
   bool        e2sm_kpm_enabled  = false;
   bool        e2sm_rc_enabled   = false;
+  bool        e2sm_ni_enabled   = false;    //lnv - Add E2SM_NI to the config options
 };
 
 } // namespace srsran

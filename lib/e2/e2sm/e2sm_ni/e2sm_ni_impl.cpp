@@ -4,8 +4,11 @@
 */
 
 #include "e2sm/e2sm_ni/e2sm_ni_impl.h"
+#include "srsran/asn1/asn1_utils.h"
 
-namespace srsran {
+using namespace asn1::e2ap;
+using namespace asn1::e2sm_ni;
+using namespace srsran;
 
 e2sm_ni_impl::e2sm_ni_impl(srslog::basic_logger&   logger_,
                             e2sm_handler&           e2sm_packer_,
@@ -52,4 +55,3 @@ e2sm_control_service* get_e2sm_control_service(const e2sm_ric_control_request& r
 }
 
 // Supporting functions
-}

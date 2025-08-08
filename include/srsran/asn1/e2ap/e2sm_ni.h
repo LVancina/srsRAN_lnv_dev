@@ -55,7 +55,7 @@ struct e2_sm_ni_action_definition_format2_s {
   std::string ni_id;        //This should be an enumerated list of available interfaces
   short ni_direction;       //This should be implemented as some kind of flag
   std::string message_fields;       //Must define which fields of the message are being requested
-  byte_buffer message;
+  srsran::byte_buffer message;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -129,6 +129,6 @@ struct e2_sm_ni_action_definition_s {
   void        to_json(json_writer& j) const;
 };
 
-}
+} //END namespace e2sm_ni
 
-}
+} //END namespace asn1
