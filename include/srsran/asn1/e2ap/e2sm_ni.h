@@ -5,7 +5,7 @@
 
 /*******************************************************************************
  *
- *                   3GPP TS ASN1 E2SM ni v15.3.0 (2019-03)
+ *                   3GPP TS ASN1 E2SM NI v15.3.0 (2025-08)
  *
  ******************************************************************************/
 
@@ -23,12 +23,56 @@ namespace e2sm_ni {
  *                             Constant Definitions
  ******************************************************************************/
 
-
+#define ASN1_E2SM_NI_MAXOF_INT_PROTOCOL_TESTS 15
+#define ASN1_E2SM_NI_MAXOF_RAN_UE_GROUPS      255
+#define ASN1_E2SM_NI_MAXOF_ACTION_PARAMETERS  255
+#define ASN1_E2SM_NI_MAXOF_RAN_PARAMETERS     65535
+#define ASN1_E2SM_NI_MAXOF_NI_TYPES           63
+#define ASN1_E2SM_NI_MAXOF_RIC_STYLES         63
 
 /*******************************************************************************
  *                              Struct Definitions
  ******************************************************************************/
 const uint32_t None = 2147483647;
+
+// GlaboENB-ID ::= SEQUENCE
+struct global_enb_id_s {
+  bool ext = false;
+  std::string plmn_id;
+  std::string enb_id;
+    // ...
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+//ENB-ID ::= CHOICE
+struct enb_id_c {
+  struct types_opts{
+    enum options{ macro_enb_id, home_enb_id, /*...*/ short_macro_enb_id, long_macro_enb_id};
+    // ***These options will be defined later***
+  };
+};
+
+// GlobalenGNB-ID ::= SEQUENCE
+struct global_gnb_id_s {
+  bool ext = flase;
+  std::string plmn_id;
+  std::string gnb_id;
+  //...
+  
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+//ENGNB-ID ::= CHOICE
+
+
+//######################## AI GENERATED STUFF #################################
 
 // E2SM-KPM-ActionDefinition-Format1 ::= SEQUENCE
 // Format1 is for full messages.
