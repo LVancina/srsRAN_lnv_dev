@@ -1,0 +1,44 @@
+Left Off: Compiled and ran e2sm_ni_message_prov_test, but it did not pass.
+Next Step: Figure out why e2sm_ni_message_prov_test is not passing and fix it.
+
+
+Notes:
+- main for gNB is at srsRAN_Project/apps/gnb/gnb/gnb.cpp
+    > Start setting up interfaces at 405
+    > NGAP gateway at line 431
+    > Enters sleep loop until gNB is stopped (ln 577)
+- NGAP initial UE message sent at srsRAN_Project/lib/ngap/ngap_impl.cpp,
+    ln 163, 195,.
+
+- It looks like there isn't an E2SM KPM set up allowing notification whenever a specific event occurs.
+	I would have to write that functionality from scratch.
+	> srsRAN_Project/lib/e2/e2sm/e2sm_kpm/e2sm_kpm_du_meas_provider_impl.cpp
+
+
+(3/7)
+Got test case to compile through adding the ngap_e2_notifier as an argument in a bunch of different constructors and function calls.
+
+ngap_e2_notifier_test passed.
+
+(3/18)
+Created e2sm_ni_message_prov_test and got it compiled. It is not passing all of the test cases though.
+
+(4/11)
+e2sm_ni_message_prov_test now passes.
+Next step: Finish implementation of e2sm_ni_impl
+- This may require a lot of supporting work on the asn1_packer.
+
+(4/23)
+Working on e2sm_ni_asn1_packer to support e2sm_ni_impl.
+
+(6/27)
+Need to modify the action definitions to match the documented specifications.
+
+(6/30)
+Finish reimplementing ngap_e2_notifier and e2sm_ni_message_prov. Then test again.
+
+(7/21)
+Still having linker issues with ngap_e2_notifier. Will not compile.
+
+(8/5)
+Working on implementing e2sm_ni.h
