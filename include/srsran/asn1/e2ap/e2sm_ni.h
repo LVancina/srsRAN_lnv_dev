@@ -122,6 +122,27 @@ struct engnb_id_c {
       }
   };
 
+  //PLMN-Identity ::= OCTET STRING (SIZE(3))
+  struct plmn_identity_s {
+      std::array<uint8_t, 3> value{};
+      SRSASN_CODE pack(bit_ref& bref) const;
+      SRSASN_CODE upack(bit_ref& bref);
+      void        to_json(json_writer& j) const;
+      plmn_identity_s() = default;
+      plmn_identity_s(uint8_t mcc_digit1, uint8_t mcc_digit2, uint8_t mcc_digit3,
+              uint8_t mnc_digit1, uint8_t mnc_digit2, uint8_t mnc_digit3) {
+        // encode MCC/MNC into 3 bytes as per 3GPP TS 24.008
+        value[0] = (mcc_digit2 << 4) | mcc_digit1;
+        value[1] = (mnc_digit3 << 4) | mcc_digit3;
+        value[2] = (mnc_digit2 << 4) | mnc_digit1;
+      }
+  }
+
+  //GNB-CU-UP-ID::= INTEGER (0..68719476735)
+  struct gnb_cu_up_id_i {
+
+  }
+
   BitString gnb_id;
 
   static engnb_id_c make_gnb_id(const std::vector<uint8_t>& data, uint8_t len) {
