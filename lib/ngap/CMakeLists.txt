@@ -25,6 +25,7 @@ set(SOURCES
         ngap_factory.cpp
         ngap_impl.cpp
         ngap_connection_handler.cpp
+        ngap_e2_notifier.cpp    # lnv - New file for CMake tree
         ngap_validators/ngap_validators.cpp
         gateways/n2_connection_client_factory.cpp
         metrics/ngap_metrics_aggregator.cpp
