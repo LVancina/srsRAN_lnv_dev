@@ -47,6 +47,9 @@ static void configure_cli11_e2_args(CLI::App&          app,
   add_option(app, "--e2sm_kpm_enabled", e2_params.e2sm_kpm_enabled, "Enable KPM service module")->capture_default_str();
   add_option(app, "--e2sm_rc_enabled", e2_params.e2sm_rc_enabled, "Enable RC service module")->capture_default_str();
   add_option(app, "--e2sm_ccc_enabled", e2_params.e2sm_ccc_enabled, "Enable CCC service module")->capture_default_str();
+  // TODO - Enable
+  // app.add_option("--e2sm_ni_enabled", e2_params.e2sm_ni_enabled, "Enable NETWORK INTERFACES service module");   // lnv - Look to see if E2SM-NI is enabled
+  // app.add_option("--e2sm_sec_enabled", e2_params.e2sm_sec_enabled, "Enable SECURITY service module");   // lnv - Look to see if my security SM is enabled
 }
 
 void srsran::configure_cli11_with_e2_config_schema(CLI::App&          app,
