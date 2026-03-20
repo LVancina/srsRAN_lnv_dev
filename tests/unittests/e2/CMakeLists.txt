@@ -86,12 +86,14 @@ gtest_discover_tests(asn1_e2sm_ccc_test)
 
 # lnv - The following tests cases were added for Lucas V's project
 add_executable(ngap_e2_notifier_test lnv_unittests/ngap_e2_notifier_test.cpp)
-target_link_libraries(ngap_e2_notifier_test srsran_ngap srsran_e2 srsran_network srslog e2ap_asn1 srsran_support srsran_pcap gtest gtest_main)
+target_link_libraries(ngap_e2_notifier_test srsran_e2 srsran_ngap srslog e2ap_asn1 srsran_support srsran_pcap gtest gtest_main)
+# target_link_libraries(ngap_e2_notifier_test srsran_e2 srsran_network srsran_ngap srslog e2ap_asn1 srsran_support srsran_pcap gtest gtest_main)
 target_include_directories(ngap_e2_notifier_test PRIVATE ${CMAKE_SOURCE_DIR})
 gtest_discover_tests(ngap_e2_notifier_test)
 
 # target_link_libraries(e2sm_ni_message_prov_test srsran srs_network srslog srsran_e2 e2ap_asn1 srsran_pcap srsran_gateway srsran_support gtest gtest_main)
 add_executable(e2sm_ni_message_prov_test lnv_unittests/e2sm_ni_message_prov_test.cpp)
-target_link_libraries(e2sm_ni_message_prov_test srsran_e2 srsran_network srslog e2ap_asn1 srsran_pcap srsran_gateway srsran_support gtest gtest_main)
+target_link_libraries(e2sm_ni_message_prov_test srsran_e2 srsran_ngap  srslog e2ap_asn1 srsran_pcap srsran_gateway srsran_support gtest gtest_main)
+# target_link_libraries(e2sm_ni_message_prov_test srsran_e2 srsran_network srslog e2ap_asn1 srsran_pcap srsran_gateway srsran_support gtest gtest_main)
 target_include_directories(e2sm_ni_message_prov_test PRIVATE ${CMAKE_SOURCE_DIR})
 gtest_discover_tests(e2sm_ni_message_prov_test)
