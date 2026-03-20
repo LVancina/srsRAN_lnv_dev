@@ -67,6 +67,29 @@ std::unique_ptr<e2_agent> srsran::create_e2_du_agent(const e2ap_configuration&  
                                                      std::move(e2sm_kpm_packer),
                                                      std::move(e2sm_kpm_iface)});
 
+  // lnv - add e2sm_ni to the factory pattern
+  // TODO - Need to implement to the modules that this block is dependent on
+  // E2SM-NI
+  // instantiate packer
+  auto e2sm_ni_packer = std::make_unique<e2sm_ni_asn1_packer>();
+  // instantiate interface
+  auto e2sm_ni_iface  = std::make_unique<e2sm_ni_impl>(logger, *e2sm_ni_packer);
+  // set control service styles
+  std::unique_ptr<e2sm_control_service> ni_control_service_style =
+      std::make_unique<e2sm_ni_control_service>(control_service_style_id);
+  // instantiate control action executor
+  std::unique_ptr<e2sm_control_action_executor> ni_control_action_executor =
+      std::make_unique<e2sm_ni_control_action_2_6_du_executor>(*du_configurator_, *f1ap_ue_id_translator_);
+  // add control action executor to: style, packer, and iface
+  ni_control_service_style->add_e2sm_ni_control_action_executor(std::move(ni_control_action_executor));
+  e2sm_ni_packer->add_e2sm_control_service(ni_control_service_style.get());
+  e2sm_ni_iface->add_e2sm_control_service(std::move(ni_control_service_style));
+  // add e2sm module to dependencies.e2sm_modules
+  dependencies.e2sm_modules.emplace_back(e2sm_module{
+      e2sm_ni_asn1_packer::ran_func_id, e2sm_ni_asn1_packer::oid, std::move(e2sm_ni_packer), std::move(e2sm_ni_iface)});
+  // lnv - *END*
+  
+  
   // E2SM-RC
   auto e2sm_rc_packer = std::make_unique<e2sm_rc_asn1_packer>();
   auto e2sm_rc_iface  = std::make_unique<e2sm_rc_impl>(logger, *e2sm_rc_packer);
