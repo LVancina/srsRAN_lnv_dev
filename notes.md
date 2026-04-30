@@ -2,13 +2,29 @@
 
 ## Next Steps
 - [x] Port over unit tests
-- [ ] Port over E2\_entity changes
 - [ ] Port over e2sm\_ni\_asn1\_packer files and finish implementation
+- [ ] Port over E2\_entity changes
+- [ ] Implement e2sm\_ni\_ies
 - [ ] Port over e2sm\_ni\_impl files and test
 
 ## ToDo List
 
 ## Working Log
+### 20260323
+- The \_ies files are all what used to be the E2SM files, defining the ASN.1 encoding scheme.
+- The e2sm files been refactored to have shared information elements in the 'common' IEs file.
+- I should be able to directly port the ASN.1 encoding from the archive. I just need to check whether a structure already exists in the 'common' file.
+>[!WARNING] Lots of errors in e2sm\_ni\_asn1\_packer and a few other files, preventing compile.
+- **Next Step:** Finish implementing the ASN.1 encoding definitions in the IEs files.
+
+### 20260322
+- Continued to refactor e2sm\_ni\_ies and e2sm\_ni\_asn1\_packer.
+- **Next Step:** Figure out how to define the action definitions in e2sm\_ni\_ies.
+
+### 20260321
+- Added e2sm\_ni\_ies; formerly e2sm\_ni\\.
+- **Next Step:** Continue working on refactoring e2sm\_ni\_asn1\_packer.
+
 ### 20260320
 - The initial instantiation of the E2SMs seems to happen in the 'e2 factory' files.
 - [ ] Need to port over and update e2sm\_ni\_ans1 files to make e2\_du\_factory compile without errors.

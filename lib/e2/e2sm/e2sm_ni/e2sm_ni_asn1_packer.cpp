@@ -7,6 +7,7 @@
 
 using namespace asn1::e2ap;
 using namespace asn1::e2sm_ni;
+// using namespace asn1;
 using namespace srsran;
 
 const std::string e2sm_ni_asn1_packer::short_name       = "ORAN-E2SM-NI";

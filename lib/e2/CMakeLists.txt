@@ -45,8 +45,11 @@ set(SOURCES
         e2sm/e2sm_rc/e2sm_rc_control_service_impl.cpp
         e2sm/e2sm_rc/e2sm_rc_control_action_du_executor.cpp
         e2sm/e2sm_rc/e2sm_rc_control_action_cu_executor.cpp
-        e2sm/e2sm_ni/e2sm_ni_message_prov.cpp   # lnv - add new files to CMake tree
+        # lnv - add new files to CMake tree
+        e2sm/e2sm_ni/e2sm_ni_message_prov.cpp
+        e2sm/e2sm_ni/e2sm_ni_asn1_packer.cpp
         # e2sm/e2sm_ni/e2sm_ni_impl.cpp
+        # lnv - *END*
         e2sm/e2sm_manager.cpp
         e2sm/e2sm_kpm/e2sm_kpm_utils.cpp
         e2sm/e2sm_kpm/e2sm_kpm_report_service_impl.cpp

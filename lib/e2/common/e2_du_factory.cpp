@@ -34,6 +34,8 @@
 #include "e2sm/e2sm_rc/e2sm_rc_control_action_du_executor.h"
 #include "e2sm/e2sm_rc/e2sm_rc_control_service_impl.h"
 #include "e2sm/e2sm_rc/e2sm_rc_impl.h"
+#include "e2sm/e2sm_ni/e2sm_ni_asn1_packer.h"
+#include "e2sm/e2sm_ni/e2sm_ni_impl.h"
 #include "srsran/e2/e2_agent_dependencies.h"
 
 using namespace srsran;
