@@ -97,6 +97,7 @@ const uint32_t None = 2147483647;
 // };
 
 // TODO - validate AI generated code below
+
 //ENGNB-ID ::= CHOICE
 struct engnb_id_c {
   struct types_opts {
@@ -137,6 +138,7 @@ struct engnb_id_c {
     // Type uint64
     // Will be directly defined in the structures it is part of.
 
+  // GlobalenGNB-ID ::= SEQUENCE
   struct globalgnb_id_s {
     bool                     ext = true;
     fixed_octstring<3, true> plmn_id;
@@ -171,20 +173,24 @@ struct engnb_id_c {
     // Already implemented in common IEs as global_ng_ran_node_id_c
     //
 
+// Criticality::= ENUMERATED { reject, ignore, notify }
 struct criticality_opts {
   enum options {reject, ignore, notify} values;
   const char* to_string() const;
 };
 using criticality_e = enumerated<criticality_opts, false>;
 
+// Presence::= ENUMERATED { optional, conditional, mandatory }
 struct presence_opts {
   enum options {optional, conditional, mandatory} values;
   const char* to_string() const;
 };
 using presence_e = enumerated<presence_opts, false>;
 
+// ProcedureCode::= INTEGER (0..255)
 using procedure_code = uint8_t;
    
+// ProtocolIE-ID::= INTEGER (0..maxProtocolIEs)
 using protocol_ie_id = uint64_t;
 
    
@@ -263,6 +269,7 @@ struct ran_param_value_c {
   printable_string<1, 150, true, true> value_prts_;
 };
 
+// RANparameter-Item ::= SEQUENCE
 struct ran_param_item_s {
   bool ext = true;
   ran_param_id ran_param_id;
@@ -274,26 +281,34 @@ struct ran_param_item_s {
   void        to_json(json_writer& j) const;
 };
 
+// NI-Type ::= ENUMERATED
+struct ni_type_opts {
+  enum options {s1, x2, ng, xn, f1, e1, /*...*/ nullvalue} value;
+  const char* to_string() const;
+};
+using ni_type_e = enumerated<ni_type_opts, false>;
 
 // ----------------------------------------------------------------------------
 // Event Trigger Definition
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-EventTriggerDefinition-Format1 ::= SEQUENCE
 using int_protocol_ie_l = dyn_array<ni_protocol_ie_item>;
-  struct e2sm_ni_event_trigger_format1_s {
-    bool ext = true;
-    ni_type int_type;
-    ni_identifier int_id;
-    ni_direction int_direction;
-    ni_message_type int_message_type;
+struct e2sm_ni_event_trigger_format1_s {
+  bool ext = true;
+  ni_type_e int_type;
+  ni_identifier int_id;
+  ni_direction int_direction;
+  ni_message_type int_message_type;
 
-    bool protocol_ie_list_present = false;
-    int_protocol_ie_l int_protocol_ie_list;
+  bool protocol_ie_list_present = false;
+  int_protocol_ie_l int_protocol_ie_list;
 
-    // sequence methods
-    SRSASN_CODE pack(bit_ref& bref) const;
-    SRSASN_CODE unpack(cbit_ref& bref);
-    void        to_json(json_writer& j) const;
-  };
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
 
   // E2SM-NI EventTriggerDefinition IE
   struct e2sm_ni_event_trigger_definition_c {
@@ -322,6 +337,8 @@ using int_protocol_ie_l = dyn_array<ni_protocol_ie_item>;
 // ----------------------------------------------------------------------------
 // Action Definition
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-ActionDefinition-Format1 ::= SEQUENCE
 using action_param_l = dyn_array<ran_param_item_s>;
 struct e2sm_ni_action_definition_format1_s {
   bool ext = true;
@@ -334,8 +351,8 @@ struct e2sm_ni_action_definition_format1_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-ActionDefinition-Format2 ::= SEQUENCE
 using ran_ue_group_l = dyn_array<ran_ue_group_item_s>;
-
 struct e2sm_ni_action_definition_format2_s {
   bool ext = true;
   bool ran_ue_group_list_present = false;
@@ -347,6 +364,7 @@ struct e2sm_ni_action_definition_format2_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-ActionDefinitionFormat ::= CHOICE
 struct e2sm_ni_action_definition_format_c {
     struct types_opts {
       enum options {
@@ -380,6 +398,7 @@ struct e2sm_ni_action_definition_format_c {
     e2sm_ni_action_definition_format2_s format2;
 };
 
+// E2SM-NI-ActionDefinition ::= SEQUENCE
 struct e2sm_ni_action_definition_s {
   bool ext = true;
   int64_t ric_style_type = 0;   // TODO - Check if this is correct
@@ -394,9 +413,11 @@ struct e2sm_ni_action_definition_s {
 // ----------------------------------------------------------------------------
 // Indication Header
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-IndicationHeader-Format1 ::= SEQUENCE
 struct e2sm_ni_indication_header_format1_s {
   bool ext = true;
-  ni_type int_type;
+  ni_type_e int_type;
   ni_identifier int_id;
   ni_direction int_direction;
   bool time_stamp_present = false;
@@ -408,6 +429,7 @@ struct e2sm_ni_indication_header_format1_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-IndicationHeader ::= CHOICE
 struct e2sm_ni_indication_header_c {
   struct types_opts {
     enum options {
@@ -440,6 +462,8 @@ using ni_message = unbounded_octstring<true>;
 // ----------------------------------------------------------------------------
 // Indication Message
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-IndicationMessage-Format1 ::= SEQUENCE
 struct e2sm_ni_indication_message_format1_s {
   bool ext = true;
   ni_message int_message;
@@ -450,6 +474,7 @@ struct e2sm_ni_indication_message_format1_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-IndicationMessage ::= CHOICE
 struct e2sm_ni_indication_message_c {
   struct types_opts {
     enum options {
@@ -479,6 +504,8 @@ struct e2sm_ni_indication_message_c {
 // ----------------------------------------------------------------------------
 // Call Process ID
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-CallProcessID-Format1 ::= SEQUENCE
 struct e2sm_ni_call_process_format1_s {
   bool ext = true;
   int64_t ran_call_process_id_number = 0;   // TODO - verify this number
@@ -489,6 +516,7 @@ struct e2sm_ni_call_process_format1_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-CallProcessID-Format2 ::= SEQUENCE
 struct e2sm_ni_call_process_format2_s {
   bool ext = true;
   // std::string ran_call_process_id_number;
@@ -500,6 +528,7 @@ struct e2sm_ni_call_process_format2_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-CallProcessID ::= CHOICE
 struct e2sm_ni_call_process_id_c {
   struct types_opts {
     enum options {
@@ -535,10 +564,12 @@ struct e2sm_ni_call_process_id_c {
 // ----------------------------------------------------------------------------
 // Control Header
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-ControlHeader-Format1 ::= SEQUENCE
 struct e2sm_ni_control_header_format1_s {
   bool ext = true;
 
-  ni_type int_type;
+  ni_type_e int_type;
   ni_identifier int_id;
   ni_direction int_direction;
   ric_ctrl_msg_pri ric_cntl_msg_pri;
@@ -550,6 +581,7 @@ struct e2sm_ni_control_header_format1_s {
 
 };
 
+// E2SM-NI-ControlHeader ::= CHOICE
 struct e2sm_ni_control_header_c {
   struct types_opts {
     enum options {
@@ -579,6 +611,8 @@ struct e2sm_ni_control_header_c {
 // ----------------------------------------------------------------------------
 // Control Message
 // ----------------------------------------------------------------------------
+
+// E2SM-NI-ControlMessage-Format1 ::= SEQUENCE
 struct e2sm_ni_control_message_format1_s {
   bool ext = true;
 
@@ -590,6 +624,7 @@ struct e2sm_ni_control_message_format1_s {
   void        to_json(json_writer& j) const;
 };
 
+// E2SM-NI-ControlMessage ::= CHOICE
 struct e2sm_ni_control_message_c {
   struct types_opts {
     enum options {
@@ -619,8 +654,9 @@ struct e2sm_ni_control_message_c {
 // ----------------------------------------------------------------------------
 // Control Outcome
 // ----------------------------------------------------------------------------
-using outcome_element_l = dyn_array<ran_param_item>;
 
+// E2SM-NI-ControlOutcome-Format1 ::= SEQUENCE
+using outcome_element_l = dyn_array<ran_param_item>;
 struct e2sm_ni_control_outcome_format1_s {
   bool ext = true;
 
@@ -634,6 +670,7 @@ struct e2sm_ni_control_outcome_format1_s {
 
 };
 
+// E2SM-NI-ControlOutcome ::= CHOICE
 struct e2sm_ni_control_outcome_c {
   struct types_opts {
     enum options {
@@ -664,6 +701,7 @@ struct e2sm_ni_control_outcome_c {
 // RAN Function Description
 // ----------------------------------------------------------------------------
 
+// E2SM-NI-RANfunction-Item ::= SEQUENCE
 using ric_event_trigger_style_l = dyn_array<ric_event_trigger_style_list_s>;
 using ric_event_report_style_l = dyn_array<ric_event_report_style_list_s>;
 using ric_event_inster_style_l = dyn_array<ric_event_insert_style_list_s>;
@@ -685,6 +723,7 @@ struct e2sm_ni_ran_function_item_s {
   ric_event_policy_style_l ric_event_policy_style_list;
 };
 
+// E2SM-NI-RANfunction-Description ::= SEQUENCE
 using ni_type_l = dyn_array<e2sm_ni_ran_function_item_s>;
 struct e2sm_ni_ran_function_description_s {
   bool ext = true;
@@ -709,6 +748,7 @@ using global_enb_id = global_enb_id_s;
 // Global-en-gNB-ID ::= GlobalenGNB-ID
 using global_en_gnb_id = globalen_gnb_id_s;
 
+// Global-gNB-DU-ID ::= SEQUENCE
 struct global_gnb_du_id_s {
   bool ext = false;
   global_ng_ran_id global_ng_ran_id;
@@ -720,7 +760,9 @@ struct global_gnb_du_id_s {
   void        to_json(json_writer& j) const;
 };
 
+// Global-ng-RAN-ID ::= GlobalNG-RANNode-ID
 using global_ng_ran_id = global_ng_ran_node_id_c;
+// Global-gNB-CU-UP-ID ::= SEQUENCE
 struct global_gnb_cu_up_id_s {
   bool ext = false;
   global_ng_ran_id global_ng_ran_id;
@@ -741,12 +783,15 @@ struct global_gnb_cu_up_id_s {
 // };
 // using nr_freq_shift7p5khz_e = enumerated<nr_freq_shift7p5khz_opts, true>;
 //
+
+// NI-Direction ::= ENUMERATED
 struct ni_direction_opts {
   enum options {incoming, outgoing, both, /*...*/ nulltype} value;
   const char* to_string() const;
 };
 using ni_direction_e = enumerated<ni_direction_opts, true>;
 
+// NI-Identifier ::= CHOICE
 struct ni_identifier_c {
   struct types_opts {
     enum options {
@@ -806,6 +851,7 @@ struct type_of_message_opts {
 };
 using type_of_message_e = enumerated<type_of_message_opts, false>;
 
+// NI-MessageTypeApproach1 ::= SEQUENCE
 struct ni_message_type_approach1_s {
   bool ext = true;
   procedure_code procedure_code;
@@ -824,18 +870,22 @@ using ni_message_type_xn = ni_message_type_approach1_s;
 using ni_message_type_f1 = ni_message_type_approach1_s;
 using ni_message_type_e1 = ni_message_type_approach1_s;
 
+// NI-MessageType::= CHOICE
 struct ni_message_type_c {
   e1_message_type_s e1_message_type;
 };
 
+// NI-ProtocolIE-ID ::= ProtocolIE-ID
 using ni_protocol_ie_id = protocol_ie_id;
 
+// NI-ProtocolIE-Test ::= ENUMERATED
 struct ni_protocol_ie_test_opts {
   enum options {equal, greaterthan, lessthan, contains, present, /*...*/ nullvalue} value;
   const char* to_string() const;
 };
 using ni_protocol_ie_test_e = enumerated<ni_protocol_ie_test_opts, false>;
 
+// NI-ProtocolIE-Value ::= CHOICE
 struct ni_protocol_ie_value_c {
   struct types_opts {
     enum options {
@@ -892,6 +942,7 @@ private:
   printable_string<1, 150, true, true> value_prts;
 };
 
+// NI-ProtocolIE-Item ::= SEQUENCE
 struct ni_protocol_ie_item_s {
   bool ext = true;
   ni_protocol_ie_id interface_protocol_ie_id;
@@ -904,6 +955,17 @@ struct ni_protocol_ie_item_s {
   void        to_json(json_writer& j) const;
 };
 
+// NI-TimeStamp ::= OCTET STRING (SIZE(8))
+using ni_timestamp = bounded_octstring<0, 8>;
+
+// RANcallProcess-ID-number ::= INTEGER
+using ran_call_proc_id_num = uint64_t;
+
+// RANcallProcess-ID-string ::= PrintableString(SIZE(1..150,...))
+  // Defined in common_ies.h
+
+//RANfunction-Name ::= SEQUENCE
+//  Defined in common_ies.h
 } // namespace e2sm
 } // namespace asn1
 
