@@ -261,7 +261,7 @@ struct ni_identifier_c {
   }
   ni_identifier_c& global_ng_ran_id() {
     assert_choice_type(types::global_ng_ran_id, type_, "NI Identifier");
-    return global_en_gnb_id_;
+    return global_ng_ran_id_;
   }
   ni_identifier_c& global_gnb_du_id() {
     assert_choice_type(types::global_gnb_du_id, type_, "NI Identifier");
@@ -925,6 +925,20 @@ struct e2sm_ni_control_outcome_c {
 // RAN Function Description
 // ----------------------------------------------------------------------------
 
+// RANparameterDef-Item ::= SEQUENCE
+struct ran_param_def_item_s {
+  bool ext = false;
+  ran_param_id ran_param_id;
+  ran_param_name ran_param_name;
+  ran_param_type_e ran_param_type;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+
 //RIC-EventTriggerStyle-List ::= SEQUENCE
 struct ric_event_trigger_style_list_s {
   bool ext = true;
@@ -938,6 +952,7 @@ struct ric_event_trigger_style_list_s {
   void        to_json(json_writer& j) const;
 };
 
+// RIC-ReportStyle-List ::= SEQUENCE
 using ric_report_ran_param_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_report_style_list_s {
   bool ext = true;
@@ -990,6 +1005,7 @@ struct ric_control_style_list_s {
   void        to_json(json_writer& j) const;
 };
 
+// RIC-PolicyStyle-List ::= SEQUENCE
 using ric_policy_ran_param_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_policy_style_list_s {
   bool ext = true;
@@ -1066,78 +1082,8 @@ struct e2sm_ni_ran_function_description_s {
 //RANfunction-Name ::= SEQUENCE
 //  Defined in common_ies.h
 
-// RANparameterDef-Item ::= SEQUENCE
-struct ran_param_def_item_s {
-  bool ext = false;
-  ran_param_id ran_param_id;
-  ran_param_name ran_param_name;
-  ran_param_type_e ran_param_type;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// RANparameter-Value ::= CHOICE
-struct ran_param_value_c {
-  struct types_opts {
-    enum options {
-      value_int,
-      value_enum,
-      value_bool,
-      value_bits,
-      value_octs,
-      value_prts,
-      /*...*/
-      nulltype
-    } values;
-    const char* to_string() const;
-  };
-  using types = enumerated<types_opts, true>;
-
-  // choice methods
-  types type() const { return type_; }
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-  //getters
-  uint64_t& value_int() {
-    assert_choice_type(types::value_int, type_, "NI-ProtocolIE-Value");
-    return value_int;
-  }
-  uint64_t& value_enum() {
-    assert_choice_type(types::value_enum, type_, "NI-ProtocolIE-Value");
-    return value_enum;
-  }
-  bool& value_bool() {
-    assert_choice_type(types::value_bool, type_, "NI-ProtocolIE-Value");
-    return value_bool;
-  }
-  unbounded_bitstring<true, true>& value_bits() {
-    assert_choice_type(types::value_bits, type_, "NI-ProtocolIE-Value");
-    return value_bits;
-  }
-  unbounded_octstring<true>& value_octs() {
-    assert_choice_type(types::value_octs, type_, "NI-ProtocolIE-Value");
-    return value_octs;
-  }
-  printable_string<1, 150, true, true>& value_prts() {
-    assert_choice_type(types::value_prts, type_, "NI-ProtocolIE-Value");
-    return value_prts;
-  }
-private:
-  types type_;
-  uint64_t value_int;
-  uint64_t value_enum;
-  bool value_bool;
-  unbounded_bitstring<true, true> value_bits;
-  unbounded_octstring<true> value_octs;
-  printable_string<1, 150, true, true> value_prts;
-};
-
 // RIC-ControlStyle-List ::= SEQUENCE
-using ric_ctrl_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>
+using ric_ctrl_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_ctrl_style_list_s {
   bool ext = true;
   ric_style_type ric_ctrl_style_type;
@@ -1155,54 +1101,6 @@ struct ric_ctrl_style_list_s {
   void        to_json(json_writer& j) const;
 };
 
-// RIC-InsertStyle-List ::= SEQUENCE
-using ric_insert_ran_param_def_l = dyn_array<ran_param_def_item_s>;
-struct ric_insert_style_list_s {
-  ric_style_type ric_insert_style_type;
-  ric_style_name ric_insert_style_name;
-  ric_format_type ric_insert_action_format_type;
-  ric_insert_ran_param_def_l ric_insert_ran_param_def_list;
-  ric_format_type ric_indication_header_format_type;
-  ric_format_type ric_indication_msg_format_type;
-  ric_format_type ric_call_process_id_format_type;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// RIC-PolicyStyle-List ::= SEQUENCE
-using ric_policy_ran_param_def_l = dyn_array<ran_param_def_item_s>
-struct ric_policy_style_list_s {
-  bool ext = true;
-  ric_style_type ric_policy_style_type;
-  ric_style_name ric_policy_style_name; 
-  ric_format_type ric_policy_action_format_type;
-  ric_policy_ran_param_def_l ric_policy_ran_param_def_list; 
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// RIC-ReportStyle-List ::= SEQUENCE
-using ric_report_ran_param_def_l = dyn_array<ran_param_def_item_s>
-struct ric_report_style_list_s {
-  bool ext = true;
-  ric_style_type ric_report_style_type;
-  ric_style_name ric_report_style_name;
-  ric_format_type ric_report_action_format_type;
-  ric_report_ran_param_def_l ric_report_ran_param_def_list;
-  ric_format_type ric_indication_header_format_type;
-  ric_format_type ric_indication_msg_format_type;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-}; // namespace e2sm
+} // namespace e2sm
 } // namespace asn1
 
