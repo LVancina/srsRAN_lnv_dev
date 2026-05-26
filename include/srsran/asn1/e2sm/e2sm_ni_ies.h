@@ -4,11 +4,6 @@
 */
 
 /*******************************************************************************
- *                              Struct Definitions
- ******************************************************************************/
-
-// TODO - refactor this file to match new srsRAN software design
-/*******************************************************************************
  *
  *                   3GPP TS ASN1 E2SM NI v15.3.0 (2025-08)
  *
@@ -19,6 +14,7 @@
 #include "../asn1_utils.h"
 #include "srsran/asn1/asn1_ap_utils.h"
 #include "e2sm_common_ies.h"
+#include "e2sm_ni_ies_old.h"
 #include <cstdint>
 #include <cstdio>
 #include <stdarg.h>
@@ -37,66 +33,104 @@ namespace e2sm {
 #define ASN1_E2SM_NI_MAXOF_NI_TYPES           63
 // #define ASN1_E2SM_NI_MAXOF_RIC_STYLES         63   // already defined in e2sm_common_ies.h
 
+/*******************************************************************************
+ *                              Primitive Types
+ ******************************************************************************/
+
 using gnb_du_id = uint64_t;
 using gnb_cu_up_id = uint64_t;
+const uint32_t NONE = 2147483647;
+
+// ProcedureCode::= INTEGER (0..255)
+using procedure_code = uint8_t;
+   
+// ProtocolIE-ID::= INTEGER (0..maxProtocolIEs)
+using protocol_ie_id = uint64_t;
+
+// NI-ProtocolIE-ID ::= ProtocolIE-ID
+using ni_protocol_ie_id = protocol_ie_id;
+
+//RIC-Control-Message-Priority ::= INTEGER
+using ric_ctrl_msg_pri = uint64_t;
+
+// RIC-Format-Type ::= INTEGER
+using ric_format_type = uint64_t;
+
+// RIC-Style-Type ::= INTEGER
+using ric_style_type = uint64_t;
+
+// RANcallProcess-ID-number ::= INTEGER
+using ran_call_proc_id_num = uint64_t;
+
+// NI-TimeStamp ::= OCTET STRING (SIZE(8))
+using ni_timestamp = bounded_octstring<0, 8>;
+
+// ni_message placeholder
+using ni_message = unbounded_octstring<true>;
+
+// RANparameter-ID ::= INTEGER (0..maxofRANparameters)
+using ran_param_id = uint64_t;
+
+// RANparameter-Name ::= PrintableString(SIZE(1..150,...))
+using ran_param_name = printable_string<1, 150, true, true>;
+
+//RANueGroupID ::= INTEGER (0..maxofRANueGRoups)
+using ran_ue_group_id = uint64_t;
+
+// RANcallProcess-ID-string::= PrintableString(SIZE(1..150,...))
+using ran_call_process_id_string = printable_string<1, 150, true, true>;
+
+// RIC-Style-Name ::= PrintableString(SIZE(1..150,...))
+using ric_style_name = printable_string<1, 150, true, true>;
+
+/*******************************************************************************
+ *                              ENUMERATED definitions
+ ******************************************************************************/
+// NI-Type ::= ENUMERATED
+struct ni_type_opts {
+  enum options {s1, x2, ng, xn, f1, e1, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using ni_type_e = enumerated<ni_type_opts, false>;
+
+// NI-Direction ::= ENUMERATED
+struct ni_direction_opts {
+  enum options {incoming, outgoing, both, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using ni_direction_e = enumerated<ni_direction_opts, true>;
+
+// TypeOfMessage ::= ENUMERATED
+struct type_of_message_opts {
+  enum options {nothing, initiating_message, successful_outcome, unsuccessful_outcome, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using type_of_message_e = enumerated<type_of_message_opts, false>;
+
+// RANparameter-Type ::= ENUMERATED
+struct ran_param_type_opts {
+  enum options {integer, enumerated, boolean, bitstring, octetstring, printablestring, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using ran_param_type_e = enumerated<ran_param_type_opts, false>;
+
+// RANparameter-Test-Condition ::= ENUMERATED
+struct ran_param_test_condition_opts {
+  enum options {equal, greaterthan, lessthan, contains, present, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using ran_param_test_condition_e = enumerated<ran_param_test_condition_opts, false>;
+
+// NI-ProtocolIE-Test ::= ENUMERATED
+struct ni_protocol_ie_test_opts {
+  enum options {equal, greaterthan, lessthan, contains, present, /*...*/ nulltype} value;
+  const char* to_string() const;
+};
+using ni_protocol_ie_test_e = enumerated<ni_protocol_ie_test_opts, false>;
+
 /*******************************************************************************
  *                              Struct Definitions
  ******************************************************************************/
-const uint32_t None = 2147483647;
-
-// ***Already implemented in common IEs***
-// GlobalENB-ID ::= SEQUENCE
-// struct global_enb_id_s {
-//   bool ext = false;
-//   std::string plmn_id;
-//   enb_id_c enb_id;
-//     // ...
-//
-//   // sequence methods
-//   SRSASN_CODE pack(bit_ref& bref) const;
-//   SRSASN_CODE unpack(cbit_ref& bref);
-//   void        to_json(json_writer& j) const;
-// };
-
-// ***Already implemented in common IEs***
-//ENB-ID ::= CHOICE
-// struct enb_id_c {
-//   struct types_opts{
-//     enum options{ macro_enb_id, home_enb_id, /*...*/ short_macro_enb_id, 
-//       long_macro_enb_id, nulltype};
-//     // ***These options will be defined later***
-//   };
-//   typedef enumerated<types_opts, true> types;
-//
-//   // Choice methods
-//   enb_id_c() = default;
-//
-//   SRSASN_CODE pack(bit_ref& bref) const;
-//   SRSASN_CODE unpack(cbit_ref& bref);
-//   void        to_json(json_writer& j) const;
-//
-// private:
-//   types                   type_;
-//   choice_buffer_t<real_s> c;
-//
-//   void destroy_();
-// };
-
-// ***Already implemented in common IEs***
-// GlobalenGNB-ID ::= SEQUENCE
-// struct global_gnb_id_s {
-//   bool ext = false;
-//   std::string plmn_id;
-//   std::string gnb_id;
-//   //...
-//   
-//   // sequence methods
-//   SRSASN_CODE pack(bit_ref& bref) const;
-//   SRSASN_CODE unpack(cbit_ref& bref);
-//   void        to_json(json_writer& j) const;
-// };
-
-// TODO - validate AI generated code below
 
 //ENGNB-ID ::= CHOICE
 struct engnb_id_c {
@@ -126,45 +160,36 @@ struct engnb_id_c {
     bounded_bitstring<22, 32, false, true> gnb_id_;
   };
 
-  //PLMN-Identity ::= OCTET STRING (SIZE(3))
-    // Type fixed_octstring
-    // Will be directly defined in the structures it is part of.
+// GlobalenGNB-ID ::= SEQUENCE
+struct globalgnb_id_s {
+  bool                     ext = true;
+  fixed_octstring<3, true> plmn_id;
+  gnb_id_c                 gnb_id;
+  // ...
 
-  //GNB-CU-UP-ID::= INTEGER (0..68719476735)
-    // Type uint64
-    // Will be directly defined in the structures it is part of.
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
 
-  //GNB-DU-ID::= INTEGER (0..68719476735)
-    // Type uint64
-    // Will be directly defined in the structures it is part of.
+// Global-eNB-ID ::= GlobalENB-ID
+using global_enb_id = global_enb_id_s;
 
-  // GlobalenGNB-ID ::= SEQUENCE
-  struct globalgnb_id_s {
-    bool                     ext = true;
-    fixed_octstring<3, true> plmn_id;
-    gnb_id_c                 gnb_id;
-    // ...
+// Global-en-gNB-ID ::= GlobalenGNB-ID
+using global_en_gnb_id = globalen_gnb_id_s;
 
-    // sequence methods
-    SRSASN_CODE pack(bit_ref& bref) const;
-    SRSASN_CODE unpack(cbit_ref& bref);
-    void        to_json(json_writer& j) const;
-  };
+// GlabalngeNB-ID ::= SEQUENCE
+struct globalng_enb_id_s {
+  bool ext = true;
+  fixed_octstring<3, true> plmn_id;
+  enb_id_c enb_id;
 
-  // GNB-ID-Choice ::= CHOICE
-    // Already implemented in common IEs
-
-  // GlabalngeNB-ID ::= SEQUENCE
-  struct globalng_enb_id_s {
-    bool ext = true;
-    fixed_octstring<3, true> plmn_id;
-    enb_id_c enb_id;
-
-    // sequence methods
-    SRSASN_CODE pack(bit_ref& bref) const;
-    SRSASN_CODE unpack(cbit_ref& bref);
-    void        to_json(json_writer& j) const;
-  };
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
 
   // ENG-ID-Choice ::= CHOICE
     // Already implemented in common IEs
@@ -173,25 +198,116 @@ struct engnb_id_c {
     // Already implemented in common IEs as global_ng_ran_node_id_c
     //
 
-// Criticality::= ENUMERATED { reject, ignore, notify }
-struct criticality_opts {
-  enum options {reject, ignore, notify} values;
-  const char* to_string() const;
-};
-using criticality_e = enumerated<criticality_opts, false>;
+// Global-ng-RAN-ID ::= GlobalNG-RANNode-ID
+using global_ng_ran_id = global_ng_ran_node_id_c;
 
-// Presence::= ENUMERATED { optional, conditional, mandatory }
-struct presence_opts {
-  enum options {optional, conditional, mandatory} values;
-  const char* to_string() const;
-};
-using presence_e = enumerated<presence_opts, false>;
+// Global-gNB-DU-ID ::= SEQUENCE
+struct global_gnb_du_id_s {
+  bool ext = false;
+  global_ng_ran_id global_ng_ran_id;
+  gnb_du_id gnb_du_id;
 
-// ProcedureCode::= INTEGER (0..255)
-using procedure_code = uint8_t;
-   
-// ProtocolIE-ID::= INTEGER (0..maxProtocolIEs)
-using protocol_ie_id = uint64_t;
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+// Global-gNB-CU-UP-ID ::= SEQUENCE
+struct global_gnb_cu_up_id_s {
+  bool ext = false;
+  global_ng_ran_id global_ng_ran_id;
+  gnb_cu_up_id gnb_cu_up_id;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+//*****************************************************************************
+//                              NI-Identifier
+//*****************************************************************************
+
+// NI-Identifier ::= CHOICE
+struct ni_identifier_c {
+  struct types_opts {
+    enum options {
+      global_enb_id,
+      global_en_gnb_id,
+      global_ng_ran_id,
+      global_gnb_du_id,
+      global_gnb_cu_up_id,
+      /*...*/
+      nulltype
+    } values;
+    const char* to_string() const;
+  };
+  using types = enumerated<types_opts, true>;
+
+  // choice methods
+  types type() const { return type_; }
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+  //getters
+  ni_identifier_c& global_enb_id() {
+    assert_choice_type(types::global_enb_id, type_, "NI Identifier");
+    return global_enb_id_;
+  }
+  ni_identifier_c& global_en_gnb_id() {
+    assert_choice_type(types::global_en_gnb_id, type_, "NI Identifier");
+    return global_en_gnb_id_;
+  }
+  ni_identifier_c& global_ng_ran_id() {
+    assert_choice_type(types::global_ng_ran_id, type_, "NI Identifier");
+    return global_en_gnb_id_;
+  }
+  ni_identifier_c& global_gnb_du_id() {
+    assert_choice_type(types::global_gnb_du_id, type_, "NI Identifier");
+    return global_gnb_du_id_;
+  }
+  ni_identifier_c& global_gnb_cu_up_id() {
+    assert_choice_type(types::global_gnb_cu_up_id, type_, "NI Identifier");
+    return global_gnb_cu_up_id_;
+  }
+  private:
+    types type_;
+    ::asn1::e2sm::global_enb_id global_enb_id_;
+    ::asn1::e2sm::global_en_gnb_id global_en_gnb_id_;
+    ::asn1::e2sm::global_ng_ran_id global_ng_ran_id_;
+    global_gnb_du_id_s global_gnb_du_id_;
+    global_gnb_cu_up_id_s global_gnb_cu_up_id_;
+};
+
+
+// ****************************************************************************
+// E2SM-NI Service Model IEs
+// ****************************************************************************
+
+// NI-MessageTypeApproach1 ::= SEQUENCE
+struct ni_message_type_approach1_s {
+  bool ext = true;
+  procedure_code procedure_code;
+  type_of_message_e type_of_message;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+using ni_message_type_s1 = ni_message_type_approach1_s;
+using ni_message_type_x2 = ni_message_type_approach1_s;
+using ni_message_type_ng = ni_message_type_approach1_s;
+using ni_message_type_xn = ni_message_type_approach1_s;
+using ni_message_type_f1 = ni_message_type_approach1_s;
+using ni_message_type_e1 = ni_message_type_approach1_s;
+
+// NI-MessageType::= CHOICE
+struct ni_message_type_c {
+  ni_message_type_e1 e1_message_type;
+};
 
    
 // ****************************************************************************
@@ -201,9 +317,6 @@ using protocol_ie_id = uint64_t;
 // ----------------------------------------------------------------------------
 // Common IEs
 // ----------------------------------------------------------------------------
-
-// RANparameter-ID ::= INTEGER (0..maxofRANparameters)
-using ran_param_id = uint8_t;
 
 // RANparameter-Value ::= CHOICE
 struct ran_param_value_c {
@@ -281,25 +394,139 @@ struct ran_param_item_s {
   void        to_json(json_writer& j) const;
 };
 
-// NI-Type ::= ENUMERATED
-struct ni_type_opts {
-  enum options {s1, x2, ng, xn, f1, e1, /*...*/ nullvalue} value;
-  const char* to_string() const;
+// RANimperativePolicy ::= SEQUENCE
+using ran_imperative_policy_l = dyn_array<ran_param_item_s>;
+struct ran_imperative_policy_s {
+  bool ext = true;
+  bool ran_imperative_policy_list_present = false;
+  ran_imperative_policy_l ran_imperative_policy_list;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
 };
-using ni_type_e = enumerated<ni_type_opts, false>;
+
+// RANueGroupDef-Item ::= SEQUENCE
+struct ran_ue_group_def_item_s {
+  bool ext = true;
+  ran_param_id ran_param_id;
+  ran_param_test_condition_e ran_param_test;
+  ran_param_value_c ran_param_value;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+//RANueGroupDefinition ::= SEQUENCE
+using ran_ue_group_def_l = dyn_array<ran_ue_group_def_item_s>;
+struct ran_ue_group_def_s {
+  bool ext = true;
+  ran_ue_group_def_l ran_ue_group_def_list;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+//RANueGroup-Item ::= SEQUENCE
+struct ran_ue_group_item_s {
+  bool ext = true;
+  ran_ue_group_id ran_ue_group_id;
+  ran_ue_group_def_s ran_ue_group_def;
+  ran_imperative_policy_s ran_policy;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+// NI-ProtocolIE-Value ::= CHOICE
+struct ni_protocol_ie_value_c {
+  struct types_opts {
+    enum options {
+      value_int,
+      value_enum,
+      value_bool,
+      value_bits,
+      value_octs,
+      value_prts,
+      /*...*/
+      nulltype
+    } values;
+    const char* to_string() const;
+  };
+  using types = enumerated<types_opts, true>;
+
+  // choice methods
+  types type() const { return type_; }
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+  //getters
+  uint64_t& value_int() {
+    assert_choice_type(types::value_int, type_, "NI-ProtocolIE-Value");
+    return value_int_;
+  }
+  uint64_t& value_enum() {
+    assert_choice_type(types::value_enum, type_, "NI-ProtocolIE-Value");
+    return value_enum_;
+  }
+  bool& value_bool() {
+    assert_choice_type(types::value_bool, type_, "NI-ProtocolIE-Value");
+    return value_bool_;
+  }
+  unbounded_bitstring<true, true>& value_bits() {
+    assert_choice_type(types::value_bits, type_, "NI-ProtocolIE-Value");
+    return value_bits_;
+  }
+  unbounded_octstring<true>& value_octs() {
+    assert_choice_type(types::value_octs, type_, "NI-ProtocolIE-Value");
+    return value_octs_;
+  }
+  printable_string<1, 150, true, true>& value_prts() {
+    assert_choice_type(types::value_prts, type_, "NI-ProtocolIE-Value");
+    return value_prts_;
+  }
+private:
+  types type_;
+  uint64_t value_int_;
+  uint64_t value_enum_;
+  bool value_bool_;
+  unbounded_bitstring<true, true> value_bits_;
+  unbounded_octstring<true> value_octs_;
+  printable_string<1, 150, true, true> value_prts_;
+};
+
+// NI-ProtocolIE-Item ::= SEQUENCE
+struct ni_protocol_ie_item_s {
+  bool ext = true;
+  ni_protocol_ie_id interface_protocol_ie_id;
+  ni_protocol_ie_test_e interface_protocol_ie_test;
+  ni_protocol_ie_value_c interface_protocol_ie_value;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
 
 // ----------------------------------------------------------------------------
 // Event Trigger Definition
 // ----------------------------------------------------------------------------
 
 // E2SM-NI-EventTriggerDefinition-Format1 ::= SEQUENCE
-using int_protocol_ie_l = dyn_array<ni_protocol_ie_item>;
+using int_protocol_ie_l = dyn_array<ni_protocol_ie_item_s>;
 struct e2sm_ni_event_trigger_format1_s {
   bool ext = true;
   ni_type_e int_type;
-  ni_identifier int_id;
-  ni_direction int_direction;
-  ni_message_type int_message_type;
+  ni_identifier_c int_id;
+  ni_direction_e int_direction;
+  ni_message_type_c int_message_type;
 
   bool protocol_ie_list_present = false;
   int_protocol_ie_l int_protocol_ie_list;
@@ -418,10 +645,10 @@ struct e2sm_ni_action_definition_s {
 struct e2sm_ni_indication_header_format1_s {
   bool ext = true;
   ni_type_e int_type;
-  ni_identifier int_id;
-  ni_direction int_direction;
+  ni_identifier_c int_id;
+  ni_direction_e int_direction;
   bool time_stamp_present = false;
-  ni_time_stamp time_stamp;
+  ni_timestamp time_stamp;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -455,9 +682,6 @@ struct e2sm_ni_indication_header_c {
   types type_;
   e2sm_ni_indication_header_format1_s format1;
 };
-
-// ni_message placeholder
-using ni_message = unbounded_octstring<true>;
 
 // ----------------------------------------------------------------------------
 // Indication Message
@@ -570,8 +794,8 @@ struct e2sm_ni_control_header_format1_s {
   bool ext = true;
 
   ni_type_e int_type;
-  ni_identifier int_id;
-  ni_direction int_direction;
+  ni_identifier_c int_id;
+  ni_direction_e int_direction;
   ric_ctrl_msg_pri ric_cntl_msg_pri;
 
   // sequence methods
@@ -656,7 +880,7 @@ struct e2sm_ni_control_message_c {
 // ----------------------------------------------------------------------------
 
 // E2SM-NI-ControlOutcome-Format1 ::= SEQUENCE
-using outcome_element_l = dyn_array<ran_param_item>;
+using outcome_element_l = dyn_array<ran_param_item_s>;
 struct e2sm_ni_control_outcome_format1_s {
   bool ext = true;
 
@@ -701,26 +925,105 @@ struct e2sm_ni_control_outcome_c {
 // RAN Function Description
 // ----------------------------------------------------------------------------
 
+//RIC-EventTriggerStyle-List ::= SEQUENCE
+struct ric_event_trigger_style_list_s {
+  bool ext = true;
+  ric_style_type ric_event_trigger_style_type;
+  ric_style_name ric_event_trigger_style_name;
+  ric_format_type ric_event_trigger_format_type;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+using ric_report_ran_param_def_l = dyn_array<ran_param_def_item_s>;
+struct ric_report_style_list_s {
+  bool ext = true;
+  ric_style_type ric_report_style_type;
+  ric_style_name ric_report_style_name;
+  ric_format_type ric_report_action_format_type;
+  ric_report_ran_param_def_l ric_report_ran_param_def_list;
+  ric_format_type ric_indication_header_format_type;
+  ric_format_type ric_indication_msg_format_type;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+using ric_insert_ran_param_def_l = dyn_array<ran_param_def_item_s>;
+struct ric_insert_style_list_s {
+  bool ext = true;
+
+  ric_style_type ric_insert_style_type;
+  ric_style_name ric_insert_style_name;
+  ric_format_type ric_insert_action_format_type;
+  ric_insert_ran_param_def_l ric_insert_ran_param_def_list;
+  ric_format_type ric_indication_header_format_type;
+  ric_format_type ric_indication_message_format_type;
+  ric_format_type ric_call_process_id_format_type;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+using ric_control_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>;
+struct ric_control_style_list_s {
+  bool ext = true;
+  ric_style_type ric_control_style_type;
+  ric_style_name ric_control_style_name;
+  ric_format_type ric_control_format_type;
+  ric_format_type ric_control_header_format_type;
+  ric_format_type ric_control_message_format_type;
+  ric_format_type ric_call_process_id_format_type;
+  ric_format_type ric_control_outcome_format_type;
+  ric_control_outcome_ran_para_def_l ric_control_outcome_ran_para_def_list;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
+using ric_policy_ran_param_def_l = dyn_array<ran_param_def_item_s>;
+struct ric_policy_style_list_s {
+  bool ext = true;
+  ric_style_type ric_policy_style_type;
+  ric_style_name ric_policy_style_name;
+  ric_format_type ric_policy_action_format_type;
+  ric_policy_ran_param_def_l ric_policy_ran_param_def_list;
+
+  // sequence methods
+  SRSASN_CODE pack(bit_ref& bref) const;
+  SRSASN_CODE unpack(cbit_ref& bref);
+  void        to_json(json_writer& j) const;
+};
+
 // E2SM-NI-RANfunction-Item ::= SEQUENCE
 using ric_event_trigger_style_l = dyn_array<ric_event_trigger_style_list_s>;
-using ric_event_report_style_l = dyn_array<ric_event_report_style_list_s>;
-using ric_event_inster_style_l = dyn_array<ric_event_insert_style_list_s>;
-using ric_event_control_sytle_l = dyn_array<ric_event_control_style_list_s>;
-using ric_event_policy_style_l = dyn_array<ric_event_policy_style_list_s>;
+using ric_report_style_l = dyn_array<ric_report_style_list_s>;
+using ric_insert_style_l = dyn_array<ric_insert_style_list_s>;
+using ric_control_sytle_l = dyn_array<ric_control_style_list_s>;
+using ric_policy_style_l = dyn_array<ric_policy_style_list_s>;
 
 struct e2sm_ni_ran_function_item_s {
   bool ext = true;
 
   bool ric_event_trigger_style_list_present = false;
   ric_event_trigger_style_l ric_event_trigger_style_list;
-  bool ric_event_report_style_list_present = false;
-  ric_event_report_style_l ric_event_report_style_list;
-  bool ric_event_insert_style_list_present = false;
-  ric_event_inster_style_l ric_event_insert_style_list;
-  bool ric_event_control_style_list_present = false;
-  ric_event_control_sytle_l ric_event_control_style_list;
-  bool ric_event_policy_style_list_present = false;
-  ric_event_policy_style_l ric_event_policy_style_list;
+  bool ric_report_style_list_present = false;
+  ric_report_style_l ric_event_report_style_list;
+  bool ric_insert_style_list_present = false;
+  ric_insert_style_l ric_event_insert_style_list;
+  bool ric_control_style_list_present = false;
+  ric_control_sytle_l ric_event_control_style_list;
+  bool ric_policy_style_list_present = false;
+  ric_policy_style_l ric_event_policy_style_list;
 };
 
 // E2SM-NI-RANfunction-Description ::= SEQUENCE
@@ -742,37 +1045,6 @@ struct e2sm_ni_ran_function_description_s {
 // Common IEs
 // ----------------------------------------------------------------------------
 
-// Global-eNB-ID ::= GlobalENB-ID
-using global_enb_id = global_enb_id_s;
-
-// Global-en-gNB-ID ::= GlobalenGNB-ID
-using global_en_gnb_id = globalen_gnb_id_s;
-
-// Global-gNB-DU-ID ::= SEQUENCE
-struct global_gnb_du_id_s {
-  bool ext = false;
-  global_ng_ran_id global_ng_ran_id;
-  gnb_du_id gnb_du_id;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// Global-ng-RAN-ID ::= GlobalNG-RANNode-ID
-using global_ng_ran_id = global_ng_ran_node_id_c;
-// Global-gNB-CU-UP-ID ::= SEQUENCE
-struct global_gnb_cu_up_id_s {
-  bool ext = false;
-  global_ng_ran_id global_ng_ran_id;
-  gnb_cu_up_id gnb_cu_up_id;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
 
 // ***EXAMPLE from common_ies.h***
 // NRFrequencyShift7p5khz ::= ENUMERATED
@@ -784,213 +1056,15 @@ struct global_gnb_cu_up_id_s {
 // using nr_freq_shift7p5khz_e = enumerated<nr_freq_shift7p5khz_opts, true>;
 //
 
-// NI-Direction ::= ENUMERATED
-struct ni_direction_opts {
-  enum options {incoming, outgoing, both, /*...*/ nulltype} value;
-  const char* to_string() const;
-};
-using ni_direction_e = enumerated<ni_direction_opts, true>;
-
-// NI-Identifier ::= CHOICE
-struct ni_identifier_c {
-  struct types_opts {
-    enum options {
-      global_enb_id,
-      global_en_gnb_id,
-      global_ng_ran_id,
-      global_gnb_du_id,
-      global_gnb_cu_up_id,
-      /*...*/
-      nulltype
-    } values;
-    const char* to_string() const;
-  };
-  using types = enumerated<types_opts, true>;
-
-  // choice methods
-  types type() const { return type_; }
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-  //getters
-  ni_identifier_c& global_enb_id() {
-    assert_choice_type(types::global_enb_id, type_, "NI Identifier");
-    return global_enb_id;
-  }
-  ni_identifier_c& global_en_gnb_id() {
-    assert_choice_type(types::global_en_gnb_id, type_, "NI Identifier");
-    return global_en_gnb_id;
-  }
-  ni_identifier_c& global_ng_ran_id() {
-    assert_choice_type(types::global_ng_ran_id, type_, "NI Identifier");
-    return global_en_gnb_id;
-  }
-  ni_identifier_c& global_gnb_du_id() {
-    assert_choice_type(types::global_gnb_du_id, type_, "NI Identifier");
-    return global_gnb_du_id;
-  }
-  ni_identifier_c& global_gnb_cu_up_id() {
-    assert_choice_type(types::global_gnb_cu_up_id, type_, "NI Identifier");
-    return global_gnb_cu_up_id;
-  }
-private:
-  global_enb_id global_enb_id;
-  global_en_gnb_id global_en_gnb_id;
-  global_ng_ran_id global_ng_ran_id;
-  global_gnb_du_id_s global_gnb_du_id;
-  global_gnb_cu_up_id_s global_gnb_cu_up_id;
-};
-
 // NI-Message ::= OCTET STRING
 // Declared above!
 
-// TypeOfMessage ::= ENUMERATED
-struct type_of_message_opts {
-  enum options {nothing, initiating_message, successful_outcome, unsuccessful_outcome} value;
-  const char* to_string() const;
-};
-using type_of_message_e = enumerated<type_of_message_opts, false>;
-
-// NI-MessageTypeApproach1 ::= SEQUENCE
-struct ni_message_type_approach1_s {
-  bool ext = true;
-  procedure_code procedure_code;
-  type_of_message_e type_of_message;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-using ni_message_type_s1 = ni_message_type_approach1_s;
-using ni_message_type_x2 = ni_message_type_approach1_s;
-using ni_message_type_ng = ni_message_type_approach1_s;
-using ni_message_type_xn = ni_message_type_approach1_s;
-using ni_message_type_f1 = ni_message_type_approach1_s;
-using ni_message_type_e1 = ni_message_type_approach1_s;
-
-// NI-MessageType::= CHOICE
-struct ni_message_type_c {
-  e1_message_type_s e1_message_type;
-};
-
-// NI-ProtocolIE-ID ::= ProtocolIE-ID
-using ni_protocol_ie_id = protocol_ie_id;
-
-// NI-ProtocolIE-Test ::= ENUMERATED
-struct ni_protocol_ie_test_opts {
-  enum options {equal, greaterthan, lessthan, contains, present, /*...*/ nullvalue} value;
-  const char* to_string() const;
-};
-using ni_protocol_ie_test_e = enumerated<ni_protocol_ie_test_opts, false>;
-
-// NI-ProtocolIE-Value ::= CHOICE
-struct ni_protocol_ie_value_c {
-  struct types_opts {
-    enum options {
-      value_int,
-      value_enum,
-      value_bool,
-      value_bits,
-      value_octs,
-      value_prts,
-      /*...*/
-      nullvalue
-    } values;
-    const char* to_string() const;
-  };
-  using types = enumerated<types_opts, true>;
-
-  // choice methods
-  types type() const { return type_; }
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-  //getters
-  uint64_t& value_int() {
-    assert_choice_type(types::value_int, type_, "NI-ProtocolIE-Value");
-    return value_int;
-  }
-  uint64_t& value_enum() {
-    assert_choice_type(types::value_enum, type_, "NI-ProtocolIE-Value");
-    return value_enum;
-  }
-  bool& value_bool() {
-    assert_choice_type(types::value_bool, type_, "NI-ProtocolIE-Value");
-    return value_bool;
-  }
-  unbounded_bitstring<true, true>& value_bits() {
-    assert_choice_type(types::value_bits, type_, "NI-ProtocolIE-Value");
-    return value_bits;
-  }
-  unbounded_octstring<true>& value_octs() {
-    assert_choice_type(types::value_octs, type_, "NI-ProtocolIE-Value");
-    return value_octs;
-  }
-  printable_string<1, 150, true, true>& value_prts() {
-    assert_choice_type(types::value_prts, type_, "NI-ProtocolIE-Value");
-    return value_prts;
-  }
-private:
-  types type_;
-  uint64_t value_int;
-  uint64_t value_enum;
-  bool value_bool;
-  unbounded_bitstring<true, true> value_bits;
-  unbounded_octstring<true> value_octs;
-  printable_string<1, 150, true, true> value_prts;
-};
-
-// NI-ProtocolIE-Item ::= SEQUENCE
-struct ni_protocol_ie_item_s {
-  bool ext = true;
-  ni_protocol_ie_id interface_protocol_ie_id;
-  ni_protocol_ie_test_e interface_protocol_ie_test;
-  in_protocol_ie_value_c interface_protocol_ie_value;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// NI-TimeStamp ::= OCTET STRING (SIZE(8))
-using ni_timestamp = bounded_octstring<0, 8>;
-
-// RANcallProcess-ID-number ::= INTEGER
-using ran_call_proc_id_num = uint64_t;
 
 // RANcallProcess-ID-string ::= PrintableString(SIZE(1..150,...))
   // Defined in common_ies.h
 
 //RANfunction-Name ::= SEQUENCE
 //  Defined in common_ies.h
-
-// RANimperativePolicy ::= SEQUENCE
-using ran_imperative_policy_l = dyn_array<ran_param_item_s>;
-struct ran_imperative_policy_s {
-  bool ext = true;
-  bool ran_imperative_policy_list_present = false;
-  ran_imperative_policy_l ran_imperative_policy_list;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-// RANparameter-ID ::= INTEGER (0..maxofRANparameters)
-using ran_param_id = uint64_t;
-
-// RANparameter-Name ::= PrintableString(SIZE(1..150,...))
-using ran_param_name = printable_string<1, 150, true, true>
-
-struct ran_param_type_opts {
-  enum options {integer, enumerated, boolean, bitstring, octetstring, printablestring, /*...*/ nullvalue} value;
-  const char* to_string() const;
-};
-using ran_param_type_e = enumerated<ran_param_type_opts, false>;
 
 // RANparameterDef-Item ::= SEQUENCE
 struct ran_param_def_item_s {
@@ -1005,13 +1079,6 @@ struct ran_param_def_item_s {
   void        to_json(json_writer& j) const;
 };
 
-// RANparameter-Test-Condition ::= ENUMERATED
-struct ran_param_test_condition_opts {
-  enum options {equal, greaterthan, lessthan, contains, present, /*...*/ nullvalue} value;
-  const char* to_string() const;
-};
-using ran_param_test_condition_e = enumerated<ran_param_test_condition_opts, false>;
-
 // RANparameter-Value ::= CHOICE
 struct ran_param_value_c {
   struct types_opts {
@@ -1023,7 +1090,7 @@ struct ran_param_value_c {
       value_octs,
       value_prts,
       /*...*/
-      nullvalue
+      nulltype
     } values;
     const char* to_string() const;
   };
@@ -1069,59 +1136,6 @@ private:
   printable_string<1, 150, true, true> value_prts;
 };
 
-//RANueGroupID ::= INTEGER (0..maxofRANueGRoups)
-using ran_ue_group_id = uint64_t;
-
-// RANueGroupDef-Item ::= SEQUENCE
-struct ran_ue_group_def_item_s {
-  bool ext = true;
-  ran_param_id ran_param_id;
-  ran_param_test_condition_e ran_param_test;
-  ran_param_value_c ran_param_value;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-//RANueGroupDefinition ::= SEQUENCE
-using ran_ue_group_def_l = dyn_array<ran_ue_group_def_item_s>;
-struct ran_ue_group_def_s {
-  bool ext = true;
-  ran_ue_group_def_l ran_ue_group_def_list;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-//RANueGroup-Item ::= SEQUENCE
-struct ran_ue_group_item_s {
-  bool ext = true;
-  ran_ue_group_id ran_ue_group_id;
-  ran_ue_group_def ran_ue_group_def_s;
-  ran_imperative_policy_s ran_policy;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-//RIC-Control-Message-Priority ::= INTEGER
-using ric_ctrl_msg_pri = uint64_t;
-
-// RIC-Format-Type ::= INTEGER
-using ric_format_type = uint64_t;
-
-// RIC-Style-Type ::= INTEGER
-using ric_style_type = uint64_t;
-
-// RIC-Style-Name ::= PrintableString(SIZE(1..150,...))
-using ric_style_name = printable_string<1, 150, true, true>;
-
 // RIC-ControlStyle-List ::= SEQUENCE
 using ric_ctrl_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>
 struct ric_ctrl_style_list_s {
@@ -1134,19 +1148,6 @@ struct ric_ctrl_style_list_s {
   ric_format_type ric_call_process_id_format_type;
   ric_format_type ric_ctrl_outcome_format_type;
   ric_ctrl_outcome_ran_para_def_l ric_ctrl_outcome_ran_para_def_list;
-
-  // sequence methods
-  SRSASN_CODE pack(bit_ref& bref) const;
-  SRSASN_CODE unpack(cbit_ref& bref);
-  void        to_json(json_writer& j) const;
-};
-
-//RIC-EventTriggerStyle-List ::= SEQUENCE
-struct ric_event_trigger_style_list_s {
-  bool ext = true;
-  ric_style_type ric_event_tyrigger_style_type;
-  ric_style_name ric_event_trigger_style_name;
-  ric_format_type ric_event_trigger_format_type;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -1202,8 +1203,6 @@ struct ric_report_style_list_s {
   SRSASN_CODE unpack(cbit_ref& bref);
   void        to_json(json_writer& j) const;
 };
-};
-};
-} // namespace e2sm
+}; // namespace e2sm
 } // namespace asn1
 
