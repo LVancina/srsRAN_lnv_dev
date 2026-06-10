@@ -11,10 +11,9 @@
 
 #pragma once
 
-#include "../asn1_utils.h"
+#include "srsran/asn1/asn1_utils.h"
 #include "srsran/asn1/asn1_ap_utils.h"
 #include "e2sm_common_ies.h"
-#include "e2sm_ni_ies_old.h"
 #include <cstdint>
 #include <cstdio>
 #include <stdarg.h>
@@ -37,27 +36,27 @@ namespace e2sm {
  *                              Primitive Types
  ******************************************************************************/
 
-using gnb_du_id = uint64_t;
-using gnb_cu_up_id = uint64_t;
+using gnb_du_id_t = uint64_t;
+using gnb_cu_up_id_t = uint64_t;
 const uint32_t NONE = 2147483647;
 
 // ProcedureCode::= INTEGER (0..255)
-using procedure_code = uint8_t;
+using procedure_code_t = uint8_t;
    
 // ProtocolIE-ID::= INTEGER (0..maxProtocolIEs)
-using protocol_ie_id = uint64_t;
+using protocol_ie_id_t = uint64_t;
 
 // NI-ProtocolIE-ID ::= ProtocolIE-ID
-using ni_protocol_ie_id = protocol_ie_id;
+using ni_protocol_ie_id_t = protocol_ie_id_t;
 
 //RIC-Control-Message-Priority ::= INTEGER
-using ric_ctrl_msg_pri = uint64_t;
+using ric_ctrl_msg_pri_t = uint64_t;
 
 // RIC-Format-Type ::= INTEGER
-using ric_format_type = uint64_t;
+using ric_format_type_t = uint64_t;
 
 // RIC-Style-Type ::= INTEGER
-using ric_style_type = uint64_t;
+using ric_style_type_t = uint64_t;
 
 // RANcallProcess-ID-number ::= INTEGER
 using ran_call_proc_id_num = uint64_t;
@@ -69,13 +68,13 @@ using ni_timestamp = bounded_octstring<0, 8>;
 using ni_message = unbounded_octstring<true>;
 
 // RANparameter-ID ::= INTEGER (0..maxofRANparameters)
-using ran_param_id = uint64_t;
+using ran_param_id_t = uint64_t;
 
 // RANparameter-Name ::= PrintableString(SIZE(1..150,...))
 using ran_param_name = printable_string<1, 150, true, true>;
 
 //RANueGroupID ::= INTEGER (0..maxofRANueGRoups)
-using ran_ue_group_id = uint64_t;
+using ran_ue_group_id_t = uint64_t;
 
 // RANcallProcess-ID-string::= PrintableString(SIZE(1..150,...))
 using ran_call_process_id_string = printable_string<1, 150, true, true>;
@@ -174,10 +173,10 @@ struct globalgnb_id_s {
 };
 
 // Global-eNB-ID ::= GlobalENB-ID
-using global_enb_id = global_enb_id_s;
+using global_enb_id_t = global_enb_id_s;
 
 // Global-en-gNB-ID ::= GlobalenGNB-ID
-using global_en_gnb_id = globalen_gnb_id_s;
+using global_en_gnb_id_t = globalen_gnb_id_s;
 
 // GlabalngeNB-ID ::= SEQUENCE
 struct globalng_enb_id_s {
@@ -199,13 +198,13 @@ struct globalng_enb_id_s {
     //
 
 // Global-ng-RAN-ID ::= GlobalNG-RANNode-ID
-using global_ng_ran_id = global_ng_ran_node_id_c;
+using global_ng_ran_id_t = global_ng_ran_node_id_c;
 
 // Global-gNB-DU-ID ::= SEQUENCE
 struct global_gnb_du_id_s {
   bool ext = false;
-  global_ng_ran_id global_ng_ran_id;
-  gnb_du_id gnb_du_id;
+  global_ng_ran_id_t global_ng_ran_id;
+  gnb_du_id_t gnb_du_id;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -216,8 +215,8 @@ struct global_gnb_du_id_s {
 // Global-gNB-CU-UP-ID ::= SEQUENCE
 struct global_gnb_cu_up_id_s {
   bool ext = false;
-  global_ng_ran_id global_ng_ran_id;
-  gnb_cu_up_id gnb_cu_up_id;
+  global_ng_ran_id_t global_ng_ran_id;
+  gnb_cu_up_id_t gnb_cu_up_id;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -240,7 +239,7 @@ struct ni_identifier_c {
       global_gnb_cu_up_id,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -273,9 +272,9 @@ struct ni_identifier_c {
   }
   private:
     types type_;
-    ::asn1::e2sm::global_enb_id global_enb_id_;
-    ::asn1::e2sm::global_en_gnb_id global_en_gnb_id_;
-    ::asn1::e2sm::global_ng_ran_id global_ng_ran_id_;
+    global_enb_id_t global_enb_id_;
+    global_en_gnb_id_t global_en_gnb_id_;
+    global_ng_ran_id_t global_ng_ran_id_;
     global_gnb_du_id_s global_gnb_du_id_;
     global_gnb_cu_up_id_s global_gnb_cu_up_id_;
 };
@@ -288,7 +287,7 @@ struct ni_identifier_c {
 // NI-MessageTypeApproach1 ::= SEQUENCE
 struct ni_message_type_approach1_s {
   bool ext = true;
-  procedure_code procedure_code;
+  procedure_code_t procedure_code;
   type_of_message_e type_of_message;
 
   // sequence methods
@@ -330,7 +329,7 @@ struct ran_param_value_c {
       value_prts,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -385,7 +384,7 @@ struct ran_param_value_c {
 // RANparameter-Item ::= SEQUENCE
 struct ran_param_item_s {
   bool ext = true;
-  ran_param_id ran_param_id;
+  ran_param_id_t ran_param_id;
   ran_param_value_c ran_param_value;
 
   // sequence methods
@@ -410,7 +409,7 @@ struct ran_imperative_policy_s {
 // RANueGroupDef-Item ::= SEQUENCE
 struct ran_ue_group_def_item_s {
   bool ext = true;
-  ran_param_id ran_param_id;
+  ran_param_id_t ran_param_id;
   ran_param_test_condition_e ran_param_test;
   ran_param_value_c ran_param_value;
 
@@ -435,7 +434,7 @@ struct ran_ue_group_def_s {
 //RANueGroup-Item ::= SEQUENCE
 struct ran_ue_group_item_s {
   bool ext = true;
-  ran_ue_group_id ran_ue_group_id;
+  ran_ue_group_id_t ran_ue_group_id;
   ran_ue_group_def_s ran_ue_group_def;
   ran_imperative_policy_s ran_policy;
 
@@ -457,7 +456,7 @@ struct ni_protocol_ie_value_c {
       value_prts,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -505,7 +504,7 @@ private:
 // NI-ProtocolIE-Item ::= SEQUENCE
 struct ni_protocol_ie_item_s {
   bool ext = true;
-  ni_protocol_ie_id interface_protocol_ie_id;
+  ni_protocol_ie_id_t interface_protocol_ie_id;
   ni_protocol_ie_test_e interface_protocol_ie_test;
   ni_protocol_ie_value_c interface_protocol_ie_value;
 
@@ -540,7 +539,7 @@ struct e2sm_ni_event_trigger_format1_s {
   // E2SM-NI EventTriggerDefinition IE
   struct e2sm_ni_event_trigger_definition_c {
     struct types_opts {
-      enum options {event_definition_format1, /*...*/ nulltype} values;
+      enum options {event_definition_format1, /*...*/ nulltype} value;
       const char* to_string() const;
     };
     using types = enumerated<types_opts, true>;
@@ -599,7 +598,7 @@ struct e2sm_ni_action_definition_format_c {
         action_definition_format2,
         /*...*/
         nulltype
-      } values;
+      } value;
       const char* to_string() const;
     };
     using types = enumerated<types_opts, true>;
@@ -663,7 +662,7 @@ struct e2sm_ni_indication_header_c {
       indication_header_format1,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -705,7 +704,7 @@ struct e2sm_ni_indication_message_c {
       indication_message_format1,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -760,7 +759,7 @@ struct e2sm_ni_call_process_id_c {
       call_process_format2,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -796,7 +795,7 @@ struct e2sm_ni_control_header_format1_s {
   ni_type_e int_type;
   ni_identifier_c int_id;
   ni_direction_e int_direction;
-  ric_ctrl_msg_pri ric_cntl_msg_pri;
+  ric_ctrl_msg_pri_t ric_cntl_msg_pri;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -812,7 +811,7 @@ struct e2sm_ni_control_header_c {
       control_header_format1,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -855,7 +854,7 @@ struct e2sm_ni_control_message_c {
       control_message_format1,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -901,7 +900,7 @@ struct e2sm_ni_control_outcome_c {
       control_outcome_format1,
       /*...*/
       nulltype
-    } values;
+    } value;
     const char* to_string() const;
   };
   using types = enumerated<types_opts, true>;
@@ -928,7 +927,7 @@ struct e2sm_ni_control_outcome_c {
 // RANparameterDef-Item ::= SEQUENCE
 struct ran_param_def_item_s {
   bool ext = false;
-  ran_param_id ran_param_id;
+  ran_param_id_t ran_param_id;
   ran_param_name ran_param_name;
   ran_param_type_e ran_param_type;
 
@@ -942,9 +941,9 @@ struct ran_param_def_item_s {
 //RIC-EventTriggerStyle-List ::= SEQUENCE
 struct ric_event_trigger_style_list_s {
   bool ext = true;
-  ric_style_type ric_event_trigger_style_type;
+  ric_style_type_t ric_event_trigger_style_type;
   ric_style_name ric_event_trigger_style_name;
-  ric_format_type ric_event_trigger_format_type;
+  ric_format_type_t ric_event_trigger_format_type;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -956,12 +955,12 @@ struct ric_event_trigger_style_list_s {
 using ric_report_ran_param_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_report_style_list_s {
   bool ext = true;
-  ric_style_type ric_report_style_type;
+  ric_style_type_t ric_report_style_type;
   ric_style_name ric_report_style_name;
-  ric_format_type ric_report_action_format_type;
+  ric_format_type_t ric_report_action_format_type;
   ric_report_ran_param_def_l ric_report_ran_param_def_list;
-  ric_format_type ric_indication_header_format_type;
-  ric_format_type ric_indication_msg_format_type;
+  ric_format_type_t ric_indication_header_format_type;
+  ric_format_type_t ric_indication_msg_format_type;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -973,13 +972,13 @@ using ric_insert_ran_param_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_insert_style_list_s {
   bool ext = true;
 
-  ric_style_type ric_insert_style_type;
+  ric_style_type_t ric_insert_style_type;
   ric_style_name ric_insert_style_name;
-  ric_format_type ric_insert_action_format_type;
+  ric_format_type_t ric_insert_action_format_type;
   ric_insert_ran_param_def_l ric_insert_ran_param_def_list;
-  ric_format_type ric_indication_header_format_type;
-  ric_format_type ric_indication_message_format_type;
-  ric_format_type ric_call_process_id_format_type;
+  ric_format_type_t ric_indication_header_format_type;
+  ric_format_type_t ric_indication_message_format_type;
+  ric_format_type_t ric_call_process_id_format_type;
 
   // sequence methods
   SRSASN_CODE pack(bit_ref& bref) const;
@@ -990,13 +989,13 @@ struct ric_insert_style_list_s {
 using ric_control_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_control_style_list_s {
   bool ext = true;
-  ric_style_type ric_control_style_type;
+  ric_style_type_t ric_control_style_type;
   ric_style_name ric_control_style_name;
-  ric_format_type ric_control_format_type;
-  ric_format_type ric_control_header_format_type;
-  ric_format_type ric_control_message_format_type;
-  ric_format_type ric_call_process_id_format_type;
-  ric_format_type ric_control_outcome_format_type;
+  ric_format_type_t ric_control_format_type;
+  ric_format_type_t ric_control_header_format_type;
+  ric_format_type_t ric_control_message_format_type;
+  ric_format_type_t ric_call_process_id_format_type;
+  ric_format_type_t ric_control_outcome_format_type;
   ric_control_outcome_ran_para_def_l ric_control_outcome_ran_para_def_list;
 
   // sequence methods
@@ -1009,9 +1008,9 @@ struct ric_control_style_list_s {
 using ric_policy_ran_param_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_policy_style_list_s {
   bool ext = true;
-  ric_style_type ric_policy_style_type;
+  ric_style_type_t ric_policy_style_type;
   ric_style_name ric_policy_style_name;
-  ric_format_type ric_policy_action_format_type;
+  ric_format_type_t ric_policy_action_format_type;
   ric_policy_ran_param_def_l ric_policy_ran_param_def_list;
 
   // sequence methods
@@ -1086,13 +1085,13 @@ struct e2sm_ni_ran_function_description_s {
 using ric_ctrl_outcome_ran_para_def_l = dyn_array<ran_param_def_item_s>;
 struct ric_ctrl_style_list_s {
   bool ext = true;
-  ric_style_type ric_ctrl_style_type;
+  ric_style_type_t ric_ctrl_style_type;
   ric_style_name ric_ctrl_style_name;
-  ric_format_type ric_ctrl_format_type;
-  ric_format_type ric_ctrl_header_format_type;
-  ric_format_type ric_ctrl_message_format_type;
-  ric_format_type ric_call_process_id_format_type;
-  ric_format_type ric_ctrl_outcome_format_type;
+  ric_format_type_t ric_ctrl_format_type;
+  ric_format_type_t ric_ctrl_header_format_type;
+  ric_format_type_t ric_ctrl_message_format_type;
+  ric_format_type_t ric_call_process_id_format_type;
+  ric_format_type_t ric_ctrl_outcome_format_type;
   ric_ctrl_outcome_ran_para_def_l ric_ctrl_outcome_ran_para_def_list;
 
   // sequence methods
